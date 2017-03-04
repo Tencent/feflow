@@ -1,0 +1,31 @@
+{
+  "name": "feflow-cli",
+  "version": "0.1.0",
+  "description": "A command line tool aims to improve front-end engineer workflow.",
+  "main": "index.js",
+  "scripts": {
+    "commitmsg": "validate-commit-msg",
+    "commit": "git-cz ",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://git.code.oa.com/feflow/feflow-cli.git"
+  },
+  "keywords": [
+    "workflow",
+    "commandline",
+    "front-end"
+  ],
+  "author": "lewischeng",
+  "license": "MIT",
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "commitizen": "^2.3.0",
+    "validate-commit-msg": "^2.11.1",
+    "conventional-changelog-cli": "^1.2.0",
+    "husky": "^0.13.1"
+  }
+}
