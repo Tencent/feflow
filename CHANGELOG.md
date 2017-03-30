@@ -1,3 +1,13 @@
+<a name="0.2.0"></a>
+# [0.2.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.1.2...v0.2.0) (2017-03-30)
+
+
+### Features
+
+* 打通Git仓库创建流程和克隆 ([2fc1458](http://git.code.oa.com/feflow/feflow-cli/commits/2fc1458))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.1.1...v0.1.2) (2017-03-26)
 
