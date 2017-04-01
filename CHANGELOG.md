@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.2.0...v0.3.0) (2017-04-01)
+
+
+### Features
+
+* 集成业务脚手架，支持业务的now-starkit ([02866da](http://git.code.oa.com/feflow/feflow-cli/commits/02866da))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.1.2...v0.2.0) (2017-03-30)
 
