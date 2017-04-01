@@ -1,6 +1,6 @@
 {
   "name": "@tencent/feflow-cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -23,9 +23,11 @@
     "feflow": "./bin/feflow"
   },
   "dependencies": {
+    "inquirer": "^3.0.6",
     "commander": "^2.9.0",
     "yeoman-environment": "^1.6.6",
-    "@tencent/generator-now-activity": "^0.2.0"
+    "@tencent/generator-now-activity": "^0.2.0",
+    "@tencent/generator-now-business": "^0.1.0"
   },
   "devDependencies": {
     "commitizen": "^2.3.0",
