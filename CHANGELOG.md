@@ -1,3 +1,13 @@
+<a name="0.3.1"></a>
+## [0.3.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.0...v0.3.1) (2017-04-04)
+
+
+### Bug Fixes
+
+* 升级generator-now-business，修复repo url错误bug。 ([b845631](http://git.code.oa.com/feflow/feflow-cli/commits/b845631))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.2.0...v0.3.0) (2017-04-01)
 
