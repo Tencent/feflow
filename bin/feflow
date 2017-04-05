@@ -6,7 +6,7 @@ const yeoman = require('yeoman-environment');
 const yeomanEnv = yeoman.createEnv();
 
 program
-    .version('0.3.3')
+    .version('0.3.4')
     .option('-init', '工程目录初始化');
 
 /**
