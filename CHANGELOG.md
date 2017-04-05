@@ -1,3 +1,13 @@
+<a name="0.3.4"></a>
+## [0.3.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.3...v0.3.4) (2017-04-05)
+
+
+### Bug Fixes
+
+* 模板文件vcmrc丢失问题修复 ([dddce99](http://git.code.oa.com/feflow/feflow-cli/commits/dddce99))
+
+
+
 <a name="0.3.3"></a>
 ## [0.3.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.0...v0.3.3) (2017-04-04)
 
