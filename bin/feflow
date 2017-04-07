@@ -1,55 +1,5 @@
 #!/usr/bin/env node
 
-const inquirer = require('inquirer');
-const program = require('commander');
-const yeoman = require('yeoman-environment');
-const yeomanEnv = yeoman.createEnv();
+'use strict';
 
-program
-    .version('0.3.4')
-    .option('-init', '工程目录初始化');
-
-/**
- * 工程初始化命令
- */
-program
-    .command('init')
-    .description('工程目录初始化')
-    .action(function(env, options){
-
-        // 询问用户需要创建哪种类型的项目
-        const projectChoice = {
-            business: '初始化一个业务项目',
-            activity: '初始化一个活动项目'
-        };
-
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'projectType',
-                message: '您想要创建哪中类型的工程?',
-                choices: [
-                    projectChoice.business,
-                    projectChoice.activity
-                ]
-            }
-        ]).then(function (answers) {
-
-            let generatorName;
-
-            if (answers.projectType === projectChoice.business) {
-                generatorName = '@tencent/now-business'
-            } else if (answers.projectType === projectChoice.activity) {
-                generatorName = '@tencent/now-activity'
-            }
-
-            // Lookup方法会在本地查找已经安装过的generator
-            yeomanEnv.lookup(() => {
-                yeomanEnv.run(generatorName, {'skip-install': true}, err => {
-                    console.log('done');
-                });
-            });
-        });
-    });
-
-program.parse(process.argv);
+require('../lib/index');
