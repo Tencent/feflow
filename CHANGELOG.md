@@ -1,3 +1,13 @@
+<a name="0.3.5"></a>
+## [0.3.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.4...v0.3.5) (2017-04-07)
+
+
+### Features
+
+* 用户初始化 ([68f518d](http://git.code.oa.com/feflow/feflow-cli/commits/68f518d))
+
+
+
 <a name="0.3.4"></a>
 ## [0.3.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.3...v0.3.4) (2017-04-05)
 
