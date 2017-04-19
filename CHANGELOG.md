@@ -1,3 +1,23 @@
+<a name="0.4.2"></a>
+## [0.4.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.1...v0.4.2) (2017-04-19)
+
+
+### Bug Fixes
+
+* 修复windows的HOME环境变量可能没有找到的问题 ([a77749b](http://git.code.oa.com/feflow/feflow-cli/commits/a77749b)), closes [#issues3](http://git.code.oa.com/feflow/feflow-cli/issues/issues3)
+
+
+
+<a name="0.4.1"></a>
+## [0.4.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.0...v0.4.1) (2017-04-07)
+
+
+### Bug Fixes
+
+* generator-now-business中的vcmrc文件丢失问题修复 ([ae84648](http://git.code.oa.com/feflow/feflow-cli/commits/ae84648))
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.3.5...v0.4.0) (2017-04-07)
 
