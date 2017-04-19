@@ -1,3 +1,13 @@
+<a name="0.5.0"></a>
+# [0.5.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.3...v0.5.0) (2017-04-19)
+
+
+### Features
+
+* 集成feflow-scanner代码规范扫描器 ([589d0e4](http://git.code.oa.com/feflow/feflow-cli/commits/589d0e4))
+
+
+
 <a name="0.4.3"></a>
 ## [0.4.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.2...v0.4.3) (2017-04-19)
 
