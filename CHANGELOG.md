@@ -1,3 +1,13 @@
+<a name="0.5.1"></a>
+## [0.5.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.0...v0.5.1) (2017-04-19)
+
+
+### Bug Fixes
+
+* 变量传递问题,receiver ([ee70542](http://git.code.oa.com/feflow/feflow-cli/commits/ee70542))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.3...v0.5.0) (2017-04-19)
 
