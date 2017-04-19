@@ -1,3 +1,13 @@
+<a name="0.4.3"></a>
+## [0.4.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.2...v0.4.3) (2017-04-19)
+
+
+### Performance Improvements
+
+* 用户使用体验优化 ([fc7ed50](http://git.code.oa.com/feflow/feflow-cli/commits/fc7ed50))
+
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.4.1...v0.4.2) (2017-04-19)
 
