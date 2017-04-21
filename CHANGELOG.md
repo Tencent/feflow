@@ -1,3 +1,13 @@
+<a name="0.5.2"></a>
+## [0.5.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.1...v0.5.2) (2017-04-21)
+
+
+### Features
+
+* 扫描功能支持ivweb团队所有的仓库 ([1ee1fc1](http://git.code.oa.com/feflow/feflow-cli/commits/1ee1fc1))
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.0...v0.5.1) (2017-04-19)
 
