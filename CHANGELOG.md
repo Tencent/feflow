@@ -1,3 +1,13 @@
+<a name="0.5.4"></a>
+## [0.5.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.3...v0.5.4) (2017-04-22)
+
+
+### Features
+
+* feflow的功能性命令增加版本自动检查功能。 ([fba072a](http://git.code.oa.com/feflow/feflow-cli/commits/fba072a))
+
+
+
 <a name="0.5.3"></a>
 ## [0.5.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.2...v0.5.3) (2017-04-22)
 
