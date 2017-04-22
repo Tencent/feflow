@@ -1,3 +1,8 @@
+<a name="0.5.3"></a>
+## [0.5.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.2...v0.5.3) (2017-04-22)
+
+
+
 <a name="0.5.2"></a>
 ## [0.5.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.1...v0.5.2) (2017-04-21)
 
