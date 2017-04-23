@@ -30,7 +30,8 @@
     "yeoman-environment": "^1.6.6",
     "@tencent/generator-now-activity": "^0.2.2",
     "@tencent/generator-now-business": "^0.1.5",
-    "@tencent/feflow-scanner": "^0.3.0"
+    "@tencent/feflow-scanner": "^0.3.0",
+    "@tencent/feflow-install": "^0.1.0"
   },
   "devDependencies": {
     "commitizen": "^2.3.0",
