@@ -1,3 +1,16 @@
+<a name="0.6.0"></a>
+# [0.6.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.4...v0.6.0) (2017-05-02)
+
+
+### Features
+
+* 插件安装命令 ([744e06a](http://git.code.oa.com/feflow/feflow-cli/commits/744e06a))
+* 暴露install函数. ([1234283](http://git.code.oa.com/feflow/feflow-cli/commits/1234283))
+* 注册与运行generator. ([8368302](http://git.code.oa.com/feflow/feflow-cli/commits/8368302))
+* 集成插件安装命令。 ([72f6c06](http://git.code.oa.com/feflow/feflow-cli/commits/72f6c06))
+
+
+
 <a name="0.5.4"></a>
 ## [0.5.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.3...v0.5.4) (2017-04-22)
 
