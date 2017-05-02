@@ -1,3 +1,13 @@
+<a name="0.6.1"></a>
+## [0.6.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.0...v0.6.1) (2017-05-02)
+
+
+### Features
+
+* 在help里面显示install命令相关提示。 ([0416d0a](http://git.code.oa.com/feflow/feflow-cli/commits/0416d0a))
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.5.4...v0.6.0) (2017-05-02)
 
