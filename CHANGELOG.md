@@ -1,3 +1,23 @@
+<a name="0.6.3"></a>
+## [0.6.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.2...v0.6.3) (2017-05-03)
+
+
+### Features
+
+* 使用核心命令时都需要检测是否完成初始化操作。 ([8418159](http://git.code.oa.com/feflow/feflow-cli/commits/8418159))
+
+
+
+<a name="0.6.2"></a>
+## [0.6.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.1...v0.6.2) (2017-05-02)
+
+
+### Bug Fixes
+
+* 修复异常报错。 ([a1e0a3a](http://git.code.oa.com/feflow/feflow-cli/commits/a1e0a3a))
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.0...v0.6.1) (2017-05-02)
 
