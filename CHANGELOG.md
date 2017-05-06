@@ -1,3 +1,19 @@
+<a name="0.6.5"></a>
+## [0.6.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.4...v0.6.5) (2017-05-06)
+
+
+### Bug Fixes
+
+* 修复generator重新安装写入config.json重复的bug. ([40632af](http://git.code.oa.com/feflow/feflow-cli/commits/40632af))
+* 修复issues4，未初始化时，会记住用户上一次输入的命令。 ([21ef25a](http://git.code.oa.com/feflow/feflow-cli/commits/21ef25a))
+
+
+### Features
+
+* 使用init命令前先判断用户本地是否有安装好的脚手架，否则提示安装。 ([c826079](http://git.code.oa.com/feflow/feflow-cli/commits/c826079))
+
+
+
 <a name="0.6.4"></a>
 ## [0.6.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.3...v0.6.4) (2017-05-06)
 
