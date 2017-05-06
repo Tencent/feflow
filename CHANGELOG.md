@@ -1,3 +1,13 @@
+<a name="0.6.4"></a>
+## [0.6.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.3...v0.6.4) (2017-05-06)
+
+
+### Features
+
+* 扫描器支持组件使用排名榜单查询。 ([da05198](http://git.code.oa.com/feflow/feflow-cli/commits/da05198))
+
+
+
 <a name="0.6.3"></a>
 ## [0.6.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.2...v0.6.3) (2017-05-03)
 
