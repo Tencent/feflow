@@ -1,3 +1,13 @@
+<a name="0.6.7"></a>
+## [0.6.7](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.6...v0.6.7) (2017-05-10)
+
+
+### Bug Fixes
+
+* 修复OSX平台报错env: node\r: No such file or directory. ([8af1069](http://git.code.oa.com/feflow/feflow-cli/commits/8af1069))
+
+
+
 <a name="0.6.6"></a>
 ## [0.6.6](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.5...v0.6.6) (2017-05-10)
 
