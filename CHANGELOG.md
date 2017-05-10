@@ -1,3 +1,13 @@
+<a name="0.6.6"></a>
+## [0.6.6](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.5...v0.6.6) (2017-05-10)
+
+
+### Features
+
+* 使用figlet来打印banner信息。 ([0a0a7d8](http://git.code.oa.com/feflow/feflow-cli/commits/0a0a7d8))
+
+
+
 <a name="0.6.5"></a>
 ## [0.6.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.4...v0.6.5) (2017-05-06)
 
