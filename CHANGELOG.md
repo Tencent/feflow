@@ -1,3 +1,33 @@
+<a name="0.7.0"></a>
+# [0.7.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.9...v0.7.0) (2017-05-24)
+
+
+### Features
+
+* cli client配置，支持fis3的全局依赖安装。 ([0fac072](http://git.code.oa.com/feflow/feflow-cli/commits/0fac072))
+
+
+
+<a name="0.6.9"></a>
+## [0.6.9](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.8...v0.6.9) (2017-05-17)
+
+
+### Bug Fixes
+
+* 脚手架bug修复。 ([f4f618f](http://git.code.oa.com/feflow/feflow-cli/commits/f4f618f))
+
+
+
+<a name="0.6.8"></a>
+## [0.6.8](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.7...v0.6.8) (2017-05-17)
+
+
+### Features
+
+* plugin接入功能完善。 ([2cda4fc](http://git.code.oa.com/feflow/feflow-cli/commits/2cda4fc))
+
+
+
 <a name="0.6.7"></a>
 ## [0.6.7](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.6...v0.6.7) (2017-05-10)
 
