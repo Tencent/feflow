@@ -1,10 +1,11 @@
-<a name="0.7.0"></a>
-# [0.7.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.9...v0.7.0) (2017-05-24)
+<a name="0.7.1"></a>
+## [0.7.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.9...v0.7.1) (2017-05-30)
 
 
 ### Features
 
 * cli client配置，支持fis3的全局依赖安装。 ([0fac072](http://git.code.oa.com/feflow/feflow-cli/commits/0fac072))
+* 使用cluster模块，多进程安装全局依赖。 ([86453ad](http://git.code.oa.com/feflow/feflow-cli/commits/86453ad))
 
 
 
