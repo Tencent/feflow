@@ -1,3 +1,24 @@
+<a name="0.7.3"></a>
+## [0.7.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.2...v0.7.3) (2017-06-22)
+
+
+### Features
+
+* 增加publish命令的usage ([bbd5297](http://git.code.oa.com/feflow/feflow-cli/commits/bbd5297))
+* 增加增量更新功能 ([a062d98](http://git.code.oa.com/feflow/feflow-cli/commits/a062d98))
+
+
+
+<a name="0.7.2"></a>
+## [0.7.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.1...v0.7.2) (2017-05-31)
+
+
+### Bug Fixes
+
+* 版本bug. ([63113b0](http://git.code.oa.com/feflow/feflow-cli/commits/63113b0))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.6.9...v0.7.1) (2017-05-30)
 
