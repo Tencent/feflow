@@ -1,3 +1,18 @@
+<a name="0.7.4"></a>
+## [0.7.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.3...v0.7.4) (2017-07-14)
+
+
+### Bug Fixes
+
+* 修复feflow安装时modules信息未写入的bug. ([2469c85](http://git.code.oa.com/feflow/feflow-cli/commits/2469c85))
+
+
+### Features
+
+* 支持-h, -H简写的命令 ([1b1f719](http://git.code.oa.com/feflow/feflow-cli/commits/1b1f719))
+
+
+
 <a name="0.7.3"></a>
 ## [0.7.3](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.2...v0.7.3) (2017-06-22)
 
