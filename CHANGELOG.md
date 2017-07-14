@@ -1,3 +1,13 @@
+<a name="0.7.5"></a>
+## [0.7.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.4...v0.7.5) (2017-07-14)
+
+
+### Bug Fixes
+
+* 修复高版本的npm依赖问题 ([3ecd745](http://git.code.oa.com/feflow/feflow-cli/commits/3ecd745))
+
+
+
 <a name="0.7.4"></a>
 ## [0.7.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.3...v0.7.4) (2017-07-14)
 
