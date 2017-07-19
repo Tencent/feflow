@@ -1,6 +1,6 @@
 {
   "name": "@tencent/feflow-cli",
-  "version": "0.7.5",
+  "version": "0.8.0",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -23,21 +23,24 @@
     "feflow": "./bin/feflow"
   },
   "dependencies": {
+    "@tencent/feflow-configure": "^0.2.1",
+    "@tencent/feflow-plugin": "^0.2.5",
+    "@tencent/feflow-publish": "^0.1.0",
+    "@tencent/feflow-scanner": "^0.5.0",
+    "chalk": "^2.0.1",
     "co": "^4.6.0",
-    "lodash": "^4.17.4",
     "figlet": "^1.2.0",
     "inquirer": "^3.0.6",
-    "shelljs": "^0.7.7",
-    "chalk": "^2.0.1",
-    "osenv": "^0.1.4",
+    "lodash": "^4.17.4",
     "meow": "^3.7.0",
     "minimist": "^1.2.0",
+    "opn": "^5.1.0",
+    "osenv": "^0.1.4",
+    "request": "^2.81.0",
     "request-promise": "^4.2.1",
-    "yeoman-environment": "^1.6.6",
-    "@tencent/feflow-configure": "^0.2.1",
-    "@tencent/feflow-scanner": "^0.5.0",
-    "@tencent/feflow-plugin": "^0.2.5",
-    "@tencent/feflow-publish": "^0.1.0"
+    "shelljs": "^0.7.7",
+    "tough-cookie": "^2.3.2",
+    "yeoman-environment": "^1.6.6"
   },
   "devDependencies": {
     "commitizen": "^2.3.0",
