@@ -23,6 +23,7 @@
     "feflow": "./bin/feflow"
   },
   "dependencies": {
+    "@tencent/feflow-utils": "^0.2.1",
     "@tencent/feflow-configure": "^0.2.1",
     "@tencent/feflow-plugin": "^0.2.5",
     "@tencent/feflow-publish": "^0.1.0",
