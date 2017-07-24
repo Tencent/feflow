@@ -1,3 +1,19 @@
+<a name="0.8.0"></a>
+# [0.8.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.5...v0.8.0) (2017-07-24)
+
+
+### Bug Fixes
+
+* 当前的版本号显示package.json里面的版本. ([d7f6cd6](http://git.code.oa.com/feflow/feflow-cli/commits/d7f6cd6))
+
+
+### Features
+
+* Github oauth鉴权。 ([20069b6](http://git.code.oa.com/feflow/feflow-cli/commits/20069b6))
+* 使用feflow的统一info和error输出格式. ([1341a22](http://git.code.oa.com/feflow/feflow-cli/commits/1341a22))
+
+
+
 <a name="0.7.5"></a>
 ## [0.7.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.4...v0.7.5) (2017-07-14)
 
