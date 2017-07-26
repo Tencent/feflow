@@ -1,6 +1,6 @@
 {
   "name": "@tencent/feflow-cli",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "feflow": "./bin/feflow"
   },
   "dependencies": {
-    "@tencent/feflow-utils": "^0.3.1",
+    "@tencent/feflow-utils": "^0.4.2",
     "@tencent/feflow-configure": "^0.2.1",
     "@tencent/feflow-plugin": "^0.2.6",
     "@tencent/feflow-publish": "^0.1.0",
