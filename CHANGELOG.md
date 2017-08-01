@@ -1,10 +1,17 @@
-<a name="0.8.5"></a>
-## [0.8.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.8.4...v0.8.5) (2017-07-27)
+<a name="0.9.0"></a>
+# [0.9.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.8.4...v0.9.0) (2017-08-01)
+
+
+### Bug Fixes
+
+* Revert ([4d2544c](http://git.code.oa.com/feflow/feflow-cli/commits/4d2544c))
 
 
 ### Features
 
+* 增加捷豹发布、ars发布功能 ([0d70416](http://git.code.oa.com/feflow/feflow-cli/commits/0d70416))
 * 支持多个插件下载 ([1389151](http://git.code.oa.com/feflow/feflow-cli/commits/1389151))
+* 预安装feflow官方插件 ([d6ce254](http://git.code.oa.com/feflow/feflow-cli/commits/d6ce254))
 
 
 
@@ -40,13 +47,22 @@
 
 
 <a name="0.7.5"></a>
-## [0.7.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.3...v0.7.5) (2017-07-14)
+## [0.7.5](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.4...v0.7.5) (2017-07-14)
+
+
+### Bug Fixes
+
+* 修复高版本的npm依赖问题 ([3ecd745](http://git.code.oa.com/feflow/feflow-cli/commits/3ecd745))
+
+
+
+<a name="0.7.4"></a>
+## [0.7.4](http://git.code.oa.com/feflow/feflow-cli/compare/v0.7.3...v0.7.4) (2017-07-14)
 
 
 ### Bug Fixes
 
 * 修复feflow安装时modules信息未写入的bug. ([2469c85](http://git.code.oa.com/feflow/feflow-cli/commits/2469c85))
-* 修复高版本的npm依赖问题 ([3ecd745](http://git.code.oa.com/feflow/feflow-cli/commits/3ecd745))
 
 
 ### Features
