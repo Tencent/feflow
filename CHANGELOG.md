@@ -1,3 +1,13 @@
+<a name="0.9.1"></a>
+## [0.9.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.9.0...v0.9.1) (2017-08-02)
+
+
+### Features
+
+* 支持jb、ars发布的子命令 ([75d8ba6](http://git.code.oa.com/feflow/feflow-cli/commits/75d8ba6))
+
+
+
 <a name="0.9.0"></a>
 # [0.9.0](http://git.code.oa.com/feflow/feflow-cli/compare/v0.8.4...v0.9.0) (2017-08-01)
 
