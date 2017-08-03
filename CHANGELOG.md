@@ -1,3 +1,13 @@
+<a name="0.9.2"></a>
+## [0.9.2](http://git.code.oa.com/feflow/feflow-cli/compare/v0.9.1...v0.9.2) (2017-08-03)
+
+
+### Features
+
+* 升级发布模块，支持新的机器 ([30ff221](http://git.code.oa.com/feflow/feflow-cli/commits/30ff221))
+
+
+
 <a name="0.9.1"></a>
 ## [0.9.1](http://git.code.oa.com/feflow/feflow-cli/compare/v0.9.0...v0.9.1) (2017-08-02)
 
