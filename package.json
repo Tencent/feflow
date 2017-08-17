@@ -1,6 +1,6 @@
 {
-  "name": "feflow-cli",
-  "version": "0.0.1",
+  "name": "@tencent/feflow-cli",
+  "version": "0.10.0",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -10,21 +10,32 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iv-web/feflow-cli.git"
+    "url": "https://github.com/iv-web/feflow-cli"
   },
   "keywords": [
     "workflow",
     "commandline",
     "front-end"
   ],
-  "author": "lewischeng",
+  "author": "cpselvis (cpselvis@gmail.com)",
   "license": "MIT",
   "bin": {
     "feflow": "./bin/feflow"
   },
   "dependencies": {
+    "abbrev": "^1.1.0",
+    "bluebird": "^3.5.0",
+    "bunyan": "^1.8.12",
+    "chalk": "^2.0.1",
+    "co": "^4.6.0",
+    "figlet": "^1.2.0",
+    "hexo-fs": "^0.2.1",
     "inquirer": "^3.0.6",
-    "shelljs": "^0.7.7",
+    "lodash": "^4.17.4",
+    "meow": "^3.7.0",
+    "minimist": "^1.2.0",
+    "os": "^0.1.1",
+    "osenv": "^0.1.4",
     "yeoman-environment": "^1.6.6"
   },
   "devDependencies": {
