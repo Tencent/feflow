@@ -23,6 +23,8 @@
     "feflow": "./bin/feflow"
   },
   "dependencies": {
+    "@tencent/generator-now-activity": "^0.7.0",
+    "@tencent/generator-now-business": "^0.8.0",
     "abbrev": "^1.1.0",
     "bluebird": "^3.5.0",
     "bunyan": "^1.8.12",
