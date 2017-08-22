@@ -1,6 +1,6 @@
 .idea/
 .DS_Store
 node_modules
-npm-debug.log
-debug.log
+*.log
 *-lock.json
+coverage/
