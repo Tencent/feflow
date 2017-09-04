@@ -1,5 +1,12 @@
-feflow
-=========================================================
+<p align="center">
+  <a>
+    <img width="200" src="https://raw.githubusercontent.com/iv-web/feflow-cli/master/logo.png">
+  </a>
+</p>
+
+
+# feflow
+
 A command line tool aims to improve front-end engineer workflow and standard, powered by [Node.js](https://nodejs.org/en/).
 
 ## Features
