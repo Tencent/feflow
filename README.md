@@ -22,6 +22,7 @@ $ npm install feflow-cli -g
 ```
 
 ## Documents
+- Develop a plugin: [plugin](docs/plugin.md)
 - Git commit standard: [commit-standard](docs/commit-standard.md)
 
 ## Changelog
