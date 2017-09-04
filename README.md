@@ -21,6 +21,9 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 $ npm install feflow-cli -g
 ```
 
+## Documents
+- Git commit standard: [commit-standard](docs/commit-standard.md)
+
 ## Changelog
 
 [Changelog](CHANGELOG.md)
