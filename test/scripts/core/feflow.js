@@ -3,6 +3,7 @@
 const should = require('chai').should();
 const pathFn = require('path');
 const osenv = require('osenv');
+const sinon = require('sinon');
 const sep = pathFn.sep;
 
 
@@ -19,4 +20,15 @@ describe('Feflow', () => {
     feflow.pkgPath.should.eql(pathFn.join(base, 'package.json'));
     feflow.pluginDir.should.eql(pathFn.join(base, 'node_modules') + sep);
   });
+
+  it('call() - command not registered', () => {
+    const errorCallback = sinon.spy(err => {
+      err.should.have.property('message', 'Command `nothing` has not been registered yet!');
+    });
+
+    return feflow.call('nothing').catch(errorCallback).finally(() => {
+      errorCallback.calledOnce.should.be.true;
+    });
+  });
+
 });

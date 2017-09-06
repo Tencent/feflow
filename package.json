@@ -52,6 +52,7 @@
     "husky": "^0.13.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
+    "sinon": "^3.2.1",
     "validate-commit-msg": "^2.11.1"
   }
 }
