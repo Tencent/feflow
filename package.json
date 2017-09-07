@@ -7,8 +7,7 @@
     "commitmsg": "validate-commit-msg",
     "commit": "git-cz ",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "test": "mocha test/index.js",
-    "test-cov": "istanbul cover --print both _mocha -- test/index.js"
+    "test": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
   },
   "repository": {
     "type": "git",
@@ -47,6 +46,7 @@
   "devDependencies": {
     "chai": "^4.1.1",
     "chai-as-promised": "^7.1.1",
+    "codecov": "^2.3.0",
     "commitizen": "^2.3.0",
     "conventional-changelog-cli": "^1.2.0",
     "husky": "^0.13.1",
