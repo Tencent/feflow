@@ -18,6 +18,9 @@
     "commandline",
     "front-end"
   ],
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "author": "cpselvis (cpselvis@gmail.com)",
   "license": "MIT",
   "bin": {
@@ -41,6 +44,7 @@
     "osenv": "^0.1.4",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
+    "semver": "^5.4.1",
     "yeoman-environment": "^1.6.6"
   },
   "devDependencies": {
