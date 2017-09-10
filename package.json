@@ -38,6 +38,7 @@
     "generator-webapp": "^3.0.1",
     "hexo-fs": "^0.2.1",
     "inquirer": "^3.0.6",
+    "js-yaml": "^3.9.1",
     "lodash": "^4.17.4",
     "meow": "^3.7.0",
     "minimist": "^1.2.0",
@@ -57,7 +58,6 @@
     "conventional-changelog-cli": "^1.2.0",
     "husky": "^0.13.1",
     "istanbul": "^0.4.5",
-    "js-yaml": "^3.9.1",
     "mocha": "^3.5.0",
     "sinon": "^3.2.1",
     "validate-commit-msg": "^2.11.1"
