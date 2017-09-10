@@ -1,5 +1,24 @@
+<a name="0.10.1"></a>
+## [0.10.1](https://github.com/iv-web/feflow-cli/compare/v0.10.0...v0.10.1) (2017-09-10)
+
+
+### Bug Fixes
+
+* npm registry and proxy can be set when initialized. ([a9a8119](https://github.com/iv-web/feflow-cli/commit/a9a8119))
+* support yeoman generator app/index.js folder ([bedfaa9](https://github.com/iv-web/feflow-cli/commit/bedfaa9))
+
+
+### Features
+
+* check node engine requirements ([499358d](https://github.com/iv-web/feflow-cli/commit/499358d))
+* init client before load external plugins ([2982f3d](https://github.com/iv-web/feflow-cli/commit/2982f3d))
+* print banner when no args ([3fff39c](https://github.com/iv-web/feflow-cli/commit/3fff39c))
+* use yaml to store local config ([c7d3241](https://github.com/iv-web/feflow-cli/commit/c7d3241))
+
+
+
 <a name="0.10.0"></a>
-# 0.10.0 (2017-08-21)
+# [0.10.0](https://github.com/iv-web/feflow-cli/compare/626def2...v0.10.0) (2017-08-21)
 
 
 ### Features
