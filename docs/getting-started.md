@@ -46,6 +46,8 @@ $ nvm install stable
 
 ## 开始使用feflow
 
+如果是初次使用，feflow会在用户目录下创建.feflow文件夹、package.json和.feflowrc.yml配置文件。后续通过feflow install命令安装的脚手架和插件都会存放在这个文件夹下。
+
 ### 初次使用配置npm registry和proxy
 feflow采用npm进行Yeoman脚手架和 feflow 插件安装，默认的npm registry为：http://registry.npmjs.org/ ， 你可以配置成cnpm的registry(https://registry.npm.taobao.org) 或者私有npm registry，如果有需要还可以配置proxy。如下：
 
@@ -70,6 +72,17 @@ $ feflow install generator-react-webpack    # 安装一个react项目脚手架
 ❯ Yeoman generator for AngularJS
   Yeoman generator for using React with Webpack via Babel
   Scaffold out a front-end web app
+```
+
+### 使用Feflow插件
+feflow的大部分功能都是通过外部插件来进行扩展支持的。安装插件和安装脚手架一样简单，如下：
+
+```bash
+$ feflow install feflow-plugin-deps         # 安装一个IVWEB团队开发全局依赖包环境管理插件
+```
+然后就可以使用插件暴露出来的命令了。
+```bash
+$ feflow deps --global                      # 安装IVWEB团队基于React、Redux、FIS3环境全局依赖
 ```
  
 ## 建议
