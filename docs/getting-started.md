@@ -13,25 +13,15 @@ feflow是一个工程效率和规范的工具，贯穿整个项目的生命周�
 
 ### 前置条件
 
-安装feflow相当简单。 但是, 你需要首先安装下面这些软件:
+安装feflow相当简单。 但是, 你需要首先安装Node.js:
 
-* Node.js
-* Git
-
-如果你电脑里面已经有了这些软件，恭喜你，请直接通过tnpm来安装feflow:
+如果你电脑里面已经安装了Node.js，恭喜你，请直接通过npm来安装feflow:
 
 ```bash
 $ npm install feflow-cli -g
 ```
 
-如果未安装Node.js和Git，可以通过下面的指引来进行安装。
-
-### 安装Git
-
-* Windows: 下载 & 安装 git.
-* Mac: 通过Homebrew, MacPorts 或者 installer.
-* Linux (Ubuntu, Debian): sudo apt-get install git-core
-* Linux (Fedora, Red Hat, CentOS): sudo yum install git-core
+如果未安装Node.js，可以通过下面的指引来进行安装。
 
 ### 安装Node.js
 
@@ -54,6 +44,34 @@ $ nvm install stable
 
 还有一种可供选择的路径，直接前往[Node.js官网](https://nodejs.org/en/)传送门.
 
+## 开始使用feflow
+
+### 初次使用配置npm registry和proxy
+feflow采用npm进行Yeoman脚手架和 feflow 插件安装，默认的npm registry为：http://registry.npmjs.org/ ， 你可以配置成cnpm的registry(https://registry.npm.taobao.org) 或者私有npm registry，如果有需要还可以配置proxy。如下：
+
+```bash
+? 请输入npm的registry: http://registry.npmjs.org/
+? 请输入npm的proxy(默认为空):
+```
+
+### 初始化项目
+初始化项目前需要安装Yeoman脚手架。当然，你可以根据业务需要，编写基于Yeoman的脚手架，然后发布到私有npm仓库里。那么如何安装一个Yeoman脚手架呢？
+
+```bash
+$ feflow install generator-webapp           # 安装一个现代webapp项目脚手架
+$ feflow install generator-angular          # 安装一个angular项目脚手架
+$ feflow install generator-react-webpack    # 安装一个react项目脚手架
+```
+当然您也可以通过 feflow install 一次性安装上面所有的脚手架，安装完成后通过 init 开始创建项目吧~
+
+``` bash
+➜  ~ feflow init
+? 您想要创建哪中类型的工程? (Use arrow keys)
+❯ Yeoman generator for AngularJS
+  Yeoman generator for using React with Webpack via Babel
+  Scaffold out a front-end web app
+```
+ 
 ## 建议
 * windows用户推荐使用[cmder](http://cmder.net/), 也可以使用windows cmd或者powershell。不要使用Git bash, git bash对命令行支持的不友好。
 * OSX用户可以使用高大上的iterm2，必备神器
