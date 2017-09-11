@@ -1,0 +1,3 @@
+describe('Utils', () => {
+  require('./yaml');
+});
