@@ -1,6 +1,6 @@
 <p align="center">
   <a>
-    <img width="200" src="https://raw.githubusercontent.com/iv-web/feflow-cli/master/logo.png">
+    <img width="200" src="https://pub.idqqimg.com/pc/misc/files/20170911/dc2b53e557654d88bd59bfb3aad0dc99.png">
   </a>
 </p>
 
