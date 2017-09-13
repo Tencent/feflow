@@ -29,11 +29,11 @@ feflow.cmd.register('deps', 'Config ivweb dependencies', function(args) {
 通过feflow.log来进行相关命令行日志输出
 
 ```
-const log = feflow.log();
-log.info()    // 提示日志
-log.debug()   // 调试日志,  命令行增加--debug可以开启
-log.warn()    // 警告日志
-log.error()   // 错误日志
-log.fatal()   // 致命错误日志
+const log = feflow.log;
+log.info()    // 提示日志，控制台中显示绿色
+log.debug()   // 调试日志,  命令行增加--debug可以开启，控制台中显示灰色
+log.warn()    // 警告日志，控制台中显示黄色背景
+log.error()   // 错误日志，控制台中显示红色
+log.fatal()   // 致命错误日志，，控制台中显示红色
 ```
 
