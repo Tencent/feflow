@@ -28,6 +28,7 @@ $ npm install feflow-cli -g
 
 ## Documents
 - Getting Started: [getting-started](docs/getting-started.md)
+- Architecture design: [architecture](docs/architecture.md)
 - Develop a plugin: [plugin](docs/plugin.md)
 - Git commit standard: [commit-standard](docs/commit-standard.md)
 
