@@ -14,6 +14,8 @@
 
 A command line tool aims to improve front-end engineer workflow and standard, powered by [Node.js](https://nodejs.org/en/).
 
+[中文 README](https://github.com/iv-web/feflow-cli/blob/master/README_zh-CN.md)
+
 ## Features
 
 - Powerful plugin system, easy to extend.
