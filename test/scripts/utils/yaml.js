@@ -15,11 +15,11 @@ describe('Yaml', () => {
   const base = pathFn.join(osenv.home(), './.feflow');
   let testPath;
 
-  beforeEach(function() {
+  beforeEach(function () {
     testPath = pathFn.join(base, '.feflowtestrc.yml');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     if (fs.existsSync(testPath)) {
       fs.unlinkSync(testPath);
     }

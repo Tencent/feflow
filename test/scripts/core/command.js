@@ -8,7 +8,8 @@ describe('Register command', () => {
   it('register()', () => {
     const command = new Command();
 
-    command.register('test', () => {});
+    command.register('test', () => {
+    });
 
     command.get('test').should.exist;
 
@@ -25,7 +26,8 @@ describe('Register command', () => {
   it('get()', () => {
     const command = new Command();
 
-    command.register('test', () => {});
+    command.register('test', () => {
+    });
 
     command.get('test').should.exist;
   });
@@ -33,7 +35,8 @@ describe('Register command', () => {
   it('list()', () => {
     const command = new Command();
 
-    command.register('test', () => {});
+    command.register('test', () => {
+    });
 
     command.list().should.have.keys(['test']);
   });
