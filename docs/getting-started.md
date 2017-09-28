@@ -1,6 +1,6 @@
 # 概览
 
-欢迎来到feflow文档，如果在使用feflow的过程中遇到任何问题，请提交[issue](https://github.com/iv-web/feflow-cli/issues/new)或者[Pull Requests](https://github.com/iv-web/feflow-cli/pulls)。
+欢迎来到feflow文档，如果在使用feflow的过程中遇到任何问题，请提交[issue](https://github.com/cpselvis/feflow-cli/issues/new)或者[Pull Requests](https://github.com/cpselvis/feflow-cli/pulls)。
 
 ## feflow是什么?
 
@@ -84,7 +84,7 @@ $ feflow install feflow-plugin-deps         # 安装一个IVWEB团队开发�
 ```bash
 $ feflow deps --global                      # 安装IVWEB团队基于React、Redux、FIS3环境全局依赖
 ```
- 
+
 ## 建议
 * windows用户推荐使用[cmder](http://cmder.net/), 也可以使用windows cmd或者powershell。不要使用Git bash, git bash对命令行支持的不友好。
 * OSX用户可以使用高大上的iterm2，必备神器

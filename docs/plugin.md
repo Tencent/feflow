@@ -10,7 +10,7 @@
 
 ```
 feflow.cmd.register('deps', 'Config ivweb dependencies', function(args) {
-    console.log(args); 
+    console.log(args);
     // Plugin logic here.
 });
 ```

@@ -1,6 +1,6 @@
 {
   "name": "feflow-cli",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/iv-web/feflow-cli"
+    "url": "https://github.com/cpselvis/feflow-cli"
   },
   "keywords": [
     "workflow",
