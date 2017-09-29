@@ -26,7 +26,7 @@ describe('Feflow', () => {
 
   it('call() - no callback and args is not a function', () => feflow.call('test', {foo: 'bar'}).then(data => {
     data.should.eql({foo: 'bar'});
-  }));g
+  }));
 
   it('call() - callback without args', callback => {
     feflow.call('test', (err, data) => {
