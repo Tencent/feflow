@@ -7,6 +7,8 @@
 
 # feflow
 
+[![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![](https://img.shields.io/travis/feflow/feflow-cli.svg?style=flat-square)](https://travis-ci.org/feflow/feflow-cli)
 [![Codecov](https://img.shields.io/codecov/c/github/feflow/feflow-cli/master.svg?style=flat-square)](https://codecov.io/gh/feflow/feflow-cli/branch/master)
 [![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
