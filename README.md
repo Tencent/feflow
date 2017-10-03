@@ -13,6 +13,7 @@
 [![Codecov](https://img.shields.io/codecov/c/github/feflow/feflow-cli/master.svg?style=flat-square)](https://codecov.io/gh/feflow/feflow-cli/branch/master)
 [![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
 [![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
+[![Gitter](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli)
 
 A command line tool aims to improve front-end engineer workflow and standard, powered by [Node.js](https://nodejs.org/en/).
 
