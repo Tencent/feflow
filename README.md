@@ -7,8 +7,8 @@
 
 # feflow
 
-[![](https://img.shields.io/travis/cpselvis/feflow-cli.svg?style=flat-square)](https://travis-ci.org/cpselvis/feflow-cli)
-[![Codecov](https://img.shields.io/codecov/c/github/cpselvis/feflow-cli/master.svg?style=flat-square)](https://codecov.io/gh/cpselvis/feflow-cli/branch/master)
+[![](https://img.shields.io/travis/feflow/feflow-cli.svg?style=flat-square)](https://travis-ci.org/feflow/feflow-cli)
+[![Codecov](https://img.shields.io/codecov/c/github/feflow/feflow-cli/master.svg?style=flat-square)](https://codecov.io/gh/feflow/feflow-cli/branch/master)
 [![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
 [![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
 
@@ -37,7 +37,7 @@ $ npm install feflow-cli -g
 ## Contributing
 
 1. Check for open issues or open a fresh issue to start a discussion around a feature idea or a bug.
-2. Fork [the repository](https://github.com/cpselvis/feflow-cli)_ on GitHub to start making your changes to the **master** branch (or branch off of it).
+2. Fork [the repository](https://github.com/feflow/feflow-cli)_ on GitHub to start making your changes to the **master** branch (or branch off of it).
 3. Write a test which shows that the bug was fixed or that the feature works as expected.
 4. Send a pull request and bug the maintainer until it gets merged and published. :) Make sure to add yourself to [AUTHORS_](AUTHORS).
 
