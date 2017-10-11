@@ -32,6 +32,7 @@ $ npm install feflow-cli -g
 - [架构设计](docs/architecture.md)
 - [开发一个插件](docs/plugin.md)
 - [Git操作规范接入](docs/commit-standard.md)
+- [ESLint操作规范](docs/eslint-standard.md)
 
 ## 如何贡献
 

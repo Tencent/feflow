@@ -34,6 +34,7 @@ $ npm install feflow-cli -g
 - Architecture design: [architecture](docs/architecture.md)
 - Develop a plugin: [plugin](docs/plugin.md)
 - Git commit standard: [commit-standard](docs/commit-standard.md)
+- ESLint standard: [eslint-standard](docs/eslint-standard.md)
 
 ## Contributing
 
