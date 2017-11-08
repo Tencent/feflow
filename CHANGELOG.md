@@ -1,3 +1,13 @@
+<a name="0.10.4"></a>
+## [0.10.4](https://github.com/cpselvis/feflow-cli/compare/v0.10.3...v0.10.4) (2017-11-08)
+
+
+### Features
+
+* add compatiable version field in package.json ([d0fe38b](https://github.com/cpselvis/feflow-cli/commit/d0fe38b))
+
+
+
 <a name="0.10.3"></a>
 ## [0.10.3](https://github.com/cpselvis/feflow-cli/compare/v0.10.2...v0.10.3) (2017-09-28)
 
