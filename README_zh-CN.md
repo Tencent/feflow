@@ -7,8 +7,8 @@
 
 # feflow
 
-[![](https://img.shields.io/travis/iv-web/feflow-cli.svg?style=flat-square)](https://travis-ci.org/iv-web/feflow-cli)
-[![Codecov](https://img.shields.io/codecov/c/github/iv-web/feflow-cli/master.svg?style=flat-square)](https://codecov.io/gh/iv-web/feflow-cli/branch/master)
+[![](https://img.shields.io/travis/iv-web/feflow.svg?style=flat-square)](https://travis-ci.org/iv-web/feflow)
+[![Codecov](https://img.shields.io/codecov/c/github/iv-web/feflow/master.svg?style=flat-square)](https://codecov.io/gh/iv-web/feflow/branch/master)
 [![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
 [![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
 [![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -37,7 +37,7 @@ $ npm install feflow-cli -g
 ## 如何贡献
 
 1. 从目前已经存在的issue或者提出一个新的issue去讨论新的特性或者存在的bug.
-2. 在Github上Fork [仓库](https://github.com/feflow/feflow-cli)_，然后在master或者其它分支上开始进行您的修改.
+2. 在Github上Fork [仓库](https://github.com/iv-web/feflow)_，然后在master或者其它分支上开始进行您的修改.
 3. 编写测试用力表明某个bug被修复掉了或者新的特性可以正常工作.
 4. 提交PR直到它被merge或者发布出去了. :) 记得把您添加进 [AUTHORS_](AUTHORS).
 

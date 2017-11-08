@@ -1,6 +1,6 @@
 {
   "name": "feflow-cli",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -25,6 +25,9 @@
   "license": "MIT",
   "bin": {
     "feflow": "./bin/feflow"
+  },
+  "configs": {
+    "compatiableVersion": "0.10.0"
   },
   "dependencies": {
     "abbrev": "^1.1.0",
