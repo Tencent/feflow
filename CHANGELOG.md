@@ -1,3 +1,15 @@
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/cpselvis/feflow-cli/compare/v0.10.4...v0.11.0) (2017-11-09)
+
+
+### Features
+
+* check upgrade and force update when not compatible ([529568d](https://github.com/cpselvis/feflow-cli/commit/529568d))
+* force update to latest version when not compatible. ([2455888](https://github.com/cpselvis/feflow-cli/commit/2455888))
+* plugin increment update policy. ([7a3039d](https://github.com/cpselvis/feflow-cli/commit/7a3039d))
+
+
+
 <a name="0.10.4"></a>
 ## [0.10.4](https://github.com/cpselvis/feflow-cli/compare/v0.10.3...v0.10.4) (2017-11-08)
 
