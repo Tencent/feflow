@@ -22,6 +22,7 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 - Powerful plugin system, easy to extend.
 - Integrate with Yeoman, easy to initialize project based on yeoman generators.
 - Define a series of standards including commit standard and ESlint standard.
+- Seperate CLI core and plugins, it will force update when not compatible with latest version.
 
 ## Installation
 
@@ -31,10 +32,12 @@ $ npm install feflow-cli -g
 
 ## Documents
 - Getting Started: [getting-started](docs/getting-started.md)
-- Architecture design: [architecture](docs/architecture.md)
 - Develop a plugin: [plugin](docs/plugin.md)
 - Git commit standard: [commit-standard](docs/commit-standard.md)
 - ESLint standard: [eslint-standard](docs/eslint-standard.md)
+
+## Architecture
+![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
 
 ## Contributing
 

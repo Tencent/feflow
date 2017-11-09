@@ -20,6 +20,7 @@
 - 强大的插件机制，易于扩展.
 - 和Yeoman集成，很容易通过Yeoman脚手架进行项目的初始化创建.
 - 定义了一系列规范，包括Commit规范和ESLint规范.
+- CLI的内核和插件层分离，当和最新版本不兼容时会采取全量更新和增量更新策略。
 
 ## 安装
 
@@ -29,10 +30,12 @@ $ npm install feflow-cli -g
 
 ## 文档
 - [开始使用](docs/getting-started.md)
-- [架构设计](docs/architecture.md)
 - [开发一个插件](docs/plugin.md)
 - [Git操作规范接入](docs/commit-standard.md)
 - [ESLint操作规范](docs/eslint-standard.md)
+
+## 整体架构
+![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
 
 ## 如何贡献
 
