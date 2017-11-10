@@ -27,7 +27,7 @@
     "feflow": "./bin/feflow"
   },
   "configs": {
-    "compatibleVersion": ">=0.11.1"
+    "compatibleVersion": ">=0.11.2"
   },
   "dependencies": {
     "abbrev": "^1.1.0",
