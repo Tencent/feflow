@@ -1,3 +1,23 @@
+<a name="0.11.2"></a>
+## [0.11.2](https://github.com/cpselvis/feflow-cli/compare/v0.11.1...v0.11.2) (2017-11-10)
+
+
+### Bug Fixes
+
+* process should exit after client init success ([572eac5](https://github.com/cpselvis/feflow-cli/commit/572eac5))
+
+
+
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/cpselvis/feflow-cli/compare/v0.11.0...v0.11.1) (2017-11-10)
+
+
+### Bug Fixes
+
+* upgrade action should after init client ([649a0ae](https://github.com/cpselvis/feflow-cli/commit/649a0ae))
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/cpselvis/feflow-cli/compare/v0.10.4...v0.11.0) (2017-11-09)
 
