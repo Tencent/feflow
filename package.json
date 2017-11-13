@@ -58,6 +58,8 @@
     "codecov": "^2.3.0",
     "commitizen": "^2.3.0",
     "conventional-changelog-cli": "^1.2.0",
+    "eslint": "^4.11.0",
+    "eslint-config-ivweb": "^0.1.0",
     "husky": "^0.13.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.5.0",
