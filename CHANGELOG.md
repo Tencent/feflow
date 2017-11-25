@@ -1,10 +1,11 @@
-<a name="0.11.2"></a>
-## [0.11.2](https://github.com/cpselvis/feflow-cli/compare/v0.11.1...v0.11.2) (2017-11-10)
+<a name="0.11.3"></a>
+## [0.11.3](https://github.com/cpselvis/feflow-cli/compare/v0.11.1...v0.11.3) (2017-11-25)
 
 
 ### Bug Fixes
 
 * process should exit after client init success ([572eac5](https://github.com/cpselvis/feflow-cli/commit/572eac5))
+* trim space after user input registry and proxy. ([cb25ea6](https://github.com/cpselvis/feflow-cli/commit/cb25ea6)), closes [#6](https://github.com/cpselvis/feflow-cli/issues/6)
 
 
 
