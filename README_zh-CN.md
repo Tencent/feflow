@@ -30,6 +30,20 @@
 ``` bash
 $ npm install feflow-cli -g
 ```
+## 使用
+```bash
+# 初始化项目
+$ feflow init
+
+# 本地开发
+$ feflow dev
+
+# 代码质量检查
+$ feflow lint
+
+# 打包构建
+$ feflow build
+```
 
 ## 文档
 - [开始使用](docs/getting-started.md)

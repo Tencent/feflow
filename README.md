@@ -33,6 +33,21 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 $ npm install feflow-cli -g
 ```
 
+## Usage
+```bash
+# Create a project
+$ feflow init
+
+# Local development
+$ feflow dev
+
+# Code quality
+$ feflow lint
+
+# Build and package
+$ feflow build
+```
+
 ## Documents
 - Getting Started: [getting-started](docs/getting-started.md)
 - Develop a plugin: [plugin](docs/plugin.md)
