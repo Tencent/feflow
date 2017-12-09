@@ -24,6 +24,7 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 
 - Powerful plugin system, easy to extend.
 - Integrate with Yeoman, easy to initialize project based on yeoman generators.
+- Support multiple mainstream builder, including webpack, fis and etc.
 - Define a series of standards including commit standard and ESlint standard.
 - Seperate CLI core and plugins, it will force update when not compatible with latest version.
 
