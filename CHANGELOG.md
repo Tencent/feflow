@@ -1,3 +1,13 @@
+<a name="0.12.0"></a>
+# [0.12.0](https://github.com/cpselvis/feflow-cli/compare/v0.12.0-alpha.1...v0.12.0) (2017-12-11)
+
+### Features
+
+* add dev and build command ([88414b2](https://github.com/cpselvis/feflow-cli/commit/88414b2))
+* intergate dev and build commands ([9a3efaa](https://github.com/cpselvis/feflow-cli/commit/9a3efaa))
+
+
+
 <a name="0.11.3"></a>
 ## [0.11.3](https://github.com/cpselvis/feflow-cli/compare/v0.11.1...v0.11.3) (2017-11-25)
 
@@ -6,6 +16,13 @@
 
 * process should exit after client init success ([572eac5](https://github.com/cpselvis/feflow-cli/commit/572eac5))
 * trim space after user input registry and proxy. ([cb25ea6](https://github.com/cpselvis/feflow-cli/commit/cb25ea6)), closes [#6](https://github.com/cpselvis/feflow-cli/issues/6)
+
+
+### Features
+
+* add feflow lint ([c235e8b](https://github.com/cpselvis/feflow-cli/commit/c235e8b))
+* ignore files ([b6d07fb](https://github.com/cpselvis/feflow-cli/commit/b6d07fb))
+* 新增feflow lint ([3814216](https://github.com/cpselvis/feflow-cli/commit/3814216))
 
 
 
@@ -86,6 +103,3 @@
 * command register mechanism. ([febe1c3](https://github.com/cpselvis/feflow-cli/commit/febe1c3))
 * Initial commit ([626def2](https://github.com/cpselvis/feflow-cli/commit/626def2))
 * support -v and --version command. ([fa14d9e](https://github.com/cpselvis/feflow-cli/commit/fa14d9e))
-
-
-
