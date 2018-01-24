@@ -111,7 +111,8 @@
 * 第一步：创建一个feature分支或者bugfix分支
 ``` sh
   $ git checkout -b feature_infinite_load    # 切换到一个feature分支或者bug fix分支
-``` sh
+```  
+  
 
 * 第二步：将代码提交到本地Git仓库，并填写符合要求的Commit message格式
 ``` sh
