@@ -13,17 +13,6 @@
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/feflow/feflow/compare/v0.12.0-alpha.1...v0.12.0) (2017-12-11)
 
-
-
-<a name="0.12.0-alpha.1"></a>
-# [0.12.0-alpha.1](https://github.com/feflow/feflow/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2017-12-10)
-
-
-
-<a name="0.12.0-alpha.0"></a>
-# [0.12.0-alpha.0](https://github.com/feflow/feflow/compare/v0.11.3...v0.12.0-alpha.0) (2017-12-09)
-
-
 ### Features
 
 * add dev and build command ([88414b2](https://github.com/feflow/feflow/commit/88414b2))
@@ -126,6 +115,3 @@
 * command register mechanism. ([febe1c3](https://github.com/feflow/feflow/commit/febe1c3))
 * Initial commit ([626def2](https://github.com/feflow/feflow/commit/626def2))
 * support -v and --version command. ([fa14d9e](https://github.com/feflow/feflow/commit/fa14d9e))
-
-
-
