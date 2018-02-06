@@ -1,6 +1,6 @@
 {
   "name": "feflow-cli",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cpselvis/feflow-cli"
+    "url": "https://github.com/feflow/feflow.git"
   },
   "keywords": [
     "workflow",
@@ -21,13 +21,12 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "author": "cpselvis (cpselvis@gmail.com)",
   "license": "MIT",
   "bin": {
     "feflow": "./bin/feflow"
   },
   "configs": {
-    "compatibleVersion": ">=0.11.2"
+    "compatibleVersion": ">=0.13.0"
   },
   "dependencies": {
     "abbrev": "^1.1.0",
@@ -41,7 +40,6 @@
     "hexo-fs": "^0.2.1",
     "inquirer": "^3.0.6",
     "js-yaml": "^3.9.1",
-    "lodash": "^4.17.4",
     "meow": "^3.7.0",
     "minimist": "^1.2.0",
     "ora": "^1.3.0",
