@@ -1,11 +1,4 @@
-<p align="center">
-  <a>
-    <img width="200" src="https://pub.idqqimg.com/pc/misc/files/20170911/dc2b53e557654d88bd59bfb3aad0dc99.png">
-  </a>
-</p>
-
-
-# feflow
+![banner](https://user-images.githubusercontent.com/18289264/35855826-34885a0c-0b6f-11e8-9ba2-98272cb9a27a.png)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/iv-web/feflow/blob/master/LICENSE)
 [![](https://img.shields.io/travis/iv-web/feflow.svg?style=flat-square)](https://travis-ci.org/iv-web/feflow)
