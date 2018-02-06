@@ -6,7 +6,7 @@
   "scripts": {
     "commitmsg": "validate-commit-msg",
     "commit": "git-cz ",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "test": "istanbul cover node_modules/mocha/bin/_mocha && codecov"
   },
   "repository": {
