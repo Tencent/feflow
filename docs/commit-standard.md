@@ -67,7 +67,7 @@
 
 * 第一步：在工程跟目录下的package.json文件加入如下代码所示的scripts和dependencies内容，版本号为3位版本号。
 
-``` sh
+``` 
   {
     "name": "application-name",
     "version": "0.1.0",
@@ -85,9 +85,10 @@
   }
 ```
 
+
 * 第二步：在工程根目录新建.vcmrc文件，并且文件内容为
 
-``` sh
+``` 
 {
   "helpMessage": "\nPlease fix your commit message (and consider using https://www.npmjs.com/package/commitizen)\n",
   "types": [
@@ -105,11 +106,13 @@
   "autoFix": false
 }
 ```
+
 ### 接入后的Git commit操作流程
 * 第一步：创建一个feature分支或者bugfix分支
 ``` sh
   $ git checkout -b feature_infinite_load    # 切换到一个feature分支或者bug fix分支
-``` sh
+```  
+  
 
 * 第二步：将代码提交到本地Git仓库，并填写符合要求的Commit message格式
 ``` sh
