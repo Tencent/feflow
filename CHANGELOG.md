@@ -1,3 +1,13 @@
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/feflow/feflow/compare/v0.13.0...v0.13.1) (2018-03-09)
+
+
+### Bug Fixes
+
+* **core:** increment update failed bug ([e5333cd](https://github.com/feflow/feflow/commit/e5333cd))
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/feflow/feflow/compare/v0.12.0...v0.13.0) (2018-02-06)
 
