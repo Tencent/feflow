@@ -32,11 +32,17 @@ $ feflow init
 # 本地开发
 $ feflow dev
 
-# 代码质量检查
+# 代码检查
 $ feflow lint
 
 # 打包构建
 $ feflow build
+
+# 安装 feflow 插件或者脚手架
+$ feflow install package
+
+# 配置CLI客户端
+$ feflow config <key> <value>
 ```
 
 ## 文档
@@ -52,7 +58,7 @@ $ feflow build
 
 1. 从目前已经存在的issue或者提出一个新的issue去讨论新的特性或者存在的bug.
 2. 在Github上Fork [仓库](https://github.com/feflow/feflow)_，然后在master或者其它分支上开始进行您的修改.
-3. 编写测试用力表明某个bug被修复掉了或者新的特性可以正常工作.
+3. 编写测试用例表明某个bug被修复掉了或者新的特性可以正常工作.
 4. 提交PR直到它被merge或者发布出去了. :) 记得把您添加进 [AUTHORS_](AUTHORS).
 
 ## 版本日志
