@@ -24,25 +24,38 @@
 ``` bash
 $ npm install feflow-cli -g
 ```
-## 使用
-```bash
-# 初始化项目
+
+## 快速使用
+
+**初始化项目**
+
+``` bash
 $ feflow init
+$ cd <folder>
+```
 
-# 本地开发
+**本地开发**
+
+``` bash
 $ feflow dev
+```
 
-# 代码检查
+**代码检查**
+
+``` bash
 $ feflow lint
+```
 
-# 打包构建
+**生产环境打包**
+
+``` bash
 $ feflow build
+```
 
-# 安装 feflow 插件或者脚手架
-$ feflow install package
+**安装 脚手架或插件**
 
-# 配置CLI客户端
-$ feflow config <key> <value>
+``` bash
+$ feflow install <package>
 ```
 
 ## 文档

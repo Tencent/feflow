@@ -15,11 +15,11 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 
 ## Features
 
-- ✔︎ Powerful plugin system, easy to extend.
-- ✔︎ Integrate with Yeoman, easy to initialize project based on yeoman generators.
-- ✔︎ Support multiple mainstream builder, including webpack, fis and etc.
-- ✔︎ Define a series of standards including commit standard and ESlint standard.
-- ✔︎ Seperate CLI core and plugins, it will force update when not compatible with latest version.
+- Powerful plugin system, easy to extend.
+- Integrate with Yeoman, easy to initialize project based on yeoman generators.
+- Support multiple mainstream builder, including webpack, fis and etc.
+- Define a series of standards including commit standard and ESlint standard.
+- Seperate CLI core and plugins, it will force update when not compatible with latest version.
 
 ## Installation
 
@@ -27,25 +27,37 @@ A command line tool aims to improve front-end engineer workflow and standard, po
 $ npm install feflow-cli -g
 ```
 
-## Usage
-```bash
-# Create a project
+## Quick Start
+
+**Create a project**
+
+``` bash
 $ feflow init
+$ cd <folder>
+```
 
-# Local development
+**Local development**
+
+``` bash
 $ feflow dev
+```
 
-# Code quality
+**Code quality**
+
+``` bash
 $ feflow lint
+```
 
-# Build and package
+**Build for production**
+
+``` bash
 $ feflow build
+```
 
-# Install plugins, yeoman generators and builders
-$ feflow install package
+**Install scaffords or plugins**
 
-# Config client
-$ feflow config <key> <value>
+``` bash
+$ feflow install <package>
 ```
 
 ## Docs
