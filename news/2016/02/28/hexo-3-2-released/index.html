@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>Hexo 3.2 Released | Feflow.js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://feflowjs.org/news/2016/02/28/hexo-3-2-released/index.html">
+  <!-- Alternative links -->
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icon/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icon/apple-touch-icon-152x152.png">
+  <link rel="icon" type="image/png" href="/icon/favicon-196x196.png" sizes="196x196">
+  <link rel="icon" type="image/png" href="/icon/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/icon/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/icon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
+  <meta name="generator" content="Hexo 3.7.1">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/atom.xml" title="Feflow.js">
+  <!-- Open Graph -->
+  <meta name="description" content="It has been a long time that Hexo is poor at handling large website. (#710, #1124, #283, #1187, #550, #1769, etc.) We tried hard to solve this problem and there’re several improvements in Hexo 3.2. It">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo 3.2 Released">
+<meta property="og:url" content="https://feflowjs.org/news/2016/02/28/hexo-3-2-released/index.html">
+<meta property="og:site_name" content="Feflow.js">
+<meta property="og:description" content="It has been a long time that Hexo is poor at handling large website. (#710, #1124, #283, #1187, #550, #1769, etc.) We tried hard to solve this problem and there’re several improvements in Hexo 3.2. It">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2018-04-11T02:17:29.205Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo 3.2 Released">
+<meta name="twitter:description" content="It has been a long time that Hexo is poor at handling large website. (#710, #1124, #283, #1187, #550, #1769, etc.) We tried hard to solve this problem and there’re several improvements in Hexo 3.2. It">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48498357-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="header">
+  <div class="wrapper">
+    <div id="header-inner" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/zh-cn/" id="logo">Feflow</a>
+      </h1>
+      <nav id="main-nav">
+        <a href="/zh-cn/docs/" class="main-nav-link">文档指南</a>
+        <a href="https://github.com/feflow/feflow/releases" target="_blank" class="main-nav-link">发布日志</a>
+        <iframe src="https://ghbtns.com/github-btn.html?user=feflow&repo=feflow&type=star&count=true" frameborder="0" scrolling="0" width="150px" height="20px"></iframe>
+        <div id="search-input-wrap">
+          <div id="search-input-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input type="search" id="search-input" placeholder="Search...">
+        </div>
+      </nav>
+      <div id="lang-select-wrap">
+        <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+        <select id="lang-select" data-canonical="">
+          
+            <option value="zh-cn" selected>简体中文</option>
+          
+        </select>
+      </div>
+      <a id="mobile-nav-toggle">
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div class="wrapper">
+    <div class="inner">
+      <article class="article post" itemscope itemtype="http://schema.org/Article">
+  <header class="article-header">
+    
+      <h1 class="article-title" itemprop="name">Hexo 3.2 Released</h1>
+    
+    <a href="/news/2016/02/28/hexo-3-2-released/" class="article-date"><time datetime="2016-02-28T00:00:00.000Z">2016-02-28</time></a>
+  </header>
+  <div class="article-content" itemprop="articleBody">
+    <p>It has been a long time that Hexo is poor at handling large website. (<a href="https://github.com/hexojs/hexo/issues/710" target="_blank" rel="noopener">#710</a>, <a href="https://github.com/hexojs/hexo/issues/1124" target="_blank" rel="noopener">#1124</a>, <a href="https://github.com/hexojs/hexo/issues/283" target="_blank" rel="noopener">#283</a>, <a href="https://github.com/hexojs/hexo/issues/1187" target="_blank" rel="noopener">#1187</a>, <a href="https://github.com/hexojs/hexo/issues/550" target="_blank" rel="noopener">#550</a>, <a href="https://github.com/hexojs/hexo/issues/1769" target="_blank" rel="noopener">#1769</a>, etc.) We tried hard to solve this problem and there’re several improvements in Hexo 3.2.</p>
+<h2 id="It’s-all-about-speed" class="article-heading"><a href="#It’s-all-about-speed" class="headerlink" title="It’s all about speed"></a>It’s all about speed<a class="article-anchor" href="#It’s-all-about-speed" aria-hidden="true"></a></h2><h3 id="Caching-rendered-contents" class="article-heading"><a href="#Caching-rendered-contents" class="headerlink" title="Caching rendered contents"></a>Caching rendered contents<a class="article-anchor" href="#Caching-rendered-contents" aria-hidden="true"></a></h3><p>Rendered contents are cached in the warehouse. This saves a lot of time and made hot processing (2nd-time processing) <strong>1.7x faster</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>3.1</th>
+<th>3.2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cold processing</td>
+<td>6.094s</td>
+<td>6.454s</td>
+</tr>
+<tr>
+<td>Hot processing</td>
+<td>5.154s</td>
+<td>3.002s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Lazy-load-language-files-of-highlight-js" class="article-heading"><a href="#Lazy-load-language-files-of-highlight-js" class="headerlink" title="Lazy load language files of highlight.js"></a>Lazy load language files of highlight.js<a class="article-anchor" href="#Lazy-load-language-files-of-highlight-js" aria-hidden="true"></a></h3><p><a href="https://github.com/hexojs/hexo/issues/1036" target="_blank" rel="noopener">highlight.js is slow</a>. Especially when it try to detect the language. Lazy load language files make processing faster and don’t have to load bunch of unused language files. However there’re some limitations:</p>
+<ul>
+<li>Auto detect must be disabled.</li>
+<li>You have to specify language in code block.</li>
+</ul>
+<p>You can set auto detect disabled in <code>_config.yml</code>.</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">highlight:</span></span><br><span class="line"><span class="attr">  auto_detect:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="Templates-precompilation" class="article-heading"><a href="#Templates-precompilation" class="headerlink" title="Templates precompilation"></a>Templates precompilation<a class="article-anchor" href="#Templates-precompilation" aria-hidden="true"></a></h3><p>Theme templates are precompiled if possible. It makes generation speed <strong>2x faster</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>3.1</th>
+<th>3.2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cold generation</td>
+<td>27.2s</td>
+<td>13.6s</td>
+</tr>
+<tr>
+<td>Hot generation</td>
+<td>24.4s</td>
+<td>12.6s</td>
+</tr>
+</tbody>
+</table>
+<p>The following renderers have already supported this feature.</p>
+<ul>
+<li><a href="https://github.com/hexojs/hexo-renderer-ejs" target="_blank" rel="noopener">hexo-renderer-ejs</a></li>
+<li><a href="https://github.com/hexojs/hexo-renderer-jade" target="_blank" rel="noopener">hexo-renderer-jade</a></li>
+<li><a href="https://github.com/hexojs/hexo-renderer-swig" target="_blank" rel="noopener">hexo-renderer-swig</a></li>
+</ul>
+<p>And it’s easy to implement precompilation for renderers. Just add a <code>compile</code> function to the renderer. Take EJS renderer for example:</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ejs = <span class="built_in">require</span>(<span class="string">'ejs'</span>);</span><br><span class="line"><span class="keyword">var</span> assign = <span class="built_in">require</span>(<span class="string">'object-assign'</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ejsRenderer</span>(<span class="params">data, locals</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ejs.render(data.text, assign(&#123;<span class="attr">filename</span>: data.path&#125;, locals));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ejsRenderer.compile = <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ejs.compile(data.text, &#123;</span><br><span class="line">    filename: data.path</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = ejsRenderer;</span><br></pre></td></tr></table></figure>
+<h2 id="Include-exclude-source-files" class="article-heading"><a href="#Include-exclude-source-files" class="headerlink" title="Include/exclude source files"></a>Include/exclude source files<a class="article-anchor" href="#Include-exclude-source-files" aria-hidden="true"></a></h2><p>You can include/exclude specified source files in <code>_config.yml</code>.</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">include:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">.htaccess</span></span><br><span class="line"></span><br><span class="line"><span class="attr">exclude:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">tmp/**/*</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://github.com/hexojs/hexo/releases" target="_blank" rel="noopener">changelog</a>, <a href="https://docs.google.com/spreadsheets/d/1nLW3fPCtrkfMolz8UnUiKq5lqys6bIcZqrfksuvQHA0/edit?usp=sharing" target="_blank" rel="noopener">benchmark results</a>.</p>
+
+  </div>
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  var disqus_shortname = 'hexojs';
+  var disqus_url = 'https://feflowjs.org/news/2016/02/28/hexo-3-2-released/index.html';
+  var disqus_title = "Hexo 3.2 Released";
+  var disqus_config = function(){
+    this.language = 'zh';
+  };
+  (function(){
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'https://go.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+</article>
+
+    </div>
+  </div>
+</div>
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2018 <a href="https://github.com/feflow" target="_blank">Feflow.js</a><br>
+      Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
+    </div>
+    <div id="footer-links">
+      <a href="#" class="footer-link"><i class="fa fa-wechat"></i></a>
+      <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/zh-cn/docs/" class="mobile-nav-link">文档指南</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/feflow/feflow" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/js/lang_select.js"></script>
+<script src="/js/toc.js"></script>
+<script src="/js/mobile_nav.js"></script>
+<!-- endbuild -->
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>

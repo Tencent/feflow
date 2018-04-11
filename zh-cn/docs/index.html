@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>概述 | Feflow.js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://feflowjs.org/zh-cn/docs/index.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://feflowjs.org/zh-cn/docs/index.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icon/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icon/apple-touch-icon-152x152.png">
+  <link rel="icon" type="image/png" href="/icon/favicon-196x196.png" sizes="196x196">
+  <link rel="icon" type="image/png" href="/icon/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/icon/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/icon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
+  <meta name="generator" content="Hexo 3.7.1">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/atom.xml" title="Feflow.js">
+  <!-- Open Graph -->
+  <meta name="description" content="欢迎使用 Feflow，本文档将帮助您快速上手。如果您在使用过程中遇到问题，请查看 问题解答 中的解答，或者在 GitHub、Google Group 上提问。 什么是 Feflow？feflow是一个工程效率和规范的工具，贯穿整个项目的生命周期，从开发环境配置、初始化、代码构建到发布上线。 截止到2018年4月，累计使用feflow创建超过200个项目，10次团队贡献代码行数统计，30次内置离线">
+<meta property="og:type" content="website">
+<meta property="og:title" content="概述">
+<meta property="og:url" content="https://feflowjs.org/zh-cn/docs/index.html">
+<meta property="og:site_name" content="Feflow.js">
+<meta property="og:description" content="欢迎使用 Feflow，本文档将帮助您快速上手。如果您在使用过程中遇到问题，请查看 问题解答 中的解答，或者在 GitHub、Google Group 上提问。 什么是 Feflow？feflow是一个工程效率和规范的工具，贯穿整个项目的生命周期，从开发环境配置、初始化、代码构建到发布上线。 截止到2018年4月，累计使用feflow创建超过200个项目，10次团队贡献代码行数统计，30次内置离线">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2018-04-11T11:54:10.244Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="概述">
+<meta name="twitter:description" content="欢迎使用 Feflow，本文档将帮助您快速上手。如果您在使用过程中遇到问题，请查看 问题解答 中的解答，或者在 GitHub、Google Group 上提问。 什么是 Feflow？feflow是一个工程效率和规范的工具，贯穿整个项目的生命周期，从开发环境配置、初始化、代码构建到发布上线。 截止到2018年4月，累计使用feflow创建超过200个项目，10次团队贡献代码行数统计，30次内置离线">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48498357-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="header">
+  <div class="wrapper">
+    <div id="header-inner" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/zh-cn/" id="logo">Feflow</a>
+      </h1>
+      <nav id="main-nav">
+        <a href="/zh-cn/docs/" class="main-nav-link">文档指南</a>
+        <a href="https://github.com/feflow/feflow/releases" target="_blank" class="main-nav-link">发布日志</a>
+        <iframe src="https://ghbtns.com/github-btn.html?user=feflow&repo=feflow&type=star&count=true" frameborder="0" scrolling="0" width="150px" height="20px"></iframe>
+        <div id="search-input-wrap">
+          <div id="search-input-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input type="search" id="search-input" placeholder="Search...">
+        </div>
+      </nav>
+      <div id="lang-select-wrap">
+        <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+        <select id="lang-select" data-canonical="docs/index.html">
+          
+            <option value="zh-cn" selected>简体中文</option>
+          
+        </select>
+      </div>
+      <a id="mobile-nav-toggle">
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">概述</h1>
+                <a href="https://github.com/hexojs/site/edit/master/source/zh-cn/docs/index.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <p>欢迎使用 Feflow，本文档将帮助您快速上手。如果您在使用过程中遇到问题，请查看 <a href="troubleshooting.html">问题解答</a> 中的解答，或者在 <a href="https://github.com/feflow/feflow/issues" target="_blank" rel="noopener">GitHub</a>、<a href="https://groups.google.com/group/hexo" target="_blank" rel="noopener">Google Group</a> 上提问。</p>
+<h2 id="什么是-Feflow？" class="article-heading"><a href="#什么是-Feflow？" class="headerlink" title="什么是 Feflow？"></a>什么是 Feflow？<a class="article-anchor" href="#什么是-Feflow？" aria-hidden="true"></a></h2><p>feflow是一个工程效率和规范的工具，贯穿整个项目的生命周期，从开发环境配置、初始化、代码构建到发布上线。</p>
+<p>截止到2018年4月，累计使用feflow创建超过200个项目，10次团队贡献代码行数统计，30次内置离线包搜集。</p>
+<h2 id="安装" class="article-heading"><a href="#安装" class="headerlink" title="安装"></a>安装<a class="article-anchor" href="#安装" aria-hidden="true"></a></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install -g feflow-cli</span><br></pre></td></tr></table></figure>
+<h3 id="前置条件" class="article-heading"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件<a class="article-anchor" href="#前置条件" aria-hidden="true"></a></h3><p>安装feflow相当简单。 但是, 你需要首先安装下面这些软件:</p>
+<ul>
+<li>Node.js</li>
+<li>Git</li>
+</ul>
+<p>如果未安装Node.js和Git，可以通过下面的指引来进行安装。</p>
+<h3 id="安装Git" class="article-heading"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git<a class="article-anchor" href="#安装Git" aria-hidden="true"></a></h3><ul>
+<li>Windows: 下载 &amp; 安装 git.</li>
+<li>Mac: 通过Homebrew, MacPorts 或者 installer.</li>
+<li>Linux (Ubuntu, Debian): sudo apt-get install git-core</li>
+<li>Linux (Fedora, Red Hat, CentOS): sudo yum install git-core</li>
+</ul>
+<h3 id="安装Node-js" class="article-heading"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js<a class="article-anchor" href="#安装Node-js" aria-hidden="true"></a></h3><p>安装Node.js的最好方式是通过Node Version Manager.<br>十分感谢nvm的创造者，他们提供了一个简单的脚本来自动安装nvm:</p>
+<p>cURL:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash</span><br></pre></td></tr></table></figure></p>
+<p>Wget:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash</span><br></pre></td></tr></table></figure></p>
+<p>一旦nvm安装成功，重启命令行终端并且允许下面的命令来安装Node.js:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ nvm install stable</span><br></pre></td></tr></table></figure>
+<p>还有一种可供选择的路径，直接前往<a href="https://nodejs.org/en/" target="_blank" rel="noopener">Node.js官网</a>传送门.</p>
+<h2 id="建议" class="article-heading"><a href="#建议" class="headerlink" title="建议"></a>建议<a class="article-anchor" href="#建议" aria-hidden="true"></a></h2><ul>
+<li>windows用户推荐使用<a href="http://cmder.net/" target="_blank" rel="noopener">cmder</a>, 也可以使用windows cmd或者powershell。不要使用Git bash, git bash对命令行支持的不友好。</li>
+<li>OSX用户可以使用高大上的iterm2，必备神器</li>
+</ul>
+
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2018-04-11T11:54:10.244Z" itemprop="dateModified">上次更新：2018-04-11</time>
+                <a href="commands.html" class="article-footer-next" title="命令"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+<section id="comments">
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  var disqus_shortname = 'hexojs';
+  var disqus_url = 'https://feflowjs.org/zh-cn/docs/index.html';
+  var disqus_title = "概述";
+  var disqus_config = function(){
+    this.language = 'zh';
+  };
+  (function(){
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'https://go.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是-Feflow？"><span class="toc-text">什么是 Feflow？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-text">安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#前置条件"><span class="toc-text">前置条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装Git"><span class="toc-text">安装Git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装Node-js"><span class="toc-text">安装Node.js</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#建议"><span class="toc-text">建议</span></a></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner">
+    <strong class="sidebar-title">开始使用</strong><a href="index.html" class="sidebar-link current">概述</a><a href="commands.html" class="sidebar-link">命令</a><strong class="sidebar-title">开发者接入</strong><a href="writing.html" class="sidebar-link">自定义脚手架</a><a href="tag-plugins.html" class="sidebar-link">插件开发</a><strong class="sidebar-title">规范</strong><a href="permalinks.html" class="sidebar-link">Git commit规范</a><a href="themes.html" class="sidebar-link">README规范</a><a href="eslint.html" class="sidebar-link">ESlint规范</a><strong class="sidebar-title">其他</strong><a href="troubleshooting.html" class="sidebar-link">问题解答</a><a href="contributing.html" class="sidebar-link">贡献</a>
+  </div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2018 <a href="https://github.com/feflow" target="_blank">Feflow.js</a><br>
+      Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
+    </div>
+    <div id="footer-links">
+      <a href="#" class="footer-link"><i class="fa fa-wechat"></i></a>
+      <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/zh-cn/docs/" class="mobile-nav-link">文档指南</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/feflow/feflow" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">开始使用</strong><a href="index.html" class="mobile-nav-link current">概述</a><a href="commands.html" class="mobile-nav-link">命令</a><strong class="mobile-nav-title">开发者接入</strong><a href="writing.html" class="mobile-nav-link">自定义脚手架</a><a href="tag-plugins.html" class="mobile-nav-link">插件开发</a><strong class="mobile-nav-title">规范</strong><a href="permalinks.html" class="mobile-nav-link">Git commit规范</a><a href="themes.html" class="mobile-nav-link">README规范</a><a href="eslint.html" class="mobile-nav-link">ESlint规范</a><strong class="mobile-nav-title">其他</strong><a href="troubleshooting.html" class="mobile-nav-link">问题解答</a><a href="contributing.html" class="mobile-nav-link">贡献</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/index.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/js/lang_select.js"></script>
+<script src="/js/toc.js"></script>
+<script src="/js/mobile_nav.js"></script>
+<!-- endbuild -->
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>
