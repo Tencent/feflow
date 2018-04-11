@@ -48,11 +48,9 @@ $ feflow install package
 $ feflow config <key> <value>
 ```
 
-## Documents
-- Getting Started: [getting-started](docs/getting-started.md)
-- Develop a plugin: [plugin](docs/plugin.md)
-- Git commit standard: [commit-standard](docs/commit-standard.md)
-- ESLint standard: [eslint-standard](docs/eslint-standard.md)
+## Docs
+
+* 中文文档 <http://www.feflowjs.org/zh-cn/docs/>
 
 ## Architecture
 ![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
