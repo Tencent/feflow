@@ -46,10 +46,8 @@ $ feflow config <key> <value>
 ```
 
 ## 文档
-- [开始使用](docs/getting-started.md)
-- [开发一个插件](docs/plugin.md)
-- [Git操作规范接入](docs/commit-standard.md)
-- [ESLint操作规范](docs/eslint-standard.md)
+
+* 中文文档 <http://www.feflowjs.org/zh-cn/docs/>
 
 ## 整体架构
 ![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
