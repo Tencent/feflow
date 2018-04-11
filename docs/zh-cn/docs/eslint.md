@@ -1,3 +1,6 @@
+title: ESlint规范
+---
+
 [ESLint](https://eslint.org/)于2013年6月份推出，至今4个年头，最新版本v4.8.0。它是目前主流的用于Javascript和JSX代码规范检查的利器，很多大公司比如[Airbnb](https://github.com/airbnb/javascript)和[Google](https://google.github.io/styleguide/javascriptguide.xml)均有一套自己的Javascript编码规范，而规范的实施背后离不开ESLint的支持。比如大名顶顶的[eslint-config-airbnb](https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb)和[eslint-config-google](https://github.com/google/eslint-config-google)。为了更好的统一团队的JS编程风格和代码质量。[feflow](https://github.com/feflow)官方经过调研和探索，终于迎来了ESLint的解决方案，最核心的理念是：基于eslint:recommend做规则的定制化。
 
 ## 从一次生产事故说起
