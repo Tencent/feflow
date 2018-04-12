@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
+    
+    <lastmod>2018-04-12T02:42:33.342Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
     
     <lastmod>2018-04-11T12:28:30.920Z</lastmod>
@@ -19,13 +26,6 @@
     <loc>https://feflowjs.org/index.html</loc>
     
     <lastmod>2018-04-11T12:13:07.221Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
-    
-    <lastmod>2018-04-11T11:54:10.244Z</lastmod>
     
   </url>
   

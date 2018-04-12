@@ -274,7 +274,7 @@ body {
   display: inline-block;
 }
 #search-input-icon {
-  color: #fff;
+  color: #333;
   padding-right: 0.5em;
   display: inline-block;
   opacity: 0.7;
@@ -283,7 +283,7 @@ body {
   background: none;
   font-size: inherit;
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #fff;
+  color: #333;
   outline: none;
   -webkit-appearance: none;
 }
@@ -357,12 +357,11 @@ body {
 }
 #banner-title {
   padding-top: 20px;
-  font-size: 40px;
   line-height: 1.15;
   font-weight: 300;
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
-  font-size: 36px;
+  font-size: 32px;
   letter-spacing: 6px;
   line-height: 60px;
   color: #fff;
@@ -375,11 +374,16 @@ body {
   }
 }
 #banner-bio {
-  font-size: 20px;
+  font-size: 16px;
   margin: 0px;
   color: #d6d6d6;
   text-align: center;
   margin-bottom: 70px;
+}
+@media screen and (min-width: 769px) {
+  #banner-bio {
+    font-size: 20px;
+  }
 }
 #banner-buttons {
   margin-bottom: 100px;
@@ -405,8 +409,10 @@ body {
   border-radius: 50px;
   text-align: center;
 }
-#banner-buttons .intro {
-  margin-right: 20px;
+@media screen and (min-width: 769px) {
+  #banner-buttons .intro {
+    margin-right: 20px;
+  }
 }
 #banner-buttons .get-started {
   background: #1b95e0;
@@ -1295,7 +1301,7 @@ a.article-title:hover {
   }
 }
 .mobile-nav-toggle-bar {
-  background: #fff;
+  background: #333;
   position: absolute;
   left: 0;
   width: 100%;
