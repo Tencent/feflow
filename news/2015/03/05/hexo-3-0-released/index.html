@@ -43,7 +43,7 @@
 <meta property="og:site_name" content="Feflow.js">
 <meta property="og:description" content="Hexo 3.0 has finally come out! After four beta and four RC versions, Hexo 3 become more stable and more powerful. Thanks for the contributors and testers!  What’s Changed?There’re many improvements in">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2018-04-11T02:17:29.204Z">
+<meta property="og:updated_time" content="2018-04-11T17:03:58.155Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo 3.0 Released">
 <meta name="twitter:description" content="Hexo 3.0 has finally come out! After four beta and four RC versions, Hexo 3 become more stable and more powerful. Thanks for the contributors and testers!  What’s Changed?There’re many improvements in">
@@ -169,7 +169,13 @@
       Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
     </div>
     <div id="footer-links">
-      <a href="#" class="footer-link"><i class="fa fa-wechat"></i></a>
+      <a class="footer-link">
+        <i class="fa fa-wechat" id="wechat-trigger"></i>
+        <span class="wechat-qrcode" id="wechat-qrcode">
+          <img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLBJ9HDnzZNt8rBft0KhyZ9cczicFiaVVvSibzBKUUlbywBVg/" />
+          <em class="wechat-qrcode-icon"></em>
+        </span>
+      </a>
       <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
     </div>
   </div>
@@ -201,6 +207,7 @@
 <script src="/js/lang_select.js"></script>
 <script src="/js/toc.js"></script>
 <script src="/js/mobile_nav.js"></script>
+<script src="/js/footer_qrcode.js"></script>
 <!-- endbuild -->
 
 <!-- Algolia -->
