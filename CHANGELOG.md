@@ -1,3 +1,23 @@
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/feflow/feflow/compare/v0.13.1...v0.13.2) (2018-04-28)
+
+
+### Features
+
+* support yeoman generator and builder increment update seperately. ([6c2fc65](https://github.com/feflow/feflow/commit/6c2fc65))
+
+
+
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/feflow/feflow/compare/v0.13.1...v0.13.2) (2018-04-28)
+
+
+### Features
+
+* support template and builder increment update seperately. ([6c2fc65](https://github.com/feflow/feflow/commit/6c2fc65))
+
+
+
 <a name="0.13.1"></a>
 ## [0.13.1](https://github.com/feflow/feflow/compare/v0.13.0...v0.13.1) (2018-03-09)
 
