@@ -1,3 +1,13 @@
+<a name="0.13.5"></a>
+## [0.13.5](https://github.com/feflow/feflow/compare/v0.13.4...v0.13.5) (2018-07-04)
+
+
+### Features
+
+* config support js file(eg: feflow.js or feflow.json) ([4c7dfd8](https://github.com/feflow/feflow/commit/4c7dfd8))
+
+
+
 <a name="0.13.2"></a>
 ## [0.13.2](https://github.com/feflow/feflow/compare/v0.13.1...v0.13.2) (2018-04-28)
 
