@@ -58,14 +58,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/themes/index.html</loc>
+    <loc>https://feflowjs.org/plugins/index.html</loc>
     
     <lastmod>2018-05-14T13:51:23.089Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/plugins/index.html</loc>
+    <loc>https://feflowjs.org/themes/index.html</loc>
     
     <lastmod>2018-05-14T13:51:23.089Z</lastmod>
     
@@ -79,6 +79,13 @@
   </url>
   
   <url>
+    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
+    
+    <lastmod>2018-05-14T13:51:23.084Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/about/index.html</loc>
     
     <lastmod>2018-05-14T13:51:23.084Z</lastmod>
@@ -87,13 +94,6 @@
   
   <url>
     <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
-    
-    <lastmod>2018-05-14T13:51:23.084Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
     
     <lastmod>2018-05-14T13:51:23.084Z</lastmod>
     
