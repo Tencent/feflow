@@ -38,6 +38,7 @@
     "cross-spawn": "^5.1.0",
     "easy-table": "^1.1.0",
     "figlet": "^1.2.0",
+    "fs-extra": "^7.0.0",
     "hexo-fs": "^0.2.1",
     "inquirer": "^3.0.6",
     "js-yaml": "^3.9.1",
