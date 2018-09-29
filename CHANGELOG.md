@@ -1,3 +1,14 @@
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/feflow/feflow/compare/v0.13.6...v0.14.0) (2018-09-29)
+
+
+### Features
+
+* add deployer command ([1fcba76](https://github.com/feflow/feflow/commit/1fcba76))
+* add eject command ([7b49e2f](https://github.com/feflow/feflow/commit/7b49e2f))
+
+
+
 <a name="0.13.6"></a>
 ## [0.13.6](https://github.com/feflow/feflow/compare/v0.13.5...v0.13.6) (2018-08-08)
 
