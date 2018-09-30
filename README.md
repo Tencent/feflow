@@ -54,6 +54,12 @@ $ feflow lint
 $ feflow build
 ```
 
+**Deploy files**
+
+``` bash
+$ feflow deploy
+```
+
 **Install scaffords or plugins**
 
 ``` bash

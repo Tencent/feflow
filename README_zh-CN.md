@@ -52,6 +52,12 @@ $ feflow lint
 $ feflow build
 ```
 
+**部署文件**
+
+``` bash
+$ feflow deploy
+```
+
 **安装 脚手架或插件**
 
 ``` bash
