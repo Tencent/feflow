@@ -1,4 +1,5 @@
-# 插件开发指引
+title: 插件开发指引
+---
 
 以[feflow-plugin-deps](https://github.com/iv-web/feflow-plugin-deps)为例，讲讲如何开发一个feflow插件。
 
@@ -36,4 +37,5 @@ log.warn()    // 警告日志，控制台中显示黄色背景
 log.error()   // 错误日志，控制台中显示红色
 log.fatal()   // 致命错误日志，，控制台中显示红色
 ```
+
 

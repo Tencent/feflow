@@ -1,3 +1,64 @@
+<a name="0.14.0"></a>
+# [0.14.0](https://github.com/feflow/feflow/compare/v0.13.6...v0.14.0) (2018-09-29)
+
+
+### Features
+
+* add deployer command ([1fcba76](https://github.com/feflow/feflow/commit/1fcba76))
+* add eject command ([7b49e2f](https://github.com/feflow/feflow/commit/7b49e2f))
+
+
+
+<a name="0.13.6"></a>
+## [0.13.6](https://github.com/feflow/feflow/compare/v0.13.5...v0.13.6) (2018-08-08)
+
+
+### Bug Fixes
+
+* fix cod to code ([145e517](https://github.com/feflow/feflow/commit/145e517))
+
+
+
+<a name="0.13.5"></a>
+## [0.13.5](https://github.com/feflow/feflow/compare/v0.13.4...v0.13.5) (2018-07-04)
+
+
+### Features
+
+* config support js file(eg: feflow.js or feflow.json) ([4c7dfd8](https://github.com/feflow/feflow/commit/4c7dfd8))
+
+
+
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/feflow/feflow/compare/v0.13.1...v0.13.2) (2018-04-28)
+
+
+### Features
+
+* support yeoman generator and builder increment update seperately. ([6c2fc65](https://github.com/feflow/feflow/commit/6c2fc65))
+
+
+
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/feflow/feflow/compare/v0.13.1...v0.13.2) (2018-04-28)
+
+
+### Features
+
+* support template and builder increment update seperately. ([6c2fc65](https://github.com/feflow/feflow/commit/6c2fc65))
+
+
+
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/feflow/feflow/compare/v0.13.0...v0.13.1) (2018-03-09)
+
+
+### Bug Fixes
+
+* **core:** increment update failed bug ([e5333cd](https://github.com/feflow/feflow/commit/e5333cd))
+
+
+
 <a name="0.13.0"></a>
 # [0.13.0](https://github.com/feflow/feflow/compare/v0.12.0...v0.13.0) (2018-02-06)
 
@@ -12,17 +73,6 @@
 
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/feflow/feflow/compare/v0.12.0-alpha.1...v0.12.0) (2017-12-11)
-
-
-
-<a name="0.12.0-alpha.1"></a>
-# [0.12.0-alpha.1](https://github.com/feflow/feflow/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2017-12-10)
-
-
-
-<a name="0.12.0-alpha.0"></a>
-# [0.12.0-alpha.0](https://github.com/feflow/feflow/compare/v0.11.3...v0.12.0-alpha.0) (2017-12-09)
-
 
 ### Features
 
@@ -126,6 +176,3 @@
 * command register mechanism. ([febe1c3](https://github.com/feflow/feflow/commit/febe1c3))
 * Initial commit ([626def2](https://github.com/feflow/feflow/commit/626def2))
 * support -v and --version command. ([fa14d9e](https://github.com/feflow/feflow/commit/fa14d9e))
-
-
-
