@@ -1,13 +1,6 @@
 ![banner](https://user-images.githubusercontent.com/18289264/35855826-34885a0c-0b6f-11e8-9ba2-98272cb9a27a.png)
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/feflow/feflow/blob/master/LICENSE)
-[![](https://img.shields.io/travis/feflow/feflow.svg?style=flat-square)](https://travis-ci.org/feflow/feflow)
-[![Codecov](https://img.shields.io/codecov/c/github/feflow/feflow/master.svg?style=flat-square)](https://codecov.io/gh/feflow/feflow/branch/master)
-[![Package Quality](http://npm.packagequality.com/shield/feflow-cli.svg)](http://packagequality.com/#?package=feflow-cli)
-[![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
-[![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/feflow/feflow/pulls)
-[![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/feflow/feflow/blob/master/LICENSE)[![](https://img.shields.io/travis/feflow/feflow.svg?style=flat-square)](https://travis-ci.org/feflow/feflow)[![Codecov](https://img.shields.io/codecov/c/github/feflow/feflow/master.svg?style=flat-square)](https://codecov.io/gh/feflow/feflow/branch/master)[![Package Quality](http://npm.packagequality.com/shield/feflow-cli.svg)](http://packagequality.com/#?package=feflow-cli)[![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)[![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/feflow/feflow/pulls)[![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 致力于提升研发效率和规范的工程化解决方案，使用 [Node.js](https://nodejs.org/en/)编写.
 
