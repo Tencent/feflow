@@ -1,3 +1,18 @@
+<a name="0.15.0-alpha.0"></a>
+# [0.15.0-alpha.0](https://github.com/feflow/feflow/compare/v0.14.0...v0.15.0-alpha.0) (2018-12-08)
+
+
+### Bug Fixes
+
+* require deploy as internal plugins ([81c01c5](https://github.com/feflow/feflow/commit/81c01c5))
+
+
+### Features
+
+* install templates, builder and plugins with global-style ([bb509d8](https://github.com/feflow/feflow/commit/bb509d8))
+
+
+
 <a name="0.14.0"></a>
 # [0.14.0](https://github.com/feflow/feflow/compare/v0.13.6...v0.14.0) (2018-09-29)
 
