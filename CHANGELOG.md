@@ -1,3 +1,14 @@
+<a name="0.15.0-alpha.1"></a>
+# [0.15.0-alpha.1](https://github.com/feflow/feflow/compare/v0.15.0-alpha.0...v0.15.0-alpha.1) (2018-12-15)
+
+
+### Features
+
+* add disable-check params ([d6542ad](https://github.com/feflow/feflow/commit/d6542ad))
+* disable-check param for templates, builder and plugins ([3d4ea1d](https://github.com/feflow/feflow/commit/3d4ea1d))
+
+
+
 <a name="0.15.0-alpha.0"></a>
 # [0.15.0-alpha.0](https://github.com/feflow/feflow/compare/v0.14.0...v0.15.0-alpha.0) (2018-12-08)
 
