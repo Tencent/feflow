@@ -1,12 +1,11 @@
 title: 脚手架开发
 ---
 
-目前feflow有两款内置脚手架工具，为generator-now-activity、generator-now-business	
+目前feflow有一款使用react+redux+webpack4的脚手架，为generator-redux-startkit。
 
-- generator-now-activity: 是由IVWEB团队开发的一款生成`now-activity`项目脚手架的插件 
+请使用`felow install generator-redux-startkit`进行安装。
 
-- generator-now-business: 是由IVWEB团队开发的一款生成`now-(h5|mobile|pc|web|app|qq)`项目脚手架的插件
-
+该脚手架同样可以作为自己开发脚手架的参考。
 
 ## 脚手架简介
 
