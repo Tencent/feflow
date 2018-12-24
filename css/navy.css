@@ -552,6 +552,9 @@ body {
   height: 80px;
   border-radius: 18px;
 }
+.intro-user-item p {
+  padding-top: 5px;
+}
 #intro-get-started-wrap {
   text-align: center;
 }
