@@ -1,0 +1,30 @@
+{
+  "author": {
+    "name": ""
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "colors": "^1.3.2",
+    "feflow-plugin-demo1": "1.0.0"
+  },
+  "deprecated": false,
+  "description": "feflow demo plugin",
+  "devDependencies": {
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": [
+    "feflow"
+  ],
+  "license": "ISC",
+  "main": "lib/index.js",
+  "name": "feflow-plugin-demo1",
+  "repository": {
+    "type": "git"
+  },
+  "scripts": {
+    
+  },
+  "version": "1.0.4"
+}
