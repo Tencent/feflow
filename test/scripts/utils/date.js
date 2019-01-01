@@ -11,7 +11,7 @@ describe('date', () => {
   let day = dateNow.getDate();
   it('test date format', () => {
     dateType.forEach(item => {
-      date.formatDate(item, dateNow).should.eql(`${year}-${month}-${day}`);
+      date.formatDate(item, dateNow).should.eql(`${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day }`);
     })
   })
 })

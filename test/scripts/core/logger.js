@@ -32,19 +32,36 @@ describe('Logger some info', () => {
     hook.unhook();
   })
 
-  it('call() debug and silent', () => {
+  it('test debug and silent', () => {
     const log = logger({
       debug: true,
       silent: true
     });
-    log.debug(123);
-    log.info(123123123)
+    log.debug('hello feflow');
   })
-  it('call() debug', () => {
+  it('test no debug and silent', () => {
+    const log = logger({})
+    log.info('hello feflow')
+  })
+  it('test debug', () => {
     const log = logger({
       debug: true,
       silent: false
     });
-    log.debug(123);
+    log.debug('hello feflow');
+  })
+  it('test warn', () => {
+    const log = logger({
+      debug: true,
+      silent: false
+    });
+    log.warn('hello feflow');
+  })
+  it('test error', () => {
+    const log = logger({
+      debug: true,
+      silent: false
+    });
+    log.error('hello feflow');
   })
 })
