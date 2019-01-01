@@ -19,7 +19,7 @@ describe('Install command', () => {
   });
 
   it('install()', () => {
-
+    
   });
 
   it('uninstall()', () => {
