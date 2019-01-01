@@ -3,5 +3,5 @@ describe('Core', () => {
   require('./loadPlugins');
   require('./command');
   require('./logger');
-  require('./initClient')
+  require('./initClient');
 });
