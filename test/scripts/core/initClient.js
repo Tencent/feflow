@@ -88,6 +88,16 @@ describe('initClient', () => {
     initClient(feflow);
   })
 
+  it('initClient with --init args without config', () => {
+    feflow.args = {
+      '': [],
+      'init': true
+    };
+    feflow.config = '';
+    initClient(feflow);
+  })
+
+
 
 
 
