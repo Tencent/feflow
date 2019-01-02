@@ -33,6 +33,9 @@ const feflow = {
     debug: Boolean(true),
     silent: Boolean(false)
   }),
+  args: {
+    '': []
+  },
   config: {
     registry: 'http://registry.npmjs.org'
   }
