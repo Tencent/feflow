@@ -10,13 +10,10 @@ const sep = pathFn.sep;
 describe('Feflow', () => {
   const Feflow = require('../../../lib/core');
   const feflow = new Feflow();
-
   const version = require('../../../package.json').version;
   const base = pathFn.join(osenv.home(), './.feflow');
 
-
   feflow.cmd.register('test', args => args);
-
   it('constructor', () => {
     feflow.version.should.eql(version);
     feflow.baseDir.should.eql(base + sep);
@@ -55,5 +52,11 @@ describe('Feflow', () => {
       errorCallback.calledOnce.should.be.true;
     });
   });
+
+  it('loadPlugin() - load a plugin', () => {
+    feflow.loadPlugin(pathFn.resolve(__dirname, './plugins/demo1/lib/index.js'), (err) => {
+      err.should.be.eql(null)
+    });
+  })
 
 });
