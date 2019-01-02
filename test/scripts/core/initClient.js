@@ -62,4 +62,33 @@ describe('initClient', () => {
     feflow.rcPath = path.resolve(__dirname, './feflow-container/.feflowrc.yml');
     initClient(feflow);
   })
+
+  it('initClient with --init args', () => {
+    feflow.args = {
+      '': [],
+      'init': true
+    };
+    initClient(feflow);
+  })
+
+
+  it('initClient with --registry args', () => {
+    feflow.args = {
+      '': [],
+      'registry': 'http://registry.npmjs.org'
+    };
+    initClient(feflow);
+  })
+
+  it('initClient with --proxy args', () => {
+    feflow.args = {
+      '': [],
+      'proxy': 'http://registry.npmjs.org'
+    };
+    initClient(feflow);
+  })
+
+
+
+
 })
