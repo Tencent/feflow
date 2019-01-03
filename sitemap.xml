@@ -30,21 +30,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/themes/index.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/docs/permalinks.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
     
     <lastmod>2019-01-02T06:48:04.909Z</lastmod>
     
@@ -59,6 +45,20 @@
   
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
+    
+    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
+    
+    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/themes/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.909Z</lastmod>
     

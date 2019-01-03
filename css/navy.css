@@ -474,7 +474,7 @@ body {
   display: inline-block;
   width: 25%;
   min-width: 100px;
-  margin: 20px 36px;
+  margin: 20px 20px;
 }
 @media screen and (min-width: 769px) {
   .intro-feature-wrap {
