@@ -9,14 +9,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/themes.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/tag-plugins.html</loc>
     
     <lastmod>2019-01-02T06:48:04.910Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/tag-plugins.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/themes.html</loc>
     
     <lastmod>2019-01-02T06:48:04.910Z</lastmod>
     
@@ -30,20 +30,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/permalinks.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/eslint.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.909Z</lastmod>
@@ -51,7 +37,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/permalinks.html</loc>
     
     <lastmod>2019-01-02T06:48:04.909Z</lastmod>
     
@@ -65,14 +51,28 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/plugins/index.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/eslint.html</loc>
+    
+    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
+    
+    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.908Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/index.html</loc>
+    <loc>https://feflowjs.org/plugins/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.908Z</lastmod>
     
@@ -86,14 +86,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
+    <loc>https://feflowjs.org/news/2015/03/05/hexo-3-0-released/</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2015/03/05/hexo-3-0-released/</loc>
+    <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
     
