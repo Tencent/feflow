@@ -8,6 +8,7 @@
 [![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/feflow/feflow/pulls)
 [![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![developing with feflow](https://img.shields.io/badge/developing%20with-feflow-1b95e0.svg)](https://github.com/feflow/feflow)
 
 致力于提升研发效率和规范的工程化解决方案，使用 [Node.js](https://nodejs.org/en/)编写.
 
