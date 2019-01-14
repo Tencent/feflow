@@ -28,23 +28,23 @@ describe('loadPlugins', () => {
         module.filename = path;
 
         module.paths = Module._nodeModulePaths(path);
-        
+
         function require(path) {
           return module.require(path);
         }
-        
+
         require.resolve = function (request) {
           return Module._resolveFilename(request, module);
         };
-  
+
         require.main = process.mainModule;
         require.extensions = Module._extensions;
         require.cache = Module._cache;
-        
+
         // Inject feflow variable
         script = '(function(exports, require, module, __filename, __dirname, feflow){' +
           script + '});';
-        
+
         try{
           const fn = vm.runInThisContext(script, path);
           return fn(module.exports, require, module, path, pathFn.dirname(path), self);
@@ -52,7 +52,7 @@ describe('loadPlugins', () => {
           console.log('logad error', e)
           e.should.be.eql(null);
         }
-        
+
       }).asCallback(callback);
     }
   };

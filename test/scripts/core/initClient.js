@@ -5,6 +5,8 @@ const initClient = require('../../../lib/core/initClient');
 const path = require('path');
 const logger = require('../../../lib/core/logger');
 const fs = require('hexo-fs');
+const sinon = require('sinon');
+const inquirer = require('inquirer');
 
 function captureStream(stream) {
   let oldWrite = stream.write;
@@ -32,31 +34,36 @@ const feflow = {
   log: logger({
     debug: Boolean(true),
     silent: Boolean(false)
-  }),
-  config: {
-    registry: 'http://registry.npmjs.org'
-  }
+  })
 }
 
 describe('initClient', () => {
   let hook;
 
-  beforeEach(function () {
+  beforeEach(() => {
+    this.sandbox = sinon.createSandbox();
     // runs before each test in this block
     hook = captureStream(process.stderr);
   })
-  afterEach(function () {
+  afterEach(() => {
     // runs after each test in this block
     hook.unhook();
+    this.sandbox.restore();
   })
-  
+
   it('initClient has none', () => {
+    this.sandbox.stub(inquirer, 'prompt').returns(Promise.resolve(['http://registry.npmjs.org', '']));
+    this.sandbox.stub(process, 'exit').returns(Promise.resolve());
     initClient(feflow);
   })
-  
+
   it('initClient has all', () => {
     feflow.baseDir = path.resolve(__dirname, './feflow-container/container/package.json');
     feflow.rcPath = path.resolve(__dirname, './feflow-container/.feflowrc.yml');
+    feflow.config = {
+      registry: 'http://registry.npmjs.org'
+    };
     initClient(feflow);
+
   })
 })
