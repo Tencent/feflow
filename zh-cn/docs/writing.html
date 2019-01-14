@@ -29,7 +29,7 @@
   <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
   <meta name="msapplication-TileColor" content="#2f83cd">
   <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
-  <meta name="generator" content="Hexo 3.7.1">
+  <meta name="generator" content="Hexo 3.8.0">
   <!-- CSS -->
   <!-- build:css build/css/navy.css -->
   <link rel="stylesheet" href="/css/navy.css">
@@ -47,13 +47,10 @@
 <meta property="og:site_name" content="Feflow.js">
 <meta property="og:description" content="目前feflow有两款内置脚手架工具，为generator-now-activity、generator-now-business      generator-now-activity: 是由IVWEB团队开发的一款生成now-activity项目脚手架的插件   generator-now-business: 是由IVWEB团队开发的一款生成now-(h5|mobile|pc|web|app|">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="http://7tszky.com1.z0.glb.clouddn.com/FiwG7VvpYL3Tleaii9Q9dowGNJXv">
-<meta property="og:image" content="http://ov6wf6qsi.bkt.clouddn.com/image/blog/a.png">
-<meta property="og:updated_time" content="2018-05-14T13:51:23.305Z">
+<meta property="og:updated_time" content="2019-01-14T11:12:07.311Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="脚手架开发">
 <meta name="twitter:description" content="目前feflow有两款内置脚手架工具，为generator-now-activity、generator-now-business      generator-now-activity: 是由IVWEB团队开发的一款生成now-activity项目脚手架的插件   generator-now-business: 是由IVWEB团队开发的一款生成now-(h5|mobile|pc|web|app|">
-<meta name="twitter:image" content="http://7tszky.com1.z0.glb.clouddn.com/FiwG7VvpYL3Tleaii9Q9dowGNJXv">
 <meta property="fb:admins" content="100000247608790">
   <!-- Google Analytics -->
   
@@ -108,7 +105,7 @@
     <div id="content-wrap">
   <div id="content" class="wrapper">
     <div id="content-inner">
-      <article class="article-container" itemscope itemtype="http://schema.org/Article">
+      <article class="article-container" itemscope="" itemtype="http://schema.org/Article">
         <div class="article-inner">
           <div class="article">
             <div class="inner">
@@ -130,7 +127,6 @@
 <p>相信你已经关注到feflow内置的脚手架工具是以’generator-‘开头命名的，这是因为feflow的脚手架是利用<a href="https://yeoman.io" target="_blank" rel="noopener">Yeoman</a>工具的<code>yeoman-generator</code>来扩展构建的。</p>
 <h2 id="feflow脚手架设计思路" class="article-heading"><a href="#feflow脚手架设计思路" class="headerlink" title="feflow脚手架设计思路"></a>feflow脚手架设计思路<a class="article-anchor" href="#feflow脚手架设计思路" aria-hidden="true"></a></h2><p>我们需要给每个工程类型的项目创建一个generator，按照目前前端技术栈的发展情况来看，一个团队一般会有3～5个generator。通过工具上层的CLI将generator类插件暴露给开发者使用。</p>
 <p>在generator之下，需要开发一系列服务和集成规范、包括与Git仓库打通，即通过脚手架初始化项目时，对开发者进行鉴权，之后根据开发者定义的项目名称在远程仓库里创建项目仓库并授予开发者权限。整体系统架构如下：</p>
-<p><img src="http://7tszky.com1.z0.glb.clouddn.com/FiwG7VvpYL3Tleaii9Q9dowGNJXv" alt="架构"></p>
 <blockquote>
 <p>后续开发包括但不限于数据统计、分析各个业务仓库信息等功能。</p>
 </blockquote>
@@ -143,7 +139,6 @@
 <p>!&gt; name 必须以’generator-‘开头，便于Yeoman依赖文件系统来寻找可用的generator。keywords属性必须包含’yeoman-generator’。</p>
 <h3 id="初始化Generator" class="article-heading"><a href="#初始化Generator" class="headerlink" title="初始化Generator"></a>初始化Generator<a class="article-anchor" href="#初始化Generator" aria-hidden="true"></a></h3><p>通过继承Generator来扩展自定义的Generator，并将模块暴露给外部接口。</p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> Generator = <span class="built_in">require</span>(<span class="string">'yeoman-generator'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">	<span class="keyword">constructor</span>(args, opts) &#123;</span><br><span class="line">		<span class="keyword">super</span>(args, opts)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Generator 运行周期</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	initializing() &#123;   <span class="comment">// 初始化方法，检查并获取当前项目状态配置</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	prompting() &#123;      <span class="comment">// 与用户进行信息交互</span></span><br><span class="line">		... </span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.prompt([</span><br><span class="line">			&#123;</span><br><span class="line">				type: <span class="string">'input'</span>,</span><br><span class="line">				name: <span class="string">'username'</span>,</span><br><span class="line">				message: <span class="string">'请输入您的姓名：'</span>,</span><br><span class="line">				<span class="keyword">default</span>: <span class="string">'feflow-user'</span>	</span><br><span class="line">			&#125;,</span><br><span class="line">			&#123;</span><br><span class="line">				type: <span class="string">'confirm'</span>,</span><br><span class="line">				name: <span class="string">'generator_ins'</span>,</span><br><span class="line">				message: <span class="string">'是否对编程感兴趣'</span>,</span><br><span class="line">				<span class="keyword">default</span>: <span class="literal">true</span></span><br><span class="line">			&#125;</span><br><span class="line">		]).then(<span class="function">(<span class="params">answers</span>) =&gt;</span> &#123;</span><br><span class="line">			<span class="keyword">if</span>(<span class="regexp">/\d+/g</span>.test(answers.username)) &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">'姓名不能包含数字!'</span>);</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">this</span>.prompting()</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`姓名：<span class="subst">$&#123;answers.username&#125;</span>`</span>);</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">'兴趣：编程'</span>);</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	configuring() &#123;    <span class="comment">// 保存配置并通过创建.editorconfig文件和其他元数据文件来配置项目</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">default</span>() &#123;        <span class="comment">// 如果方法名未匹配优先级，则由default处理</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	writing() &#123;        <span class="comment">// 处理模板</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	conflicts() &#123;      <span class="comment">// 处理文件冲突</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	install() &#123;        <span class="comment">// 安装依赖</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	end() &#123;            <span class="comment">// 结束部分，输出结束信息</span></span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="http://ov6wf6qsi.bkt.clouddn.com/image/blog/a.png" alt="#2"></p>
 <h2 id="运行Generator" class="article-heading"><a href="#运行Generator" class="headerlink" title="运行Generator"></a>运行Generator<a class="article-anchor" href="#运行Generator" aria-hidden="true"></a></h2><p>进入项目根目录。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">// 全局安装yo</span><br><span class="line">npm install -g yo    </span><br><span class="line"></span><br><span class="line">// 在本地的全局npm安装目录下安装自定义的Generator，以便调试</span><br><span class="line">npm link            </span><br><span class="line"></span><br><span class="line">// 运行本地Generator</span><br><span class="line">yo [project name]</span><br></pre></td></tr></table></figure>
 <h2 id="连通Git-code" class="article-heading"><a href="#连通Git-code" class="headerlink" title="连通Git code"></a>连通Git code<a class="article-anchor" href="#连通Git-code" aria-hidden="true"></a></h2><p><code>@tencent/feflow-utils</code>库具有获取当前RTX用户、申请项目BadjsID、数据上报等功能。<br><br><code>@tencent/git-code-api</code>库确保用户可创建gitcode项目，并自动提交项目。</p>
@@ -153,7 +148,7 @@
 
               </div>
               <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2018-05-14T13:51:23.305Z" itemprop="dateModified">上次更新：2018-05-14</time>
+                <time class="article-footer-updated" datetime="2019-01-14T11:12:07.311Z" itemprop="dateModified">上次更新：2019-01-14</time>
                 <a href="commands.html" class="article-footer-prev" title="命令"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="tag-plugins.html" class="article-footer-next" title="插件开发"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
               </footer>
               
@@ -204,7 +199,7 @@
       <a class="footer-link">
         <i class="fa fa-wechat" id="wechat-trigger"></i>
         <span class="wechat-qrcode" id="wechat-qrcode">
-          <img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLBJ9HDnzZNt8rBft0KhyZ9cczicFiaVVvSibzBKUUlbywBVg/" />
+          <img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLBJ9HDnzZNt8rBft0KhyZ9cczicFiaVVvSibzBKUUlbywBVg/">
           <em class="wechat-qrcode-icon"></em>
         </span>
       </a>
