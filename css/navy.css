@@ -469,6 +469,17 @@ body {
   padding-top: 20px;
   text-align: center;
 }
+@media screen and (min-width: 769px) {
+  #intro-feature-list {
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    -webkit-box-lines: multiple;
+    -moz-box-lines: multiple;
+    -webkit-flex-flow: row wrap;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+  }
+}
 .intro-feature-wrap {
   padding-top: 20px;
   display: inline-block;
@@ -497,7 +508,7 @@ body {
   padding-bottom: 26px;
   text-align: center;
 }
-.intro-feature-icon .image {
+.intro-feature-icon img {
   max-width: 100%;
 }
 .intro-feature-title {
