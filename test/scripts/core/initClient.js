@@ -30,7 +30,7 @@ const feflow = {
   baseDir: path.resolve(__dirname, './feflow-container/baseDir'),
   pkgPath: path.resolve(__dirname, './feflow-container/container/package.json'),
   logDir: path.resolve(__dirname, './feflow-container/logDir'),
-  rcPath: path.resolve(__dirname, './feflow-container/rcPath'),
+  rcPath: path.resolve(__dirname, './feflow-container/rcPath/rcPath'),
   log: logger({
     debug: Boolean(true),
     silent: Boolean(false)
@@ -44,18 +44,21 @@ describe('initClient', () => {
     this.sandbox = sinon.createSandbox();
     // runs before each test in this block
     hook = captureStream(process.stderr);
-  })
+  });
   afterEach(() => {
     // runs after each test in this block
     hook.unhook();
     this.sandbox.restore();
-  })
+  });
 
   it('initClient has none', () => {
     this.sandbox.stub(inquirer, 'prompt').returns(Promise.resolve(['http://registry.npmjs.org', '']));
     this.sandbox.stub(process, 'exit').returns(Promise.resolve());
-    initClient(feflow);
-  })
+    initClient(feflow)
+      .then(_ => {
+        fs.unlinkSync(feflow.rcPath);
+      });
+  });
 
   it('initClient has all', () => {
     feflow.baseDir = path.resolve(__dirname, './feflow-container/container/package.json');
@@ -64,6 +67,6 @@ describe('initClient', () => {
       registry: 'http://registry.npmjs.org'
     };
     initClient(feflow);
-
-  })
+    fs.rmdirSync(feflow.logDir);
+  });
 })
