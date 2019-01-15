@@ -1,3 +1,19 @@
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/feflow/feflow/compare/v0.15.0...v0.15.1) (2019-01-03)
+
+
+### Bug Fixes
+
+* update inquirer and yeoman-environment to fix windows bug ([d21d026](https://github.com/feflow/feflow/commit/d21d026))
+* word for scaffold question is error ([501ded5](https://github.com/feflow/feflow/commit/501ded5))
+
+
+### Features
+
+* Pass useful utils function through feflow context to scaffload, builer and plugin ([0845f32](https://github.com/feflow/feflow/commit/0845f32))
+
+
+
 <a name="0.15.0"></a>
 # [0.15.0](https://github.com/feflow/feflow/compare/v0.15.0-alpha.1...v0.15.0) (2018-12-15)
 
