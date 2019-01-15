@@ -59,7 +59,7 @@ describe('Register a command', () => {
     }
   });
 
-  it('register() - register command with three params and options is a function', () => {
+   it('register() - register command with three params and options is a function', () => {
     const command = new Command();
 
     command.register('test', 'test description', () => {});
@@ -70,6 +70,13 @@ describe('Register a command', () => {
     const command = new Command();
 
     command.register('test', 'test desc', {}, () => {});
+    command.get('test').should.exist;
+  });
+
+  it('register() - register command with three params, desc is options', () => {
+    const command = new Command();
+
+    command.register('test', {}, () => {});
     command.get('test').should.exist;
   });
 
