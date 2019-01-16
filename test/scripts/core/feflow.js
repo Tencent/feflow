@@ -57,6 +57,6 @@ describe('Feflow', () => {
     feflow.loadPlugin(pathFn.resolve(__dirname, './plugins/feflow-plugin-demo1/lib/index.js'), (err) => {
       err.should.be.eql(null);
     });
-  });
+  })
 
 });

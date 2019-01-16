@@ -8,8 +8,10 @@ const pathFn = require('path');
 const sinon = require('sinon');
 const osenv = require('osenv');
 const sep = pathFn.sep;
+// const {install, uninstall} = require('../../../../lib/internal/install/plugin');
+// const logger = require('../../../../lib/core/logger');
 
-describe('Install command', () => {
+describe('internal intall', () => {
   beforeEach(function() {
 
   });
@@ -18,8 +20,17 @@ describe('Install command', () => {
 
   });
 
-  it('install()', () => {
-    
+  it('internal install()', () => {
+    // this.ctx = {
+    //   baseDir: pathFn.resolve(__dirname, '../../core/plugins/feflow-plugin-demo1'),
+    //   log: logger({
+    //     debug: Boolean(true),
+    //     silent: Boolean(false)
+    //   })
+    // };
+    // install({
+    //   '_': 'feflow-plugin-demo1'
+    // });
   });
 
   it('uninstall()', () => {
