@@ -58,13 +58,21 @@ describe('loadPlugins', () => {
   };
   it('call() load a simple plugin four args', () => {
     loadPlugins(feflow);
-  })
+  });
   it('call() load a simple plugin three args', () => {
     feflow.baseDir = pathFn.resolve(__dirname, './plugins/feflow-plugin-demo2');
     loadPlugins(feflow);
-  })
-  it('call() load a simple plugin tow args', () => {
+  });
+  it('call() load a simple plugin three args', () => {
     feflow.baseDir = pathFn.resolve(__dirname, './plugins/feflow-plugin-demo3');
     loadPlugins(feflow);
-  })
+  });
+  it('call() load plugin err', (done) => {
+    feflow.loadPlugin = () => {
+      return Promise.reject('cant find this plugin');
+    }
+    loadPlugins(feflow).then(_ => {
+      done();
+    });
+  });
 })
