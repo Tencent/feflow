@@ -168,11 +168,16 @@ body {
   border-top: 1px solid #161d24;
   border-bottom: 1px solid #161d24;
   margin: -1px 0;
+  padding-top: 70px;
 }
 #header {
-  position: relative;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
   background: #fff;
   padding: 10px 0;
+  z-index: 10000000;
 }
 @media print {
   #header {
