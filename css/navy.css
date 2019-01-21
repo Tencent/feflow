@@ -582,8 +582,7 @@ body {
   border-top: 1px solid #e3e3e3;
   line-height: 1;
 }
-.sidebar-link,
-.toc-link {
+.sidebar-link {
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   display: block;
   color: #444;
@@ -595,13 +594,12 @@ body {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  text-indent: 20px;
 }
-.sidebar-link.current,
-.toc-link.current {
+.sidebar-link.current {
   color: #0e83cd;
 }
-.sidebar-link:hover,
-.toc-link:hover {
+.sidebar-link:hover {
   color: #1094e8;
 }
 #content {
@@ -684,6 +682,25 @@ body {
   position: fixed;
   top: 0;
   bottom: 0;
+}
+.toc-link {
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  display: block;
+  color: #444;
+  text-decoration: none;
+  padding: 7px 0;
+  line-height: 1;
+  position: relative;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.toc-link.current {
+  color: #0e83cd;
+}
+.toc-link:hover {
+  color: #1094e8;
 }
 .toc-child {
   padding-left: 1em;
