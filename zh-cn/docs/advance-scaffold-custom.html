@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>自定义脚手架 | Feflow.js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icon/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icon/apple-touch-icon-152x152.png">
+  <link rel="icon" type="image/png" href="/icon/favicon-196x196.png" sizes="196x196">
+  <link rel="icon" type="image/png" href="/icon/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/icon/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/icon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
+  <meta name="generator" content="Hexo 3.8.0">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/atom.xml" title="Feflow.js">
+  <!-- Open Graph -->
+  <meta name="description" content="当运行 feflow init 的时候，Feflow 的内置插件会调用一个脚手架来创建项目。那么，如何创建一个自己的脚手架呢？ 其实不难，我们充分利用了社区的力量，只要你的脚手架是一个 Yeoman 脚手架即可。如果你会开发 Yeoman 脚手架，那么你已经基本能够开发一个自己的脚手架了；如果你不会，文章后面的部分也会简单地讲解一下。 开发一个 Yeoman 脚手架如果你已经会开发一个 Yeoma">
+<meta property="og:type" content="website">
+<meta property="og:title" content="自定义脚手架">
+<meta property="og:url" content="https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html">
+<meta property="og:site_name" content="Feflow.js">
+<meta property="og:description" content="当运行 feflow init 的时候，Feflow 的内置插件会调用一个脚手架来创建项目。那么，如何创建一个自己的脚手架呢？ 其实不难，我们充分利用了社区的力量，只要你的脚手架是一个 Yeoman 脚手架即可。如果你会开发 Yeoman 脚手架，那么你已经基本能够开发一个自己的脚手架了；如果你不会，文章后面的部分也会简单地讲解一下。 开发一个 Yeoman 脚手架如果你已经会开发一个 Yeoma">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-01-21T02:12:41.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义脚手架">
+<meta name="twitter:description" content="当运行 feflow init 的时候，Feflow 的内置插件会调用一个脚手架来创建项目。那么，如何创建一个自己的脚手架呢？ 其实不难，我们充分利用了社区的力量，只要你的脚手架是一个 Yeoman 脚手架即可。如果你会开发 Yeoman 脚手架，那么你已经基本能够开发一个自己的脚手架了；如果你不会，文章后面的部分也会简单地讲解一下。 开发一个 Yeoman 脚手架如果你已经会开发一个 Yeoma">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48498357-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="header">
+  <div class="wrapper">
+    <div id="header-inner" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/zh-cn/" id="logo">Feflow</a>
+      </h1>
+      <nav id="main-nav">
+        <a href="/zh-cn/docs/" class="main-nav-link">文档指南</a>
+        <a href="https://github.com/feflow/feflow/releases" target="_blank" class="main-nav-link">发布日志</a>
+        <iframe src="https://ghbtns.com/github-btn.html?user=feflow&repo=feflow&type=star&count=true" frameborder="0" scrolling="0" width="150px" height="20px"></iframe>
+        <div id="search-input-wrap">
+          <div id="search-input-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input type="search" id="search-input" placeholder="Search...">
+        </div>
+      </nav>
+      <div id="lang-select-wrap">
+        <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+        <select id="lang-select" data-canonical="docs/advance-scaffold-custom.html">
+          
+            <option value="zh-cn" selected>简体中文</option>
+          
+        </select>
+      </div>
+      <a id="mobile-nav-toggle">
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope="" itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">自定义脚手架</h1>
+                <a href="https://github.com/feflow/feflow/edit/master/docs/zh-cn/docs/advance-scaffold-custom.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <p>当运行 <code>feflow init</code> 的时候，Feflow 的内置插件会调用一个脚手架来创建项目。那么，如何创建一个自己的脚手架呢？</p>
+<p>其实不难，我们充分利用了社区的力量，只要你的脚手架是一个 Yeoman 脚手架即可。如果你会开发 Yeoman 脚手架，那么你已经基本能够开发一个自己的脚手架了；如果你不会，文章后面的部分也会简单地讲解一下。</p>
+<h2 id="开发一个-Yeoman-脚手架" class="article-heading"><a href="#开发一个-Yeoman-脚手架" class="headerlink" title="开发一个 Yeoman 脚手架"></a>开发一个 Yeoman 脚手架<a class="article-anchor" href="#开发一个-Yeoman-脚手架" aria-hidden="true"></a></h2><p>如果你已经会开发一个 Yeoman 脚手架了，可以跳过这个章节。但要注意以下要点：</p>
+<ul>
+<li>脚手架项目下 <code>package.json</code> 文件的 <code>description</code> 字段不能为空。因为在用户选择脚手架时，Feflow 需要用这个字段来提供脚手架说明。</li>
+</ul>
+<p>如果你没有 Yeoman 脚手架的开发经验，那也别急，接下来会给一个入门指导，更详细的开发文档请阅读<a href="https://yeoman.io/authoring/" target="_blank" rel="noopener">官方文档</a>。</p>
+<h3 id="准备工作" class="article-heading"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作<a class="article-anchor" href="#准备工作" aria-hidden="true"></a></h3><p>全局安装 <code>yo</code> 和 <code>generator-generator</code>：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install yo generator-generator -g</span><br><span class="line"><span class="comment"># or yarn global add yo generator-generator</span></span><br></pre></td></tr></table></figure>
+<p>这里借助了 Yeoman 以及他们写的脚手架生成器，目的是为了快速让大家创建出自己的脚手架。这不是必须选项，但在本教程中最好是按这个步骤来，否则下面可能没法继续。</p>
+<h3 id="生成脚手架模版" class="article-heading"><a href="#生成脚手架模版" class="headerlink" title="生成脚手架模版"></a>生成脚手架模版<a class="article-anchor" href="#生成脚手架模版" aria-hidden="true"></a></h3><p>现在，只需一行命令即可生成一个脚手架模版：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">yo generator</span><br></pre></td></tr></table></figure>
+<p>再次强调，<strong>生成过程中询问的 <code>Description</code> 一定要填写</strong>，Feflow 会使用它来提供脚手架说明。</p>
+<p>你可能会注意到，<strong>生成出来的脚手架模版的项目名是以 <code>generator-</code> 开头的</strong>，如果你自己手动创建一个脚手架，这也是必须的。</p>
+<p>让我们来看一下生成的脚手架模版的主要目录结构：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">├── generators/</span><br><span class="line">|   └── app/</span><br><span class="line">│       ├── index.js</span><br><span class="line">│       └── templates/</span><br><span class="line">│           └── dummyfile.txt</span><br></pre></td></tr></table></figure>
+<p>其中，<code>generators/app/index.js</code> 文件就是脚手架生成项目的逻辑，而 <code>generators/templates/</code> 文件夹就是一个项目模版。后面我们主要就是在这两个地方做定制，改造出自己的脚手架。</p>
+<h3 id="创建自己的脚手架" class="article-heading"><a href="#创建自己的脚手架" class="headerlink" title="创建自己的脚手架"></a>创建自己的脚手架<a class="article-anchor" href="#创建自己的脚手架" aria-hidden="true"></a></h3><h4 id="项目模版" class="article-heading"><a href="#项目模版" class="headerlink" title="项目模版"></a>项目模版<a class="article-anchor" href="#项目模版" aria-hidden="true"></a></h4><p>对于团队来说，一般都会有自己的项目目录结构规范，或者是有现成的项目模版，那要转换成 Yeoman 脚手架的项目模版就很简单了，直接找个项目或者把项目模版复制粘贴到 <code>generators/templates/</code> 文件夹下即可。但是要接入 Feflow 还需要做些工作。</p>
+<p>对于个人或者还没有项目模版的团队来说，首要任务当然是规划好自己的项目模版了。在本文示例中，我们将创建一个非常简单的、支持 React 的项目模版。</p>
+<h5 id="创建模版" class="article-heading"><a href="#创建模版" class="headerlink" title="创建模版"></a>创建模版<a class="article-anchor" href="#创建模版" aria-hidden="true"></a></h5><p>我们的模版主要的目录结构如下：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">|- src <span class="comment"># 示例源码</span></span><br><span class="line">    |- index.html <span class="comment"># HTML 入口</span></span><br><span class="line">    |- index.js <span class="comment"># JS 入口，也是 Webpack 打包的入口</span></span><br><span class="line">|- _babelrc <span class="comment"># 处理 JSX 的配置</span></span><br><span class="line">|- feflow.json <span class="comment"># 这个文件是必须的，作为项目和 Feflow 的桥梁</span></span><br></pre></td></tr></table></figure>
+<p>其中，如果项目中含有 <code>.babelrc</code> 这样的文件，推荐在模版中将 <code>.</code> 换成 <code>_</code>，写成 <code>_babelrc</code> 这样的形式。</p>
+<p>另外，<code>feflow.json</code> 是必须的配置文件，Feflow 会读取其中的构建器配置来对 src 中的源码进行打包构建。</p>
+<p>这里要说明一下，Feflow 定义了一个构建器的概念，实际上它指的就是把构建的代码抽离出项目形成的 NPM 包。这样做的好处在于，团队内部的项目遇到构建工具升级的时候，无需对每个项目都进行一遍升级，只需要升级构建器并更改项目中 <code>feflow.json</code> 中的配置即可。其他的好处例如节省本地空间、节省项目安装依赖包的时间、统一构建规范等等。</p>
+<p>下面是我们这个项目示例的 <code>feflow.json</code> 的配置：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    // builderType 指明了构建器的名称</span><br><span class="line">    "builderType": "builder-feflow-example",</span><br><span class="line">    "builderOptions": &#123;</span><br><span class="line">        // 你可以在这里加入自定义构建器构建流程的配置项，例如是否需要压缩 HTML 等</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>构建器 builder-feflow-example 只适用于本教程示例脚手架生成的项目，其他脚手架生成的项目需要适配构建器，关于构建器的开发请阅读 <a href="./advance-builder-custom.html">自定义构建器</a> 这一章。</p>
+</blockquote>
+<h5 id="动态模版内容" class="article-heading"><a href="#动态模版内容" class="headerlink" title="动态模版内容"></a>动态模版内容<a class="article-anchor" href="#动态模版内容" aria-hidden="true"></a></h5><p>如果你想在你的项目模版中加入动态的内容，例如根据询问用户得到的答案来填充项目名称，你就可以在项目模版下的 <code>package.json</code> 中这样写：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"&lt;%= name %&gt;"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Yeoman 模版支持 &lt;%= <em>variable</em> &gt; 这样的语法来填充动态内容，其中的 <em>variable</em> 是如何传进来将会在后面看到。</p>
+<h3 id="项目生成逻辑" class="article-heading"><a href="#项目生成逻辑" class="headerlink" title="项目生成逻辑"></a>项目生成逻辑<a class="article-anchor" href="#项目生成逻辑" aria-hidden="true"></a></h3><p>有了项目模版之后，我们还缺少根据项目模版创建一个项目的逻辑。最简单逻辑就是复制一份模版到当前目录下，当然，高级点的脚手架一般都会有如下过程：</p>
+<ol>
+<li>询问并接收用户的输入；</li>
+<li>执行一些自定义的脚本；</li>
+<li>根据用户输入和脚本执行的结果渲染项目模版，并生成于当前目录下。 </li>
+</ol>
+<p>上述的这些逻辑统统都写在 <code>generators/app/index.js</code> 文件中。通常来说，这个文件都满足如下格式：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> Generator = <span class="built_in">require</span>(<span class="string">'yeoman-generator'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="keyword">extends</span> <span class="title">Generator</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 初始化阶段</span></span><br><span class="line">    initializing () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 接收用户输入阶段</span></span><br><span class="line">    prompting () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 保存配置信息和文件</span></span><br><span class="line">    configuring () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 执行自定义函数阶段</span></span><br><span class="line">    <span class="keyword">default</span> () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 生成项目目录阶段</span></span><br><span class="line">    writing () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 统一处理冲突，如要生成的文件已经存在是否覆盖等处理</span></span><br><span class="line">    conflicts () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 安装依赖阶段</span></span><br><span class="line">    install () &#123; <span class="comment">/* code */</span> &#125;,</span><br><span class="line">    <span class="comment">// 结束阶段</span></span><br><span class="line">    end () &#123; <span class="comment">/* code */</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Yeoman 提供了一个基础的生成器类 <code>Generator</code>，我们基于它扩展自己的生成逻辑。<code>Generator</code> 类定义了八个生命周期，它们会按上述代码的顺序依次执行。</p>
+<p>示例脚手架的生成逻辑可<a href="https://github.com/feflow/generator-feflow-example/blob/master/generators/app/index.js" target="_blank" rel="noopener">阅读这里</a></p>
+<h3 id="调试" class="article-heading"><a href="#调试" class="headerlink" title="调试"></a>调试<a class="article-anchor" href="#调试" aria-hidden="true"></a></h3><p>现在，你的脚手架就定制好了，让我们来试一试吧。先安装在 Feflow 主目录下：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> &lt;your-path&gt;/generator-startkit-demo</span><br><span class="line">npm link</span><br><span class="line"><span class="built_in">cd</span> ~/.feflow</span><br><span class="line">npm link generator-startkit-demo</span><br></pre></td></tr></table></figure>
+<p>然后再编辑 <code>~/.feflow/package.json</code> 文件（可用 <code>vi ~/.feflow/package.json</code> 编辑），在 <code>dependencies</code> 字段中添加一行 <code>&quot;generator-startkit-demo&quot;: &quot;1.0.0&quot;</code>（版本号随意）。目的是为了让 Feflow 找到你的脚手架。</p>
+<p>现在，可以在你想创建项目的位置运行 <code>feflow init</code> 了。你会看到你的脚手架被展示出来了，选择它，就能开始项目的创建了。</p>
+<blockquote>
+<p><code>generator-feflow-example</code> 的源码地址是 <a href="https://github.com/feflow/generator-feflow-example" target="_blank" rel="noopener">https://github.com/feflow/generator-feflow-example</a></p>
+</blockquote>
+<h2 id="更成熟的方案" class="article-heading"><a href="#更成熟的方案" class="headerlink" title="更成熟的方案"></a>更成熟的方案<a class="article-anchor" href="#更成熟的方案" aria-hidden="true"></a></h2><p>上述的例子，仅仅是为了简单才这样设计，满足不了生产环境的使用，如果你想看更成熟的脚手架方案，我们现在就有，建议去看看：</p>
+<ul>
+<li><a href="https://github.com/feflow/generator-ivweb" target="_blank" rel="noopener">generator-ivweb</a></li>
+</ul>
+
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2019-01-21T02:12:41.699Z" itemprop="dateModified">上次更新：2019-01-21</time>
+                <a href="advance-overview.html" class="article-footer-prev" title="简介"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="advance-builder-custom.html" class="article-footer-next" title="自定义构建器"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+<section id="comments">
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  var disqus_shortname = 'feflow';
+  var disqus_url = 'https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html';
+  var disqus_title = "自定义脚手架";
+  var disqus_config = function(){
+    this.language = 'zh';
+  };
+  (function(){
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'https://go.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#开发一个-Yeoman-脚手架"><span class="toc-text">开发一个 Yeoman 脚手架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#准备工作"><span class="toc-text">准备工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成脚手架模版"><span class="toc-text">生成脚手架模版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建自己的脚手架"><span class="toc-text">创建自己的脚手架</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#项目模版"><span class="toc-text">项目模版</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#创建模版"><span class="toc-text">创建模版</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#动态模版内容"><span class="toc-text">动态模版内容</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#项目生成逻辑"><span class="toc-text">项目生成逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#调试"><span class="toc-text">调试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更成熟的方案"><span class="toc-text">更成熟的方案</span></a></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner">
+    <strong class="sidebar-title">基础</strong><a href="index.html" class="sidebar-link">介绍</a><a href="base-install.html" class="sidebar-link">安装</a><a href="base-init.html" class="sidebar-link">创建项目</a><a href="base-develope.html" class="sidebar-link">开始开发</a><a href="base-build.html" class="sidebar-link">打包构建</a><a href="base-plugins-inner.html" class="sidebar-link">插件</a><strong class="sidebar-title">高级</strong><a href="advance-overview.html" class="sidebar-link">简介</a><a href="advance-scaffold-custom.html" class="sidebar-link current">自定义脚手架</a><a href="advance-builder-custom.html" class="sidebar-link">自定义构建器</a><a href="advance-plugins-custom.html" class="sidebar-link">自定义插件</a><a href="advance-plugins-context.html" class="sidebar-link">插件上下文 API</a><strong class="sidebar-title">规范</strong><a href="rule-overview.html" class="sidebar-link">简介</a><a href="rule-git-commit.html" class="sidebar-link">Git Commit 规范</a><a href="rule-eslint.html" class="sidebar-link">ESLint 规范</a>
+  </div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2019 <a href="https://github.com/feflow" target="_blank">Feflow.js</a><br>
+      Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
+    </div>
+    <div id="footer-links">
+      <a class="footer-link">
+        <i class="fa fa-wechat" id="wechat-trigger"></i>
+        <span class="wechat-qrcode" id="wechat-qrcode">
+          <img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLBJ9HDnzZNt8rBft0KhyZ9cczicFiaVVvSibzBKUUlbywBVg/">
+          <em class="wechat-qrcode-icon"></em>
+        </span>
+      </a>
+      <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/zh-cn/docs/" class="mobile-nav-link">文档指南</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/feflow/feflow" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">基础</strong><a href="index.html" class="mobile-nav-link">介绍</a><a href="base-install.html" class="mobile-nav-link">安装</a><a href="base-init.html" class="mobile-nav-link">创建项目</a><a href="base-develope.html" class="mobile-nav-link">开始开发</a><a href="base-build.html" class="mobile-nav-link">打包构建</a><a href="base-plugins-inner.html" class="mobile-nav-link">插件</a><strong class="mobile-nav-title">高级</strong><a href="advance-overview.html" class="mobile-nav-link">简介</a><a href="advance-scaffold-custom.html" class="mobile-nav-link current">自定义脚手架</a><a href="advance-builder-custom.html" class="mobile-nav-link">自定义构建器</a><a href="advance-plugins-custom.html" class="mobile-nav-link">自定义插件</a><a href="advance-plugins-context.html" class="mobile-nav-link">插件上下文 API</a><strong class="mobile-nav-title">规范</strong><a href="rule-overview.html" class="mobile-nav-link">简介</a><a href="rule-git-commit.html" class="mobile-nav-link">Git Commit 规范</a><a href="rule-eslint.html" class="mobile-nav-link">ESLint 规范</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/advance-scaffold-custom.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/js/lang_select.js"></script>
+<script src="/js/toc.js"></script>
+<script src="/js/mobile_nav.js"></script>
+<script src="/js/footer_qrcode.js"></script>
+<!-- endbuild -->
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>

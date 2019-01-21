@@ -2,23 +2,107 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/writing.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-install.html</loc>
     
-    <lastmod>2019-01-14T11:12:07.311Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/tag-plugins.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.910Z</lastmod>
+    <lastmod>2019-01-21T02:23:26.745Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/themes.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
     
-    <lastmod>2019-01-02T06:48:04.910Z</lastmod>
+    <lastmod>2019-01-21T02:19:28.258Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-overview.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.706Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.706Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-git-commit.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.705Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-eslint.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.704Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/base-plugins-inner.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.703Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/base-init.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.701Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.700Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/base-build.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.700Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.699Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-custom.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.698Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-context.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.697Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-overview.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.696Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-builder-custom.html</loc>
+    
+    <lastmod>2019-01-21T02:12:41.694Z</lastmod>
     
   </url>
   
@@ -30,35 +114,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/permalinks.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/eslint.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/commands.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.909Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/themes/index.html</loc>
+    <loc>https://feflowjs.org/plugins/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.909Z</lastmod>
     
@@ -79,13 +135,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/about/index.html</loc>
-    
-    <lastmod>2019-01-02T06:48:04.905Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
@@ -94,6 +143,13 @@
   
   <url>
     <loc>https://feflowjs.org/news/2015/03/05/hexo-3-0-released/</loc>
+    
+    <lastmod>2019-01-02T06:48:04.905Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
     
