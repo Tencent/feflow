@@ -4,19 +4,19 @@
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
     
-    <lastmod>2019-01-17T09:50:48.901Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-custom.html</loc>
-    
-    <lastmod>2019-01-16T09:39:15.163Z</lastmod>
+    <lastmod>2019-01-21T06:02:41.708Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/base-install.html</loc>
+    
+    <lastmod>2019-01-21T02:18:24.834Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-custom.html</loc>
     
     <lastmod>2019-01-16T09:39:15.163Z</lastmod>
     
@@ -51,13 +51,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/start-from-zero.html</loc>
-    
-    <lastmod>2019-01-16T03:29:14.205Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/index.html</loc>
     
     <lastmod>2019-01-16T03:29:14.205Z</lastmod>
@@ -65,7 +58,21 @@
   </url>
   
   <url>
+    <loc>https://feflowjs.org/zh-cn/docs/start-from-zero.html</loc>
+    
+    <lastmod>2019-01-16T03:29:14.205Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/zh-cn/docs/rule-git-commit.html</loc>
+    
+    <lastmod>2019-01-16T03:29:14.204Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
     
     <lastmod>2019-01-16T03:29:14.204Z</lastmod>
     
@@ -86,30 +93,9 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
-    
-    <lastmod>2019-01-16T03:29:14.204Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/docs/base-init.html</loc>
     
     <lastmod>2019-01-16T03:29:14.203Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-overview.html</loc>
-    
-    <lastmod>2019-01-16T03:29:14.203Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html</loc>
-    
-    <lastmod>2019-01-16T03:29:14.202Z</lastmod>
     
   </url>
   
@@ -122,6 +108,13 @@
   
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
+    
+    <lastmod>2019-01-16T03:29:14.202Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-scaffold-custom.html</loc>
     
     <lastmod>2019-01-16T03:29:14.202Z</lastmod>
     

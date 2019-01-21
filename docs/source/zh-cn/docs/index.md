@@ -47,3 +47,9 @@ Feflow 引入了构建器这个概念，它的基本思想是将构建脚本进�
 
 ## 贡献者
 
+感谢所有为Feflow贡献代码的人，以下排名不分先后：
+
+| [<img src="http://dayu.oa.com/avatars/lewischeng/profile.jpg" width="100px;"/><br /><sub><b>lewischeng</b></sub>](http://git.code.oa.com/u/lewischeng) | [<img src="http://dayu.oa.com/avatars/stevenzhai/profile.jpg" width="100px;"/><br /><sub><b>stevenzhai</b></sub>](http://git.code.oa.com/u/stevenzhai)  | [<img src="http://dayu.oa.com/avatars/jeremygao/profile.jpg" width="100px;"/><br /><sub><b>jeremygao</b></sub>](http://git.code.oa.com/u/jeremygao) | [<img src="http://dayu.oa.com/avatars/linjianghe/profile.jpg" width="100px;"/><br /><sub><b>linjianghe</b></sub>](http://git.code.oa.com/u/linjianghe)  | [<img src="http://dayu.oa.com/avatars/erwinliu/profile.jpg" width="100px;"/><br /><sub><b>erwinliu</b></sub>](http://git.code.oa.com/u/erwinliu)  | [<img src="http://dayu.oa.com/avatars/yanzhanghu/profile.jpg" width="100px;"/><br /><sub><b>yanzhanghu</b></sub>](http://git.code.oa.com/u/yanzhanghu)  |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|  [<img src="http://dayu.oa.com/avatars/leoytliu/profile.jpg" width="100px;"/><br /><sub><b>leoytliu</b></sub>](http://git.code.oa.com/u/leoytliu)  | |  | |  |  |
+|  |

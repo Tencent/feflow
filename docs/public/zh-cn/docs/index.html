@@ -49,7 +49,14 @@
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://pub.idqqimg.com/3cb9b240fbbc4a5d946ceb96325be36f.svg">
 <meta property="og:image" content="https://qpic.url.cn/feeds_pic/ajNVdqHZLLD5vbArj0iaIkMLnGU3xPohibwRHibiaR3cibuy6RKYgHNCmFg/">
-<meta property="og:updated_time" content="2019-01-17T09:50:48.901Z">
+<meta property="og:image" content="http://dayu.oa.com/avatars/lewischeng/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/stevenzhai/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/jeremygao/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/linjianghe/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/erwinliu/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/yanzhanghu/profile.jpg">
+<meta property="og:image" content="http://dayu.oa.com/avatars/leoytliu/profile.jpg">
+<meta property="og:updated_time" content="2019-01-21T06:02:41.708Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="介绍">
 <meta name="twitter:description" content="欢迎使用 Feflow，本文档将帮助您快速上手。如果您在使用过程中遇到问题，请在 GitHub 上反馈。  Feflow 是什么Feflow (读音 /ˈfefləʊ/)是腾讯开源的用于提升工程效率的前端工作流和规范工具。最新版本是v0.15.1，托管在Github上：feflow。目前已经在NOW直播、花样直播、花样交友、手Q附近、群视频、群送礼、回音、应用宝、企鹅号等业务广泛使用。有80+ W">
@@ -137,10 +144,36 @@
 <h3 id="构建器" class="article-heading"><a href="#构建器" class="headerlink" title="构建器"></a>构建器<a class="article-anchor" href="#构建器" aria-hidden="true"></a></h3><p>项目创建好之后，接下来的问题就是本地开发和代码打包构建了。通常的做法是将构建脚本直接放在业务项目里面，每个业务开发者都可以根据自己的需求自行修改，这样导致的问题是每个项目的构建脚本都存在差异，构建不统一，同时每个项目都需要重复安装构建依赖。</p>
 <p>Feflow 引入了构建器这个概念，它的基本思想是将构建脚本进行统一管理，由团队里面熟悉构建的同学进行统一的维护。构建器需要发布到 npm 上进行版本管理，同时建议每个项目采用相同的构建器。构建器通过 feflow 安装后会存放在 <code>~/.feflow/node_modules</code>下，这样每个项目都可以共用一套构建脚本了。</p>
 <h3 id="插件" class="article-heading"><a href="#插件" class="headerlink" title="插件"></a>插件<a class="article-anchor" href="#插件" aria-hidden="true"></a></h3><p>除了提供基础的功能之外，Feflow里面还通过一套插件机制去方便的扩展子命令。你可以利用插件去做很多自动化的事情，比如批量压缩图片、搭建运营活动本地开发SDK、代码统计功能等等。</p>
-<h2 id="贡献者" class="article-heading"><a href="#贡献者" class="headerlink" title="贡献者"></a>贡献者<a class="article-anchor" href="#贡献者" aria-hidden="true"></a></h2>
+<h2 id="贡献者" class="article-heading"><a href="#贡献者" class="headerlink" title="贡献者"></a>贡献者<a class="article-anchor" href="#贡献者" aria-hidden="true"></a></h2><p>感谢所有为Feflow贡献代码的人，以下排名不分先后：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/lewischeng" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/lewischeng/profile.jpg" width="100px;"><br><sub><b>lewischeng</b></sub></a></th>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/stevenzhai" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/stevenzhai/profile.jpg" width="100px;"><br><sub><b>stevenzhai</b></sub></a></th>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/jeremygao" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/jeremygao/profile.jpg" width="100px;"><br><sub><b>jeremygao</b></sub></a></th>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/linjianghe" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/linjianghe/profile.jpg" width="100px;"><br><sub><b>linjianghe</b></sub></a></th>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/erwinliu" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/erwinliu/profile.jpg" width="100px;"><br><sub><b>erwinliu</b></sub></a></th>
+<th style="text-align:center"><a href="http://git.code.oa.com/u/yanzhanghu" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/yanzhanghu/profile.jpg" width="100px;"><br><sub><b>yanzhanghu</b></sub></a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><a href="http://git.code.oa.com/u/leoytliu" target="_blank" rel="noopener"><img src="http://dayu.oa.com/avatars/leoytliu/profile.jpg" width="100px;"><br><sub><b>leoytliu</b></sub></a></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+
               </div>
               <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2019-01-17T09:50:48.901Z" itemprop="dateModified">上次更新：2019-01-17</time>
+                <time class="article-footer-updated" datetime="2019-01-21T06:02:41.708Z" itemprop="dateModified">上次更新：2019-01-21</time>
                 <a href="base-install.html" class="article-footer-next" title="安装"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
               </footer>
               
