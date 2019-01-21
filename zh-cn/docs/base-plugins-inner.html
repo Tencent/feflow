@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>插件 | Feflow.js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://feflowjs.org/zh-cn/docs/base-plugins-inner.html">
+  <!-- Alternative links -->
+  
+    
+      <link rel="alternative" hreflang="zh-cn" href="https://feflowjs.org/zh-cn/docs/base-plugins-inner.html">
+    
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icon/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icon/apple-touch-icon-152x152.png">
+  <link rel="icon" type="image/png" href="/icon/favicon-196x196.png" sizes="196x196">
+  <link rel="icon" type="image/png" href="/icon/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/icon/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/icon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
+  <meta name="generator" content="Hexo 3.8.0">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/atom.xml" title="Feflow.js">
+  <!-- Open Graph -->
+  <meta name="description" content="目前为止，你可能接触到了 Feflow 的一些命令，现在，我要揭开它们的真面目，即它们都是 Feflow 内置插件注册的命令。 插件是 Feflow 的一个重要特性，本质上 Feflow 就是一个插件管理工具，每个插件可以在 Feflow 上注册多个命令，这样一来，Feflow 就支持很多命令了。 现在，就让我们来一览 Feflow 所有的内置插件以及他们注册的命令。 模块管理插件该插件包含两个命">
+<meta property="og:type" content="website">
+<meta property="og:title" content="插件">
+<meta property="og:url" content="https://feflowjs.org/zh-cn/docs/base-plugins-inner.html">
+<meta property="og:site_name" content="Feflow.js">
+<meta property="og:description" content="目前为止，你可能接触到了 Feflow 的一些命令，现在，我要揭开它们的真面目，即它们都是 Feflow 内置插件注册的命令。 插件是 Feflow 的一个重要特性，本质上 Feflow 就是一个插件管理工具，每个插件可以在 Feflow 上注册多个命令，这样一来，Feflow 就支持很多命令了。 现在，就让我们来一览 Feflow 所有的内置插件以及他们注册的命令。 模块管理插件该插件包含两个命">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-01-21T02:12:41.703Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="插件">
+<meta name="twitter:description" content="目前为止，你可能接触到了 Feflow 的一些命令，现在，我要揭开它们的真面目，即它们都是 Feflow 内置插件注册的命令。 插件是 Feflow 的一个重要特性，本质上 Feflow 就是一个插件管理工具，每个插件可以在 Feflow 上注册多个命令，这样一来，Feflow 就支持很多命令了。 现在，就让我们来一览 Feflow 所有的内置插件以及他们注册的命令。 模块管理插件该插件包含两个命">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48498357-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="header">
+  <div class="wrapper">
+    <div id="header-inner" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/zh-cn/" id="logo">Feflow</a>
+      </h1>
+      <nav id="main-nav">
+        <a href="/zh-cn/docs/" class="main-nav-link">文档指南</a>
+        <a href="https://github.com/feflow/feflow/releases" target="_blank" class="main-nav-link">发布日志</a>
+        <iframe src="https://ghbtns.com/github-btn.html?user=feflow&repo=feflow&type=star&count=true" frameborder="0" scrolling="0" width="150px" height="20px"></iframe>
+        <div id="search-input-wrap">
+          <div id="search-input-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input type="search" id="search-input" placeholder="Search...">
+        </div>
+      </nav>
+      <div id="lang-select-wrap">
+        <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+        <select id="lang-select" data-canonical="docs/base-plugins-inner.html">
+          
+            <option value="zh-cn" selected>简体中文</option>
+          
+        </select>
+      </div>
+      <a id="mobile-nav-toggle">
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+    <div id="content-wrap">
+  <div id="content" class="wrapper">
+    <div id="content-inner">
+      <article class="article-container" itemscope="" itemtype="http://schema.org/Article">
+        <div class="article-inner">
+          <div class="article">
+            <div class="inner">
+              <header class="article-header">
+                <h1 class="article-title" itemprop="name">插件</h1>
+                <a href="https://github.com/feflow/feflow/edit/master/docs/zh-cn/docs/base-plugins-inner.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
+              </header>
+              <div class="article-content" itemprop="articleBody">
+                <p>目前为止，你可能接触到了 Feflow 的一些命令，现在，我要揭开它们的真面目，即它们都是 Feflow 内置插件注册的命令。</p>
+<p>插件是 Feflow 的一个重要特性，本质上 Feflow 就是一个插件管理工具，每个插件可以在 Feflow 上注册多个命令，这样一来，Feflow 就支持很多命令了。</p>
+<p>现在，就让我们来一览 Feflow 所有的内置插件以及他们注册的命令。</p>
+<h2 id="模块管理插件" class="article-heading"><a href="#模块管理插件" class="headerlink" title="模块管理插件"></a>模块管理插件<a class="article-anchor" href="#模块管理插件" aria-hidden="true"></a></h2><p>该插件包含两个命令：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装包</span></span><br><span class="line">feflow install &lt;package-name&gt;</span><br><span class="line"><span class="comment"># 2. 卸载包</span></span><br><span class="line">feflow uninstall &lt;package-name&gt;</span><br></pre></td></tr></table></figure>
+<p><code>feflow install &lt;package-name&gt;</code> 命令是迄今为止用的最多的命令之一，它可以将各种 NPM 模块安装至 <code>~/.feflow/node_modules</code> 下面。我们用它安装脚手架、构建器或者是插件。</p>
+<p><code>feflow uninstall &lt;package-name&gt;</code> 命令与上述命令相反，它用于卸载 Feflow 下的 NPM 模块。</p>
+<p>由于这个插件可以安装或卸载任意 NPM 模块，所以我们称之为模块管理插件。有了这个插件，就方便了诸如脚手架、构建器、部署器、插件的管理。</p>
+<h2 id="脚手架调度插件" class="article-heading"><a href="#脚手架调度插件" class="headerlink" title="脚手架调度插件"></a>脚手架调度插件<a class="article-anchor" href="#脚手架调度插件" aria-hidden="true"></a></h2><p>该插件包含一个命令：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">feflow init</span><br></pre></td></tr></table></figure>
+<p>这个插件可以让用户从本地已经安装好的脚手架中选取一个用作项目的创建，因此我们把这个插件称为脚手架调度插件。</p>
+<p>脚手架调度插件每次执行的时候，会自动更新本地所有有新版本的脚手架，如果你想跳过更新，可以加上一个 <code>--disableCheck</code> 的参数：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">feflow init --disableCheck</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>关于脚手架的开发可以阅读<a href="./advance-scaffold-custom.html">这里</a></p>
+</blockquote>
+<h2 id="构建器调度插件" class="article-heading"><a href="#构建器调度插件" class="headerlink" title="构建器调度插件"></a>构建器调度插件<a class="article-anchor" href="#构建器调度插件" aria-hidden="true"></a></h2><p>该插件包含两个命令：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 本地开发</span></span><br><span class="line">feflow dev</span><br><span class="line"><span class="comment"># 2. 生成打包文件</span></span><br><span class="line">feflow build</span><br></pre></td></tr></table></figure>
+<p>这个插件会获取项目根目录下 <code>feflow.js</code> 或者 <code>feflow.json</code> 配置文件中的 <code>builderType</code> 字段的值作为构建器的名字。如果你没有用 Feflow 安装过这个构建器，该插件则会自动帮你安装好，然后这个插件会委托构建器执行 <code>dev</code> 或者是 <code>build</code> 命令，实现构建过程。</p>
+<p>因为构建器是独立的，这个插件会根据配置选择指定的构建器进行构建，所以我们把这个插件称为构建器调度插件。这种将构建器分离出来的方式有效的帮助了项目升级构建代码的过程。</p>
+<blockquote>
+<p>关于构建器的开发可以阅读<a href="./advance-builder-custom.html">这里</a></p>
+</blockquote>
+<h2 id="部署器调度插件" class="article-heading"><a href="#部署器调度插件" class="headerlink" title="部署器调度插件"></a>部署器调度插件<a class="article-anchor" href="#部署器调度插件" aria-hidden="true"></a></h2><p>该插件包含一个命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">feflow deploy</span><br></pre></td></tr></table></figure>
+<p>这个插件会获取项目根目录下 <code>feflow.js</code> 或者 <code>feflow.json</code> 配置文件中的 <code>deployerType</code> 字段的值作为部署器的名字，然后委托部署器执行 <code>deploy</code> 命令，实现部署过程。</p>
+<blockquote>
+<p>关于部署器的开发可以阅读<a href="./deployer-custom.html">这里</a></p>
+</blockquote>
+<h2 id="全局配置插件" class="article-heading"><a href="#全局配置插件" class="headerlink" title="全局配置插件"></a>全局配置插件<a class="article-anchor" href="#全局配置插件" aria-hidden="true"></a></h2><p>这个插件可能一般用的比较少，它是用来在 ~/.feflow/.feflowrc.yml 文件中设置和获取配置项的，这个文件可以作为 Feflow 全局的配置文件使用。Feflow 内置插件会用到该文件中的两个配置项，一个是 <code>registry</code>，一个是 <code>proxy</code>，都是用于 Feflow 或插件下载包时需要走私有的仓库或者代理的情况。如果你自己开发了插件，并且想给用户一些自定义的配置，就可以利用该插件来添加这些配置，然后你的插件可以通过 Feflow 传过来的上下文获取到这些配置。</p>
+<p>全局配置插件注册了一个 <code>config</code> 命令，并且支持 <code>set</code>、<code>get</code>、<code>list</code> 三个子命令，用法如下：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 列出所有配置项</span></span><br><span class="line">feflow config list</span><br><span class="line"><span class="comment"># 获取一个配置项</span></span><br><span class="line">feflow config get &lt;key&gt;</span><br><span class="line"><span class="comment"># 添加或修改一个配置项</span></span><br><span class="line">feflow config <span class="built_in">set</span> &lt;key&gt; &lt;value&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="代码检查插件" class="article-heading"><a href="#代码检查插件" class="headerlink" title="代码检查插件"></a>代码检查插件<a class="article-anchor" href="#代码检查插件" aria-hidden="true"></a></h2><p>Feflow 还内置了一个代码检查插件，可以方便你用 ESLint 检查项目的代码：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">feflow lint [folder]</span><br></pre></td></tr></table></figure>
+<p>它还支持 <code>--ignore</code> 参数，允许检查时忽略一些目录或文件。</p>
+<h2 id="自定义插件" class="article-heading"><a href="#自定义插件" class="headerlink" title="自定义插件"></a>自定义插件<a class="article-anchor" href="#自定义插件" aria-hidden="true"></a></h2><p>Feflow 除了内置一些核心插件外，还支持开发者编写自己的插件并注册到 Feflow 上，将 Feflow 打造成自己独有的一套工程化工具，关于如何开发一个自己的插件请阅读<a href="./advance-plugins-custom.html">自定义插件</a>一章。</p>
+
+              </div>
+              <footer class="article-footer">
+                <time class="article-footer-updated" datetime="2019-01-21T02:12:41.703Z" itemprop="dateModified">上次更新：2019-01-21</time>
+                <a href="base-build.html" class="article-footer-prev" title="打包构建"><i class="fa fa-chevron-left"></i><span>上一页</span></a><a href="advance-overview.html" class="article-footer-next" title="简介"><span>下一页</span><i class="fa fa-chevron-right"></i></a>
+              </footer>
+              
+<section id="comments">
+  <div id="disqus_thread"></div>
+</section>
+<script>
+  var disqus_shortname = 'feflow';
+  var disqus_url = 'https://feflowjs.org/zh-cn/docs/base-plugins-inner.html';
+  var disqus_title = "插件";
+  var disqus_config = function(){
+    this.language = 'zh';
+  };
+  (function(){
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'https://go.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+            </div>
+          </div>
+          <aside id="article-toc" role="navigation">
+            <div id="article-toc-inner">
+              <strong class="sidebar-title">目录</strong>
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#模块管理插件"><span class="toc-text">模块管理插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脚手架调度插件"><span class="toc-text">脚手架调度插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建器调度插件"><span class="toc-text">构建器调度插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#部署器调度插件"><span class="toc-text">部署器调度插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#全局配置插件"><span class="toc-text">全局配置插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码检查插件"><span class="toc-text">代码检查插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义插件"><span class="toc-text">自定义插件</span></a></li></ol>
+              <a href="#" id="article-toc-top">回到顶部</a>
+            </div>
+          </aside>
+        </div>
+      </article>
+      <aside id="sidebar" role="navigation">
+  <div class="inner">
+    <strong class="sidebar-title">基础</strong><a href="index.html" class="sidebar-link">介绍</a><a href="base-install.html" class="sidebar-link">安装</a><a href="base-init.html" class="sidebar-link">创建项目</a><a href="base-develope.html" class="sidebar-link">开始开发</a><a href="base-build.html" class="sidebar-link">打包构建</a><a href="base-plugins-inner.html" class="sidebar-link current">插件</a><strong class="sidebar-title">高级</strong><a href="advance-overview.html" class="sidebar-link">简介</a><a href="advance-scaffold-custom.html" class="sidebar-link">自定义脚手架</a><a href="advance-builder-custom.html" class="sidebar-link">自定义构建器</a><a href="advance-plugins-custom.html" class="sidebar-link">自定义插件</a><a href="advance-plugins-context.html" class="sidebar-link">插件上下文 API</a><strong class="sidebar-title">规范</strong><a href="rule-overview.html" class="sidebar-link">简介</a><a href="rule-git-commit.html" class="sidebar-link">Git Commit 规范</a><a href="rule-eslint.html" class="sidebar-link">ESLint 规范</a>
+  </div>
+</aside>
+    </div>
+  </div>
+</div>
+
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2019 <a href="https://github.com/feflow" target="_blank">Feflow.js</a><br>
+      Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
+    </div>
+    <div id="footer-links">
+      <a class="footer-link">
+        <i class="fa fa-wechat" id="wechat-trigger"></i>
+        <span class="wechat-qrcode" id="wechat-qrcode">
+          <img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLBJ9HDnzZNt8rBft0KhyZ9cczicFiaVVvSibzBKUUlbywBVg/">
+          <em class="wechat-qrcode-icon"></em>
+        </span>
+      </a>
+      <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/zh-cn/docs/" class="mobile-nav-link">文档指南</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/feflow/feflow" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+      <strong class="mobile-nav-title">基础</strong><a href="index.html" class="mobile-nav-link">介绍</a><a href="base-install.html" class="mobile-nav-link">安装</a><a href="base-init.html" class="mobile-nav-link">创建项目</a><a href="base-develope.html" class="mobile-nav-link">开始开发</a><a href="base-build.html" class="mobile-nav-link">打包构建</a><a href="base-plugins-inner.html" class="mobile-nav-link current">插件</a><strong class="mobile-nav-title">高级</strong><a href="advance-overview.html" class="mobile-nav-link">简介</a><a href="advance-scaffold-custom.html" class="mobile-nav-link">自定义脚手架</a><a href="advance-builder-custom.html" class="mobile-nav-link">自定义构建器</a><a href="advance-plugins-custom.html" class="mobile-nav-link">自定义插件</a><a href="advance-plugins-context.html" class="mobile-nav-link">插件上下文 API</a><strong class="mobile-nav-title">规范</strong><a href="rule-overview.html" class="mobile-nav-link">简介</a><a href="rule-git-commit.html" class="mobile-nav-link">Git Commit 规范</a><a href="rule-eslint.html" class="mobile-nav-link">ESLint 规范</a>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="docs/base-plugins-inner.html">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/js/lang_select.js"></script>
+<script src="/js/toc.js"></script>
+<script src="/js/mobile_nav.js"></script>
+<script src="/js/footer_qrcode.js"></script>
+<!-- endbuild -->
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>
