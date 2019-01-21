@@ -1,0 +1,69 @@
+menu:
+  docs: Docs
+  api: API
+  news: Новости
+  plugins: Плагины
+  themes: Темы
+  search: Поиск
+
+index:
+  get_started: Начнём
+
+page:
+  contents: Содержание
+  back_to_top: Наверх
+  improve: Предложить улучшение
+  prev: Пред
+  next: След
+  last_updated: "Последнее обновление: %s"
+
+sidebar:
+  docs:
+    getting_started: Начало работы
+    overview: Обзор
+    setup: Установка
+    configuration: Конфигурация
+    commands: Команды
+    migration: Миграция
+    basic_usage: Основы
+    writing: Написание
+    front_matter: Шапка файла
+    tag_plugins: Плагины тэгов
+    asset_folders: Папки с материалами
+    data_files: Файлы с данными
+    server: Сервер
+    generating: Генерация
+    deployment: Публикация
+    customization: Кастомизация
+    permalinks: Постоянные ссылки
+    themes: Темы
+    structure: Структура
+    templates: Шаблоны
+    variables: Переменные
+    helpers: Помощники
+    internationalization: Интернацинализация (i18n)
+    plugins: Плагины
+    miscellaneous: Разное
+    troubleshooting: Решение проблем
+    contributing: Содействие
+  api:
+    core: Ядро
+    overview: Обзор
+    events: События
+    locals: Переменные
+    router: Маршруты
+    box: Модуль
+    rendering: Рендеринг
+    posts: Посты
+    scaffolds: Заготовки
+    themes: Темы
+    extensions: Расширения
+    console: Консоль
+    deployer: Инструмент размещения
+    filter: Фильтр
+    generator: Генератор
+    helper: Помошник
+    migrator: Мигратор
+    processor: Обработчик
+    renderer: Рендер
+    tag: Тэг
