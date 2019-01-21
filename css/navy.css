@@ -1507,8 +1507,12 @@ a.article-title:hover {
 .footer-link .wechat-qrcode {
   display: none;
   position: absolute;
-  top: -280px;
-  left: -86px;
+  top: 0px;
+  left: 50%;
+  -webkit-transform: translate(-50%, -100%);
+  -moz-transform: translate(-50%, -100%);
+  -ms-transform: translate(-50%, -100%);
+  transform: translate(-50%, -100%);
 }
 .footer-link .wechat-qrcode img {
   width: 200px;
