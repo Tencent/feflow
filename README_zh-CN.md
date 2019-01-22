@@ -79,6 +79,9 @@ $ feflow install <package>
 3. 编写测试用例表明某个bug被修复掉了或者新的特性可以正常工作.
 4. 提交PR直到它被merge或者发布出去了. :) 记得把您添加进 [AUTHORS_](AUTHORS).
 
+感谢所有为本项目贡献代码的人
+<a href="https://github.com/feflow/feflow/graphs/contributors"><img src="https://opencollective.com/feflow/contributors.svg?width=890&button=false" /></a>
+
 ## 版本日志
 
 [版本日志](CHANGELOG.md)
