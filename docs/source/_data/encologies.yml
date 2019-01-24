@@ -1,68 +1,7 @@
-- name: generator-ivweb
-  id: 'generator-ivweb'
+- id: generator-ivweb
+  name: generator-ivweb
   tag: 脚手架
   logo: ''
   master: lewischeng
   overview: 腾讯IVWEB团队使用的基于React+Redux的业务开发脚手架
   description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
-  screenshots:
-    - ''
-  lastestVersion: '1.6.0'
-  updateTime: 2019-01-22 15:00
-  github: ''
-  agreement: 'MIT'
-- name: Akbi
-  id: 2
-  tag: 插件
-  logo: ''
-  master: lewischeng
-  overview: Feflow申请离线包id
-  description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
-  screenshots:
-    - ''
-  lastestVersion: '1.6.0'
-  updateTime: 2019-01-22 15:00
-  github: ''
-  agreement: 'MIT'
-  howToUse: ''
-- name: Akb
-  id: 3
-  tag: 脚手架
-  logo: ''
-  master: lewischeng
-  overview: Feflow申请离线包id
-  description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
-  screenshots:
-    - ''
-  lastestVersion: '1.6.0'
-  updateTime: 2019-01-22 15:00
-  github: ''
-  agreement: 'MIT'
-  howToUse: ''
-- name: Ak
-  id: 4
-  tag: 构建器
-  logo: ''
-  master: lewischeng
-  overview: Feflow申请离线包id
-  description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
-  screenshots:
-    - ''
-  lastestVersion: '1.6.0'
-  updateTime: 2019-01-22 15:00
-  github: ''
-  agreement: 'MIT'
-  howToUse: ''
-- name: A
-  id: 'example'
-  tag: 规范
-  logo: ''
-  master: lewischeng
-  overview: Feflow申请离线包id
-  description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
-  screenshots:
-    - ''
-  lastestVersion: '1.6.0'
-  updateTime: 2019-01-22 15:00
-  github: ''
-  agreement: 'MIT'
