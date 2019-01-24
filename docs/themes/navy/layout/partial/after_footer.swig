@@ -4,6 +4,8 @@
 {{ js('js/toc') }}
 {{ js('js/mobile_nav') }}
 {{ js('js/footer_qrcode') }}
+{{ js('js/encologies') }}
+{{ js('js/encologies-detail') }}
 <!-- endbuild -->
 {% if page.layout === 'plugins' %}
 <!-- Plugin search -->
