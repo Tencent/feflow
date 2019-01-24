@@ -13,6 +13,28 @@ function startsWith(str, start) {
   return str.substring(0, start.length) === start;
 }
 
+/**
+ * 将数组内元素分组的函数，例如 chunk([1, 2, 3, 4], 2) 返回 [[1, 2], [3, 4]]
+ * @param {Array} array 数组
+ * @param {number} number 每组的元素数量
+ */
+const chunk = (array, number) => {
+  return Array.isArray(array)
+      ? array.reduce((list, item) => {
+          const length = list.length
+          const lastItem = list[length - 1]
+
+          if (Array.isArray(lastItem) && lastItem.length < number) {
+              lastItem.push(item)
+          } else {
+              list.push([item])
+          }
+
+          return list
+      }, [])
+      : []
+}
+
 hexo.extend.helper.register('page_nav', function() {
   var type = this.page.canonical_path.split('/')[0];
   var sidebar = this.site.data.sidebar[type];
@@ -171,7 +193,7 @@ hexo.extend.helper.register('encologies', function () {
   // 如果没有 Logo，则从中选取一种颜色作为背景色
   const colors = ['#337bff', '#20bdff', '#7dedda', '#2197ff']
 
-  return encologies.map(item => {
+  const encologieGroups =  chunk(encologies.map(item => {
     const { id = '', name = '', tag = '', logo = '', master = '', overview = '', description = '' } = item;
     const base = { id, name, tag, logo, master, overview, description };
 
@@ -183,17 +205,18 @@ hexo.extend.helper.register('encologies', function () {
       base.color = color
       base.firstLetter = firstLetter
     }
+
     return base
-  })
-})
+  }), 3)
+  // 如果最后一个没满三个，则给补上
+  const length = encologieGroups.length
+  const final = encologieGroups[length - 1]
+  if (final.length < 3) {
+    for (let index = 0; index < 3 - final.length; index++) {
+      final.push('');
+    }
+  }
 
-hexo.extend.helper.register('encologiesAll', function () {
-  const { encologies } = this.site.data;
-  return JSON.stringify(encologies);
-})
-
-hexo.extend.helper.register('encologiesDetail', function () {
-  const { encologies } = this.site.data;
-  return encologies[0];
+  return encologieGroups
 })
 
