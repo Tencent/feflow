@@ -159,3 +159,41 @@ hexo.extend.helper.register('hexo_version', function() {
   return this.env.version;
 });
 
+hexo.extend.helper.register('encologiesTags', function () {
+  const { encologies } = this.site.data
+  const tags = Array.from(new Set(encologies.map(item => item.tag)))
+
+  return tags
+})
+
+hexo.extend.helper.register('encologies', function () {
+  const { encologies } = this.site.data
+  // 如果没有 Logo，则从中选取一种颜色作为背景色
+  const colors = ['#337bff', '#20bdff', '#7dedda', '#2197ff']
+
+  return encologies.map(item => {
+    const { id = '', name = '', tag = '', logo = '', master = '', overview = '', description = '' } = item;
+    const base = { id, name, tag, logo, master, overview, description };
+
+    if (!logo) {
+      const colorIndex = Math.floor(colors.length * Math.random());
+      const color = colors[colorIndex];
+      const firstLetter = name[0].toLocaleUpperCase()
+
+      base.color = color
+      base.firstLetter = firstLetter
+    }
+    return base
+  })
+})
+
+hexo.extend.helper.register('encologiesAll', function () {
+  const { encologies } = this.site.data;
+  return JSON.stringify(encologies);
+})
+
+hexo.extend.helper.register('encologiesDetail', function () {
+  const { encologies } = this.site.data;
+  return encologies[0];
+})
+
