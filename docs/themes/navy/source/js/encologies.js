@@ -2,6 +2,23 @@
     'use strict';
 
     /* eslint-disable no-var */
+    var chunk = function (array, number) {
+        return Array.isArray(array)
+            ? array.reduce((list, item) => {
+                var length = list.length;
+                var lastItem = list[length - 1];
+
+                if (Array.isArray(lastItem) && lastItem.length < number) {
+                    lastItem.push(item);
+                } else {
+                    list.push([item]);
+                }
+
+                return list;
+            }, [])
+            : [];
+    };
+
     var encologiesTags = document.querySelector('.encologies-tags');
     var encologiesTagItems = Array.from(document.querySelectorAll('.encologies-tags__item'));
     var encologiesContentsWrap = document.querySelector('.encologies-contents');
@@ -13,6 +30,7 @@
             if (target.nodeName.toLocaleLowerCase() !== 'li') {
                 return;
             }
+
             // 标签着色
             encologiesTagItems.forEach(function (item) {
                 item.className = 'encologies-tags__item';
@@ -25,8 +43,13 @@
                 const { tag = '' } = content.dataset;
                 return tag === text;
             });
-            var outerHTML = filterContents.reduce(function (result, content) {
-                return result + content.outerHTML;
+            // 分组
+            var filterGroups = chunk(filterContents, 3);
+            var outerHTML = filterGroups.reduce(function (result, contents) {
+                const content = contents.reduce(function (contentsResult, content) {
+                    return contentsResult + content.outerHTML;
+                }, '');
+                return result + '<li class="encologies-contents__group">' + content + '</li>';
             }, '');
 
             encologiesContentsWrap.innerHTML = outerHTML;

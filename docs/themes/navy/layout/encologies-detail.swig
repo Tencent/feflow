@@ -1,5 +1,6 @@
 <main class="encologies">
     <section class="encologies-detail encologies-inner wrapper">
+        {% if page.screenshot %}
         <ul class="encologies-detail__screenshots">
             <h2 class="encologies-detail__header">截图展示</h2>
             <li class="encologies-detail__screenshots-item">
@@ -10,6 +11,7 @@
                 >
             </li>
         </ul>
+        {% endif %}
         <div class="encologies-detail__contents">
             <div class="encologies-detail__contents-intro encologies-detail__line">
                 <p class="encologies-detail__contents-name">{{ page.name }}</p>

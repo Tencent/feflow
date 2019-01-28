@@ -1,7 +1,44 @@
+# 外网展示的数据
 - id: generator-ivweb
   name: generator-ivweb
-  tag: 脚手架
+  tag: '脚手架'
   logo: ''
-  master: lewischeng
+  master: cpselvis
   overview: 腾讯IVWEB团队使用的基于React+Redux的业务开发脚手架
-  description: 使用fis3作为React+Redux的构建 环境。需要安装fis3基础包、fis3...
+  description: Tencent IVWEB Team project generator, based on React, redux and webpack.
+- id: builder-webpack
+  name: builder-webpack
+  tag: '构建器'
+  logo: ''
+  master: cpselvis
+  overview: 腾讯IVWEB团队使用的基于Webpack4的业务开发构建器
+  description: Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建
+- id: feflow-plugin-svgtocn
+  name: feflow-plugin-svgtocn
+  tag: '插件'
+  logo: ''
+  master: i-solar
+  overview: termtosvg 录制的 svg 文件中文美化插件
+  description: termtosvg 录制的 svg 文件对中文显示不太友好，本插件会让中文正常显示
+# 内网展示的数据
+- id: generator-halo-templates
+  name: generator-halo-templates
+  tag: '脚手架'
+  logo: ''
+  master: yanzhanghu
+  overview: 移商模板项目生成器
+  description: 移商模板项目生成器
+- id: feflow-plugin-pic-optimize
+  name: feflow-plugin-pic-optimize
+  tag: '插件'
+  logo: ''
+  master: zeyqiao
+  overview: Feflow图片压缩插件
+  description: png图片压缩原理是使用开源的压缩工具pngquant, pngcrush, optipng，依次串行对一张图片进行压缩和优化；jpg图片使用mozjpeg进行压缩和优化，自动转成progressive jpg；gif使用gifsicle进行压缩
+- id: feflow-plugin-paper-sync
+  name: feflow-plugin-paper-sync
+  tag: '插件'
+  logo: ''
+  master: erwinliu
+  overview: 社区文章同步插件
+  description: 该插件可以把 IVWEB 社区的文章一键同步到 KM 上

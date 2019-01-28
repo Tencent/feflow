@@ -10,12 +10,12 @@
         <ul class="encologies-contents">
 
             {% for encologyGroup in encologies() %}
-            <li class="encologies-contents__group" data-tag="{{ encology.tag }}">
+            <li class="encologies-contents__group">
                 {% for encology in encologyGroup %}
                     {% if !encology %}
                     <div class="encologies-contents__item encologies-contents__hidden"></div>
                     {% else %}
-                    <div class="encologies-contents__item">
+                    <div class="encologies-contents__item" data-tag="{{ encology.tag }}">
                         <div class="encologies-contents__item-title">
                             {% if encology.logo %}
                                 <div
