@@ -98,10 +98,16 @@
   </div>
 </header>
 
-    <main class="encologies">
+    <script>
+    window.encologyList = [{"registry":"feflow/generator-ivweb","type":"outer"},{"registry":"feflow/builder-webpack4","type":"outer"},{"registry":"i-solar/feflow-plugin-svgtocn","type":"outer"},{"registry":"@tencent/generator-halo-templates","type":"inner"},{"registry":"@tencent/feflow-plugin-pic-optimize","type":"inner"},{"registry":"@tencent/feflow-plugin-paper-sync","type":"inner"}];
+</script>
+
+<main class="encologies" id="encologies">
     <section class="encologies-inner wrapper">
 
         <ul class="encologies-tags">
+            
+            <li class="encologies-tags__item">全部</li>
             
             <li class="encologies-tags__item">脚手架</li>
             
@@ -111,122 +117,9 @@
             
         </ul>
 
-        <ul class="encologies-contents">
-
-            
-            <li class="encologies-contents__group">
-                
-                    
-                    <div class="encologies-contents__item" data-tag="脚手架">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #20bdff;">G</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">generator-ivweb</p>
-                                <p class="encologies-contents__item-overview">腾讯IVWEB团队使用的基于React+Redux的业务开发脚手架</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">Tencent IVWEB Team project generator, based on React, redux and webpack.</p>
-                        <p class="encologies-contents__item-master">cpselvis</p>
-                        <a class="encologies-contents__item-link" href="generator-ivweb.html"></a>
-                    </div>
-                    
-                
-                    
-                    <div class="encologies-contents__item" data-tag="构建器">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #2197ff;">B</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">builder-webpack</p>
-                                <p class="encologies-contents__item-overview">腾讯IVWEB团队使用的基于Webpack4的业务开发构建器</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建</p>
-                        <p class="encologies-contents__item-master">cpselvis</p>
-                        <a class="encologies-contents__item-link" href="builder-webpack.html"></a>
-                    </div>
-                    
-                
-                    
-                    <div class="encologies-contents__item" data-tag="插件">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #2197ff;">F</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">feflow-plugin-svgtocn</p>
-                                <p class="encologies-contents__item-overview">termtosvg 录制的 svg 文件中文美化插件</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">termtosvg 录制的 svg 文件对中文显示不太友好，本插件会让中文正常显示</p>
-                        <p class="encologies-contents__item-master">i-solar</p>
-                        <a class="encologies-contents__item-link" href="feflow-plugin-svgtocn.html"></a>
-                    </div>
-                    
-                
-            </li>
-            
-            <li class="encologies-contents__group">
-                
-                    
-                    <div class="encologies-contents__item" data-tag="脚手架">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #20bdff;">G</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">generator-halo-templates</p>
-                                <p class="encologies-contents__item-overview">移商模板项目生成器</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">移商模板项目生成器</p>
-                        <p class="encologies-contents__item-master">yanzhanghu</p>
-                        <a class="encologies-contents__item-link" href="generator-halo-templates.html"></a>
-                    </div>
-                    
-                
-                    
-                    <div class="encologies-contents__item" data-tag="插件">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #20bdff;">F</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">feflow-plugin-pic-optimize</p>
-                                <p class="encologies-contents__item-overview">Feflow图片压缩插件</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">png图片压缩原理是使用开源的压缩工具pngquant, pngcrush, optipng，依次串行对一张图片进行压缩和优化；jpg图片使用mozjpeg进行压缩和优化，自动转成progressive jpg；gif使用gifsicle进行压缩</p>
-                        <p class="encologies-contents__item-master">zeyqiao</p>
-                        <a class="encologies-contents__item-link" href="feflow-plugin-pic-optimize.html"></a>
-                    </div>
-                    
-                
-                    
-                    <div class="encologies-contents__item" data-tag="插件">
-                        <div class="encologies-contents__item-title">
-                            
-                                <div class="encologies-contents__item-logo" style="background-color: #337bff;">F</div>
-                            
-                            <div class="encologies-contents__item-info">
-                                <p class="encologies-contents__item-name">feflow-plugin-paper-sync</p>
-                                <p class="encologies-contents__item-overview">社区文章同步插件</p>
-                            </div>
-                        </div>
-                        <p class="encologies-contents__item-description">该插件可以把 IVWEB 社区的文章一键同步到 KM 上</p>
-                        <p class="encologies-contents__item-master">erwinliu</p>
-                        <a class="encologies-contents__item-link" href="feflow-plugin-paper-sync.html"></a>
-                    </div>
-                    
-                
-            </li>
-            
-
-        </ul>
-
+        <div id="content">
+            <!-- JS 渲染的内容 -->
+        </div>
     </section>
 </main>
     <footer id="footer" class="wrapper">
@@ -269,12 +162,17 @@
   </div>
 </nav>
   <!-- Scripts -->
+<!-- 1. axios -->
+<script src="https://pub.idqqimg.com/32bac374da334d70b6db59a5fa56c0e3.js"></script>
+<!-- 2. markdown-it -->
+<script src="https://pub.idqqimg.com/bbb73d86dbd641a7aa6ea8b7066a4955.js"></script>
 <!-- build:js build/js/main.js -->
 <script src="/js/lang_select.js"></script>
 <script src="/js/toc.js"></script>
 <script src="/js/mobile_nav.js"></script>
 <script src="/js/footer_qrcode.js"></script>
 <script src="/js/encologies.js"></script>
+<script src="/js/encologies-detail.js"></script>
 <!-- endbuild -->
 
 <!-- Algolia -->
