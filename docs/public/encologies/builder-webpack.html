@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head prefix="og: http://ogp.me/ns#">
+  <meta charset="utf-8">
+  <title>Feflow.js</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://feflowjs.org/encologies/builder-webpack.html">
+  <!-- Alternative links -->
+  
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/icon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-touch-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/icon/apple-touch-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icon/apple-touch-icon-152x152.png">
+  <link rel="icon" type="image/png" href="/icon/favicon-196x196.png" sizes="196x196">
+  <link rel="icon" type="image/png" href="/icon/favicon-160x160.png" sizes="160x160">
+  <link rel="icon" type="image/png" href="/icon/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="/icon/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/icon/favicon-32x32.png" sizes="32x32">
+  <meta name="msapplication-TileColor" content="#2f83cd">
+  <meta name="msapplication-TileImage" content="/icon/mstile-144x144.png">
+  <meta name="generator" content="Hexo 3.8.0">
+  <!-- CSS -->
+  <!-- build:css build/css/navy.css -->
+  <link rel="stylesheet" href="/css/navy.css">
+  <!-- endbuild -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css">
+  <!-- RSS -->
+  <link rel="alternate" href="/atom.xml" title="Feflow.js">
+  <!-- Open Graph -->
+  <meta name="description" content="Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Feflow.js">
+<meta property="og:url" content="https://feflowjs.org/encologies/builder-webpack.html">
+<meta property="og:site_name" content="Feflow.js">
+<meta property="og:description" content="Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://qpic.url.cn/feeds_pic/ajNVdqHZLLDpvNiayyEbzqB9V61CRiallnRdEKFaViaxw7pibicBKgEI8vw/">
+<meta property="og:image" content="https://qpic.url.cn/feeds_pic/Q3auHgzwzM72dIPZyXSdy8srwzIOTovf0VSaNlBzE98ueBiaibIVSHkA/">
+<meta property="og:updated_time" content="2019-01-28T08:58:59.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Feflow.js">
+<meta name="twitter:description" content="Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建">
+<meta name="twitter:image" content="https://qpic.url.cn/feeds_pic/ajNVdqHZLLDpvNiayyEbzqB9V61CRiallnRdEKFaViaxw7pibicBKgEI8vw/">
+<meta property="fb:admins" content="100000247608790">
+  <!-- Google Analytics -->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-48498357-3', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body>
+  <div id="container">
+    <header id="header" class="header">
+  <div class="wrapper">
+    <div id="header-inner" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/zh-cn/" id="logo">Feflow</a>
+      </h1>
+      <nav id="main-nav">
+        <a href="/zh-cn/docs/" class="main-nav-link">文档指南</a><a href="/encologies/" class="main-nav-link">生态系统</a>
+        <a href="https://github.com/feflow/feflow/releases" target="_blank" class="main-nav-link">发布日志</a>
+        <iframe src="https://ghbtns.com/github-btn.html?user=feflow&repo=feflow&type=star&count=true" frameborder="0" scrolling="0" width="150px" height="20px"></iframe>
+        <div id="search-input-wrap">
+          <div id="search-input-icon">
+            <i class="fa fa-search"></i>
+          </div>
+          <input type="search" id="search-input" placeholder="Search...">
+        </div>
+      </nav>
+      <div id="lang-select-wrap">
+        <label id="lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></label>
+        <select id="lang-select" data-canonical="">
+          
+            <option value="zh-cn" selected>简体中文</option>
+          
+        </select>
+      </div>
+      <a id="mobile-nav-toggle">
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+        <span class="mobile-nav-toggle-bar"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+    <main class="encologies">
+    <section class="encologies-detail encologies-inner wrapper">
+        
+        <div class="encologies-detail__contents">
+            <div class="encologies-detail__contents-intro encologies-detail__line">
+                <p class="encologies-detail__contents-name">builder-webpack</p>
+                <p class="encologies-detail__contents-overview">腾讯IVWEB团队使用的基于Webpack4的业务开发构建器</p>
+                <p class="encologies-detail__contents-description">Webpack 构建器, 适用于NOW直播业务和活动类型的项目构建</p>
+            </div>
+            <div class="encologies-detail__contents-bases encologies-detail__line">
+                <h2 class="encologies-detail__header">基本信息</h2>
+                <table>
+                    <tbody>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">最新版本</td>
+                            <td>0.0.11</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">维护者</td>
+                            <td>cpselvis</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">更新时间</td>
+                            <td>2019-01-25</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip encologies-detail__contents-github">
+                                Github
+                                <i></i>
+                                <span>· MIT</span>
+                                <a href="https://github.com/feflow/builder-webpack4"></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="encologies-detail__contents-uses">
+                <h2 class="encologies-detail__header">如何使用</h2>
+                <div class="article-content">
+                    <h4 id="特性" class="article-heading"><a href="#特性" class="headerlink" title="特性"></a>特性<a class="article-anchor" href="#特性" aria-hidden="true"></a></h4><ul>
+<li>使用webpack4 + babel7 最新的构建解决方案</li>
+<li>对H5开发友好，默认集成 Rem 方案，解决适配问题</li>
+<li>支持多页面打包的开发方式</li>
+<li>支持less和typescript的文件打包</li>
+</ul>
+<h4 id="安装" class="article-heading"><a href="#安装" class="headerlink" title="安装"></a>安装<a class="article-anchor" href="#安装" aria-hidden="true"></a></h4><p>确保feflow的版本在 v0.12.0 以上, 可以通过如下命令安装最新feflow版本<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ npm install feflow-cli -g</span><br></pre></td></tr></table></figure></p>
+<h4 id="快速使用" class="article-heading"><a href="#快速使用" class="headerlink" title="快速使用"></a>快速使用<a class="article-anchor" href="#快速使用" aria-hidden="true"></a></h4><h5 id="添加feflow-json配置文件" class="article-heading"><a href="#添加feflow-json配置文件" class="headerlink" title="添加feflow.json配置文件"></a>添加feflow.json配置文件<a class="article-anchor" href="#添加feflow-json配置文件" aria-hidden="true"></a></h5><p>在项目根目录添加 <code>feflow.json</code> 配置文件</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"builderType"</span>: <span class="string">"builder-webpack3"</span>,</span><br><span class="line">    <span class="string">"builderOptions"</span>: &#123;</span><br><span class="line">        <span class="string">"product"</span>: <span class="string">"now"</span>,                                    // 产品，此处可以是 now 或者 shangfen</span><br><span class="line">        <span class="string">"domain"</span>: <span class="string">"now.qq.com"</span>,                              // 域名，离线包的域名需要使用</span><br><span class="line">        <span class="string">"cdn"</span>: <span class="string">"11.url.cn"</span>,                                  // 资源发布到的cdn名称</span><br><span class="line">        <span class="string">"moduleName"</span>: <span class="string">"mobile"</span>,                              // 部署的模块</span><br><span class="line">        <span class="string">"bizName"</span>: <span class="string">"category"</span>,                               // 业务名称</span><br><span class="line">        <span class="string">"minifyHTML"</span>: <span class="literal">true</span>,                                  // 是否压缩 html</span><br><span class="line">        <span class="string">"minifyCSS"</span>: <span class="literal">true</span>,                                   // 是否压缩 js</span><br><span class="line">        <span class="string">"minifyJS"</span>: <span class="literal">true</span>,                                    // 是否压缩 css</span><br><span class="line">        <span class="string">"inlineCSS"</span>: <span class="literal">true</span>,                                   // 生成的 css 是否内联到首屏</span><br><span class="line">        <span class="string">"usePx2rem"</span>: <span class="literal">true</span>,                                   // 是否使用 Rem</span><br><span class="line">        <span class="string">"useReact"</span>: <span class="literal">true</span>,                                    // 是否是 React，如果为<span class="literal">false</span>，则不会在 html 中引用 React 框架</span><br><span class="line">        <span class="string">"remUnit"</span>: 37.5,                                     // Rem 单位，对于 375 视觉稿，此处填写 37.5，750视觉稿需要改成 75</span><br><span class="line">        <span class="string">"remPrecision"</span>: 8,                                   // Rem 的精度，即 px 转换成了 rem 后的小数点后位数</span><br><span class="line">        <span class="string">"inject"</span>: <span class="literal">true</span>,                                      // 打包生成的 js 文件是否自动注入到 html 文件 body 之后</span><br><span class="line">        <span class="string">"port"</span>: 8001,                                        // 本地开发的 webpack 构建服务进程端口号</span><br><span class="line">        <span class="string">"externals"</span>: [                                       // 基础框架不打入到 bundle 里面</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">"module"</span>: <span class="string">"react"</span>,</span><br><span class="line">                <span class="string">"entry"</span>: <span class="string">"//11.url.cn/now/lib/16.2.0/react.min.js?_bid=3123"</span>,</span><br><span class="line">                <span class="string">"global"</span>: <span class="string">"React"</span></span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="string">"module"</span>: <span class="string">"react-dom"</span>,</span><br><span class="line">                <span class="string">"entry"</span>: <span class="string">"//11.url.cn/now/lib/16.2.0/react-dom.min.js?_bid=3123"</span>,</span><br><span class="line">                <span class="string">"global"</span>: <span class="string">"ReactDOM"</span></span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="命令" class="article-heading"><a href="#命令" class="headerlink" title="命令"></a>命令<a class="article-anchor" href="#命令" aria-hidden="true"></a></h5><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ feflow dev      <span class="comment"># 本地开发时的命令</span></span><br><span class="line">$ feflow build    <span class="comment"># 发布时的打包命令, 打出的包在工程的public目录, 包含 cdn, webserver 和 offline 三个文件夹</span></span><br></pre></td></tr></table></figure>
+<h4 id="文档" class="article-heading"><a href="#文档" class="headerlink" title="文档"></a>文档<a class="article-anchor" href="#文档" aria-hidden="true"></a></h4><h5 id="内联" class="article-heading"><a href="#内联" class="headerlink" title="内联"></a>内联<a class="article-anchor" href="#内联" aria-hidden="true"></a></h5><p>同时支持Fis3项目的inline语法糖写法和ejs的写法</p>
+<ul>
+<li>内联 html:</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">&lt;!--inline[/assets/inline/meta.html]--&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>内联 javascript</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">&lt;script src=<span class="string">"@tencent/report-whitelist?__inline"</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>备注：如果希望内联某个 JS 文件，需要使用相对路径的写法。</p>
+<h5 id="代理设置" class="article-heading"><a href="#代理设置" class="headerlink" title="代理设置"></a>代理设置<a class="article-anchor" href="#代理设置" aria-hidden="true"></a></h5><ul>
+<li>执行 <code>feflow dev</code> 命令后会在本地的 8001 端口开启一个 WDS 服务，所有的静态资源(html, css, js, img) 都会在内存里面。可以通过 <a href="http://127.0.0.1:8001/webpack-dev-server" target="_blank" rel="noopener">http://127.0.0.1:8001/webpack-dev-server</a>  查看</li>
+</ul>
+<p><img src="https://qpic.url.cn/feeds_pic/ajNVdqHZLLDpvNiayyEbzqB9V61CRiallnRdEKFaViaxw7pibicBKgEI8vw/" alt=""></p>
+<ul>
+<li>Fiddler配置把之前的本地绝对路径改成 本地server 路径即可：</li>
+</ul>
+<p><img src="https://qpic.url.cn/feeds_pic/Q3auHgzwzM72dIPZyXSdy8srwzIOTovf0VSaNlBzE98ueBiaibIVSHkA/" alt=""></p>
+<h5 id="热更新支持" class="article-heading"><a href="#热更新支持" class="headerlink" title="热更新支持"></a>热更新支持<a class="article-anchor" href="#热更新支持" aria-hidden="true"></a></h5><ul>
+<li>如果要支持热更新，需要再增加一条代理<code>_webpack_hmr</code>的配置，如：</li>
+</ul>
+<p><code>/^https?://now\.qq\.com/(__webpack_hmr)$/ http://127.0.0.1:8001/$1</code></p>
+<ul>
+<li>在项目中，用<code>react-hot-loader</code>将<code>pageComponent</code>变为可接受热更新的组件</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; hot &#125; <span class="keyword">from</span> <span class="string">'react-hot-loader'</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">pageComponent</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> hot(<span class="built_in">module</span>)(pageComponent)</span><br></pre></td></tr></table></figure>
+<h5 id="测试" class="article-heading"><a href="#测试" class="headerlink" title="测试"></a>测试<a class="article-anchor" href="#测试" aria-hidden="true"></a></h5><ol>
+<li><code>git clone</code>这个用于烟雾测试的<a href="https://github.com/feflow/generator-smoking-test" target="_blank" rel="noopener">模板项目</a></li>
+<li>配置<code>.travis.yml</code>，可以参考模板项目<a href="https://github.com/feflow/generator-smoking-test" target="_blank" rel="noopener">README</a></li>
+<li>在<a href="https://travis-ci.org/feflow/builder-webpack3" target="_blank" rel="noopener">Travis-ci</a>中打开此项目的自动构建</li>
+</ol>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+    <footer id="footer" class="wrapper">
+  <div class="inner">
+    <div id="footer-copyright">
+      &copy; 2019 <a href="https://github.com/feflow" target="_blank">Feflow.js</a><br>
+      Documentation licensed under <a href="https://tldrlegal.com/license/mit-license" target="_blank">MIT</a>.
+    </div>
+    <div id="footer-links">
+      <a class="footer-link">
+        <i class="fa fa-wechat" id="wechat-trigger"></i>
+        <span class="wechat-qrcode" id="wechat-qrcode">
+          <img src="https://qpic.url.cn/feeds_pic/PiajxSqBRaEKKibIJlsAvuKVxzkFP8BAib3u7QQkybZohJnYywCnHibhfw/">
+        </span>
+      </a>
+      <a href="https://github.com/feflow/feflow" class="footer-link" target="_blank"><i class="fa fa-github-alt"></i></a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+  <div id="mobile-nav-dimmer"></div>
+  <nav id="mobile-nav">
+  <div id="mobile-nav-inner">
+    <ul id="mobile-nav-list">
+      <a href="/zh-cn/docs/" class="mobile-nav-link">文档指南</a><a href="/encologies/" class="mobile-nav-link">生态系统</a>
+      <li class="mobile-nav-item">
+        <a href="https://github.com/feflow/feflow" class="mobile-nav-link" rel="external" target="_blank">GitHub</a>
+      </li>
+    </ul>
+    
+  </div>
+  <div id="mobile-lang-select-wrap">
+    <span id="mobile-lang-select-label"><i class="fa fa-globe"></i><span>简体中文</span></span>
+    <select id="mobile-lang-select" data-canonical="">
+      
+        <option value="zh-cn" selected>简体中文</option>
+      
+    </select>
+  </div>
+</nav>
+  <!-- Scripts -->
+<!-- build:js build/js/main.js -->
+<script src="/js/lang_select.js"></script>
+<script src="/js/toc.js"></script>
+<script src="/js/mobile_nav.js"></script>
+<script src="/js/footer_qrcode.js"></script>
+<script src="/js/encologies.js"></script>
+<!-- endbuild -->
+
+<!-- Algolia -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+<script type="text/javascript">
+document.getElementById('search-input-wrap').classList.add('on');
+docsearch({
+  apiKey: 'cdea7d4e47d84f6145b77e7f68689f35',
+  indexName: 'hexo_zh-cn',
+  inputSelector: '#search-input'
+});
+</script>
+
+
+</body>
+</html>

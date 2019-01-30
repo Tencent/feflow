@@ -1,10 +1,15 @@
 <!-- Scripts -->
+<!-- 1. axios -->
+<script src="https://pub.idqqimg.com/32bac374da334d70b6db59a5fa56c0e3.js"></script>
+<!-- 2. markdown-it -->
+<script src="https://pub.idqqimg.com/bbb73d86dbd641a7aa6ea8b7066a4955.js"></script>
 <!-- build:js build/js/main.js -->
 {{ js('js/lang_select') }}
 {{ js('js/toc') }}
 {{ js('js/mobile_nav') }}
 {{ js('js/footer_qrcode') }}
 {{ js('js/encologies') }}
+{{ js('js/encologies-detail') }}
 <!-- endbuild -->
 {% if page.layout === 'plugins' %}
 <!-- Plugin search -->

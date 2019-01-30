@@ -2,11 +2,11 @@
 <html lang="zh-cn">
 <head prefix="og: http://ogp.me/ns#">
   <meta charset="utf-8">
-  <title>Plugins | Feflow.js</title>
+  <title>Feflow.js</title>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://feflowjs.org/plugins/index.html">
+  <link rel="canonical" href="https://feflowjs.org/encologies/feflow-plugin-paper-sync.html">
   <!-- Alternative links -->
   
   <!-- Icon -->
@@ -36,17 +36,19 @@
   <!-- RSS -->
   <link rel="alternate" href="/atom.xml" title="Feflow.js">
   <!-- Open Graph -->
-  <meta name="description" content="Hexo is a fast, simple &amp; powerful blog framework powered by Node.js.">
+  <meta name="description" content="该插件可以把 IVWEB 社区的文章一键同步到 KM 上">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Plugins">
-<meta property="og:url" content="https://feflowjs.org/plugins/index.html">
+<meta property="og:title" content="Feflow.js">
+<meta property="og:url" content="https://feflowjs.org/encologies/feflow-plugin-paper-sync.html">
 <meta property="og:site_name" content="Feflow.js">
-<meta property="og:description" content="Hexo is a fast, simple &amp; powerful blog framework powered by Node.js.">
+<meta property="og:description" content="该插件可以把 IVWEB 社区的文章一键同步到 KM 上">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2019-01-21T06:13:15.966Z">
+<meta property="og:image" content="https://feflowjs.org/encologies/images/article.png">
+<meta property="og:updated_time" content="2019-01-28T08:58:59.160Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Plugins">
-<meta name="twitter:description" content="Hexo is a fast, simple &amp; powerful blog framework powered by Node.js.">
+<meta name="twitter:title" content="Feflow.js">
+<meta name="twitter:description" content="该插件可以把 IVWEB 社区的文章一键同步到 KM 上">
+<meta name="twitter:image" content="https://feflowjs.org/encologies/images/article.png">
 <meta property="fb:admins" content="100000247608790">
   <!-- Google Analytics -->
   
@@ -98,45 +100,67 @@
   </div>
 </header>
 
-    <div id="content-wrap">
-  <div id="content" class="wrapper">
-    <div id="content-inner">
-      <article class="article-container" itemscope="" itemtype="http://schema.org/Article">
-        <div class="article-inner">
-          <div class="article">
-            <div class="inner">
-              <header class="article-header">
-                <h1 class="article-title" itemprop="name">Plugins</h1>
-                <a href="https://github.com/feflow/feflow/edit/master/docs/plugins/index.md" class="article-edit-link" title="改进本文"><i class="fa fa-pencil"></i></a>
-              </header>
-              <div class="article-content" itemprop="articleBody">
-                
-              </div>
-              <footer class="article-footer">
-                <time class="article-footer-updated" datetime="2019-01-21T06:13:15.966Z" itemprop="dateModified">上次更新：2019-01-21</time>
-                
-              </footer>
-              
+    <main class="encologies">
+    <section class="encologies-detail encologies-inner wrapper">
+        
+        <div class="encologies-detail__contents">
+            <div class="encologies-detail__contents-intro encologies-detail__line">
+                <p class="encologies-detail__contents-name">feflow-plugin-paper-sync</p>
+                <p class="encologies-detail__contents-overview">社区文章同步插件</p>
+                <p class="encologies-detail__contents-description">该插件可以把 IVWEB 社区的文章一键同步到 KM 上</p>
             </div>
-          </div>
-          <aside id="article-toc" role="navigation">
-            <div id="article-toc-inner">
-              <strong class="sidebar-title">目录</strong>
-              
-              <a href="#" id="article-toc-top">回到顶部</a>
+            <div class="encologies-detail__contents-bases encologies-detail__line">
+                <h2 class="encologies-detail__header">基本信息</h2>
+                <table>
+                    <tbody>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">最新版本</td>
+                            <td>1.0.4</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">维护者</td>
+                            <td>erwinliu</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip">更新时间</td>
+                            <td>2018-11-27</td>
+                        </tr>
+                        <tr class="encologies-detail__contents-item">
+                            <td class="encologies-detail__contents-tip encologies-detail__contents-github">
+                                Github
+                                <i></i>
+                                <span>· MIT</span>
+                                <a href="https://git.code.oa.com/feflow-plugin/feflow-plugin-paper-sync"></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-          </aside>
-        </div>
-      </article>
-      <aside id="sidebar" role="navigation">
-  <div class="inner">
-    
-  </div>
-</aside>
-    </div>
-  </div>
-</div>
+            <div class="encologies-detail__contents-uses">
+                <h2 class="encologies-detail__header">如何使用</h2>
+                <div class="article-content">
+                    <ol start="0">
+<li>终端设置代理</li>
+</ol>
+<p>因为 ivweb.io 是外网环境，所以要设置代理让终端走外网环境，简单的配置如下</p>
+<pre><code><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> https_proxy=http://web-proxy.tencent.com:8080</span><br><span class="line"><span class="built_in">export</span> http_proxy=http://web-proxy.tencent.com:8080</span><br></pre></td></tr></table></figure>
+</code></pre><ol>
+<li><p>安装 <code>feflow-plugin-paper-sync</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">feflow install @tencent/feflow-plugin-paper-sync</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>去社区找到自己想同步的文章 ID</p>
+<p> <img src="./images/article.png" alt="如何寻找文章ID"></p>
+</li>
+<li><p>执行命令同步文章</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">feflow sync &lt;id&gt;</span><br><span class="line"><span class="comment"># 例如 feflow sync 100335</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
 
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
     <footer id="footer" class="wrapper">
   <div class="inner">
     <div id="footer-copyright">
@@ -183,14 +207,6 @@
 <script src="/js/mobile_nav.js"></script>
 <script src="/js/footer_qrcode.js"></script>
 <script src="/js/encologies.js"></script>
-<!-- endbuild -->
-
-<!-- Plugin search -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.1.2/lunr.min.js"></script>
-<!-- Lazy load -->
-<script async src="https://cdn.jsdelivr.net/lazysizes/3.0.0/lazysizes.min.js"></script>
-<!-- build:js build/js/plugins.js -->
-<script src="/js/plugins.js"></script>
 <!-- endbuild -->
 
 <!-- Algolia -->
