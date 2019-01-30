@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://feflowjs.org/encologies/index.html</loc>
+    
+    <lastmod>2019-01-30T13:10:01.523Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/encologies/detail.html</loc>
+    
+    <lastmod>2019-01-30T13:10:01.522Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/zh-cn/docs/base-install.html</loc>
     
     <lastmod>2019-01-21T03:43:46.519Z</lastmod>
@@ -16,14 +30,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-overview.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
     
     <lastmod>2019-01-21T02:12:41.706Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-overview.html</loc>
     
     <lastmod>2019-01-21T02:12:41.706Z</lastmod>
     
@@ -135,14 +149,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/about/index.html</loc>
+    <loc>https://feflowjs.org/news/2015/03/05/hexo-3-0-released/</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2015/03/05/hexo-3-0-released/</loc>
+    <loc>https://feflowjs.org/about/index.html</loc>
     
     <lastmod>2019-01-02T06:48:04.905Z</lastmod>
     
