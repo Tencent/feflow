@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://feflowjs.org/encologies/index.html</loc>
+    
+    <lastmod>2019-01-30T13:10:01.523Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/encologies/detail.html</loc>
+    
+    <lastmod>2019-01-30T13:10:01.522Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/zh-cn/docs/base-install.html</loc>
     
     <lastmod>2019-01-21T03:43:46.519Z</lastmod>
