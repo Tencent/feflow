@@ -15,5 +15,8 @@
 - registry: '@tencent/feflow-plugin-pic-optimize'
   type: 'inner'
 
+- registry: '@tencent/feflow-plugin-lego'
+  type: 'inner'
+
 - registry: '@tencent/feflow-plugin-paper-sync'
   type: 'inner'
