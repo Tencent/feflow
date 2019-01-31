@@ -100,6 +100,10 @@
                         var color = getColor();
                         var firstLetter = name[0].toLocaleUpperCase();
 
+                        if (!master) {
+                            master = (body.maintainers && body.maintainers[0] && body.maintainers[0].name) || '';
+                        }
+
                         return {
                             registry: encodeURIComponent(registry),
                             type: type,

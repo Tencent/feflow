@@ -1,12 +1,12 @@
-# 外网展示的数据
-- registry: feflow/generator-ivweb
-  type: 'outer'
+# 同步外网展示的数据
+- registry: generator-ivweb
+  type: 'inner'
 
-- registry: feflow/builder-webpack4
-  type: 'outer'
+- registry: builder-webpack4
+  type: 'inner'
 
-- registry: i-solar/feflow-plugin-svgtocn
-  type: 'outer'
+- registry: feflow-plugin-svgtocn
+  type: 'inner'
 
 # 内网展示的数据
 - registry: '@tencent/generator-halo-templates'

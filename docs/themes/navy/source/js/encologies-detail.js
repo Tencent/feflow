@@ -26,8 +26,12 @@
                     var description = body.description;
                     var master = body.author && body.author.name;
                     var updateTime = new Date(body._cnpm_publish_time).toLocaleDateString();
-                    var github = body.repository && body.repository.url && body.repository.url.replace('git@git.code.oa.com:', 'https://git.code.oa.com/');
+                    var github = (body.homepage || body.repository && body.repository.url && body.repository.url.replace('git@git.code.oa.com:', 'https://git.code.oa.com/'));
                     var readmeHTML = markdown.render(body.readme);
+
+                    if (!master) {
+                        master = (body.maintainers && body.maintainers[0] && body.maintainers[0].name) || '';
+                    }
 
                     return {
                         name: name,
