@@ -6,12 +6,11 @@
     return;
   }
 
-  var accessToken = 'acef7b6f616795ea99bc7ffc7156117db4b84ecd';
-
   window.addEventListener('DOMContentLoaded', function() {
     var encologiesDetail = document.querySelector('.encologies-detail');
     var urlParams = new URLSearchParams(window.location.search);
     var registry = decodeURIComponent(urlParams.get('registry'));
+    var fullRegistry = decodeURIComponent(urlParams.get('fullRegistry'));
     var type = urlParams.get('type');
     var markdown = new window.markdownit(); // eslint-disable-line new-cap
 
@@ -41,17 +40,17 @@
           };
         });
     } else {
-      var readmeRequest = window.axios.get('https://raw.githubusercontent.com/' + registry + '/master/README.md')
+      var readmeRequest = window.axios.get('https://raw.githubusercontent.com/' + fullRegistry + '/master/README.md')
         .then(function(response) {
           return response;
         }, function() {
-          return window.axios.get('https://raw.githubusercontent.com/' + registry + '/master/readme.md');
+          return window.axios.get('https://raw.githubusercontent.com/' + fullRegistry + '/master/readme.md');
         });
-      // 外部生态走 github
+      // 外部生态走 cnpm
       request = Promise.all([
-        window.axios.get('https://api.github.com/repos/' + registry + '?access_token=' + accessToken),
+        window.axios.get('https://registry.npm.taobao.org/' + registry + '/latest'),
         // package.json 获取版本号
-        window.axios.get('https://raw.githubusercontent.com/' + registry + '/master/package.json'),
+        window.axios.get('https://raw.githubusercontent.com/' + fullRegistry + '/master/package.json'),
         // readme
         readmeRequest
       ]).then(function(responses) {
@@ -61,9 +60,9 @@
         var body = repoData.data;
         var name = body.name;
         var description = body.description;
-        var owner = body.owner || {};
-        var master = owner.login || '';
-        var updateTime = new Date(body.updated_at).toLocaleDateString();
+        var master = (body.author && body.author.name) || (body.maintainers && body.maintainers[0] && body.maintainers[0].name) || '';
+        var updateTime = new Date(body.publish_time).toLocaleDateString();
+        var github = 'https://github.com/' + fullRegistry;
         var readmeHTML = markdown.render(readmeData.data);
         var lastestVersion = packageData && packageData.data && packageData.data.version;
         var agreement = packageData && packageData.data && packageData.data.license;
@@ -79,7 +78,7 @@
           agreement: agreement,
           lastestVersion: lastestVersion,
           updateTime: updateTime,
-          github: body.html_url,
+          github: github,
           readmeHTML: readmeHTML
         };
       });

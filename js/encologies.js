@@ -6,7 +6,6 @@
     return;
   }
 
-  var accessToken = 'acef7b6f616795ea99bc7ffc7156117db4b84ecd';
   var tags = ['all', 'generator', 'builder', 'plugin'];
   var tagMap = {
     '全部': 'all',
@@ -88,6 +87,7 @@
       var request;
       var type = encologyInfo.type;
       var registry = encologyInfo.registry;
+      var fullRegistry = encologyInfo.fullRegistry || '';
       // 内部生态走 tnpm
       if (type === 'inner') {
         request = window.axios.get('http://r.tnpm.oa.com/' + registry + '/latest')
@@ -112,20 +112,29 @@
             };
           });
       } else {
-        // 外部生态走 github
-        request = window.axios.get('https://api.github.com/repos/' + registry + '?access_token=' + accessToken)
+        // 外部生态走 cnpm
+        request = window.axios.get('https://registry.npm.taobao.org/' + registry + '/latest')
           .then(function(response) {
             var body = response.data;
             var name = body.name;
             var description = body.description;
-            var owner = body.owner || {};
-            var master = owner.login || '';
+            var master = (body.author && body.author.name) || (body.maintainers && body.maintainers[0] && body.maintainers[0].name) || '';
             var tag = getTag(name);
             var color = getColor();
             var firstLetter = name[0].toLocaleUpperCase();
 
+            if (!fullRegistry) {
+              var homepage = body.homepage || '';
+              var pureHomepage = homepage.replace(/\?.*/).replace(/#.*/, '');
+              var chunks = pureHomepage.split('/');
+              var length = chunks.length;
+
+              fullRegistry = chunks.slice(length - 2, length).join('/');
+            }
+
             return {
               registry: encodeURIComponent(registry),
+              fullRegistry: encodeURIComponent(fullRegistry),
               type: type,
               name: name,
               tag: tag,
@@ -171,7 +180,7 @@
                                 + '</div>'
                                 + '<p class="encologies-contents__item-description">' + item.description + '</p>'
                                 + '<p class="encologies-contents__item-master">' + item.master + '</p>'
-                                + '<a class="encologies-contents__item-link" href="detail.html?registry=' + item.registry + '&type=' + item.type + '"></a>'
+                                + '<a class="encologies-contents__item-link" href="detail.html?registry=' + item.registry + '&type=' + item.type + '&fullRegistry=' + item.fullRegistry + '"></a>'
                             + '</div>';
           });
           // 包裹 li 标签
