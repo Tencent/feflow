@@ -1,3 +1,18 @@
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/feflow/feflow/compare/v0.15.1...v0.15.2) (2019-02-13)
+
+
+### Bug Fixes
+
+* when install plugin in devDependencies cant use plugin ([9819083](https://github.com/feflow/feflow/commit/9819083))
+
+
+### Features
+
+* add clean command ([632505f](https://github.com/feflow/feflow/commit/632505f))
+
+
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/feflow/feflow/compare/v0.15.0...v0.15.1) (2019-01-03)
 
