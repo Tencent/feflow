@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://feflowjs.org/encologies/index.html</loc>
+    
+    <lastmod>2019-01-28T08:58:40.076Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/encologies/detail.html</loc>
+    
+    <lastmod>2019-01-28T08:58:40.076Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://feflowjs.org/zh-cn/index.html</loc>
     
     <lastmod>2019-01-21T06:13:15.969Z</lastmod>
@@ -9,28 +23,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-plugins-inner.html</loc>
-    
-    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/docs/rule-overview.html</loc>
-    
-    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
-    
-    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-git-commit.html</loc>
     
     <lastmod>2019-01-21T06:13:15.968Z</lastmod>
     
@@ -44,7 +37,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-eslint.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-git-commit.html</loc>
     
     <lastmod>2019-01-21T06:13:15.968Z</lastmod>
     
@@ -52,6 +45,27 @@
   
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/start-from-zero.html</loc>
+    
+    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
+    
+    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
+    
+    <lastmod>2019-01-21T06:13:15.968Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-eslint.html</loc>
     
     <lastmod>2019-01-21T06:13:15.968Z</lastmod>
     
@@ -72,7 +86,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/index.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-plugins-inner.html</loc>
     
     <lastmod>2019-01-21T06:13:15.968Z</lastmod>
     
@@ -86,14 +100,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-context.html</loc>
-    
-    <lastmod>2019-01-21T06:13:15.967Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
+    <loc>https://feflowjs.org/themes/index.html</loc>
     
     <lastmod>2019-01-21T06:13:15.967Z</lastmod>
     
@@ -107,7 +114,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/themes/index.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
     
     <lastmod>2019-01-21T06:13:15.967Z</lastmod>
     
@@ -122,6 +129,13 @@
   
   <url>
     <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-custom.html</loc>
+    
+    <lastmod>2019-01-21T06:13:15.967Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-context.html</loc>
     
     <lastmod>2019-01-21T06:13:15.967Z</lastmod>
     
@@ -149,13 +163,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
-    
-    <lastmod>2019-01-21T06:13:15.964Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/about/index.html</loc>
     
     <lastmod>2019-01-21T06:13:15.964Z</lastmod>
@@ -177,14 +184,21 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2014/07/13/hexo-2-8-released/</loc>
+    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
+    
+    <lastmod>2019-01-21T06:13:15.964Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/news/2014/06/14/hexo-2-7-released/</loc>
     
     <lastmod>2019-01-21T06:13:15.961Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2014/06/14/hexo-2-7-released/</loc>
+    <loc>https://feflowjs.org/news/2014/07/13/hexo-2-8-released/</loc>
     
     <lastmod>2019-01-21T06:13:15.961Z</lastmod>
     
