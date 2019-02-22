@@ -4,7 +4,21 @@
   <url>
     <loc>https://feflowjs.org/zh-cn/index.html</loc>
     
-    <lastmod>2019-02-21T08:21:29.904Z</lastmod>
+    <lastmod>2019-02-22T02:07:39.618Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/index.html</loc>
+    
+    <lastmod>2019-02-22T02:07:25.819Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
+    
+    <lastmod>2019-02-21T08:21:29.903Z</lastmod>
     
   </url>
   
@@ -30,9 +44,9 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/rule-readme.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-init.html</loc>
     
-    <lastmod>2019-02-21T08:21:29.903Z</lastmod>
+    <lastmod>2019-02-21T08:21:29.902Z</lastmod>
     
   </url>
   
@@ -58,21 +72,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-init.html</loc>
-    
-    <lastmod>2019-02-21T08:21:29.902Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-build.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
     
     <lastmod>2019-02-21T08:21:29.901Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/base-develope.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/base-build.html</loc>
     
     <lastmod>2019-02-21T08:21:29.901Z</lastmod>
     
@@ -100,13 +107,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-context.html</loc>
-    
-    <lastmod>2019-02-21T08:21:29.900Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/zh-cn/docs/advance-overview.html</loc>
     
     <lastmod>2019-02-21T08:21:29.900Z</lastmod>
@@ -114,9 +114,9 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/plugins/index.html</loc>
+    <loc>https://feflowjs.org/zh-cn/docs/advance-plugins-context.html</loc>
     
-    <lastmod>2019-02-21T08:21:29.899Z</lastmod>
+    <lastmod>2019-02-21T08:21:29.900Z</lastmod>
     
   </url>
   
@@ -128,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/index.html</loc>
+    <loc>https://feflowjs.org/plugins/index.html</loc>
     
     <lastmod>2019-02-21T08:21:29.899Z</lastmod>
     
@@ -142,13 +142,6 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/about/index.html</loc>
-    
-    <lastmod>2019-02-21T08:21:29.895Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://feflowjs.org/encologies/index.html</loc>
     
     <lastmod>2019-02-21T08:21:29.895Z</lastmod>
@@ -156,14 +149,21 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
+    <loc>https://feflowjs.org/about/index.html</loc>
+    
+    <lastmod>2019-02-21T08:21:29.895Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
     
     <lastmod>2019-02-21T08:21:29.894Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2016/02/28/hexo-3-2-released/</loc>
+    <loc>https://feflowjs.org/news/2015/02/27/new-documentation-and-registry/</loc>
     
     <lastmod>2019-02-21T08:21:29.894Z</lastmod>
     
@@ -177,14 +177,14 @@
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2014/07/13/hexo-2-8-released/</loc>
+    <loc>https://feflowjs.org/news/2014/06/14/hexo-2-7-released/</loc>
     
     <lastmod>2019-02-21T08:21:29.891Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://feflowjs.org/news/2014/06/14/hexo-2-7-released/</loc>
+    <loc>https://feflowjs.org/news/2014/07/13/hexo-2-8-released/</loc>
     
     <lastmod>2019-02-21T08:21:29.891Z</lastmod>
     
