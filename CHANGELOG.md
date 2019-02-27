@@ -1,3 +1,14 @@
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/feflow/feflow/compare/v0.15.2...v0.15.3) (2019-02-27)
+
+
+### Bug Fixes
+
+* filter wrong command ([#78](https://github.com/feflow/feflow/issues/78)) ([99b2381](https://github.com/feflow/feflow/commit/99b2381))
+* stop update when full update error ([#74](https://github.com/feflow/feflow/issues/74)) ([85e1633](https://github.com/feflow/feflow/commit/85e1633))
+
+
+
 <a name="0.15.2"></a>
 ## [0.15.2](https://github.com/feflow/feflow/compare/v0.15.1...v0.15.2) (2019-02-13)
 
