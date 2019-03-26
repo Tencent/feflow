@@ -1,5 +1,4 @@
-title: Git提交规范
----
+# Git Commit 规范
 
 ![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg?longCache=true&style=flat-square)
 
@@ -54,7 +53,7 @@ title: Git提交规范
 #
 # * 为什么这个变更是必须的? 它可能是用来修复一个bug，增加一个feature，提升性能、可靠性、稳定性等等
 # * 他如何解决这个问题? 具体描述解决问题的步骤
-# * 是否存在副作用、风险? 
+# * 是否存在副作用、风险?
 #
 # 尾部：如果需要的化可以添加一个链接到issue地址或者其它文档，或者关闭某个issue。
 ```
@@ -70,7 +69,7 @@ title: Git提交规范
 * Tag包括3位版本，前缀使用v。比如v1.2.31。Tag命名规范：
     * 新功能开发使用第2位版本号，bug修复使用第3位版本号
     * 核心基础库或者Node中间价可以在大版本发布请使用灰度版本号，在版本后面加上后缀，用中划线分隔。alpha或者belta后面加上次数，即第几次alpha：
-        * v2.0.0-alpha.1 
+        * v2.0.0-alpha.1
         * v2.0.0-belta.1
 * 版本正式发布前需要生成changelog文档，然后再发布上线。
 
@@ -143,7 +142,7 @@ title: Git提交规范
 * 第三步：将代码同步到远程Git仓库
 
 ```sh
-  $ git push origin feature_infinite_load    # 将修改发布到远程仓库 
+  $ git push origin feature_infinite_load    # 将修改发布到远程仓库
 ```
 
 * 第四步：自动生成changelog，并打Tag发布
