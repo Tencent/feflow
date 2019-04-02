@@ -2,7 +2,7 @@
   "name": "feflow-cli",
   "version": "0.15.3",
   "description": "A command line tool aims to improve front-end engineer workflow.",
-  "main": "lib/index.js",
+  "main": "lib/feflow.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
     "commit": "git-cz ",
