@@ -1,3 +1,20 @@
+<a name="0.15.4"></a>
+## [0.15.4](https://github.com/feflow/feflow/compare/v0.15.3...v0.15.4) (2019-04-24)
+
+
+### Bug Fixes
+
+* change package.json main file ([#90](https://github.com/feflow/feflow/issues/90)) ([e6e7ee9](https://github.com/feflow/feflow/commit/e6e7ee9))
+
+
+### Features
+
+* add unsafe-perm params to avoid node-sass problems ([#91](https://github.com/feflow/feflow/issues/91)) ([26764dc](https://github.com/feflow/feflow/commit/26764dc))
+* auto list help docs ([#83](https://github.com/feflow/feflow/issues/83)) ([981e329](https://github.com/feflow/feflow/commit/981e329))
+* list plugins and generators ([#88](https://github.com/feflow/feflow/issues/88)) ([984d62b](https://github.com/feflow/feflow/commit/984d62b))
+
+
+
 <a name="0.15.3"></a>
 ## [0.15.3](https://github.com/feflow/feflow/compare/v0.15.2...v0.15.3) (2019-02-27)
 
