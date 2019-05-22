@@ -1,3 +1,13 @@
+<a name="0.15.5"></a>
+## [0.15.5](https://github.com/feflow/feflow/compare/v0.15.4...v0.15.5) (2019-05-22)
+
+
+### Features
+
+* support active subgenerator ([#93](https://github.com/feflow/feflow/issues/93)) ([234e6bc](https://github.com/feflow/feflow/commit/234e6bc))
+
+
+
 <a name="0.15.4"></a>
 ## [0.15.4](https://github.com/feflow/feflow/compare/v0.15.3...v0.15.4) (2019-04-24)
 
