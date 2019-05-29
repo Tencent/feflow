@@ -1,3 +1,13 @@
+<a name="0.15.6"></a>
+## [0.15.6](https://github.com/feflow/feflow/compare/v0.15.5...v0.15.6) (2019-05-29)
+
+
+### Bug Fixes
+
+* fix eslint check ([#94](https://github.com/feflow/feflow/issues/94)) ([feee34c](https://github.com/feflow/feflow/commit/feee34c))
+
+
+
 <a name="0.15.5"></a>
 ## [0.15.5](https://github.com/feflow/feflow/compare/v0.15.4...v0.15.5) (2019-05-22)
 
