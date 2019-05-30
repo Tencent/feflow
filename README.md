@@ -69,7 +69,7 @@ $ feflow install <package>
 
 ## Docs
 
-* 中文文档 <http://www.feflowjs.org/zh-cn/docs/>
+* 中文文档 <https://feflowjs.org/zh/guide/>
 
 ## Architecture
 ![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
@@ -80,6 +80,9 @@ $ feflow install <package>
 2. Fork [the repository](https://github.com/feflow/feflow)_ on GitHub to start making your changes to the **master** branch (or branch off of it).
 3. Write a test which shows that the bug was fixed or that the feature works as expected.
 4. Send a pull request and bug the maintainer until it gets merged and published. :) Make sure to add yourself to [AUTHORS_](AUTHORS).
+
+This project exists thanks to all the people who contribute.
+<a href="https://github.com/feflow/feflow/graphs/contributors"><img src="https://opencollective.com/feflow/contributors.svg?width=890&button=false" /></a>
 
 ## Changelog
 

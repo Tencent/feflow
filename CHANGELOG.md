@@ -1,3 +1,66 @@
+<a name="0.15.6"></a>
+## [0.15.6](https://github.com/feflow/feflow/compare/v0.15.5...v0.15.6) (2019-05-29)
+
+
+### Bug Fixes
+
+* fix eslint check ([#94](https://github.com/feflow/feflow/issues/94)) ([feee34c](https://github.com/feflow/feflow/commit/feee34c))
+
+
+
+<a name="0.15.5"></a>
+## [0.15.5](https://github.com/feflow/feflow/compare/v0.15.4...v0.15.5) (2019-05-22)
+
+
+### Features
+
+* support active subgenerator ([#93](https://github.com/feflow/feflow/issues/93)) ([234e6bc](https://github.com/feflow/feflow/commit/234e6bc))
+
+
+
+<a name="0.15.4"></a>
+## [0.15.4](https://github.com/feflow/feflow/compare/v0.15.3...v0.15.4) (2019-04-24)
+
+
+### Bug Fixes
+
+* change package.json main file ([#90](https://github.com/feflow/feflow/issues/90)) ([e6e7ee9](https://github.com/feflow/feflow/commit/e6e7ee9))
+
+
+### Features
+
+* add unsafe-perm params to avoid node-sass problems ([#91](https://github.com/feflow/feflow/issues/91)) ([26764dc](https://github.com/feflow/feflow/commit/26764dc))
+* auto list help docs ([#83](https://github.com/feflow/feflow/issues/83)) ([981e329](https://github.com/feflow/feflow/commit/981e329))
+* list plugins and generators ([#88](https://github.com/feflow/feflow/issues/88)) ([984d62b](https://github.com/feflow/feflow/commit/984d62b))
+
+
+
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/feflow/feflow/compare/v0.15.2...v0.15.3) (2019-02-27)
+
+
+### Bug Fixes
+
+* filter wrong command ([#78](https://github.com/feflow/feflow/issues/78)) ([99b2381](https://github.com/feflow/feflow/commit/99b2381))
+* stop update when full update error ([#74](https://github.com/feflow/feflow/issues/74)) ([85e1633](https://github.com/feflow/feflow/commit/85e1633))
+
+
+
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/feflow/feflow/compare/v0.15.1...v0.15.2) (2019-02-13)
+
+
+### Bug Fixes
+
+* when install plugin in devDependencies cant use plugin ([9819083](https://github.com/feflow/feflow/commit/9819083))
+
+
+### Features
+
+* add clean command ([632505f](https://github.com/feflow/feflow/commit/632505f))
+
+
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/feflow/feflow/compare/v0.15.0...v0.15.1) (2019-01-03)
 
