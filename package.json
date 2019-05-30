@@ -1,6 +1,6 @@
 {
   "name": "feflow-cli",
-  "version": "0.15.6",
+  "version": "0.15.8",
   "description": "A command line tool aims to improve front-end engineer workflow.",
   "main": "lib/core/index.js",
   "scripts": {

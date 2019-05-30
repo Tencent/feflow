@@ -1,3 +1,14 @@
+<a name="0.15.8"></a>
+## [0.15.8](https://github.com/feflow/feflow/compare/v0.15.6...v0.15.8) (2019-05-30)
+
+
+### Bug Fixes
+
+* add some eslint packages ([#95](https://github.com/feflow/feflow/issues/95)) ([c113162](https://github.com/feflow/feflow/commit/c113162))
+* fix lint rule ([#96](https://github.com/feflow/feflow/issues/96)) ([39e3aa5](https://github.com/feflow/feflow/commit/39e3aa5))
+
+
+
 <a name="0.15.6"></a>
 ## [0.15.6](https://github.com/feflow/feflow/compare/v0.15.5...v0.15.6) (2019-05-29)
 
