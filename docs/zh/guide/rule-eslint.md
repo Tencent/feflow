@@ -1,7 +1,10 @@
-title: ESlint规范
----
+# ESLint 规范
 
-[ESLint](https://eslint.org/)于2013年6月份推出，至今4个年头，最新版本v4.8.0。它是目前主流的用于Javascript和JSX代码规范检查的利器，很多大公司比如[Airbnb](https://github.com/airbnb/javascript)和[Google](https://google.github.io/styleguide/javascriptguide.xml)均有一套自己的Javascript编码规范，而规范的实施背后离不开ESLint的支持。比如大名顶顶的[eslint-config-airbnb](https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb)和[eslint-config-google](https://github.com/google/eslint-config-google)。为了更好的统一团队的JS编程风格和代码质量。[feflow](https://github.com/feflow)官方经过调研和探索，终于迎来了ESLint的解决方案，最核心的理念是：基于eslint:recommend做规则的定制化。
+[ESLint](https://eslint.org/) 是目前最主流的 Javascript 和 JSX 代码检查的利器。
+
+很多大公司比如 [Airbnb](https://github.com/airbnb/javascript) 和 [Google](https://google.github.io/styleguide/javascriptguide.xml) 都有一套自己的 Javascript 编码规范，而规范能够实施离不开 ESLint。像 Airbnb 就有大名顶顶的 [eslint-config-airbnb](https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb)，而 Google 则有 [eslint-config-google](https://github.com/google/eslint-config-google)。但他们都适合他们自己的团队，并不适合 Feflow 团队。
+
+经过调研和探索，Feflow 也推出了适用于自己团队的 ESLint 解决方案 —— [eslint-config-ivweb](https://github.com/feflow/eslint-config-ivweb)。这套方案最核心的理念是**基于 `eslint:recommend` 做规则的定制化**。
 
 ## 从一次生产事故说起
 
@@ -10,7 +13,8 @@ title: ESlint规范
 类似的问题其实很多： 比如变量未定义，方法被覆盖等等都会造成js代码执行时报错。那么如何避免呢？ESLint官方提供sharable config（可共享配置），前端团队可以根据自身团队情况定制ESLint规范配置。
 
 ## 规则定义准则
-* 不重复造轮子，基于eslint:recommend配置并改进
+
+* 不重复造轮子，基于 eslint:recommend 配置并改进
 * 能够帮助发现代码错误的规则，全部开启
 * 目的是团队的代码风格统一，而不是限制开发体验
 
@@ -80,11 +84,11 @@ module.exports = {
 
 ##    答疑互动
 
-Q： 为什么不直接使用airbnb团队的 eslint-config-airbnb？  
+Q： 为什么不直接使用airbnb团队的 eslint-config-airbnb？
 A： airbnb官方的规则过于庞大，有10多个规则文件。维护起来成本较高，选择基于轻量级的 eslint:recommend 基础之上定制团队ESLint规则更加简单，也便于维护。
 
-Q： 我觉得eslint-config-ivweb有些规则不太合适，怎么办？  
+Q： 我觉得eslint-config-ivweb有些规则不太合适，怎么办？
 A： 欢迎提交issue讨论或者直接提交PR。仓库地址：https://github.com/feflow/eslint-config-ivweb
 
-Q： 为什么使用lint-staged？  
+Q： 为什么使用lint-staged？
 A： lint-staged只会对修改过的js文件行数进行代码规范检查，不会对所有的代码检查，更加合理和可操作。

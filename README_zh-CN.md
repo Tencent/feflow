@@ -67,7 +67,7 @@ $ feflow install <package>
 
 ## 文档
 
-* 中文文档 <http://www.feflowjs.org/zh-cn/docs/>
+* 中文文档 <https://feflowjs.org/zh/guide/>
 
 ## 整体架构
 ![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
@@ -78,6 +78,9 @@ $ feflow install <package>
 2. 在Github上Fork [仓库](https://github.com/feflow/feflow)_，然后在master或者其它分支上开始进行您的修改.
 3. 编写测试用例表明某个bug被修复掉了或者新的特性可以正常工作.
 4. 提交PR直到它被merge或者发布出去了. :) 记得把您添加进 [AUTHORS_](AUTHORS).
+
+感谢所有为本项目贡献代码的人
+<a href="https://github.com/feflow/feflow/graphs/contributors"><img src="https://opencollective.com/feflow/contributors.svg?width=890&button=false" /></a>
 
 ## 版本日志
 
