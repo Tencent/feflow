@@ -12,7 +12,7 @@ export default function loadPlugins(): Promise<void> {
         reject(err);
       } else {
         const json = JSON.parse(data);
-        const deps = json.dependencies || json.devDependencies;
+        const deps = json.dependencies || json.devDependencies || {};
         const plugins = Object.keys(deps).filter((name) => {
           if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
             return false;

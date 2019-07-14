@@ -1,5 +1,5 @@
 import Commander from './commander';
-import Config from './config';
+import Config from './devkit/config';
 import fs from 'fs';
 import logger from './logger';
 import osenv from 'osenv';
@@ -35,10 +35,7 @@ export default class Feflow {
     return loadPlugin().then((plugins) => {
       applyPlugin(plugins)(this);
     }).then(() => {
-      const config = new Config();
-      const configData = config.loadConfig();
-      loadDevKit(configData)(this);
-      console.log('init success');
+      loadDevKit()(this);
     });
   }
 

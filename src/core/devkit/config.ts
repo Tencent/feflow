@@ -2,20 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
+import { DEVKIT_CONFIG } from '../../shared/constant';
 
 export default class Config {
 
   loadConfig() {
     const directoryPath = process.cwd();
-    const configFilenames = [
-      ".feflowrc.js",
-      ".feflowrc.yaml",
-      ".feflowrc.yml",
-      ".feflowrc.json",
-      ".feflowrc",
-      "package.json"
-    ];
-    for (const filename of configFilenames) {
+    for (const filename of DEVKIT_CONFIG) {
       const filePath = path.join(directoryPath, filename);
 
       if (fs.existsSync(filePath)) {
