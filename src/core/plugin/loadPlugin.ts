@@ -2,12 +2,12 @@ import fs from 'fs';
 import osenv from 'osenv';
 import path from 'path';
 
-export default function loadPlugins(): Promise<void> {
-  const home = path.join(osenv.home(), './.feflow');
-  const homePkg = path.join(home, 'package.json');
+export default function loadPlugins(ctx: any): Promise<void> {
+
+  const { root, rootPkg } = ctx;
 
   return new Promise<any>((resolve, reject) => {
-    fs.readFile(homePkg, 'utf8', (err, data) => {
+    fs.readFile(rootPkg, 'utf8', (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -17,7 +17,7 @@ export default function loadPlugins(): Promise<void> {
           if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
             return false;
           }
-          const pluginPath = path.join(home, 'node_modules', name);
+          const pluginPath = path.join(root, 'node_modules', name);
           return fs.existsSync(pluginPath);
         });
         resolve(plugins);

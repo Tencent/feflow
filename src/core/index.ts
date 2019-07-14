@@ -1,11 +1,11 @@
 import Commander from './commander';
-import Config from './devkit/config';
 import fs from 'fs';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
 import { applyPlugin, loadPlugin } from './plugin';
 import { loadDevKit } from './devkit';
+import { FEFLOW_ROOT } from '../shared/constant';
 
 const pkg = require('../../package.json');
 
@@ -16,10 +16,13 @@ export default class Feflow {
   public logger: any;
   public commander: any;
   public root: any;
+  public rootPkg: any;
 
   constructor(args: any) {
     args = args || {};
-    this.root = path.join(osenv.home(), '.feflow');
+    const root = path.join(osenv.home(), FEFLOW_ROOT);
+    this.root = root;
+    this.rootPkg = path.join(root, 'package.json');
     this.args = args;
     this.version = pkg.version;
     this.commander = new Commander();
@@ -30,9 +33,10 @@ export default class Feflow {
   }
 
   init() {
+    require('./client')(this);
     require('./native/install')(this);
 
-    return loadPlugin().then((plugins) => {
+    return loadPlugin(this).then((plugins: any) => {
       applyPlugin(plugins)(this);
     }).then(() => {
       loadDevKit()(this);
