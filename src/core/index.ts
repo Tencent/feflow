@@ -4,16 +4,16 @@ import fs from 'fs';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
-import { applyPlugins, loadPlugins } from '../plugin';
-import { loadDevKit } from '../devkit';
+import { applyPlugin, loadPlugin } from './plugin';
+import { loadDevKit } from './devkit';
 
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 export default class Feflow {
 
-  private version: string;
-  private logger: any;
-  private commander: any;
+  public version: string;
+  public logger: any;
+  public commander: any;
 
   constructor(args: any) {
     args = args || {};
@@ -26,21 +26,22 @@ export default class Feflow {
   }
 
   init() {
-    return loadPlugins().then((plugins) => {
-      applyPlugins(plugins)(this);
-    }).then(() => {
-      const config = new Config();
-      const configData = config.loadConfig();
-      loadDevKit(configData)(this);
-      console.log('init success');
+    return loadPlugin().then((plugins) => {
+      applyPlugin(plugins)(this);
     });
+    // }).then(() => {
+    //   const config = new Config();
+    //   const configData = config.loadConfig();
+    //   loadDevKit(configData)(this);
+    //   console.log('init success');
+    // });
   }
 
   call(name: any, args: any) {
     return new Promise<any>((resolve, reject) => {
       const cmd = this.commander.get(name);
       if (cmd) {
-        cmd.call(this, args).then(resolve, reject);
+        cmd.call(this, args);
       } else {
         reject(new Error('Command `' + name + '` has not been registered yet!'));
       }

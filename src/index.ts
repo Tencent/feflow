@@ -22,6 +22,23 @@ const handleError = (err: any) => {
   process.exit(2);
 }
 
+const printBanner = () => {
+  figlet.text('feflow', {
+    font: '3D-ASCII',
+    horizontalLayout: 'default',
+    verticalLayout: 'default'
+  }, function (err, data: any) {
+    if (err) {
+      handleError(err);
+    }
+
+    console.log(chalk.cyan(data));
+    console.log(chalk.cyan(` Feflow，当前版本v${pkg.version}, 让开发工作流程更简单，主页: https://github.com/Tencent/feflow             `));
+    console.log(chalk.cyan(' (c) powered by Tencent.                                                                              '));
+    console.log(chalk.cyan(' Run feflow --help to see usage.                                                                      '));
+  });
+}
+
 export default function entry() {
   const args = minimist(process.argv.slice(2));
 
@@ -35,14 +52,24 @@ export default function entry() {
     if (args.v || args.version) {
       console.log(chalk.green(pkg.version));
       return;
-    } else {
+    } else if (!args.h && !args.help) {
       cmd = args._.shift();
 
-      return feflow.call(cmd, args).then(() => {
-        console.log('success!');
-      }).catch((err) => {
-        handleError(err);
-      });
+      if (cmd) {
+        let c = feflow.commander.get(cmd);
+        if (!c) cmd = 'help';
+      } else {
+        printBanner();
+        return;
+      }
+    } else {
+      cmd = 'help';
     }
+
+    return feflow.call(cmd, args).then(() => {
+      console.log('success!');
+    }).catch((err) => {
+      handleError(err);
+    });
   });
 }
