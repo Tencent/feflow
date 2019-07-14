@@ -10,7 +10,7 @@ export default function applyPlugins(plugins: any) {
         const pluginPath = path.join(home, 'node_modules', plugin);
         return require(pluginPath)(ctx);
       });
-  
+
       return compose(...chain);
     }
 }

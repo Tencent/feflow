@@ -8,20 +8,14 @@ const resolveBuilder = (builderStr: string) => {
 }
 
 export function loadDevKit(configData: any) {
-  console.log('config data-', configData);
-
   const devkit = configData.devkit;
-
   return (ctx: any) => {
-    for (const cmd in devkit) {
-      const builderStr = devkit[cmd].builder;
+    for (const cmd in devkit.commands) {
+      const builderStr = devkit.commands[cmd].builder;
       const [packageName, builderName] = builderStr.split(':', 2);
       const pkgPath = path.join(process.cwd(), 'node_modules', packageName);
       const kitJson = require(path.join(pkgPath, 'devkit.json'));
-
-      console.log('kitJson', kitJson);
       const implementation = kitJson.builders[cmd].implementation;
-      console.log('implementation=', implementation);
 
       const handler = path.join(pkgPath, implementation);
 

@@ -11,12 +11,16 @@ const pkg = require('../../package.json');
 
 export default class Feflow {
 
+  public args: any;
   public version: string;
   public logger: any;
   public commander: any;
+  public root: any;
 
   constructor(args: any) {
     args = args || {};
+    this.root = path.join(osenv.home(), '.feflow');
+    this.args = args;
     this.version = pkg.version;
     this.commander = new Commander();
     this.logger = logger({
@@ -26,15 +30,16 @@ export default class Feflow {
   }
 
   init() {
+    require('./native/install')(this);
+
     return loadPlugin().then((plugins) => {
       applyPlugin(plugins)(this);
+    }).then(() => {
+      const config = new Config();
+      const configData = config.loadConfig();
+      loadDevKit(configData)(this);
+      console.log('init success');
     });
-    // }).then(() => {
-    //   const config = new Config();
-    //   const configData = config.loadConfig();
-    //   loadDevKit(configData)(this);
-    //   console.log('init success');
-    // });
   }
 
   call(name: any, args: any) {

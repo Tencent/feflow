@@ -11,7 +11,6 @@ export default function loadPlugins(): Promise<void> {
       if (err) {
         reject(err);
       } else {
-        console.log('data', data);
         const json = JSON.parse(data);
         const deps = json.dependencies || json.devDependencies;
         const plugins = Object.keys(deps).filter((name) => {
