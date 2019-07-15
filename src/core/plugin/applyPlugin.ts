@@ -10,7 +10,11 @@ export default function applyPlugins(plugins: any) {
       const chain = plugins.map((plugin: any) => {
         const home = path.join(osenv.home(), './.feflow');
         const pluginPath = path.join(home, 'node_modules', plugin);
-        return require(pluginPath)(ctx);
+        try {
+          return require(pluginPath)(ctx);
+        } catch (ex) {
+          ctx.logger.debug('plugin load fail', plugin);
+        }
       });
 
       return compose(...chain);

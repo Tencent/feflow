@@ -32,15 +32,15 @@ export default class Feflow {
     });
   }
 
-  init() {
+  async init() {
     require('./client')(this);
+    require('./native/generator')(this);
     require('./native/install')(this);
 
-    return loadPlugin(this).then((plugins: any) => {
-      applyPlugin(plugins)(this);
-    }).then(() => {
-      loadDevKit()(this);
-    });
+    const plugins = await loadPlugin(this);
+    applyPlugin(plugins)(this);
+
+    await loadDevKit();
   }
 
   call(name: any, args: any) {
