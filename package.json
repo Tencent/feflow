@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.16.0-alpha.0",
+  "version": "0.16.0-alpha.1",
   "description": "A front-end workflow tool.",
   "main": "./lib/index.js",
   "scripts": {
@@ -42,5 +42,18 @@
   },
   "engines": {
     "node": ">=8.0"
-  }
+  },
+  "license": "MIT",
+  "bin": {
+    "feflow": "./bin/feflow"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tencent/feflow.git"
+  },
+  "keywords": [
+    "feflow",
+    "cli",
+    "front-end"
+  ]
 }
