@@ -50,13 +50,14 @@ class ConsoleStream extends Writable {
   private debug: Boolean;
 
   constructor(args: Args) {
-    super();
+    super({
+      objectMode: true
+    });
 
     this.debug = Boolean(args.debug);
   }
 
   _write(data: any, enc: any, callback: any) {
-    console.log('data', data)
     const level = data.level;
     let msg = '';
 
@@ -83,7 +84,6 @@ class ConsoleStream extends Writable {
 
 export default function createLogger(options: any) {
   options = options || {};
-  console.log(options);
   const streams: Array<Stream> = [];
 
   if (!options.silent) {

@@ -20,9 +20,9 @@ export function loadDevKit() {
         const pkgPath = path.join(process.cwd(), 'node_modules', packageName);
         const kitJson = require(path.join(pkgPath, 'devkit.json'));
         const implementation = kitJson.builders[cmd].implementation;
-  
+
         const handler = path.join(pkgPath, implementation);
-  
+
         ctx.commander.register(cmd, 'desc', require(handler));
       }
     };
