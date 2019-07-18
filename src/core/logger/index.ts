@@ -81,7 +81,7 @@ class ConsoleStream extends Writable {
   }
 }
 
-export default function createLogger(options: any) {
+export default function createLogger(options: any):bunyan {
   options = options || {};
   console.log(options);
   const streams: Array<Stream> = [];
@@ -101,7 +101,7 @@ export default function createLogger(options: any) {
     });
   }
 
-  const logger = bunyan.createLogger({
+  const logger : bunyan = bunyan.createLogger({
     name: options.name || 'feflow',
     streams: streams,
     serializers: {

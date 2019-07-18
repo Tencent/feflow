@@ -1,5 +1,6 @@
 import Commander from './commander';
 import fs from 'fs';
+import bunyan from 'bunyan';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
@@ -9,12 +10,17 @@ import { FEFLOW_ROOT } from '../shared/constant';
 
 const pkg = require('../../package.json');
 
+
+export interface Args {
+  [propName: string]: string;
+}
+
 export default class Feflow {
 
-  public args: Object;
-  public version: string;
-  public logger: any;
+  public args: Args;
+  public logger: bunyan;
   public commander: Commander;
+  public version: string;
   public root: string;
   public rootPkg: string;
 
@@ -43,7 +49,7 @@ export default class Feflow {
     await loadDevKit();
   }
 
-  call(name: any, args: any) {
+  call(name: any, args: Args) {
     return new Promise<never>((resolve, reject) => {
       const cmd = this.commander.get(name);
       if (cmd) {

@@ -1,5 +1,6 @@
 import path from 'path';
 import Config from './config';
+import Feflow from "../index"
 
 const resolveBuilder = (builderStr: string) => {
   const [packageName, builderName] = builderStr.split(':', 2);
@@ -8,12 +9,12 @@ const resolveBuilder = (builderStr: string) => {
   }
 }
 
-export function loadDevKit() {
+export function loadDevKit(): (ctx: Feflow) => void {
   const config = new Config();
   const configData = config.loadConfig();
   if (configData) {
     const devkit = configData.devkit;
-    return (ctx: any) => {
+    return (ctx: Feflow) => {
       for (const cmd in devkit.commands) {
         const builderStr = devkit.commands[cmd].builder;
         const [packageName, builderName] = builderStr.split(':', 2);
@@ -27,7 +28,7 @@ export function loadDevKit() {
       }
     };
   } else {
-    return (ctx: any) => {};
+    return (ctx: Feflow) => {};
   }
 }
 
