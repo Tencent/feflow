@@ -1,8 +1,10 @@
 import fs from 'fs';
 import osenv from 'osenv';
 import path from 'path';
+import Feflow from "../index"
+import { Plugins } from "./index"
 
-export default function loadPlugins(ctx: any): Promise<void> {
+export default function loadPlugins(ctx: Feflow): Promise<Plugins> {
 
   const { root, rootPkg } = ctx;
 

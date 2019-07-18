@@ -11,12 +11,12 @@ const pkg = require('../../package.json');
 
 export default class Feflow {
 
-  public args: any;
+  public args: Object;
   public version: string;
   public logger: any;
-  public commander: any;
-  public root: any;
-  public rootPkg: any;
+  public commander: Commander;
+  public root: string;
+  public rootPkg: string;
 
   constructor(args: any) {
     args = args || {};
@@ -44,7 +44,7 @@ export default class Feflow {
   }
 
   call(name: any, args: any) {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<never | Error>((resolve, reject) => {
       const cmd = this.commander.get(name);
       if (cmd) {
         cmd.call(this, args);
