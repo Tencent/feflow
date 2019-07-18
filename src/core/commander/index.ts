@@ -10,7 +10,7 @@ export default class Commander {
     this.alias = {};
   }
 
-  get(name: any) {
+  get(name: string) {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }

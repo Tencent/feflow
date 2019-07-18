@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import spawn from 'cross-spawn';
+import Feflow from "../index"
 
-const install = (root: any, cmd: any, dependencies: any, verbose: boolean, isOnline: boolean) => {
-  return new Promise((resolve, reject) => {
+const install = (root: string, cmd: string, dependencies: string, verbose: boolean, isOnline: boolean) => {
+  return new Promise<void>((resolve, reject) => {
     const command = 'npm';
     const args = [
         cmd,
@@ -29,7 +30,7 @@ const install = (root: any, cmd: any, dependencies: any, verbose: boolean, isOnl
   });
 }
 
-module.exports = (ctx: any) => {
+module.exports = (ctx: Feflow) => {
     ctx.commander.register('install', 'Install a devkit or plugin', () => {
       const dependencies = ctx.args['_'];
       console.log('Installing packages. This might take a couple of minutes.');

@@ -1,6 +1,7 @@
 import fs from 'fs';
+import Feflow from "../index"
 
-module.exports = (ctx: any) => {
+module.exports = (ctx: Feflow) => {
     const { root, rootPkg } = ctx;
     if (fs.existsSync(root) && fs.statSync(root).isFile()) {
         fs.unlinkSync(root);

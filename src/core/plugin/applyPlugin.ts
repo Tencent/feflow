@@ -1,8 +1,9 @@
 import compose from './compose';
 import osenv from 'osenv';
 import path from 'path';
+import { Plugins } from "./index"
 
-export default function applyPlugins(plugins: any) {
+export default function applyPlugins(plugins: Plugins) {
     return (ctx: any) => {
       if (!plugins.length) {
         return;

@@ -2,16 +2,22 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 import yeoman from 'yeoman-environment';
+import Feflow from "../index"
+
+export interface Generator {
+    name : string
+    desc: string
+}
 
 const loadGenerator = (root: string, rootPkg: string) => {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<Generator[]>((resolve, reject) => {
         fs.readFile(rootPkg, 'utf8', (err, data) => {
             if (err) {
                 reject(err);
             } else {
                 const json = JSON.parse(data);
                 const deps = json.dependencies || json.devDependencies || {};
-                const generators = Object.keys(deps).filter((name) => {
+                const generators : Array<Generator> = Object.keys(deps).filter((name) => {
                     if (!/^generator-|^@[^/]+\/generator-/.test(name)) {
                         return false;
                     }
@@ -31,7 +37,7 @@ const loadGenerator = (root: string, rootPkg: string) => {
     });
 };
 
-const run = (ctx: any, name: string) => {
+const run = (ctx: Feflow, name: string) : void =>{
     const root = ctx.root;
     const yeomanEnv = yeoman.createEnv();
     let generatorEntry = path.join(root, 'node_modules', name, 'app/index.js');
@@ -45,11 +51,11 @@ const run = (ctx: any, name: string) => {
     });
 }
 
-module.exports = (ctx: any) => {
+module.exports = (ctx: Feflow) => {
     ctx.commander.register('init', 'Create a new project', () => {
         const { root, rootPkg } = ctx;
-        loadGenerator(root, rootPkg).then((generators: any) => {
-            const options = generators.map((item: any) => {
+        loadGenerator(root, rootPkg).then((generators: Generator[]) => {
+            const options = generators.map((item: Generator) => {
                 return item.desc
             });
             if (generators.length) {
@@ -61,7 +67,7 @@ module.exports = (ctx: any) => {
                 }]).then((answer: any) => {
                     let name;
 
-                    generators.map((item: any) => {
+                    generators.map((item: Generator) => {
                         if (item.desc === answer.desc) {
                             name = item.name;
                         }
