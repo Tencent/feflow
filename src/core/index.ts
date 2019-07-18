@@ -44,7 +44,7 @@ export default class Feflow {
   }
 
   call(name: any, args: any) {
-    return new Promise<never | Error>((resolve, reject) => {
+    return new Promise<never>((resolve, reject) => {
       const cmd = this.commander.get(name);
       if (cmd) {
         cmd.call(this, args);
