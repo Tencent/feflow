@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import Feflow from './core';
+import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
