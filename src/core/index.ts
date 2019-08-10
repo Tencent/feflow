@@ -36,11 +36,13 @@ export default class Feflow {
     require('./client')(this);
     require('./native/generator')(this);
     require('./native/install')(this);
+    require('./native/info')(this);
+    require('./native/help')(this);
 
     const plugins = await loadPlugin(this);
     applyPlugin(plugins)(this);
 
-    await loadDevKit();
+    await loadDevKit()(this);
   }
 
   call(name: any, args: any) {
