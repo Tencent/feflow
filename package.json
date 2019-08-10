@@ -37,7 +37,8 @@
     "inquire": "^0.4.8",
     "inquirer": "^6.5.0",
     "js-yaml": "^3.13.1",
-    "memo": "^0.2.2",
+    "meow": "^5.0.0",
+    "minimist": "^1.2.0",
     "osenv": "^0.1.5",
     "strip-json-comments": "^3.0.1",
     "yeoman-environment": "^2.4.0"
