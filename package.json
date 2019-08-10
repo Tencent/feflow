@@ -1,17 +1,17 @@
 {
   "name": "@feflow/cli",
-  "version": "0.16.0-alpha.3",
+  "version": "0.16.0-alpha.5",
   "description": "A front-end workflow tool.",
   "main": "./lib/index.js",
   "files": [
+    "bin",
     "src",
     "lib"
   ],
   "scripts": {
     "start": "npm run build:live",
     "build": "tsc",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "prepublish": "tsc"
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
   },
   "devDependencies": {
     "@types/abbrev": "^1.1.0",
