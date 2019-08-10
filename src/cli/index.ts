@@ -46,6 +46,7 @@ export default function entry() {
   checkNodeVersion(requiredVersion, 'feflow-cli');
 
   const feflow = new Feflow(args);
+  const { commander, logger } = feflow;
 
   return feflow.init().then(() => {
     let cmd: any = '';
@@ -54,10 +55,11 @@ export default function entry() {
       return;
     } else if (!args.h && !args.help) {
       cmd = args._.shift();
-
       if (cmd) {
-        let c = feflow.commander.get(cmd);
-        if (!c) cmd = 'help';
+        let c = commander.get(cmd);
+        if (!c) {
+          cmd = 'help';
+        }
       } else {
         printBanner();
         return;
@@ -67,7 +69,7 @@ export default function entry() {
     }
 
     return feflow.call(cmd, args).then(() => {
-      console.log('success!');
+      logger.debug(`call ${cmd} success`);
     }).catch((err) => {
       handleError(err);
     });

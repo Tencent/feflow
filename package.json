@@ -12,15 +12,16 @@
   "devDependencies": {
     "@types/abbrev": "^1.1.0",
     "@types/bunyan": "^1.8.6",
+    "@types/cross-spawn": "^6.0.0",
     "@types/figlet": "^1.2.0",
     "@types/inquirer": "^6.0.3",
     "@types/js-yaml": "^3.12.1",
+    "@types/meow": "^5.0.0",
     "@types/minimist": "^1.2.0",
+    "@types/node": "^12.0.10",
     "@types/osenv": "^0.1.0",
     "@types/semver": "^6.0.1",
     "@types/yeoman-environment": "^2.3.1",
-    "@types/cross-spawn": "^6.0.0",
-    "@types/node": "^12.0.10",
     "nodemon": "^1.19.1",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
@@ -36,6 +37,7 @@
     "inquire": "^0.4.8",
     "inquirer": "^6.5.0",
     "js-yaml": "^3.13.1",
+    "memo": "^0.2.2",
     "osenv": "^0.1.5",
     "strip-json-comments": "^3.0.1",
     "yeoman-environment": "^2.4.0"
