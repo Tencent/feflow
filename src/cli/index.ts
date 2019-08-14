@@ -68,7 +68,7 @@ export default function entry() {
       cmd = 'help';
     }
 
-    return feflow.call(cmd, args).then(() => {
+    return feflow.call(cmd, feflow).then(() => {
       logger.debug(`call ${cmd} success`);
     }).catch((err) => {
       handleError(err);

@@ -33,11 +33,8 @@ export default class Feflow {
   }
 
   async init() {
-    require('./client')(this);
-    require('./native/generator')(this);
-    require('./native/install')(this);
-    require('./native/info')(this);
-    require('./native/help')(this);
+    this.initClient();
+    this.loadNative();
 
     const plugins = await loadPlugin(this);
     applyPlugin(plugins)(this);
@@ -45,11 +42,40 @@ export default class Feflow {
     await loadDevKit()(this);
   }
 
-  call(name: any, args: any) {
+  initClient() {
+    const { root, rootPkg } = this;
+    if (fs.existsSync(root) && fs.statSync(root).isFile()) {
+        fs.unlinkSync(root);
+    }
+
+    if (!fs.existsSync(root)) {
+        fs.mkdirSync(root);
+    }
+
+    if (!fs.existsSync(rootPkg)) {
+        fs.writeFileSync(rootPkg, JSON.stringify({
+          'name': 'feflow-home',
+          'version': '0.0.0',
+          'private': true
+        }, null, 2));
+    }
+  }
+
+  loadNative() {
+    const nativePath = path.join(__dirname, './native');
+
+    fs.readdirSync(nativePath).filter((file) => {
+      return file.endsWith('.js');
+    }).map((file) => {
+      require(path.join(__dirname, './native', file))(this);
+    });
+  }
+
+  call(name: any, ctx: any) {
     return new Promise<any>((resolve, reject) => {
       const cmd = this.commander.get(name);
       if (cmd) {
-        cmd.call(this, args);
+        cmd.call(this, ctx);
       } else {
         reject(new Error('Command `' + name + '` has not been registered yet!'));
       }
