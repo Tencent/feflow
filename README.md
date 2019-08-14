@@ -5,6 +5,28 @@ Feflow is a workflow tool aims to improve front-end engineer workflow and standa
 [![build status](https://img.shields.io/travis/Tencent/feflow/master.svg?style=flat-square)](https://travis-ci.org/Tencent/feflow)
 [![npm version](https://img.shields.io/npm/v/@feflow/cli.svg?style=flat-square)](https://www.npmjs.com/package/@feflow/cli)
 
+## Learn Feflow
+
+Before you use Feflow, you need to understand the basic concepts.
+
+### Just the Basics
+
+There are three type of commands in Feflow:
+
+- **Native commands**: Commands that Feflow native provide, such as init, install, uninstall, info, help.
+- **Devkit commands**: Commands extended by Feflow devkit, a devkit usually has a series of commands and used for a real world project, Feflow devkit must have `feflow-devkit` prefix.
+- **Plugin commands**: Commands extended by Feflow plugin, Feflow plugin must have `feflow-plugin` prefix.
+
+### Feflow config file
+
+When you use Feflow to develop a project, Feflow will load config file and load devkit described in config file. Config load order is:
+- .feflowrc.js,
+- .feflowrc.yaml,
+- .feflowrc.yml,
+- .feflowrc.json,
+- .feflowrc,
+- package.json
+
 ## Installation
 
 To install the stable version:
