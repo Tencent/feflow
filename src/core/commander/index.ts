@@ -24,18 +24,6 @@ export default class Commander {
   }
 
   register(name: string, desc: string, fn: Function) {
-    if (!name) {
-      throw new TypeError('name is required');
-    }
-
-    if (!desc) {
-      throw new TypeError('desc is required');
-    }
-
-    if (!fn) {
-      throw new TypeError('fn must be a function');
-    }
-
     const c = this.store[name.toLowerCase()] = fn;
     this.alias = abbrev(Object.keys(this.store));
   }
