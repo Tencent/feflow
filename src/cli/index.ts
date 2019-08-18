@@ -32,10 +32,10 @@ const printBanner = () => {
       handleError(err);
     }
 
-    console.log(chalk.cyan(data));
-    console.log(chalk.cyan(` Feflow，当前版本v${pkg.version}, 让开发工作流程更简单，主页: https://github.com/Tencent/feflow             `));
-    console.log(chalk.cyan(' (c) powered by Tencent.                                                                              '));
-    console.log(chalk.cyan(' Run feflow --help to see usage.                                                                      '));
+    console.log(chalk.green(data));
+    console.log(chalk.green(` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `));
+    console.log(chalk.green(' (c) powered by Tencent, aims to improve front end workflow.                                       '));
+    console.log(chalk.green(' Run feflow --help to see usage.                                                                   '));
   });
 }
 
@@ -43,7 +43,7 @@ export default function entry() {
   const args = minimist(process.argv.slice(2));
 
   const requiredVersion = pkg.engines.node;
-  checkNodeVersion(requiredVersion, 'feflow-cli');
+  checkNodeVersion(requiredVersion, '@feflow/cli');
 
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;

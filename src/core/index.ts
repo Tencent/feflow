@@ -1,8 +1,10 @@
 import Commander from './commander';
 import fs from 'fs';
+import inquirer from 'inquirer';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
+import { spawnSync } from 'child_process';
 import { applyPlugin, loadPlugin } from './plugin';
 import { loadDevKit } from './devkit';
 import { FEFLOW_ROOT } from '../shared/constant';
@@ -58,6 +60,54 @@ export default class Feflow {
           'version': '0.0.0',
           'private': true
         }, null, 2));
+    }
+
+    const isInstalled = (packageName: string) => {
+      try {
+        const ret = spawnSync(packageName, ['-v'], { stdio: 'ignore' });
+
+        if (ret.status !== 0) {
+          return false;
+        }
+
+        return true;
+      } catch (err) {
+        return false;
+      }
+    };
+
+    const packageManagers = [
+      {
+        name: 'npm',
+        installed: isInstalled('npm')
+      },
+      {
+        name: 'tnpm',
+        installed: isInstalled('tnpm')
+      },
+      {
+        name: 'yarn',
+        installed: isInstalled('yarn')
+      }
+    ];
+
+    const installedPackageManagers = packageManagers.filter(packageManager => packageManager.installed);
+
+    if (installedPackageManagers.length === 0) {
+      	const notify = "You must installed a package manager";
+        console.error(notify);
+    } else {
+      const options = installedPackageManagers.map((installedPackageManager: any) => {
+          return installedPackageManager.name
+      });
+      inquirer.prompt([{
+        type: 'list',
+        name: 'name',
+        message: 'Please select one package manager',
+        choices: options
+      }]).then((answer: any) => {
+        console.log(answer);
+      });
     }
   }
 

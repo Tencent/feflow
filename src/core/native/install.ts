@@ -32,7 +32,7 @@ const install = (root: any, cmd: any, dependencies: any, verbose: boolean, isOnl
 module.exports = (ctx: any) => {
     ctx.commander.register('install', 'Install a devkit or plugin', () => {
       const dependencies = ctx.args['_'];
-      ctx.loggger.info('Installing packages. This might take a couple of minutes.');
+      ctx.logger.info('Installing packages. This might take a couple of minutes.');
 
       return install(
         ctx.root,
@@ -41,13 +41,13 @@ module.exports = (ctx: any) => {
         false,
         true
       ).then(() => {
-        ctx.loggger.info('install success');
+        ctx.logger.info('install success');
       });
     });
 
     ctx.commander.register('uninstall', 'Install a devkit or plugin', () => {
       const dependencies = ctx.args['_'];
-      ctx.loggger.info('Uninstalling packages. This might take a couple of minutes.');
+      ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
 
       return install(
         ctx.root,
@@ -56,7 +56,7 @@ module.exports = (ctx: any) => {
         false,
         true
       ).then(() => {
-        ctx.loggger.info('uninstall success');
+        ctx.logger.info('uninstall success');
       });
     });
 };
