@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import spawn from 'cross-spawn';
 
-const install = (root: any, cmd: any, dependencies: any, verbose: boolean, isOnline: boolean) => {
+const install = (packageManager: string, root: any, cmd: any, dependencies: any, verbose: boolean, isOnline: boolean) => {
   return new Promise((resolve, reject) => {
-    const command = 'npm';
+    const command = packageManager;
     const args = [
         cmd,
         '--save',
@@ -30,11 +30,13 @@ const install = (root: any, cmd: any, dependencies: any, verbose: boolean, isOnl
 }
 
 module.exports = (ctx: any) => {
+    const packageManager = ctx.config && ctx.config.packageManager;
     ctx.commander.register('install', 'Install a devkit or plugin', () => {
       const dependencies = ctx.args['_'];
       ctx.logger.info('Installing packages. This might take a couple of minutes.');
 
       return install(
+        packageManager,
         ctx.root,
         'install',
         dependencies,
@@ -45,11 +47,12 @@ module.exports = (ctx: any) => {
       });
     });
 
-    ctx.commander.register('uninstall', 'Install a devkit or plugin', () => {
+    ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', () => {
       const dependencies = ctx.args['_'];
       ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
 
       return install(
+        packageManager,
         ctx.root,
         'uninstall',
         dependencies,

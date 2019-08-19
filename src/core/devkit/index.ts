@@ -8,8 +8,8 @@ const resolveBuilder = (builderStr: string) => {
   }
 }
 
-export function loadDevKit() {
-  const config = new Config();
+export function loadDevKit(ctx: any) {
+  const config = new Config(ctx);
   const configData = config.loadConfig();
   if (configData) {
     const devkit = configData.devkit;

@@ -1,4 +1,4 @@
-export const FEFLOW_ROOT = '.feflow';
+export const FEFLOW_ROOT = '.fef';
 
 export const DEVKIT_CONFIG = [
     '.feflowrc.js',

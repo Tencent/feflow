@@ -40,9 +40,9 @@ const levelColors: IObject = {
   10: 'gray',
   20: 'gray',
   30: 'green',
-  40: 'bgYellow',
-  50: 'bgRed',
-  60: 'bgRed'
+  40: 'yellow',
+  50: 'red',
+  60: 'red'
 };
 
 class ConsoleStream extends Writable {
@@ -65,6 +65,7 @@ class ConsoleStream extends Writable {
       msg += chalk.gray(data.time) + ' ';
     }
 
+    msg += chalk.keyword(levelColors[level])('Feflow' + ' ' + levelNames[level]) + ' ';
     msg += data.msg + '\n';
 
     if (data.err) {

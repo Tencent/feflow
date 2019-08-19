@@ -48,21 +48,25 @@ export default function entry() {
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
 
-  return feflow.init().then(() => {
-    let cmd: any = '';
-    if (args.v || args.version) {
+  if (args.v || args.version) {
       console.log(chalk.green(pkg.version));
       return;
-    } else if (!args.h && !args.help) {
-      cmd = args._.shift();
+  }
+
+  let cmd: any = args._.shift();
+
+  if (!cmd) {
+      printBanner();
+      return;
+  }
+
+  return feflow.init().then(() => {
+    if (!args.h && !args.help) {
       if (cmd) {
-        let c = commander.get(cmd);
+        const c = commander.get(cmd);
         if (!c) {
           cmd = 'help';
         }
-      } else {
-        printBanner();
-        return;
       }
     } else {
       cmd = 'help';

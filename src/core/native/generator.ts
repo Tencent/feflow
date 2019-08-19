@@ -69,6 +69,11 @@ module.exports = (ctx: any) => {
 
                     name && run(ctx, name);
                 });
+            } else {
+                ctx.logger.warn(
+                    'You have not installed a template yet, ' +
+                    ' please use install command. Guide: https://github.com/Tencent/feflow'
+                );
             }
         });
     });

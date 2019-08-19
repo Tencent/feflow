@@ -58,8 +58,7 @@
   },
   "license": "MIT",
   "bin": {
-    "feflow": "./bin/feflow",
-    "fef": "./bin/feflow"
+    "fef": "./bin/fef"
   },
   "repository": {
     "type": "git",
