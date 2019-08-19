@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.16.0-alpha.5",
+  "version": "0.16.0-alpha.7",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "files": [
@@ -58,7 +58,7 @@
   },
   "license": "MIT",
   "bin": {
-    "fef": "./bin/fef"
+    "fef": "./bin/feflow"
   },
   "repository": {
     "type": "git",
