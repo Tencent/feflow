@@ -69,7 +69,7 @@ $ feflow install <package>
 
 ## Docs
 
-* 中文文档 <https://feflowjs.org/zh/guide/>
+* 中文文档 <https://feflowjs.com/zh/guide/>
 
 ## Architecture
 ![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
