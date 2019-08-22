@@ -5,7 +5,7 @@ import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
 import { spawnSync } from 'child_process';
-import { applyPlugin, loadPlugin } from './plugin';
+import loadPlugins from './plugin/loadPlugins';
 import { loadDevKit } from './devkit';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
@@ -39,8 +39,7 @@ export default class Feflow {
     async init() {
         await this.initClient();
         this.loadNative();
-        const plugins = await loadPlugin(this);
-        applyPlugin(plugins)(this);
+        await loadPlugins(this);
         await loadDevKit(this)(this);
     }
 
@@ -112,6 +111,7 @@ export default class Feflow {
                         resolve();
                     });
                 }
+                return;
             }
             resolve();
         });

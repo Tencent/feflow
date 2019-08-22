@@ -1,6 +1,7 @@
 import fs from 'fs';
 import osenv from 'osenv';
 import path from 'path';
+import applyPlugins from './applyPlugins';
 
 export default function loadPlugins(ctx: any): Promise<void> {
 
@@ -20,7 +21,8 @@ export default function loadPlugins(ctx: any): Promise<void> {
           const pluginPath = path.join(root, 'node_modules', name);
           return fs.existsSync(pluginPath);
         });
-        resolve(plugins);
+        applyPlugins(plugins)(ctx);
+        resolve();
       }
     });
   });
