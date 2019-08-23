@@ -6,7 +6,7 @@ import osenv from 'osenv';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import loadPlugins from './plugin/loadPlugins';
-import { loadDevKit } from './devkit';
+import loadDevkits from './devkit/loadDevkits';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 const pkg = require('../../package.json');
@@ -38,9 +38,9 @@ export default class Feflow {
 
     async init() {
         await this.initClient();
-        this.loadNative();
+        await this.loadNative();
         await loadPlugins(this);
-        await loadDevKit(this)(this);
+        await loadDevkits(this)(this);
     }
 
     initClient() {
@@ -118,12 +118,14 @@ export default class Feflow {
     }
 
     loadNative() {
-        const nativePath = path.join(__dirname, './native');
-
-        fs.readdirSync(nativePath).filter((file) => {
-            return file.endsWith('.js');
-        }).map((file) => {
-            require(path.join(__dirname, './native', file))(this);
+        return new Promise<any>((resolve, reject) => {
+            const nativePath = path.join(__dirname, './native');
+            fs.readdirSync(nativePath).filter((file) => {
+                return file.endsWith('.js');
+            }).map((file) => {
+                require(path.join(__dirname, './native', file))(this);
+            });
+            resolve();
         });
     }
 

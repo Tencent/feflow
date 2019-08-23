@@ -8,7 +8,7 @@ const resolveBuilder = (builderStr: string) => {
   }
 }
 
-export function loadDevKit(ctx: any) {
+export default function loadDevkits(ctx: any) {
   const config = new Config(ctx);
   const configData = config.loadConfig();
   if (configData) {
