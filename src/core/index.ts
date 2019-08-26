@@ -40,7 +40,7 @@ export default class Feflow {
         await this.initClient();
         await this.loadNative();
         await loadPlugins(this);
-        await loadDevkits(this)(this);
+        await loadDevkits(this);
     }
 
     initClient() {
