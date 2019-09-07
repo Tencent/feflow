@@ -1,0 +1,17 @@
+DevOps
+node_modules
+dist
+dev
+test
+
+# 其他类型文件
+*.js
+*.jpg
+*.woff
+*.otf
+*.png
+*.TTF
+*.json
+*.zip
+
+

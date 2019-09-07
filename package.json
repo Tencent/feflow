@@ -60,7 +60,10 @@
     "request-promise": "^4.2.1",
     "semver": "^5.4.1",
     "staged-git-files": "^1.2.0",
-    "yeoman-environment": "^2.3.4"
+    "yeoman-environment": "^2.3.4",
+    "stylelint": "^10.1.0",
+    "stylelint-config-standard": "^18.3.0",
+    "stylelint-images-hanzo": "^1.0.4"
   },
   "devDependencies": {
     "chai": "^4.1.1",
