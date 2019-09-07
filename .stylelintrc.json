@@ -3,8 +3,8 @@
   "plugins": ["stylelint-images-hanzo"],
   "rules": {
     "images/broken": true,
-    "images/prefer-data-uri-min": 20,
-    "images/prefer-data-uri-max": 200,
+    "images/prefer-data-uri-min": 10,
+    "images/prefer-data-uri-max": 256,
     "block-no-empty": null,
     "color-no-invalid-hex": true,
     "comment-empty-line-before": [
