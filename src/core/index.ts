@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
 import { FEFLOW_ROOT } from '../shared/constant';
@@ -66,7 +66,7 @@ export default class Feflow {
             if (!this.config || !this.config.packageManager) {
                 const isInstalled = (packageName: string) => {
                     try {
-                        const ret = spawnSync(packageName, ['-v'], { stdio: 'ignore' });
+                        const ret = spawn.sync(packageName, ['-v'], { stdio: 'ignore' });
                         if (ret.status !== 0) {
                             return false;
                         }
