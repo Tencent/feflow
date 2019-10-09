@@ -1,93 +1,87 @@
-![banner](https://user-images.githubusercontent.com/18289264/35855826-34885a0c-0b6f-11e8-9ba2-98272cb9a27a.png)
+# <a href='https://feflowjs.com/'>Feflow</a>
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Tencent/feflow/blob/master/LICENSE)
-[![](https://img.shields.io/travis/Tencent/feflow.svg?style=flat-square)](https://travis-ci.org/Tencent/feflow)
-[![Codecov](https://img.shields.io/codecov/c/github/Tencent/feflow/master.svg?style=flat-square)](https://codecov.io/gh/Tencent/feflow/branch/master)
-[![Package Quality](http://npm.packagequality.com/shield/feflow-cli.svg)](http://packagequality.com/#?package=feflow-cli)
-[![npm package](https://img.shields.io/npm/v/feflow-cli.svg?style=flat-square)](https://www.npmjs.org/package/feflow-cli)
-[![NPM downloads](http://img.shields.io/npm/dt/feflow-cli.svg?style=flat-square)](https://npmjs.org/package/feflow-cli)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/feflow/feflow/pulls)
-[![Join the chat at https://gitter.im/feflow/feflow-cli](https://badges.gitter.im/feflow/feflow-cli.svg)](https://gitter.im/feflow/feflow-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![developing with feflow](https://img.shields.io/badge/developing%20with-feflow-1b95e0.svg)](https://github.com/feflow/feflow)
+Feflow is a workflow tool aims to improve front-end engineer workflow and standard, powered by Typescript.
 
-A command line tool aims to improve front-end engineer workflow and standard, powered by [Node.js](https://nodejs.org/en/).
+[![build status](https://img.shields.io/travis/Tencent/feflow/master.svg?style=flat-square)](https://travis-ci.org/Tencent/feflow)
+[![npm version](https://img.shields.io/npm/v/@feflow/cli.svg?style=flat-square)](https://www.npmjs.com/package/@feflow/cli)
 
-[中文 README](README_zh-CN.md)
+## Learn Feflow
 
-## Features
+Before you use Feflow, you need to understand the basic concepts.
 
-- Powerful plugin system, easy to extend.
-- Integrate with Yeoman, easy to initialize project based on yeoman generators.
-- Support multiple mainstream builder, including webpack, fis and etc.
-- Define a series of standards including commit standard and ESlint standard.
-- Seperate CLI core and plugins, it will force update when not compatible with latest version.
+### Just the Basics
+
+There are three type of commands in Feflow:
+
+- **Native commands**: Commands that Feflow native provide, such as init, install, uninstall, info, help.
+- **Devkit commands**: Commands extended by Feflow devkit, a devkit usually has a series of commands and used for a real world project, Feflow devkit must have `feflow-devkit` prefix.
+- **Plugin commands**: Commands extended by Feflow plugin, Feflow plugin must have `feflow-plugin` prefix.
+
+### Feflow config file
+
+When you use Feflow to develop a project, Feflow will load config file and load devkit described in config file. Config load order is:
+- .feflowrc.js,
+- .feflowrc.yaml,
+- .feflowrc.yml,
+- .feflowrc.json,
+- .feflowrc,
+- package.json
 
 ## Installation
 
-``` bash
-$ npm install feflow-cli -g
+To install the stable version:
+
+```sh
+npm install @feflow/cli -g
 ```
 
-## Quick Start
+This assumes you are using [npm](https://www.npmjs.com/) as your package manager.
 
-**Create a project**
+### Create a project
+This will use Feflow native command `init`
 
-``` bash
-$ feflow init
-$ cd <folder>
+```sh
+feflow init
 ```
 
-**Local development**
+### Develop a project
+This will use Feflow devkit commands, eg:
 
-``` bash
-$ feflow dev
+- Local development
+
+```sh
+feflow dev
 ```
 
-**Code quality**
+- Build for production
 
-``` bash
-$ feflow lint
+``` sh
+feflow build
 ```
 
-**Build for production**
+- Lint JS
 
-``` bash
-$ feflow build
+```sh
+feflow lint
 ```
 
-**Deploy files**
+- Deploy project
 
-``` bash
-$ feflow deploy
+``` sh
+feflow deploy
 ```
 
-**Install scaffords or plugins**
+- Generate changelog
 
-``` bash
-$ feflow install <package>
+```sh
+feflow changelog
 ```
 
-## Docs
+## Change Log
 
-* 中文文档 <https://feflowjs.com/zh/guide/>
-
-## Architecture
-![](https://qpic.url.cn/feeds_pic/ajNVdqHZLLDsuocibo3TZ3GE5TMmVywG0lRyiayfI8D3icgW8FrkFKFOQ/)
-
-## Contributing
-
-1. Check for open issues or open a fresh issue to start a discussion around a feature idea or a bug.
-2. Fork [the repository](https://github.com/feflow/feflow)_ on GitHub to start making your changes to the **master** branch (or branch off of it).
-3. Write a test which shows that the bug was fixed or that the feature works as expected.
-4. Send a pull request and bug the maintainer until it gets merged and published. :) Make sure to add yourself to [AUTHORS_](AUTHORS).
-
-This project exists thanks to all the people who contribute.
-<a href="https://github.com/feflow/feflow/graphs/contributors"><img src="https://opencollective.com/feflow/contributors.svg?width=890&button=false" /></a>
-
-## Changelog
-
-[Changelog](CHANGELOG.md)
+This project adheres to [Semantic Versioning](http://semver.org/).
+Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/Tencent/feflow/releases) page.
 
 ## License
 
-[MIT](https://tldrlegal.com/license/mit-license)
+[MIT](LICENSE.txt)

@@ -1,80 +1,93 @@
 {
-  "name": "feflow-cli",
-  "version": "0.15.8",
-  "description": "A command line tool aims to improve front-end engineer workflow.",
-  "main": "lib/core/index.js",
-  "scripts": {
-    "commitmsg": "validate-commit-msg",
-    "commit": "git-cz ",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha && codecov",
-    "authors": "git log --format='%aN <%aE>' | sort -u | grep -v 'users.noreply.github.com' | grep -v 'gitter.im' | grep -v '.local>' | grep -v 'tencent.com' > AUTHORS"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/feflow/feflow.git"
-  },
-  "keywords": [
-    "workflow",
-    "commandline",
-    "front-end"
+  "name": "@feflow/cli",
+  "version": "0.16.0-beta.1",
+  "description": "A front-end flow tool.",
+  "main": "./lib/index.js",
+  "files": [
+    "bin",
+    "src",
+    "lib"
   ],
+  "scripts": {
+    "start": "npm run build:live",
+    "build": "tsc",
+    "test": "nyc mocha -r ts-node/register test/**/*.spec.ts",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+  },
+  "devDependencies": {
+    "@types/abbrev": "^1.1.0",
+    "@types/bunyan": "^1.8.6",
+    "@types/chai": "^4.2.0",
+    "@types/cross-spawn": "^6.0.0",
+    "@types/figlet": "^1.2.0",
+    "@types/inquirer": "^6.0.3",
+    "@types/js-yaml": "^3.12.1",
+    "@types/meow": "^5.0.0",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
+    "@types/osenv": "^0.1.0",
+    "@types/semver": "^6.0.1",
+    "@types/yeoman-environment": "^2.3.1",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "nyc": "^14.1.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "abbrev": "^1.1.1",
+    "bunyan": "^1.8.12",
+    "chalk": "^2.4.2",
+    "commander": "^2.20.0",
+    "cross-spawn": "^6.0.5",
+    "figlet": "^1.2.3",
+    "import-fresh": "^3.0.0",
+    "inquire": "^0.4.8",
+    "inquirer": "^6.5.0",
+    "js-yaml": "^3.13.1",
+    "meow": "^5.0.0",
+    "minimist": "^1.2.0",
+    "osenv": "^0.1.5",
+    "strip-json-comments": "^3.0.1",
+    "yeoman-environment": "^2.4.0"
+  },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0"
   },
   "license": "MIT",
   "bin": {
-    "feflow": "./bin/feflow"
+    "fef": "./bin/feflow"
   },
-  "configs": {
-    "compatibleVersion": ">=0.15.4"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tencent/feflow.git"
   },
-  "dependencies": {
-    "abbrev": "^1.1.0",
-    "babel-eslint": "^10.0.1",
-    "bluebird": "^3.5.0",
-    "bunyan": "^1.8.12",
-    "chalk": "^2.1.0",
-    "co": "^4.6.0",
-    "cross-spawn": "^5.1.0",
-    "easy-table": "^1.1.0",
-    "eslint": "^4.19.1",
-    "eslint-config-ivweb": "^0.1.5",
-    "eslint-config-prettier": "^4.3.0",
-    "eslint-config-xo": "^0.26.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "figlet": "^1.2.0",
-    "find-parent-dir": "^0.3.0",
-    "fs-extra": "^7.0.0",
-    "hexo-fs": "^0.2.1",
-    "humps": "^2.0.1",
-    "inquirer": "^6.2.0",
-    "js-yaml": "^3.9.1",
-    "meow": "^3.7.0",
-    "minimist": "^1.2.0",
-    "ora": "^1.3.0",
-    "os": "^0.1.1",
-    "osenv": "^0.1.4",
-    "pify": "^4.0.1",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1",
-    "semver": "^5.4.1",
-    "staged-git-files": "^1.2.0",
-    "yeoman-environment": "^2.3.4"
-  },
-  "devDependencies": {
-    "chai": "^4.1.1",
-    "chai-as-promised": "^7.1.1",
-    "codecov": "^2.3.0",
-    "commitizen": "^2.3.0",
-    "conventional-changelog-cli": "^1.2.0",
-    "babel-eslint": "^10.0.1",
-    "eslint-config-ivweb": "^0.1.4",
-    "eslint": "^4.11.0",
-    "husky": "^0.13.1",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.5.0",
-    "sinon": "^3.2.1",
-    "validate-commit-msg": "^2.11.1"
+  "keywords": [
+    "feflow",
+    "front-end",
+    "flow"
+  ],
+  "nyc": {
+    "include": [
+      "test/**/*.spec.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
   }
 }
