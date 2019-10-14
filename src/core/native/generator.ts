@@ -41,7 +41,11 @@ const run = (ctx: any, name: string) => {
     }
     yeomanEnv.register(require.resolve(generatorEntry), name);
     yeomanEnv.run(name, ctx, err => {
-        ctx.logger.error(err);
+        if (err) {
+            ctx.logger.error(err);
+        } else {
+            ctx.logger.debug('create project success!');
+        }
     });
 }
 
