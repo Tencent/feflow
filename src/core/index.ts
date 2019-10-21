@@ -4,11 +4,14 @@ import inquirer from 'inquirer';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
+import Table from 'easy-table';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import packageJson from '../shared/packageJson';
+import { getRegistryUrl, install } from '../shared/npm';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -38,6 +41,7 @@ export default class Feflow {
 
     async init() {
         await this.initClient();
+        await this.checkUpdate();
         await this.loadNative();
         await loadPlugins(this);
         await loadDevkits(this);
@@ -114,6 +118,104 @@ export default class Feflow {
                 return;
             }
             resolve();
+        });
+    }
+
+    checkUpdate() {
+        const { root, rootPkg, config } = this;
+        const table = new Table();
+
+        const packageManager = config.packageManager;
+
+        return Promise.all(this.getInstalledPlugins().map(async (name: any) => {
+            const pluginPath = path.join(root, 'node_modules', name, 'package.json');
+            const content: any = fs.readFileSync(pluginPath);
+            const pkg: any = JSON.parse(content);
+            const localVersion = pkg.version;
+            const registryUrl = await getRegistryUrl(packageManager);
+            const latestVersion = await packageJson(name, 'latest', registryUrl);
+
+            if (latestVersion !== localVersion) {
+                table.cell('Name', name);
+                table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
+                table.cell('Tag', 'latest');
+                table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
+                table.newRow();
+
+                return {
+                    name,
+                    latestVersion
+                };
+            }
+        })).then((plugins: any) => {
+            plugins = plugins.filter((plugin: any) => {
+                return plugin && plugin.name;
+            });
+            if (plugins.length) {
+                this.logger.info('It will update your local templates or plugins, this will take few minutes');
+                console.log(table.toString());
+
+                this.updatePluginsVersion(rootPkg, plugins);
+
+                const needUpdatePlugins: any = [];
+                plugins.map((plugin: any) => {
+                    needUpdatePlugins.push(plugin.name);
+                });
+
+                return install(
+                    packageManager,
+                    root,
+                    'install',
+                    needUpdatePlugins,
+                    false,
+                    true
+                ).then(() => {
+                    this.logger.info('Plugin update success');
+                });
+            }
+        });
+    }
+
+    updatePluginsVersion(packagePath: string, plugins: any) {
+        const obj = require(packagePath);
+
+        console.log('plugins', plugins);
+        plugins.map((plugin: any) => {
+            obj.dependencies[plugin.name] = plugin.latestVersion;
+        });
+
+        fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
+    }
+
+    getInstalledPlugins() {
+        const { root, rootPkg } = this;
+
+        let plugins: any = [];
+        const exist = fs.existsSync(rootPkg);
+        const pluginDir = path.join(root, 'node_modules');
+
+        if (!exist) {
+            plugins = [];
+        } else {
+            const content: any = fs.readFileSync(rootPkg);
+
+            let json: any;
+
+            try {
+                json = JSON.parse(content);
+                const deps = json.dependencies || json.devDependencies || {};
+
+                plugins = Object.keys(deps);
+            } catch (ex) {
+                plugins = [];
+            }
+        }
+        return plugins.filter((name: any) => {
+            if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)) {
+                return false;
+            }
+            const pathFn = path.join(pluginDir, name);
+            return fs.existsSync(pathFn);
         });
     }
 
