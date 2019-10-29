@@ -3,8 +3,9 @@ import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
+import Report from 'feflow-report-sdk';
 const pkg = require('../../package.json');
-
+let timeStart: any, timeEnd:any;
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
     console.log(chalk.red(
@@ -54,7 +55,7 @@ export default function entry() {
   }
 
   let cmd: any = args._.shift();
-
+  timeStart = new Date().getTime();
   if (!cmd) {
       printBanner();
       return;
@@ -73,6 +74,14 @@ export default function entry() {
     }
 
     return feflow.call(cmd, feflow).then(() => {
+      timeEnd = new Date().getDate()
+      const report = new Report({});
+      let reportObj = {
+        cmd: cmd,
+        args: args,
+        tsp: timeEnd - timeStart
+      }
+      report.report(reportObj)
       logger.debug(`call ${cmd} success`);
     }).catch((err) => {
       handleError(err);
