@@ -1,33 +1,5 @@
 import chalk from 'chalk';
-import spawn from 'cross-spawn';
-
-const install = (packageManager: string, root: any, cmd: any, dependencies: any, verbose: boolean, isOnline: boolean) => {
-  return new Promise((resolve, reject) => {
-    const command = packageManager;
-    const args = [
-        cmd,
-        '--save',
-        '--save-exact',
-        '--loglevel',
-        'error',
-    ].concat(dependencies);
-
-    if (verbose) {
-      args.push('--verbose');
-    }
-
-    const child = spawn(command, args, { stdio: 'inherit', cwd: root });
-    child.on('close', code => {
-      if (code !== 0) {
-        reject({
-          command: `${command} ${args.join(' ')}`,
-        });
-        return;
-      }
-      resolve();
-    });
-  });
-}
+import { install } from '../../shared/npm';
 
 module.exports = (ctx: any) => {
     const packageManager = ctx.config && ctx.config.packageManager;

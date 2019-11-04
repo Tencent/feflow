@@ -13,16 +13,16 @@ export default function loadDevkits(ctx: any) {
   const configData = config.loadConfig();
   if (configData) {
     const devkit = configData.devkit;
+    ctx.projectConfig = configData;
     for (const cmd in devkit.commands) {
       const builderStr = devkit.commands[cmd].builder;
       const [packageName, builderName] = builderStr.split(':', 2);
       const pkgPath = path.join(process.cwd(), 'node_modules', packageName);
       const kitJson = require(path.join(pkgPath, 'devkit.json'));
       const implementation = kitJson.builders[cmd].implementation;
-
+      const description = kitJson.builders[cmd].description;
       const handler = path.join(pkgPath, implementation);
-
-      ctx.commander.register(cmd, 'desc', require(handler));
+      ctx.commander.register(cmd, description, require(handler));
     }
   } else {
 
