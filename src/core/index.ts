@@ -16,6 +16,7 @@ const pkg = require('../../package.json');
 
 export default class Feflow {
     public args: any;
+    public projectConfig: any;
     public version: string;
     public logger: any;
     public commander: any;
@@ -122,7 +123,7 @@ export default class Feflow {
     }
 
     checkUpdate() {
-        const { root, rootPkg, config } = this;
+        const { root, rootPkg, config, logger } = this;
         const table = new Table();
 
         const packageManager = config.packageManager;
@@ -146,6 +147,8 @@ export default class Feflow {
                     name,
                     latestVersion
                 };
+            } else {
+                logger.debug('All plugins is in latest version');
             }
         })).then((plugins: any) => {
             plugins = plugins.filter((plugin: any) => {
@@ -179,7 +182,6 @@ export default class Feflow {
     updatePluginsVersion(packagePath: string, plugins: any) {
         const obj = require(packagePath);
 
-        console.log('plugins', plugins);
         plugins.map((plugin: any) => {
             obj.dependencies[plugin.name] = plugin.latestVersion;
         });
