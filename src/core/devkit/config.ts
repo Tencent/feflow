@@ -11,11 +11,33 @@ export default class Config {
     this.ctx = ctx;
   }
 
+  getConfigDirectory(): string {
+    let currDir: string = process.cwd();
+
+    const isConfigExits = () => {
+      for (const filename of DEVKIT_CONFIG) {
+        if (fs.existsSync(path.join(currDir, filename))) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    while (!isConfigExits()) {
+        currDir = path.join(currDir, '../');
+        if (currDir === '/' || /^[a-zA-Z]:\\$/.test(currDir)) {
+            return '';
+        }
+    }
+
+    return currDir;
+  }
+
   loadConfig() {
-    const directoryPath = process.cwd();
+    const directoryPath = this.getConfigDirectory();
+
     for (const filename of DEVKIT_CONFIG) {
       const filePath = path.join(directoryPath, filename);
-
       if (fs.existsSync(filePath)) {
         let configData;
 
@@ -36,7 +58,7 @@ export default class Config {
       }
     }
 
-    this.ctx.logger.debug(`Config file not found on ${directoryPath}`);
+    this.ctx.logger.debug(`Config file not found.`);
     return null;
   }
 
