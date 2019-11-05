@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import importFresh from 'import-fresh';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
 import { DEVKIT_CONFIG } from '../../shared/constant';
@@ -85,7 +86,7 @@ export default class Config {
   loadJSConfigFile(filePath: string) {
     this.ctx.logger.debug(`Loading JS config file: ${filePath}`);
     try {
-
+      return importFresh(filePath);
     } catch (e) {
       this.ctx.logger.debug(`Error reading JavaScript file: ${filePath}`);
       e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
