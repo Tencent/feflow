@@ -124,10 +124,12 @@ export default class Feflow {
 
     checkUpdate() {
         const { root, rootPkg, config, logger } = this;
+        if (!config) {
+            return;
+        }
+
         const table = new Table();
-
         const packageManager = config.packageManager;
-
         return Promise.all(this.getInstalledPlugins().map(async (name: any) => {
             const pluginPath = path.join(root, 'node_modules', name, 'package.json');
             const content: any = fs.readFileSync(pluginPath);
