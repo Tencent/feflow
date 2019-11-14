@@ -8,15 +8,18 @@ module.exports = (ctx: any) => {
         switch (action) {
             case 'get':
                 console.log(ctx.config[key]);
+                break;
             case 'set':
                 config[key] = value;
                 safeDump(config, configPath);
+                break;
             case 'list':
                 let str = '';
                 for (let prop in config) {
                     str += prop + ' = ' + config[prop] + '\n';
                 }
                 console.log(str.replace(/\s+$/g, ''));
+                break;
             default:
                 return null; 
         }
