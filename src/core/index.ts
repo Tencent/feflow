@@ -44,9 +44,11 @@ export default class Feflow {
 
     async init(cmd: string) {
         if (cmd === 'config') {
+            await this.initClient();
             await this.loadNative();
         } else {
             await this.initClient();
+            await this.initPackageManager();
             await this.checkUpdate();
             await this.loadNative();
             await loadPlugins(this);
@@ -73,7 +75,15 @@ export default class Feflow {
                     'private': true
                 }, null, 2));
             }
+            
+            resolve();
+        });
+    }
 
+    initPackageManager() {
+        const { root } = this;
+
+        return new Promise<any>((resolve, reject) => {
             if (!this.config || !this.config.packageManager) {
                 const isInstalled = (packageName: string) => {
                     try {
