@@ -60,7 +60,7 @@ export default function entry() {
       return;
   }
 
-  return feflow.init().then(() => {
+  return feflow.init(cmd).then(() => {
     if (!args.h && !args.help) {
       if (cmd) {
         const c = commander.get(cmd);
