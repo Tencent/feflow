@@ -23,6 +23,7 @@ export default class Feflow {
     public root: any;
     public rootPkg: any;
     public config: any;
+    public configPath: any;
 
     constructor(args: any) {
         args = args || {};
@@ -33,6 +34,7 @@ export default class Feflow {
         this.args = args;
         this.version = pkg.version;
         this.config = parseYaml(configPath);
+        this.configPath = configPath;
         this.commander = new Commander();
         this.logger = logger({
             debug: Boolean(args.debug),
@@ -40,12 +42,16 @@ export default class Feflow {
         });
     }
 
-    async init() {
-        await this.initClient();
-        await this.checkUpdate();
-        await this.loadNative();
-        await loadPlugins(this);
-        await loadDevkits(this);
+    async init(cmd: string) {
+        if (cmd === 'config') {
+            await this.loadNative();
+        } else {
+            await this.initClient();
+            await this.checkUpdate();
+            await this.loadNative();
+            await loadPlugins(this);
+            await loadDevkits(this);
+        }
     }
 
     initClient() {
