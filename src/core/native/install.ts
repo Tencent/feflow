@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { install } from '../../shared/npm';
 
-module.exports = (ctx: any) => {
+module.exports = (ctx: FeflowInterface) => {
     const packageManager = ctx.config && ctx.config.packageManager;
     ctx.commander.register('install', 'Install a devkit or plugin', () => {
       const dependencies = ctx.args['_'];

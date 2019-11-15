@@ -2,6 +2,7 @@ import Commander from './commander';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
+import Bunyan from 'bunyan';
 import osenv from 'osenv';
 import path from 'path';
 import Table from 'easy-table';
@@ -10,22 +11,22 @@ import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
-import packageJson from '../shared/packageJson';
+import getPackageVersion from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
 const pkg = require('../../package.json');
 
-export default class Feflow {
-    public args: any;
+
+export default class Feflow implements FeflowInterface {
+    public args: Argrments;
     public projectConfig: any;
     public version: string;
-    public logger: any;
-    public commander: any;
-    public root: any;
-    public rootPkg: any;
-    public config: any;
-    public configPath: any;
+    public logger: Bunyan;
+    public commander: CommanderInterface;
+    public root: string;
+    public rootPkg: string;
+    public config: Config;
 
-    constructor(args: any) {
+    constructor(args: Argrments) {
         args = args || {};
         const root = path.join(osenv.home(), FEFLOW_ROOT);
         const configPath = path.join(root, '.feflowrc.yml');
@@ -33,8 +34,7 @@ export default class Feflow {
         this.rootPkg = path.join(root, 'package.json');
         this.args = args;
         this.version = pkg.version;
-        this.config = parseYaml(configPath);
-        this.configPath = configPath;
+        this.config = parseYaml(configPath) as Config;
         this.commander = new Commander();
         this.logger = logger({
             debug: Boolean(args.debug),
@@ -59,7 +59,7 @@ export default class Feflow {
     initClient() {
         const { root, rootPkg } = this;
 
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<null>((resolve, reject) => {
             if (fs.existsSync(root) && fs.statSync(root).isFile()) {
                 fs.unlinkSync(root);
             }
@@ -146,13 +146,16 @@ export default class Feflow {
 
         const table = new Table();
         const packageManager = config.packageManager;
-        return Promise.all(this.getInstalledPlugins().map(async (name: any) => {
+
+        const promiseList = this.getInstalledPlugins().map(async (name: string): Promise<FeflowPlugin> => {
             const pluginPath = path.join(root, 'node_modules', name, 'package.json');
-            const content: any = fs.readFileSync(pluginPath);
-            const pkg: any = JSON.parse(content);
+            const content: Buffer = fs.readFileSync(pluginPath);
+            const pkg: Package = JSON.parse(content as any);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, 'latest', registryUrl);
+            const latestVersion = await getPackageVersion(name, 'latest', registryUrl, logger);
+
+            let pluginInfo: FeflowPlugin = { name: "", latestVersion: "" };
 
             if (latestVersion !== localVersion) {
                 table.cell('Name', name);
@@ -161,15 +164,19 @@ export default class Feflow {
                 table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
                 table.newRow();
 
-                return {
+                pluginInfo = {
                     name,
                     latestVersion
                 };
             } else {
                 logger.debug('All plugins is in latest version');
             }
-        })).then((plugins: any) => {
-            plugins = plugins.filter((plugin: any) => {
+
+            return pluginInfo
+        })
+
+        return Promise.all<FeflowPlugin>(promiseList).then((plugins: FeflowPlugin[]) => {
+            plugins = plugins.filter((plugin: FeflowPlugin) => {
                 return plugin && plugin.name;
             });
             if (plugins.length) {
@@ -178,8 +185,9 @@ export default class Feflow {
 
                 this.updatePluginsVersion(rootPkg, plugins);
 
-                const needUpdatePlugins: any = [];
-                plugins.map((plugin: any) => {
+                const needUpdatePlugins: string[] = [];
+
+                plugins.map((plugin: FeflowPlugin) => {
                     needUpdatePlugins.push(plugin.name);
                 });
 
@@ -197,32 +205,32 @@ export default class Feflow {
         });
     }
 
-    updatePluginsVersion(packagePath: string, plugins: any) {
-        const obj = require(packagePath);
+    updatePluginsVersion(packagePath: string, plugins: FeflowPlugin[]) {
+        const obj: Package = require(packagePath);
 
-        plugins.map((plugin: any) => {
+        plugins.map((plugin: FeflowPlugin) => {
             obj.dependencies[plugin.name] = plugin.latestVersion;
         });
 
         fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
     }
 
-    getInstalledPlugins() {
+    getInstalledPlugins(): string[] {
         const { root, rootPkg } = this;
 
-        let plugins: any = [];
+        let plugins: string[] = [];
         const exist = fs.existsSync(rootPkg);
         const pluginDir = path.join(root, 'node_modules');
 
         if (!exist) {
             plugins = [];
         } else {
-            const content: any = fs.readFileSync(rootPkg);
+            const content: Buffer = fs.readFileSync(rootPkg);
 
-            let json: any;
+            let json: Package;
 
             try {
-                json = JSON.parse(content);
+                json = JSON.parse(content as any);
                 const deps = json.dependencies || json.devDependencies || {};
 
                 plugins = Object.keys(deps);
@@ -230,7 +238,7 @@ export default class Feflow {
                 plugins = [];
             }
         }
-        return plugins.filter((name: any) => {
+        return plugins.filter((name) => {
             if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)) {
                 return false;
             }
@@ -251,11 +259,12 @@ export default class Feflow {
         });
     }
 
-    call(name: any, ctx: any) {
-        return new Promise<any>((resolve, reject) => {
+    call(name: string, ctx: Feflow) {
+        return new Promise<null>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
                 cmd.call(this, ctx);
+                resolve();
             } else {
                 reject(new Error('Command `' + name + '` has not been registered yet!'));
             }

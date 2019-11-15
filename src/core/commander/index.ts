@@ -1,8 +1,8 @@
 import abbrev from 'abbrev';
 
-export default class Commander {
+export default class Commander implements CommanderInterface {
 
-  private store: any;
+  private store: CommanderStore;
   private alias: any;
 
   constructor() {
@@ -10,7 +10,7 @@ export default class Commander {
     this.alias = {};
   }
 
-  get(name: any) {
+  get(name: string) {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }

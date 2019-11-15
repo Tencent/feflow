@@ -1,14 +1,14 @@
 import fs from 'fs';
 import yaml from 'js-yaml';
 
-export function parseYaml(path: any) {
-  let config;
+export function parseYaml(path: string): Object {
+  let config: any;
 
   if (fs.existsSync(path)) {
     try {
       config = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
     } catch (e) {
-        throw new Error(e);
+      throw new Error(e);
     }
   }
 
@@ -16,7 +16,7 @@ export function parseYaml(path: any) {
 }
 
 
-export function safeDump(obj: object, path: any) {
+export function safeDump(obj: object, path: string) {
   let doc;
   try {
     doc = yaml.safeDump(obj, {

@@ -4,12 +4,12 @@ import osenv from 'osenv';
 import path from 'path';
 import { FEFLOW_ROOT } from '../../shared/constant';
 
-export default function applyPlugins(plugins: any) {
-    return (ctx: any) => {
+export default function applyPlugins(plugins: string[]) {
+    return (ctx: FeflowInterface) => {
       if (!plugins.length) {
         return;
       }
-      const chain = plugins.map((name: any) => {
+      const chain = plugins.map((name: string) => {
         const home = path.join(osenv.home(), FEFLOW_ROOT);
         const pluginPath = path.join(home, 'node_modules', name);
         try {

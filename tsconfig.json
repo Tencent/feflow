@@ -7,7 +7,7 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "types": ["node", "mocha"],
+    "types": ["node", "mocha", "bunyan"],
     "esModuleInterop": true,
     "resolveJsonModule": true
   },

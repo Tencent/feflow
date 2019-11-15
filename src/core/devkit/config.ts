@@ -1,19 +1,18 @@
-import fs from 'fs';
-import path from 'path';
-import importFresh from 'import-fresh';
-import stripComments from 'strip-json-comments';
-import yaml from 'js-yaml';
-import { DEVKIT_CONFIG } from '../../shared/constant';
+import fs from "fs";
+import path from "path";
+import importFresh from "import-fresh";
+import stripComments from "strip-json-comments";
+import yaml from "js-yaml";
+import { DEVKIT_CONFIG } from "../../shared/constant";
 
 export default class Config {
-
-  public ctx: any;
-  constructor(ctx: any) {
+  public ctx: FeflowInterface;
+  constructor(ctx: FeflowInterface) {
     this.ctx = ctx;
   }
 
-  getConfigDirectory(): string {
-    let currDir: string = process.cwd();
+  getConfigDirectory(cwdPath?: string): string {
+    let currDir: string = cwdPath ? cwdPath : process.cwd();
 
     const isConfigExits = () => {
       for (const filename of DEVKIT_CONFIG) {
@@ -22,47 +21,52 @@ export default class Config {
         }
       }
       return false;
-    }
+    };
 
     while (!isConfigExits()) {
-        currDir = path.join(currDir, '../');
-        if (currDir === '/' || /^[a-zA-Z]:\\$/.test(currDir)) {
-            return '';
-        }
+      currDir = path.join(currDir, "../");
+      if (currDir === "/" || /^[a-zA-Z]:\\$/.test(currDir)) {
+        return "";
+      }
     }
 
     return currDir;
   }
-
-  loadConfig() {
-    const directoryPath = this.getConfigDirectory();
-
+  loadConfig(configPath?: string): DevkitConfig | null {
+    let configFilePath = "";
     for (const filename of DEVKIT_CONFIG) {
-      const filePath = path.join(directoryPath, filename);
-      if (fs.existsSync(filePath)) {
-        let configData;
-
-        try {
-          configData = this.loadConfigFile(filePath);
-        } catch (error) {
-          if (!error || error.code !== "FEFLOW_CONFIG_FIELD_NOT_FOUND") {
-            throw error;
-          }
-        }
-
-        if (configData) {
-          this.ctx.logger.debug(`Config file found: ${filePath}`);
-          this.ctx.logger.debug('config data', configData);
-
-          return configData;
-        }
+      if (fs.existsSync(filename) && !configFilePath) {
+        configFilePath = filename;
       }
+    }
+
+    if (configFilePath) {
+      return this.readConfig(configFilePath, configPath);
     }
 
     this.ctx.logger.debug(`Config file not found.`);
     return null;
   }
+  readConfig(filename: string, configPath?: string) {
+    const directoryPath = this.getConfigDirectory(configPath);
+    const filePath = path.join(directoryPath, filename);
+    let configData: DevkitConfig;
 
+    try {
+      configData = this.loadConfigFile(filePath);
+    } catch (error) {
+      configData = {};
+      if (!error || error.code !== "FEFLOW_CONFIG_FIELD_NOT_FOUND") {
+        throw error;
+      }
+    }
+
+    if (configData) {
+      this.ctx.logger.debug(`Config file found: ${filePath}`);
+      this.ctx.logger.debug("config data", configData);
+    }
+    return configData;
+  }
   loadConfigFile(filePath: string) {
     switch (path.extname(filePath)) {
       case ".js":

@@ -12,7 +12,7 @@
     "start": "npm run build:live",
     "build": "tsc",
     "test": "nyc mocha -r ts-node/register test/**/*.spec.ts",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts"
   },
   "devDependencies": {
     "@types/abbrev": "^1.1.0",
@@ -94,5 +94,6 @@
     "sourceMap": true,
     "instrument": true,
     "all": true
-  }
+  },
+  "types": "types/index.d.ts"
 }
