@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.16.0-beta.8",
+  "version": "0.16.0",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "files": [
@@ -12,7 +12,8 @@
     "start": "npm run build:live",
     "build": "tsc",
     "test": "nyc mocha -r ts-node/register test/**/*.spec.ts",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "devDependencies": {
     "@types/abbrev": "^1.1.0",
@@ -31,6 +32,7 @@
     "@types/semver": "^6.0.1",
     "@types/yeoman-environment": "^2.3.1",
     "chai": "^4.2.0",
+    "conventional-changelog-cli": "^2.0.27",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
