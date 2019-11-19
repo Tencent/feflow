@@ -21,6 +21,7 @@ interface ReportContext {
     name: string;
   };
   log: any;
+  logger: any;
 }
 
 interface ReportBody {
@@ -38,6 +39,8 @@ class Report {
   constructor(feflowContext: any) {
     this.ctx = feflowContext;
 
+    this.ctx.log = this.ctx.log || this.ctx.logger;
+    
     this.ctx.log = this.ctx.log
       ? this.ctx.log
       : { info: console.log, debug: console.log };
