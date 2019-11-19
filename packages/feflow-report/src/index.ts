@@ -4,7 +4,7 @@ import {
   getSystemInfoByOS,
   getProjectByPackage
 } from './common/utils';
-import objectFactory from "./common/objectFactory";
+import objectFactory from './common/objectFactory';
 
 interface ReportContext {
   base: String; // pathFn.join(osenv.home(), './.feflow');
@@ -20,6 +20,7 @@ interface ReportContext {
   pkgConfig: {
     name: string;
   };
+  log: any;
 }
 
 interface ReportBody {
@@ -36,6 +37,10 @@ class Report {
 
   constructor(feflowContext: any) {
     this.ctx = feflowContext;
+
+    this.ctx.log = this.ctx.log
+      ? this.ctx.log
+      : { info: console.log, debug: console.log };
 
     this.userName = this.getUserName();
     this.systemInfo = this.getSystemInfo();
@@ -78,11 +83,11 @@ class Report {
   getReportBody(cmd, args): ReportBody {
     const reportBody: ReportBody = objectFactory
       .create()
-      .load("command", cmd)
-      .load("user_name", this.userName)
-      .load("params", args)
-      .load("system_info", this.systemInfo)
-      .load("project", this.project)
+      .load('command', cmd)
+      .load('user_name', this.userName)
+      .load('params', args)
+      .load('system_info', this.systemInfo)
+      .load('project', this.project)
       // .load("spent_time", this.systemInfo)
       // .load("is_fail", this.systemInfo)
       // .load("error_message", this.systemInfo)
@@ -101,10 +106,13 @@ class Report {
   report(cmd, args?) {
     // args check
     if (!this.checkBeforeReport(cmd, args)) return;
-
-    const reportBody: ReportBody = this.getReportBody(cmd, args);
-
-    Api.report(reportBody);
+    try {
+      const reportBody: ReportBody = this.getReportBody(cmd, args);
+      this.ctx.log.debug('reportBody', reportBody);
+      Api.report(reportBody, this.ctx.log);
+    } catch (error) {
+      console.log('feflow 上报报错，请联系相关负责人排查 ', error);
+    }
   }
 }
 

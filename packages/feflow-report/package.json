@@ -1,12 +1,13 @@
 {
   "name": "@feflow/report",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
     "test": "nyc mocha -r ts-node/register __tests__/*.spec.ts",
     "build": "tsc",
-    "dev": "npm run build && node ./lib/dev.js"
+    "dev": "npm run build && node ./lib/dev.js",
+    "publish:npm": "rm -rf lib && npm run build && npm run test && npm publish --access=public"
   },
   "author": "fXy-during <fxy1044667399@163.com>",
   "license": "ISC",
@@ -50,5 +51,10 @@
     "sourceMap": true,
     "instrument": true,
     "all": true
-  }
+  },
+  "keywords": [
+    "feflow",
+    "front-end",
+    "report"
+  ]
 }
