@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "module": "esnext",
+    "target": "es5",
+    "sourceMap": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "rootDir": "src"
+  },
+  "exclude": [
+    "node_modules",
+    "__tests__"
+  ]
+}

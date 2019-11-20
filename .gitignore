@@ -5,3 +5,5 @@ node_modules
 *-lock.json
 coverage/
 lib/
+.vscode
+**/.nyc_output
