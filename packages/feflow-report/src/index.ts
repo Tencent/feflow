@@ -4,19 +4,11 @@ import {
   getSystemInfoByOS,
   getProjectByPackage
 } from './common/utils';
-import objectFactory from "./common/objectFactory";
+import objectFactory from './common/objectFactory';
 
 interface ReportContext {
-  base: String; // pathFn.join(osenv.home(), './.feflow');
-  rcPath: String; // pathFn.join(base, '.feflowrc.yml');
-  version: String; // pkg.version;
-  baseDir: String; // base + sep;
-  pkgPath: String; // pathFn.join(base, 'package.json');
-  pluginDir: String; // pathFn.join(base, 'node_modules') + sep;
-  logDir: String; // pathFn.join(base, 'logs');
-  args: String; // camelizeKeys(args);
-  config: String; // utils.parseYaml(rcPath);            // Read feflow local config.
-  pwd: String;
+  log: any;
+  logger: any;
   pkgConfig: {
     name: string;
   };
@@ -37,12 +29,16 @@ class Report {
   constructor(feflowContext: any) {
     this.ctx = feflowContext;
 
+    this.loadContextLogger();
     this.userName = this.getUserName();
     this.systemInfo = this.getSystemInfo();
     this.project = this.getProject();
   }
-  get timestamp() {
-    return Date.now();
+  loadContextLogger() {
+    this.ctx.log = this.ctx.log || this.ctx.logger;
+    this.ctx.log = this.ctx.log
+      ? this.ctx.log
+      : { info: console.log, debug: console.log };
   }
   getProject() {
     const { pkgConfig } = this.ctx;
@@ -67,44 +63,33 @@ class Report {
     return JSON.stringify(systemDetailInfo);
   }
 
-  cmdStart() {
-    this.timestampCmdStart = this.timestamp;
-  }
-
-  cmdEnd() {
-    this.timestampSpenTime = this.timestamp - this.timestampCmdStart;
-  }
-
   getReportBody(cmd, args): ReportBody {
     const reportBody: ReportBody = objectFactory
       .create()
-      .load("command", cmd)
-      .load("user_name", this.userName)
-      .load("params", args)
-      .load("system_info", this.systemInfo)
-      .load("project", this.project)
-      // .load("spent_time", this.systemInfo)
-      // .load("is_fail", this.systemInfo)
-      // .load("error_message", this.systemInfo)
+      .load('command', cmd)
+      .load('user_name', this.userName)
+      .load('params', args)
+      .load('system_info', this.systemInfo)
+      .load('project', this.project)
       .done();
 
     return reportBody;
   }
 
   checkBeforeReport(cmd, args) {
-    if (!cmd) {
-      return false;
-    }
-    return true;
+    return !!cmd;
   }
 
   report(cmd, args?) {
     // args check
     if (!this.checkBeforeReport(cmd, args)) return;
-
-    const reportBody: ReportBody = this.getReportBody(cmd, args);
-
-    Api.report(reportBody);
+    try {
+      const reportBody: ReportBody = this.getReportBody(cmd, args);
+      this.ctx.log.debug('reportBody', reportBody);
+      Api.report(reportBody, this.ctx.log);
+    } catch (error) {
+      this.ctx.log.debug('feflow 上报报错，请联系相关负责人排查 ', error);
+    }
   }
 }
 
