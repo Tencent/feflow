@@ -3,6 +3,7 @@ import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
+import Report from '@feflow/report';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -47,8 +48,10 @@ export default function entry() {
 
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
+  const report = new Report(feflow);
 
   if (args.v || args.version) {
+      report.report('version', args);
       console.log(chalk.green(pkg.version));
       return;
   }
@@ -71,6 +74,8 @@ export default function entry() {
     } else {
       cmd = 'help';
     }
+
+    report.report(cmd, args);
 
     return feflow.call(cmd, feflow).then(() => {
       logger.debug(`call ${cmd} success`);
