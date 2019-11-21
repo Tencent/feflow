@@ -24,7 +24,7 @@ export default class Commander {
   }
 
   register(name: string, desc: string, fn: Function) {
-    const c = this.store[name.toLowerCase()] = fn;
+    this.store[name.toLowerCase()] = fn;
     this.alias = abbrev(Object.keys(this.store));
   }
 };
