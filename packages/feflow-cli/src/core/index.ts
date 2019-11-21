@@ -75,7 +75,7 @@ export default class Feflow {
                     'private': true
                 }, null, 2));
             }
-            
+
             resolve();
         });
     }

@@ -1,5 +1,4 @@
 import fs from 'fs';
-import osenv from 'osenv';
 import path from 'path';
 import applyPlugins from './applyPlugins';
 

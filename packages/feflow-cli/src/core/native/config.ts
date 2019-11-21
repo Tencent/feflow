@@ -21,7 +21,7 @@ module.exports = (ctx: any) => {
                 console.log(str.replace(/\s+$/g, ''));
                 break;
             default:
-                return null; 
+                return null;
         }
     });
 };

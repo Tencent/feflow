@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { install } from '../../shared/npm';
 
 module.exports = (ctx: any) => {

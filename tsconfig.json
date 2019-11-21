@@ -6,7 +6,7 @@
     "downlevelIteration": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true,
+    "noImplicitReturns": false,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "sourceMap": true,

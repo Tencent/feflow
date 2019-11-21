@@ -1,7 +1,5 @@
 import bunyan from 'bunyan';
 import chalk from 'chalk';
-import osenv from 'osenv';
-import path from 'path';
 import { Writable } from 'stream';
 
 interface IObject {

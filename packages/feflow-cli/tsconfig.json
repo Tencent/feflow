@@ -8,7 +8,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "moduleResolution": "node",
-    "rootDir": "src"
+    "rootDir": "src",
+    "typeRoots": ["node_modules/@types", "./types"],
   },
   "exclude": [
     "node_modules",
