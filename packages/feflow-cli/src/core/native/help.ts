@@ -14,6 +14,7 @@ module.exports = (ctx: any) => {
         Options:
             --version, -[v]           Print version and exit successfully.
             --help, -[h]              Print this help and exit successfully.
+            --list, -[l]              Print all all plugins installed.
         Report bugs to https://github.com/Tencent/feflow.
       `);
 
