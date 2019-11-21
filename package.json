@@ -30,6 +30,7 @@
     "compatibleVersion": ">=0.15.4"
   },
   "dependencies": {
+    "@feflow/report": "^0.0.5",
     "abbrev": "^1.1.0",
     "babel-eslint": "^10.0.1",
     "bluebird": "^3.5.0",
