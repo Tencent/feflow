@@ -74,6 +74,7 @@
   },
   "license": "MIT",
   "bin": {
+    "feflow": "./bin/feflow",
     "fef": "./bin/feflow"
   },
   "keywords": [
