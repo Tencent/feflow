@@ -4,6 +4,6 @@ node_modules
 *.log
 *-lock.json
 coverage/
-lib/
+pakcages/*/lib
 .vscode
 **/.nyc_output
