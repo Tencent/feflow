@@ -32,38 +32,36 @@ function loadModuleList(ctx: any) {
 module.exports = (ctx: any) => {
     ctx.commander.register('list', 'Show all plugins installed.', () => {
         const list = loadModuleList(ctx);
-        let flag = 0;
+        let templateCnt  = 0;
+        let pluginCnt = 0;
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');
         if (!list.length) {
-            console.log(chalk.magenta('暂未安装任何模板和插件'));
+            console.log(chalk.magenta('No templates and plugins have been installed'));
             return;
         }
 
-        // print templates list
         console.log('templates');
         list.map(function (name) {
             if (/generator-|^@[^/]+\/generator-/.test(name)) {
                 console.log(chalk.magenta(name));
-                flag = 1;
+                templateCnt = 1;
             }
         });
-        if (!flag) {
-            console.log(chalk.magenta('暂未安装任何模板'));
+        if (!templateCnt) {
+            console.log(chalk.magenta('No templates have been installed'));
         }
 
-        flag = 0;
-        // print plugins list
         console.log('plugins');
         list.map(function (name) {
             if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
                 console.log(chalk.magenta(name));
-                flag = 1;
+                pluginCnt = 1;
             }
         });
-        if (!flag) {
-            console.log(chalk.magenta('暂未安装任何插件'));
+        if (!pluginCnt) {
+            console.log(chalk.magenta('No plugins have been installed'));
         }
     });
 };
