@@ -1,0 +1,30 @@
+{
+  "name": "react-redux-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config ./node_modules/builder-webpack-geektime/lib/webpack.dev.js --open",
+    "build": "webpack --config ./node_modules/builder-webpack-geektime/lib/webpack.prod.js",
+    "build:ssr": "webpack --config ./node_modules/builder-webpack-geektime/lib/webpack.ssr.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.1.0",
+    "redux": "^4.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0",
+    "builder-webpack-geektime": "^1.0.2",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.3.1"
+  }
+}
