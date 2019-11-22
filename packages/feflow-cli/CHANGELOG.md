@@ -1,4 +1,23 @@
+## [0.16.3](https://github.com/Tencent/feflow/compare/v0.16.2...v0.16.3) (2019-11-21)
+
+
+
+## [0.16.2](https://github.com/Tencent/feflow/compare/v0.16.1...v0.16.2) (2019-11-21)
+
+
+### Features
+
+* add list command ([#137](https://github.com/Tencent/feflow/issues/137)) ([1b8bcc0](https://github.com/Tencent/feflow/commit/1b8bcc00f9cef5dc389c0ae3efb5a6ae1ba5837f))
+* support dynamic show help commands ([#140](https://github.com/Tencent/feflow/issues/140)) ([3ec5fab](https://github.com/Tencent/feflow/commit/3ec5fab64837dbe120c44e241f36a22f0e6253d2))
+
+
+
 ## [0.16.1](https://github.com/Tencent/feflow/compare/v0.16.0...v0.16.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* fix ts errors ([610f304](https://github.com/Tencent/feflow/commit/610f30445b54712da473c3741dd76b622d4c7cf4))
 
 
 ### Features
