@@ -65,6 +65,7 @@ export default function entry() {
   }
 
   return feflow.init(cmd).then(async () => {
+    
     await checkCliUpdate(feflow);
 
     if (!args.h && !args.help) {
