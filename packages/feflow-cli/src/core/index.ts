@@ -300,12 +300,12 @@ export default class Feflow {
         }
         const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson('feflow-cli', 'latest', registryUrl)
+        const latestVersion: any = await packageJson('@feflow/cli', 'latest', registryUrl)
         if (semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
                 name: "ifUpdate",
-                message: `${chalk.yellow(`feflow-cli's latest version is ${chalk.green(`${latestVersion}`)} but your version is ${chalk.red(`${version}`)}, Do your want to update it?`)}`,
+                message: `${chalk.yellow(`@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)} but your version is ${chalk.red(`${version}`)}, Do your want to update it?`)}`,
                 default: true
             }]
             const answer = await inquirer.prompt(askIfUpdateCli)
