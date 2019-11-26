@@ -271,7 +271,7 @@ export default class Feflow {
         return new Promise((resolve, reject) => {
             const args = [
                 'install',
-                'feflow-cli@latest',
+                '@feflow/cli@latest',
                 '--color=always',
                 '--save',
                 '--save-exact',
