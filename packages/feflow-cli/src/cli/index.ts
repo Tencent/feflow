@@ -4,7 +4,6 @@ import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
 import Report from '@feflow/report';
-import checkCliUpdate from './upgrade';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -64,10 +63,7 @@ export default function entry() {
       return;
   }
 
-  return feflow.init(cmd).then(async () => {
-    
-    await checkCliUpdate(feflow);
-
+  return feflow.init(cmd).then(() => {
     if (!args.h && !args.help) {
       if (cmd) {
         const c = commander.get(cmd);
