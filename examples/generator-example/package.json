@@ -1,6 +1,6 @@
 {
   "name": "@feflow/generator-example",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Feflow example template",
   "homepage": "https://github.com/feflow/generator-ivweb",
   "files": [
