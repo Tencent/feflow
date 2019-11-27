@@ -1,4 +1,4 @@
-# [generator-ivweb](https://github.com/feflow/generator-ivweb)
+# [generator-example](https://github.com/Tencent/generator-example)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/feflow/generator-ivweb/blob/master/LICENSE)
 [![npm package](https://img.shields.io/npm/v/generator-ivweb.svg?style=flat-square)](https://www.npmjs.org/package/generator-ivweb)
@@ -20,7 +20,7 @@ Tencent IVWEB Team project generator, based on React, redux and webpack.
 You need to install [`feflow`](https://github.com/feflow/feflow) first, it will pass a context to generator-ivweb.
 
 ```sh
-$ npm install feflow-cli -g
+$ npm install @feflow/cli -g
 ```
 
 Then install generator-ivweb
