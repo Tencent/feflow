@@ -17,7 +17,7 @@ const showHelp = (commands: Array<Object>) => {
   const sections = [
     {
       header: 'Usage',
-      content: '$ feflow [options] [command]'
+      content: '$ fef [options] [command]'
     },
     {
       header: 'Commands',
