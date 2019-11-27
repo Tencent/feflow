@@ -1,6 +1,6 @@
 {
   "name": "@feflow/report",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {

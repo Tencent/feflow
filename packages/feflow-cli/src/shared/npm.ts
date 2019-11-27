@@ -15,11 +15,11 @@ export function getRegistryUrl(packageManager: string) {
 
         child.stdout!.on('data', (data) => {
             output += data;
-        }).pipe(process.stdout);
+        });
 
         child.stderr!.on('data', (data) => {
             output += data;
-        }).pipe(process.stderr);
+        });
 
         child.on('close', code => {
             if (code !== 0) {
