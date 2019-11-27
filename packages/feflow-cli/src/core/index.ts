@@ -47,12 +47,11 @@ export default class Feflow {
     async init(cmd: string) {
         if (cmd === 'config') {
             await this.initClient();
-            await this.checkCliUpdate()
             await this.loadNative();
         } else {
             await this.initClient();
-            await this.checkCliUpdate()
             await this.initPackageManager();
+            await this.checkCliUpdate();
             await this.checkUpdate();
             await this.loadNative();
             await loadPlugins(this);
@@ -85,7 +84,7 @@ export default class Feflow {
     }
 
     initPackageManager() {
-        const { root } = this;
+        const { root, logger } = this;
 
         return new Promise<any>((resolve, reject) => {
             if (!this.config || !this.config.packageManager) {
@@ -137,6 +136,8 @@ export default class Feflow {
                     });
                 }
                 return;
+            } else {
+                logger.debug('Use packageManager is: ', this.config.packageManager);
             }
             resolve();
         });
@@ -295,22 +296,25 @@ export default class Feflow {
 
     async  checkCliUpdate() {
         const { version, config, configPath } = this;
+        if (!config) {
+            return;
+        }
         if (config.lastUpdateCheck && (+new Date() - parseInt(config.lastUpdateCheck, 10)) <= 1000 * 3600 * 24) {
             return;
         }
         const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson('@feflow/cli', 'latest', registryUrl)
+        const latestVersion: any = await packageJson('@feflow/cli', 'latest', registryUrl);
         if (semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
                 name: "ifUpdate",
-                message: `${chalk.yellow(`@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)} but your version is ${chalk.red(`${version}`)}, Do your want to update it?`)}`,
+                message: `${chalk.yellow(`@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)}, but your version is ${chalk.red(`${version}`)}, Do you want to update it?`)}`,
                 default: true
             }]
-            const answer = await inquirer.prompt(askIfUpdateCli)
+            const answer = await inquirer.prompt(askIfUpdateCli);
             if (answer.ifUpdate) {
-                await this.updateCli(packageManager)
+                await this.updateCli(packageManager);
             } else {
                 safeDump({
                     ...config,

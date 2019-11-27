@@ -36,7 +36,7 @@ const printBanner = () => {
     console.log(chalk.green(data));
     console.log(chalk.green(` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `));
     console.log(chalk.green(' (c) powered by Tencent, aims to improve front end workflow.                                       '));
-    console.log(chalk.green(' Run feflow --help to see usage.                                                                   '));
+    console.log(chalk.green(' Run fef --help to see usage.                                                                      '));
   });
 }
 
@@ -58,7 +58,7 @@ export default function entry() {
 
   let cmd: any = args._.shift();
 
-  if (!cmd) {
+  if (!cmd && !args.h && !args.help) {
       printBanner();
       return;
   }
