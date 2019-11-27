@@ -1,4 +1,18 @@
-## [0.16.3](https://github.com/Tencent/feflow/compare/v0.16.2...v0.16.3) (2019-11-21)
+# [0.17.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.16.2...v0.17.0-alpha.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* get username from os.hostname ([#143](https://github.com/Tencent/feflow/issues/143)) ([c3b0db2](https://github.com/Tencent/feflow/commit/c3b0db22eec02fc1a55d1e602cb218a7ad161d9b))
+* handle exception cases while no plugins ([#142](https://github.com/Tencent/feflow/issues/142)) ([aed5b58](https://github.com/Tencent/feflow/commit/aed5b5892ef656dba758b9ab13d6ed1ec11c2e74)), closes [#139](https://github.com/Tencent/feflow/issues/139)
+* support windows report with proxy ([#149](https://github.com/Tencent/feflow/issues/149)) ([3cd0463](https://github.com/Tencent/feflow/commit/3cd046326b68e5f61174bb747fbcf4d950a84d93))
+* **native:** fix install commands when client is first config ([680442f](https://github.com/Tencent/feflow/commit/680442f8c6920cb707ffd6e3fd07ac5a29f78c1b))
+
+
+### Features
+
+* support feature cli update tip ([90ab127](https://github.com/Tencent/feflow/commit/90ab12773075d60457530d2de66647104679ed60))
+* **devkit:** support multiple builders. ([3e3f241](https://github.com/Tencent/feflow/commit/3e3f2411af781c10fe5cfc06cbdb2b84b84cbb38)), closes [#111](https://github.com/Tencent/feflow/issues/111)
 
 
 
