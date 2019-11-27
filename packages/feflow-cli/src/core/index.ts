@@ -132,6 +132,7 @@ export default class Feflow {
                     }]).then((answer: any) => {
                         const configPath = path.join(root, '.feflowrc.yml');
                         safeDump(answer, configPath);
+                        this.config = parseYaml(configPath);
                         resolve();
                     });
                 }
