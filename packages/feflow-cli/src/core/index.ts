@@ -158,7 +158,9 @@ export default class Feflow {
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, 'latest', registryUrl);
+            const latestVersion = await packageJson(name, 'latest', registryUrl).catch((err) => {
+                logger.debug('Check plugin update error', err);
+            });
 
             if (latestVersion !== localVersion) {
                 table.cell('Name', name);
