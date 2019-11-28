@@ -5,21 +5,25 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
   const builder = commandConfig.builder;
   const [ packageName ] = builder.split(':', 2);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
-  const kitJson = require(path.join(pkgPath, 'devkit.json'));
-  const { implementation, description } = kitJson.builders[command];
-
-  if (Array.isArray(implementation)) {
-    ctx.commander.register(command, description, async () => {
-      for (let i = 0; i < implementation.length; i ++) {
-        const action = path.join(pkgPath, implementation[i]);
-        await require(action)(ctx);
-      }
-    });
-  } else {
-    const action = path.join(pkgPath, implementation);
-    ctx.commander.register(command, description, () => {
-      require(action)(ctx);
-    });
+  let kitJson;
+  try {
+    kitJson = require(path.join(pkgPath, 'devkit.json'));
+    const { implementation, description } = kitJson.builders[command];
+    if (Array.isArray(implementation)) {
+      ctx.commander.register(command, description, async () => {
+        for (let i = 0; i < implementation.length; i ++) {
+          const action = path.join(pkgPath, implementation[i]);
+          await require(action)(ctx);
+        }
+      });
+    } else {
+      const action = path.join(pkgPath, implementation);
+      ctx.commander.register(command, description, () => {
+        require(action)(ctx);
+      });
+    }
+  } catch (e) {
+    ctx.logger.debug(`${ pkgPath } not found!`);
   }
 };
 
