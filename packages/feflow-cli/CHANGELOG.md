@@ -1,3 +1,26 @@
+# [0.17.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.1...v0.17.0-alpha.3) (2019-11-28)
+
+
+### Bug Fixes
+
+* install packages when not exists ([#161](https://github.com/Tencent/feflow/issues/161)) ([#163](https://github.com/Tencent/feflow/issues/163)) ([721f1d8](https://github.com/Tencent/feflow/commit/721f1d82b984ace1ca2466e63e6e047a9dad76ca))
+
+
+
+# [0.17.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.0...v0.17.0-alpha.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* run commands error when in a feflow project but not installed devkit ([#159](https://github.com/Tencent/feflow/issues/159)) ([a7b987d](https://github.com/Tencent/feflow/commit/a7b987d098ee84e0bf03958204412d2c4c63a143)), closes [#157](https://github.com/Tencent/feflow/issues/157)
+
+
+### Features
+
+* **example:** make example in private scope ([39d021b](https://github.com/Tencent/feflow/commit/39d021bab261854c88f0d0ff2937a10dfec48e48))
+
+
+
 # [0.17.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.16.2...v0.17.0-alpha.0) (2019-11-27)
 
 
