@@ -13,7 +13,7 @@ export default function packageJson(name: string, version: string, registry: str
         resolve(response.version);
       })
       .catch((err: object) => {
-        resolve(err);
+        reject(err);
       });
   });
 }

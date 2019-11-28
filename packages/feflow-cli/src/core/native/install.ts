@@ -1,9 +1,25 @@
-import { install } from '../../shared/npm';
+import {
+  getRegistryUrl,
+  install
+} from '../../shared/npm';
+import packageJson from '../../shared/packageJson';
 
 module.exports = (ctx: any) => {
     const packageManager = ctx.config && ctx.config.packageManager;
-    ctx.commander.register('install', 'Install a devkit or plugin', () => {
+    ctx.commander.register('install', 'Install a devkit or plugin', async () => {
+      const registryUrl = await getRegistryUrl(packageManager);
       const dependencies = ctx.args['_'];
+
+      await Promise.all(
+        dependencies.map((dependency: string) => {
+          return packageJson(dependency, 'latest', registryUrl)
+            .catch(() => {
+              ctx.logger.error(`${ dependency } not found on ${ packageManager }`);
+              process.exit(2);
+            });
+        })
+      );
+
       ctx.logger.info('Installing packages. This might take a couple of minutes.');
 
       return install(
