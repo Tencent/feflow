@@ -1,9 +1,10 @@
+English | [简体中文](./README.CN.md)
+
 <h1 align="center">Feflow</h1>
 
 <p align="center">
   🚀 A tool aims to improve front-end engineer workflow and standard, powered by TypeScript.
 </p>
-English | [简体中文](./README.CN.md)
 
 <br>
 

@@ -1,9 +1,10 @@
+[English](./README.md) | 简体中文
+
 <h1 align="center">Feflow</h1>
 
 <p align="center">
   🚀 Feflow 是一个致力于提升大前端开发效率的前端工程化工具.
 </p>
-[English](./README.md) | 简体中文
 
 <br>
 
