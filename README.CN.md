@@ -42,6 +42,10 @@ npm install @feflow/cli -g
 
 你可以通过编写开发套件或者插件去扩展 Feflow 的命令
 
+更多详细信息可前往:
+- [Github Wiki](https://github.com/Tencent/feflow/wiki)
+- [官网](https://feflowjs.com/)
+
 ## 发布日志
 
 本项目遵从 [Semantic Versioning](http://semver.org/).

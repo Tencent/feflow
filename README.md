@@ -42,6 +42,10 @@ There are three kinds of commands in Feflow
 
 You can write a Feflow devkit or plugin to extends commands.
 
+More detail document can be found:
+- [Github Wiki](https://github.com/Tencent/feflow/wiki)
+- [Website](https://feflowjs.com/)
+
 ## Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
