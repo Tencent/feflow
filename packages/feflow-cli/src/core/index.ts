@@ -345,7 +345,7 @@ export default class Feflow {
 
         if (kitJson.builders) {
           const commands = kitJson.builders;
-          const { optionsDescription: cmdOptionDescrition, description } = commands[cmd] || {};
+          const { optionsDescription : cmdOptionDescrition = {}, description } = commands[cmd] || {};
           cmdDescription = description;
           const optionDescritions = Object.keys(cmdOptionDescrition);
 
