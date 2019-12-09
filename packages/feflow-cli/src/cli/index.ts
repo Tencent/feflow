@@ -71,7 +71,7 @@ export default function entry() {
           cmd = 'help';
         }
       }
-    } else {
+    } else if(!(cmd && (args.h || args.help))) {
       cmd = 'help';
     }
 

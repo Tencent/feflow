@@ -14,6 +14,8 @@ import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
+import commandLineUsage from 'command-line-usage';
+import Config from './devkit/config';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -260,6 +262,10 @@ export default class Feflow {
     }
 
     call(name: any, ctx: any) {
+        const args = ctx.args;
+        if((args.h || args.help) && name != "help"){
+            return this.showSubCommandHelp(name, ctx);
+        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
@@ -326,5 +332,69 @@ export default class Feflow {
             }
         }
     }
+    
+    async showSubCommandHelp(cmd: any, ctx: any): Promise<any> {
+        const config = new Config(ctx);
+        const configData = config.loadConfig();
+        const directoryPath = config.getConfigDirectory();
+        let kitJson;
+        let cmdDescription;
 
+        if (configData.devkit && configData.devkit.commands) {
+          const commands = configData.devkit.commands;
+          const builder = commands[cmd].builder;
+          const [packageName] = builder.split(':', 2);
+          try {
+            const pkgPath = path.join(directoryPath, 'node_modules', packageName);
+            kitJson = require(path.join(pkgPath, 'devkit.json'));
+          } catch (error) {
+            kitJson = {};
+          }
+        }
+
+        let optionDescrition: any = {
+            header: 'Options',
+            optionList: [],
+          };;
+
+        if (kitJson.builders) {
+          const commands = kitJson.builders;
+          const { optionsDescription: cmdOptionDescrition, description } = commands[cmd] || {};
+          cmdDescription = description;
+          const optionDescritions = Object.keys(cmdOptionDescrition);
+
+          optionDescritions.forEach(option => {
+            const optionItem = cmdOptionDescrition[option];
+            let optionDescritionItem = {};
+            if (typeof optionItem == 'string') {
+              optionDescritionItem = {
+                name: option,
+                description: optionItem,
+              };
+            } else if (typeof optionItem == 'object') {
+              optionDescritionItem = Object.assign({}, optionItem);
+            }
+            optionDescrition.optionList.push(optionDescritionItem);
+          });
+        }
+
+        if(optionDescrition.optionList.length == 0) {
+            return this.call("help", ctx)
+        }
+        console.log("optionDescrition", optionDescrition)
+        const sections = [
+            {
+                header: `Fef ${cmd}`,
+                content: cmdDescription
+            },
+            {
+                header: 'Usage',
+                content: `$ fef ${cmd} [options]`
+            }
+        ]
+        sections.push(optionDescrition);
+        const usage = commandLineUsage(sections);
+
+        console.log(usage);
+    }
 }
