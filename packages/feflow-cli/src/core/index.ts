@@ -264,7 +264,7 @@ export default class Feflow {
     call(name: any, ctx: any) {
         const args = ctx.args;
         if((args.h || args.help) && name != "help"){
-            return this.showSubCommandHelp(name, ctx);
+            return this.showCommandOptionDescription(name, ctx);
         }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
@@ -333,24 +333,10 @@ export default class Feflow {
         }
     }
     
-    async showSubCommandHelp(cmd: any, ctx: any): Promise<any> {
+    async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
         const config = new Config(ctx);
-        const configData = config.loadConfig();
-        const directoryPath = config.getConfigDirectory();
-        let kitJson;
+        const kitJson = config.getDevKitConfig(ctx, cmd);
         let cmdDescription;
-
-        if (configData.devkit && configData.devkit.commands) {
-          const commands = configData.devkit.commands;
-          const builder = commands[cmd].builder;
-          const [packageName] = builder.split(':', 2);
-          try {
-            const pkgPath = path.join(directoryPath, 'node_modules', packageName);
-            kitJson = require(path.join(pkgPath, 'devkit.json'));
-          } catch (error) {
-            kitJson = {};
-          }
-        }
 
         let optionDescrition: any = {
             header: 'Options',
@@ -364,16 +350,8 @@ export default class Feflow {
           const optionDescritions = Object.keys(cmdOptionDescrition);
 
           optionDescritions.forEach(option => {
-            const optionItem = cmdOptionDescrition[option];
-            let optionDescritionItem = {};
-            if (typeof optionItem == 'string') {
-              optionDescritionItem = {
-                name: option,
-                description: optionItem,
-              };
-            } else if (typeof optionItem == 'object') {
-              optionDescritionItem = Object.assign({}, optionItem);
-            }
+            let optionItemConfig = cmdOptionDescrition[option];
+            const optionDescritionItem = this.getOptionItem(optionItemConfig, option);
             optionDescrition.optionList.push(optionDescritionItem);
           });
         }
@@ -381,20 +359,39 @@ export default class Feflow {
         if(optionDescrition.optionList.length == 0) {
             return this.call("help", ctx)
         }
-        console.log("optionDescrition", optionDescrition)
-        const sections = [
-            {
-                header: `Fef ${cmd}`,
-                content: cmdDescription
-            },
-            {
-                header: 'Usage',
-                content: `$ fef ${cmd} [options]`
-            }
-        ]
+
+        const sections = [];
+        sections.push({
+            header: `Fef ${cmd}`,
+            content: cmdDescription
+        })
+        sections.push({
+            header: 'Usage',
+            content: `$ fef ${cmd} [options]`
+        })
         sections.push(optionDescrition);
         const usage = commandLineUsage(sections);
 
         console.log(usage);
     }
+
+    getOptionItem(optionItemConfig: any, option: any): object {
+        let optionDescritionItem = {};
+        if (typeof optionItemConfig == 'string') {
+            optionDescritionItem = {
+                name: option,
+                description: optionItemConfig,
+            };
+        } else {
+            const { name, description, alias, type, typeLabel } = optionItemConfig;
+            optionDescritionItem = {
+                name,
+                description,
+                alias,
+                typeLabel,
+                type: /boolean/i.test(type) ? Boolean : String,
+            };
+        }
+        return optionDescritionItem;
+    };
 }
