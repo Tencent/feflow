@@ -156,13 +156,13 @@ export default class Config {
   readFile(filePath: string) {
     return fs.readFileSync(filePath, "utf8").replace(/^\ufeff/u, "");
   }
-  getDevKitConfig(ctx:any, cmd:any) {
+  getDevKitConfig(ctx: any, cmd: any) {
     this.ctx = ctx;
     const configData = this.loadConfig();
     const directoryPath = this.getConfigDirectory();
     let kitJson;
 
-    if (configData.devkit && configData.devkit.commands) {
+    if (configData.devkit && configData.devkit.commands && configData.devkit.commands[cmd]) {
       const commands = configData.devkit.commands;
       const builder = commands[cmd].builder;
       const [packageName] = builder.split(':', 2);
