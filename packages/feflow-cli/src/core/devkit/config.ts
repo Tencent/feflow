@@ -156,4 +156,23 @@ export default class Config {
   readFile(filePath: string) {
     return fs.readFileSync(filePath, "utf8").replace(/^\ufeff/u, "");
   }
+  getDevKitConfig(ctx:any, cmd:any) {
+    this.ctx = ctx;
+    const configData = this.loadConfig();
+    const directoryPath = this.getConfigDirectory();
+    let kitJson;
+
+    if (configData.devkit && configData.devkit.commands) {
+      const commands = configData.devkit.commands;
+      const builder = commands[cmd].builder;
+      const [packageName] = builder.split(':', 2);
+      try {
+        const pkgPath = path.join(directoryPath, 'node_modules', packageName);
+        kitJson = require(path.join(pkgPath, 'devkit.json'));
+      } catch (error) {
+        kitJson = {};
+      }
+    }
+    return kitJson
+  }
 }

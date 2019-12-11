@@ -14,6 +14,8 @@ import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
+import commandLineUsage from 'command-line-usage';
+import Config from './devkit/config';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -260,6 +262,10 @@ export default class Feflow {
     }
 
     call(name: any, ctx: any) {
+        const args = ctx.args;
+        if((args.h || args.help) && name != "help"){
+            return this.showCommandOptionDescription(name, ctx);
+        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
@@ -326,5 +332,66 @@ export default class Feflow {
             }
         }
     }
+    
+    async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
+        const config = new Config(ctx);
+        const kitJson = config.getDevKitConfig(ctx, cmd);
+        let cmdDescription;
 
+        let optionDescrition: any = {
+            header: 'Options',
+            optionList: [],
+          };;
+
+        if (kitJson.builders) {
+          const commands = kitJson.builders;
+          const { optionsDescription : cmdOptionDescrition = {}, description } = commands[cmd] || {};
+          cmdDescription = description;
+          const optionDescritions = Object.keys(cmdOptionDescrition);
+
+          optionDescritions.forEach(option => {
+            let optionItemConfig = cmdOptionDescrition[option];
+            const optionDescritionItem = this.getOptionItem(optionItemConfig, option);
+            optionDescrition.optionList.push(optionDescritionItem);
+          });
+        }
+
+        if(optionDescrition.optionList.length == 0) {
+            return this.call("help", ctx)
+        }
+
+        const sections = [];
+        sections.push({
+            header: `fef ${cmd}`,
+            content: cmdDescription
+        })
+        sections.push({
+            header: 'Usage',
+            content: `$ fef ${cmd} [options]`
+        })
+        sections.push(optionDescrition);
+        const usage = commandLineUsage(sections);
+
+        console.log(usage);
+    }
+
+    getOptionItem(optionItemConfig: any, option: any): object {
+        let optionDescritionItem = {};
+        if (typeof optionItemConfig == 'string') {
+            optionDescritionItem = {
+                name: option,
+                description: optionItemConfig,
+            };
+        } else {
+            const { name, description, alias, type, typeLabel } = optionItemConfig;
+            optionDescritionItem = {
+                name,
+                description,
+                alias,
+                typeLabel,
+                type: /boolean/i.test(type) ? Boolean : String,
+            };
+        }
+        return optionDescritionItem;
+    };
 }
