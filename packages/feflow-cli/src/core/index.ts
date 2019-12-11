@@ -362,7 +362,7 @@ export default class Feflow {
 
         const sections = [];
         sections.push({
-            header: `Fef ${cmd}`,
+            header: `fef ${cmd}`,
             content: cmdDescription
         })
         sections.push({

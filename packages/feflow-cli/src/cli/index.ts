@@ -64,6 +64,7 @@ export default function entry() {
   }
 
   return feflow.init(cmd).then(() => {
+    const isInvalidCmd = !(cmd && (args.h || args.help));
     if (!args.h && !args.help) {
       if (cmd) {
         const c = commander.get(cmd);
@@ -71,7 +72,7 @@ export default function entry() {
           cmd = 'help';
         }
       }
-    } else if(!(cmd && (args.h || args.help))) {
+    } else if (isInvalidCmd) {
       cmd = 'help';
     }
 
