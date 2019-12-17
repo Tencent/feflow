@@ -164,7 +164,7 @@ export default class Feflow {
                 logger.debug('Check plugin update error', err);
             });
 
-            if (latestVersion !== localVersion) {
+            if (latestVersion && latestVersion !== localVersion) {
                 table.cell('Name', name);
                 table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
                 table.cell('Tag', 'latest');
@@ -332,7 +332,7 @@ export default class Feflow {
             }
         }
     }
-    
+
     async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
         const config = new Config(ctx);
         const kitJson = config.getDevKitConfig(ctx, cmd);
