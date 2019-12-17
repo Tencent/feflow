@@ -1,3 +1,21 @@
+## [0.17.1](https://github.com/Tencent/feflow/compare/v0.17.0...v0.17.1) (2019-12-17)
+
+
+### Bug Fixes
+
+* local develop a scallfold cause upgrade check ([#172](https://github.com/Tencent/feflow/issues/172)) ([eab5fa3](https://github.com/Tencent/feflow/commit/eab5fa36d6e38cd2fa58761336ab9374edcfd2b6))
+
+
+### Features
+
+* support sub command description ([#168](https://github.com/Tencent/feflow/issues/168)) ([2cc18fb](https://github.com/Tencent/feflow/commit/2cc18fbd975af77cddd73d77fd8679bd3bfaa16b))
+
+
+
+# [0.17.0](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.3...v0.17.0) (2019-11-29)
+
+
+
 # [0.17.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.1...v0.17.0-alpha.3) (2019-11-28)
 
 
