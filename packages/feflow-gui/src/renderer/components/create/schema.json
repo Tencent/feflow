@@ -1,0 +1,33 @@
+{
+  "gererator": "generator-ivweb-startkit",
+  "description": "Now直播基础脚手架",
+  "properties": {
+    "projectName": {
+      "type": "text",
+      "decscription": "项目名字"
+    },
+    "decscription": {
+      "type": "text",
+      "decription": "项目描述"
+    },
+    "isNeedGit": {
+      "type": "boolean",
+      "decription": "是否创建Git仓库"
+    },
+    "isNeedOCI": {
+      "require": ["isNeedGit"],
+      "type": "boolean",
+      "decription": "是否创建Git仓库"
+    },
+    "fileType": {
+      "type": "select",
+      "decription": "文件发布类型",
+      "options": {
+        "node": "纯Node项目",
+        "web": "纯Web项目"
+      }
+    }
+  },
+  "isRequire": ["projectName"],
+  "author": "bethonxyfu"
+}

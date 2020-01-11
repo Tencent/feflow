@@ -1,7 +1,9 @@
 <template>
   <div class="side-bar">
     <ul class="nav">
-      <li class="project current"><i class="icon" />我的项目</li>
+    <router-link to="/">
+        <li class="project current"><i class="icon" />我的项目</li>
+    </router-link>
       <li class="market"><i class="icon" />插件市场</li>
     </ul>
     <div class="account">
