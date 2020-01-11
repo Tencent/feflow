@@ -22,8 +22,8 @@
     {
       "require": ["isNeedGit"],
       "type": "switch",
-      "field": "isNeedOCI",
-      "title": "是否接入OCI",
+      "field": "isNeedCI",
+      "title": "是否接入CI",
       "default": true
     },
     {
@@ -37,12 +37,12 @@
       "type": "select",
       "title": "文件发布类型",
       "field": "fileType",
-      "options": {
-        "node": "纯Node项目",
-        "web": "纯Web项目"
-      }
+      "options": [
+        { "value": "node", "label": "纯Node项目" },
+        { "value": "web", "label": "纯Web项目" }
+      ]
     }
   ],
   "isRequire": ["projectName"],
-  "author": "bethonxyfu"
+  "author": "bethon"
 }

@@ -22,19 +22,10 @@
     {
       "require": ["isNeedGit"],
       "type": "switch",
-      "field": "isNeedOCI",
-      "title": "是否接入OCI"
-    },
-    {
-      "type": "select",
-      "title": "文件发布类型",
-      "field": "fileType",
-      "options": {
-        "node": "纯Node项目",
-        "web": "纯Web项目"
-      }
+      "field": "isNeedCI",
+      "title": "是否接入CI"
     }
   ],
   "isRequire": ["projectName"],
-  "author": "bethonxyfu"
+  "author": "bethon"
 }

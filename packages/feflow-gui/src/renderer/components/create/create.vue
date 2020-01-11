@@ -16,6 +16,7 @@
         <el-form-item :label="field.title" v-if="shouldShow(field)">
           <el-col>
             <component
+              v-if="field.type !== 'select'"
               :key="index"
               :is="'el-' + field.type"
               :label="field.title"
@@ -27,6 +28,19 @@
               :ref="field.title"
               :placeholder="field.description"
             ></component>
+
+            <el-select
+              v-else
+              :value="formData[field.field]"
+              @input="updateForm(field.field, $event)"
+            >
+              <el-option
+                v-for="item in field.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
           </el-col>
         </el-form-item>
       </div>

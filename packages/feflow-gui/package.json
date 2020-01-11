@@ -56,7 +56,6 @@
     }
   },
   "dependencies": {
-    "@form-create/element-ui": "^1.0.5",
     "axios": "^0.18.0",
     "element-ui": "^2.13.0",
     "vue": "^2.6.10",
