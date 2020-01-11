@@ -1,0 +1,40 @@
+{
+  "gererator": "generatorNowActivity",
+  "description": "Now直播活动脚手架",
+  "properties": [
+    {
+      "type": "input",
+      "title": "项目名字",
+      "field": "projectName"
+    },
+    {
+      "type": "input",
+      "title": "项目描述",
+      "field": "decscription",
+      "description": "推荐使用5-10个汉字"
+    },
+    {
+      "field": "isNeedGit",
+      "type": "switch",
+      "title": "是否创建Git仓库",
+      "default": true
+    },
+    {
+      "require": ["isNeedGit"],
+      "type": "switch",
+      "field": "isNeedOCI",
+      "title": "是否接入OCI"
+    },
+    {
+      "type": "select",
+      "title": "文件发布类型",
+      "field": "fileType",
+      "options": {
+        "node": "纯Node项目",
+        "web": "纯Web项目"
+      }
+    }
+  ],
+  "isRequire": ["projectName"],
+  "author": "bethonxyfu"
+}
