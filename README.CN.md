@@ -1,9 +1,9 @@
-English | [简体中文](./README.CN.md)
+[English](./README.md) | 简体中文
 
 <h1 align="center">Feflow</h1>
 
 <p align="center">
-  🚀 A tool aims to improve front-end engineer workflow and standard, powered by TypeScript.
+  🚀 Feflow 是一个致力于提升大前端开发效率的前端工程化工具.
 </p>
 
 <br>
@@ -18,21 +18,21 @@ English | [简体中文](./README.CN.md)
 [![Issue resolution][issue-resolution]][issue-resolution-url]
 [![PR's welcome][pr-welcome]][pr-welcome-url]
 
-## Introduction
+## 介绍
 
-Feflow is an engineering solution of Tencent's open source front-end field, which is committed to improving development efficiency and specification.
+Feflow 是腾讯开源的一款大前端领域的工程化方案，致力于提升开发效率和规范。
 
-## Getting Started
+## 开始使用
 
-Let's start by installing Feflow with npm.
+先通过 npm 安装 feflow 开始.
 
 ```
 npm install @feflow/cli -g
 ```
 
-There are three kinds of commands in Feflow
+在 Feflow 里面有3类命令，分别是原生命令、开发套件命令和插件命令
 
-- Native Commands
+- 原生命令
   - `fef config`
   - `fef help`
   - `fef info`
@@ -40,18 +40,18 @@ There are three kinds of commands in Feflow
   - `fef uninstall`
   - `fef list`
 
-You can write a Feflow devkit or plugin to extends commands.
+你可以通过编写开发套件或者插件去扩展 Feflow 的命令
 
-More detail document can be found:
+更多详细信息可前往:
 - [Github Wiki](https://github.com/Tencent/feflow/wiki)
-- [Website](https://feflowjs.com/)
+- [官网](https://feflowjs.com/)
 
-## Change Log
+## 发布日志
 
-This project adheres to [Semantic Versioning](http://semver.org/).
-Every release, along with the migration instructions, is documented on the GitHub [Releases](https://github.com/Tencent/feflow/releases) page.
+本项目遵从 [Semantic Versioning](http://semver.org/).
+每次发布信息都会在 Github 的 [Releases](https://github.com/Tencent/feflow/releases) 中呈现.
 
-## License
+## 许可证
 
 [MIT](LICENSE.txt)
 
