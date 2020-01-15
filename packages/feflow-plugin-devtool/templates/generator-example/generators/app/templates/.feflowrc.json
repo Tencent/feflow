@@ -1,0 +1,14 @@
+{
+  "devkit": {
+      "commands": {
+          "dev": {
+              "builder": "@feflow/feflow-devkit-example:dev",
+              "options": {}
+          },
+          "build": {
+              "builder": "@feflow/feflow-devkit-example:build",
+              "options": {}
+          }
+      }
+  }
+}
