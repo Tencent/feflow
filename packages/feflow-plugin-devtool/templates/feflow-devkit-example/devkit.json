@@ -1,0 +1,12 @@
+{
+    "builders": {
+      "dev": {
+        "implementation": "./lib/dev.js",
+        "description": "Development command"
+      },
+      "build": {
+        "implementation": "./lib/build.js",
+        "description": "Build command"
+      }
+    }
+  }

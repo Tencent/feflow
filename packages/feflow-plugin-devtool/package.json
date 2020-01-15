@@ -1,0 +1,100 @@
+{
+  "name": "@feflow/feflow-plugin-devtool",
+  "version": "0.0.1",
+  "description": "Feflow internal plugins",
+  "main": "./lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "src",
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tencent/feflow.git"
+  },
+  "scripts": {
+    "start": "npm run build:live",
+    "build": "rm -rf lib && tsc",
+    "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+  },
+  "devDependencies": {
+    "@types/abbrev": "^1.1.0",
+    "@types/bunyan": "^1.8.6",
+    "@types/chai": "^4.2.0",
+    "@types/command-line-usage": "^5.0.1",
+    "@types/cross-spawn": "^6.0.0",
+    "@types/easy-table": "0.0.32",
+    "@types/figlet": "^1.2.0",
+    "@types/inquirer": "^6.0.3",
+    "@types/js-yaml": "^3.12.1",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
+    "@types/osenv": "^0.1.0",
+    "@types/semver": "^6.0.1",
+    "@types/yeoman-environment": "^2.3.1",
+    "chai": "^4.2.0",
+    "conventional-changelog-cli": "^2.0.27",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "nyc": "^14.1.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "@feflow/report": "^0.1.0",
+    "abbrev": "^1.1.1",
+    "bunyan": "^1.8.12",
+    "chalk": "^2.4.2",
+    "command-line-usage": "^6.1.0",
+    "commander": "^2.20.0",
+    "cross-spawn": "^6.0.5",
+    "easy-table": "^1.1.1",
+    "figlet": "^1.2.3",
+    "import-fresh": "^3.1.0",
+    "inquire": "^0.4.8",
+    "inquirer": "^6.5.0",
+    "js-yaml": "^3.13.1",
+    "minimist": "^1.2.0",
+    "osenv": "^0.1.5",
+    "package-json": "^6.5.0"
+  },
+  "engines": {
+    "node": ">=8.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "feflow",
+    "front-end",
+    "flow"
+  ],
+  "nyc": {
+    "include": [
+      "test/**/*.spec.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
+  },
+  "bugs": {
+    "url": "https://github.com/Tencent/feflow/issues"
+  }
+}
