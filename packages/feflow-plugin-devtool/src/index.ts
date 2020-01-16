@@ -1,4 +1,6 @@
 import inquirer from 'inquirer';
+import fs from 'fs-extra';
+import path from 'path';
 
 
 enum DEVTOOL_TYPE {
@@ -10,6 +12,8 @@ enum DEVTOOL_TYPE {
 module.exports = (ctx: any) => {
     const { args, commander, logger } = ctx;
     const [ action ] = args['_'];
+
+    let templatePath: string;
 
     commander.register('devtool', 'Feflow devtool for better develop a devkit or plugin', async () => {
         switch (action) {
@@ -31,12 +35,15 @@ module.exports = (ctx: any) => {
                 switch (type) {
                     case DEVTOOL_TYPE.SCAFFLOAD:
                         message = '以 generator- 开头';
+                        templatePath = path.join(__dirname, '../templates/generator-template');
                         break;
                     case DEVTOOL_TYPE.DEVKIT:
                         message = '以 feflow-devkit- 开头';
+                        templatePath = path.join(__dirname, '../templates/devkit-template');
                         break;
                     case DEVTOOL_TYPE.PLUGIN:
                         message = '以 feflow-plugin- 开头';
+                        templatePath = path.join(__dirname, '../templates/plugin-template');
                         break;
                 }
 
@@ -62,7 +69,9 @@ module.exports = (ctx: any) => {
                     }
                 }]);
 
-                console.log('name', name);
+                logger.info('Start creating %s', name);
+                const destinationPath = path.join(process.cwd(), name);
+                fs.copySync(templatePath, destinationPath);
 
                 break;
             case 'dev':
