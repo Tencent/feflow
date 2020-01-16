@@ -56,6 +56,7 @@ export default class Feflow {
             await this.checkCliUpdate();
             await this.checkUpdate();
             await this.loadNative();
+            await this.loadInternalPlugins();
             await loadPlugins(this);
             await loadDevkits(this);
         }
@@ -261,6 +262,20 @@ export default class Feflow {
         });
     }
 
+    loadInternalPlugins() {
+        [
+            '@feflow/feflow-plugin-devtool'
+        ].map((name: string) => {
+            try {
+                this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
+                return require(name)(this);
+            } catch (err) {
+                this.logger.error({err: err}, 'Plugin load failed: %s', chalk.magenta(name));
+            }
+        });
+    }
+
+
     call(name: any, ctx: any) {
         const args = ctx.args;
         if((args.h || args.help) && name != "help"){
@@ -276,8 +291,7 @@ export default class Feflow {
         });
     }
 
-    async  updateCli(packageManager: string) {
-
+    async updateCli(packageManager: string) {
         return new Promise((resolve, reject) => {
             const args = [
                 'install',
