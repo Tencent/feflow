@@ -10,7 +10,13 @@ enum DEVTOOL_TYPE {
 }
 
 module.exports = (ctx: any) => {
-    const { args, commander, logger } = ctx;
+    const {
+      args,
+      commander,
+      logger,
+      root,
+      rootPkg
+    } = ctx;
     const [ action ] = args['_'];
 
     let templatePath: string;
@@ -80,7 +86,22 @@ module.exports = (ctx: any) => {
                 console.log('Happy coding!');
                 break;
             case 'dev':
-                console.log('dev');
+                logger.info('Start dev');
+                const pkgJson = require(path.join(process.cwd(), 'package.json'));
+                const rootPkgJson = require(rootPkg);
+                const rootDependenciesPath = path.join(root, 'node_modules');
+                const pkgName = pkgJson.name;
+                const pkgVersion = pkgJson.version;
+
+                logger.info('Start register %s to feflow home', pkgName);
+                if (!rootPkgJson.dependencies[pkgName]) {
+                  rootPkgJson.dependencies[pkgName] = pkgVersion;
+                }
+                logger.info('Syncing %s to feflow client system', pkgName)
+                fs.writeFileSync(rootPkg, JSON.stringify(rootPkgJson, null, 2));
+                fs.copySync(process.cwd(), path.join(rootDependenciesPath, pkgName));
+
+                logger.info('End dev, run feflow commands now!');
                 break;
             default:
                 return null;
