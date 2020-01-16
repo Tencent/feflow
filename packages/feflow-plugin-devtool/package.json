@@ -9,7 +9,8 @@
   },
   "files": [
     "src",
-    "lib"
+    "lib",
+    "templates"
   ],
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/easy-table": "0.0.32",
     "@types/figlet": "^1.2.0",
+    "@types/fs-extra": "^8.0.1",
     "@types/inquirer": "^6.0.3",
     "@types/js-yaml": "^3.12.1",
     "@types/minimist": "^1.2.0",
@@ -56,6 +58,7 @@
     "cross-spawn": "^6.0.5",
     "easy-table": "^1.1.1",
     "figlet": "^1.2.3",
+    "fs-extra": "^8.1.0",
     "import-fresh": "^3.1.0",
     "inquire": "^0.4.8",
     "inquirer": "^6.5.0",

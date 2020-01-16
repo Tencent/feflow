@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
-
+import chalk from 'chalk';
 
 enum DEVTOOL_TYPE {
     SCAFFLOAD = '脚手架',
@@ -72,7 +72,12 @@ module.exports = (ctx: any) => {
                 logger.info('Start creating %s', name);
                 const destinationPath = path.join(process.cwd(), name);
                 fs.copySync(templatePath, destinationPath);
-
+                logger.info('Creating success');
+                console.log();
+                console.log(chalk.cyan('  cd'), name);
+                console.log(`  ${chalk.cyan('fef devtool dev')}`);
+                console.log();
+                console.log('Happy coding!');
                 break;
             case 'dev':
                 console.log('dev');
