@@ -56,6 +56,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var inquirer_1 = __importDefault(require("inquirer"));
+var fs_extra_1 = __importDefault(require("fs-extra"));
+var path_1 = __importDefault(require("path"));
+var chalk_1 = __importDefault(require("chalk"));
 var DEVTOOL_TYPE;
 (function (DEVTOOL_TYPE) {
     DEVTOOL_TYPE["SCAFFLOAD"] = "\u811A\u624B\u67B6";
@@ -63,10 +66,11 @@ var DEVTOOL_TYPE;
     DEVTOOL_TYPE["PLUGIN"] = "\u63D2\u4EF6";
 })(DEVTOOL_TYPE || (DEVTOOL_TYPE = {}));
 module.exports = function (ctx) {
-    var args = ctx.args, commander = ctx.commander, logger = ctx.logger;
+    var args = ctx.args, commander = ctx.commander, logger = ctx.logger, root = ctx.root, rootPkg = ctx.rootPkg;
     var _a = __read(args['_'], 1), action = _a[0];
+    var templatePath;
     commander.register('devtool', 'Feflow devtool for better develop a devkit or plugin', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, type_1, message, name_1;
+        var _a, type_1, message, name_1, destinationPath, pkgJson, rootPkgJson, rootDependenciesPath, pkgName, pkgVersion;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -94,12 +98,15 @@ module.exports = function (ctx) {
                     switch (type_1) {
                         case DEVTOOL_TYPE.SCAFFLOAD:
                             message = '以 generator- 开头';
+                            templatePath = path_1.default.join(__dirname, '../templates/generator-template');
                             break;
                         case DEVTOOL_TYPE.DEVKIT:
                             message = '以 feflow-devkit- 开头';
+                            templatePath = path_1.default.join(__dirname, '../templates/devkit-template');
                             break;
                         case DEVTOOL_TYPE.PLUGIN:
                             message = '以 feflow-plugin- 开头';
+                            templatePath = path_1.default.join(__dirname, '../templates/plugin-template');
                             break;
                     }
                     return [4 /*yield*/, inquirer_1.default.prompt([{
@@ -125,10 +132,31 @@ module.exports = function (ctx) {
                             }])];
                 case 3:
                     name_1 = (_b.sent()).name;
-                    console.log('name', name_1);
+                    logger.info('Start creating %s', name_1);
+                    destinationPath = path_1.default.join(process.cwd(), name_1);
+                    fs_extra_1.default.copySync(templatePath, destinationPath);
+                    logger.info('Creating success');
+                    console.log();
+                    console.log(chalk_1.default.cyan('  cd'), name_1);
+                    console.log("  " + chalk_1.default.cyan('fef devtool dev'));
+                    console.log();
+                    console.log('Happy coding!');
                     return [3 /*break*/, 6];
                 case 4:
-                    console.log('dev');
+                    logger.info('Start dev');
+                    pkgJson = require(path_1.default.join(process.cwd(), 'package.json'));
+                    rootPkgJson = require(rootPkg);
+                    rootDependenciesPath = path_1.default.join(root, 'node_modules');
+                    pkgName = pkgJson.name;
+                    pkgVersion = pkgJson.version;
+                    logger.info('Start register %s to feflow home', pkgName);
+                    if (!rootPkgJson.dependencies[pkgName]) {
+                        rootPkgJson.dependencies[pkgName] = pkgVersion;
+                    }
+                    logger.info('Syncing %s to feflow client system', pkgName);
+                    fs_extra_1.default.writeFileSync(rootPkg, JSON.stringify(rootPkgJson, null, 2));
+                    fs_extra_1.default.copySync(process.cwd(), path_1.default.join(rootDependenciesPath, pkgName));
+                    logger.info('End dev, run feflow commands now!');
                     return [3 /*break*/, 6];
                 case 5: return [2 /*return*/, null];
                 case 6: return [2 /*return*/];
