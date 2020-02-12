@@ -113,6 +113,10 @@ export default class Feflow {
                         installed: isInstalled('tnpm')
                     },
                     {
+                        name: 'cnpm',
+                        installed: isInstalled('cnpm')
+                    },
+                    {
                         name: 'yarn',
                         installed: isInstalled('yarn')
                     }
