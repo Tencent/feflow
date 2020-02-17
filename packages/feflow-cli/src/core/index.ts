@@ -165,7 +165,7 @@ export default class Feflow {
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, 'latest', registryUrl).catch((err) => {
+            const latestVersion = await packageJson(name, registryUrl).catch((err) => {
                 logger.debug('Check plugin update error', err);
             });
 
@@ -331,7 +331,7 @@ export default class Feflow {
         }
         const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson('@feflow/cli', 'latest', registryUrl);
+        const latestVersion: any = await packageJson('@feflow/cli', registryUrl);
         if (semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
