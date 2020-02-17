@@ -331,8 +331,10 @@ export default class Feflow {
         }
         const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson('@feflow/cli', registryUrl);
-        if (semver.gt(latestVersion, version)) {
+        const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
+            this.logger.warn(`Network error, can't reach ${ registryUrl }, CLI give up verison check.`);
+        });
+        if (latestVersion && semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
                 name: "ifUpdate",
