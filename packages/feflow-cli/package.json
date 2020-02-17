@@ -37,6 +37,7 @@
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
     "@types/osenv": "^0.1.0",
+    "@types/request-promise": "^4.1.45",
     "@types/semver": "^6.0.1",
     "@types/yeoman-environment": "^2.3.1",
     "chai": "^4.2.0",
