@@ -1,0 +1,63 @@
+<template>
+  <div>
+    <main>
+      <side-bar></side-bar>
+      <section class="create-wrapper">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="创建项目" name="create">
+            <create-page />
+          </el-tab-pane>
+          <el-tab-pane label="导入项目" name="import">导入项目</el-tab-pane>
+        </el-tabs>
+      </section>
+    </main>
+  </div>
+</template>
+
+<script>
+import CreatePage from './create'
+import SideBar from '../SideBar'
+export default {
+  name: 'add-page',
+  components: { SideBar, CreatePage },
+  // components: { SideBar },
+  data() {
+    return {
+      activeName: 'create'
+    }
+  },
+  methods: {
+    handleClick(tab, event) {
+      console.log(tab, event)
+    }
+  }
+}
+</script>
+
+<style scoped>
+main {
+  display: flex;
+}
+.create-wrapper {
+  width: 546px;
+  padding: 0 50px;
+  margin-top: 47px;
+}
+</style>
+
+<style>
+main .el-tabs__item.is-active {
+  font-size: 20px;
+  color: #000;
+}
+main .el-tabs__active-bar {
+  background-color: #000;
+}
+main .el-tabs__item {
+  color: #8a92af;
+}
+main .el-tabs__nav-wrap::after {
+  height: 1px;
+}
+</style>
+

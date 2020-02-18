@@ -1,0 +1,48 @@
+{
+  "gererator": "generatorIvwebStartkit",
+  "description": "Now直播基础脚手架",
+  "properties": [
+    {
+      "type": "input",
+      "title": "项目名字",
+      "field": "projectName"
+    },
+    {
+      "type": "input",
+      "title": "项目描述",
+      "field": "decscription",
+      "description": "推荐使用5-10个汉字"
+    },
+    {
+      "field": "isNeedGit",
+      "type": "switch",
+      "title": "是否创建Git仓库",
+      "default": true
+    },
+    {
+      "require": ["isNeedGit"],
+      "type": "switch",
+      "field": "isNeedCI",
+      "title": "是否接入CI",
+      "default": true
+    },
+    {
+      "require": ["isNeedGit"],
+      "field": "isNeedE2E",
+      "type": "switch",
+      "title": "是否接入端对端测试",
+      "default": true
+    },
+    {
+      "type": "select",
+      "title": "文件发布类型",
+      "field": "fileType",
+      "options": [
+        { "value": "node", "label": "纯Node项目" },
+        { "value": "web", "label": "纯Web项目" }
+      ]
+    }
+  ],
+  "isRequire": ["projectName"],
+  "author": "bethon"
+}
