@@ -1,9 +1,7 @@
 <template>
     <div class="grid-projects">
     <div class="create">
-    <router-link to="/create">
         <i class="create-icon"></i>
-    </router-link>
     </div>
     <div class="project-item">
         <div class="project-screen">
@@ -92,7 +90,7 @@
     margin-bottom: 20px;
 }
 .grid-projects .create .create-icon {
-    background: url(../assets/create.png) no-repeat;
+    background: url(../../assets/create.png) no-repeat;
     width: 40px;
     height: 40px;
     display: inline-block;

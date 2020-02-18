@@ -9,7 +9,7 @@
 
 <script>
   import SideBar from './SideBar'
-  import ProjectList from './ProjectList'
+  import ProjectList from './project-list/ProjectList'
   export default {
     name: 'landing-page',
     components: { SideBar, ProjectList },
