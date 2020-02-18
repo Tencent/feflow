@@ -59,7 +59,7 @@ import generatorNow from './schema.now.json'
 
 export default {
   name: 'create-page',
-  data() {
+  data () {
     return {
       targetGenerator: '',
       generators: [],
@@ -67,7 +67,7 @@ export default {
       generatorsConfig: {}
     }
   },
-  mounted() {
+  mounted () {
     this.generatorsConfig[generatorNow.gererator] = generatorNow
     this.generatorsConfig[generatorsIvweb.gererator] = generatorsIvweb
     this.generators.push({
@@ -82,7 +82,7 @@ export default {
     this.targetGenerator = generatorNow.gererator
   },
   computed: {
-    formConfig() {
+    formConfig () {
       const _formConfig = this.generatorsConfig[this.targetGenerator] || {}
 
       const { properties = [] } = _formConfig
@@ -92,17 +92,17 @@ export default {
 
       return _formConfig
     },
-    rule() {
+    rule () {
       // 读取选中脚手架的配置
       const { properties = [] } = this.formConfig || {}
       return properties
     }
   },
   methods: {
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       console.log(tab, event)
     },
-    shouldShow(field) {
+    shouldShow (field) {
       const requireList = field.require
       let result = true
       // 错误类型
@@ -120,10 +120,10 @@ export default {
       })
       return result
     },
-    onSubmit(formData) {
+    onSubmit (formData) {
       // TODO 提交表单
     },
-    updateForm(fieldName, value) {
+    updateForm (fieldName, value) {
       this.formData[fieldName] = value
     }
   }
