@@ -39,8 +39,13 @@ main {
   display: flex;
 }
 .create-wrapper {
-  width: 546px;
-  padding: 0 50px;
+  height: 550px;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  /* padding: 0 50px; */
+  /* padding-top: 50px; */
+  padding-left: 50px;
   margin-top: 47px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="create-inner">
     <el-form label-position="left" label-width="140px" ref="form" :model="formData">
       <el-form-item label="脚手架">
         <el-select v-model="targetGenerator" placeholder="请选择">
@@ -48,15 +48,12 @@
 
     <div class="action-btn">
       <el-button>取消</el-button>
-      <el-button type="primary">创建</el-button>
+      <el-button type="primary" @click="handleClick">创建</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import generatorsIvweb from './schema.ivweb.json'
-import generatorNow from './schema.now.json'
-
 export default {
   name: 'create-page',
   data() {
@@ -68,18 +65,25 @@ export default {
     }
   },
   mounted() {
-    this.generatorsConfig[generatorNow.gererator] = generatorNow
-    this.generatorsConfig[generatorsIvweb.gererator] = generatorsIvweb
-    this.generators.push({
-      value: generatorNow.gererator,
-      label: generatorNow.description
-    })
-    this.generators.push({
-      value: generatorsIvweb.gererator,
-      label: generatorsIvweb.description
-    })
+    // 获取脚手架
+    this.$store.dispatch('getGenerator')
+    const { list, configMap } = this.$store.state.Generator
+    const gens = Object.keys(configMap)
 
-    this.targetGenerator = generatorNow.gererator
+    Array.isArray(gens) &&
+      gens.forEach(genName => {
+        const key = genName
+        const gen = configMap[genName]
+
+        this.generators.push({
+          value: key,
+          label: gen.description
+        })
+
+        this.generatorsConfig[key] = configMap[key]
+      })
+
+    this.targetGenerator = list[0]
   },
   computed: {
     formConfig() {
@@ -99,8 +103,14 @@ export default {
     }
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event)
+    handleClick() {
+      // 创建配置文件
+      this.$store.dispatch('builConfig', {
+        config: this.formData,
+        genConfig: this.generatorsConfig[this.targetGenerator]
+      })
+      // 执行脚手架初始化命令
+      this.$store.dispatch('loadGenerator')
     },
     shouldShow(field) {
       const requireList = field.require
@@ -132,6 +142,13 @@ export default {
 
 
 <style scoped>
+.create-inner {
+  width: 100%;
+  height: 500px;
+  overflow: scroll;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
 .action-btn {
   border-top: 1px solid #f3f4f5;
   padding-top: 26px;
