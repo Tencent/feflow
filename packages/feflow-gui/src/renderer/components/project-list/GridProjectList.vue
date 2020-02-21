@@ -1,7 +1,9 @@
 <template>
     <div class="grid-projects">
     <div class="create">
-        <i class="create-icon"></i>
+        <router-link to="/create">
+            <i class="create-icon"></i>
+        </router-link>
     </div>
     <div class="project-item">
         <div class="project-screen">

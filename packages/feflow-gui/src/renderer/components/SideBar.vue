@@ -11,13 +11,23 @@
         <div class="avatar">
         <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
         </div>
-        <div class="nickname">cpselvis</div>
+        <div class="nickname">{{ username }}</div>
     </div>
     <div class="logout" />
     </div>
   </div>
 </template>
-
+<script>
+  export default {
+    name: 'side-bar',
+    data () {
+      return {
+        username: window.username || 'xxx',
+        avatar: window.avatar
+      }
+    }
+  }
+</script>
 <style>
 .side-bar {
     display: flex;
