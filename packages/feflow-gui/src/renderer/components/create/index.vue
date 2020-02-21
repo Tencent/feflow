@@ -21,13 +21,13 @@ export default {
   name: 'add-page',
   components: { SideBar, CreatePage },
   // components: { SideBar },
-  data () {
+  data() {
     return {
       activeName: 'create'
     }
   },
   methods: {
-    handleClick (tab, event) {
+    handleClick(tab, event) {
       console.log(tab, event)
     }
   }
