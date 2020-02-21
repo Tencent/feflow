@@ -31,10 +31,16 @@ const actions = {
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },
-  loadGenerator({ state }) {
-    runGenerator({
-      config: state.localConfigName
-    })
+  initGenerator({ state }, { execType, config }) {
+    if (execType === 'path') {
+      // 传入配置文件路径
+      runGenerator({
+        config: state.localConfigName
+      })
+    } else {
+      // 配置传入
+      runGenerator(config)
+    }
   }
 }
 

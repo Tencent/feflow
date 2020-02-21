@@ -49,11 +49,10 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
   const fileName = genName + '-' + (Date.now() + '').slice(4)
 
   const localFilePath = generatorConfigFile(fileName, config, genConfig)
-  console.log('localFilePath', localFilePath)
 
   return localFilePath
 }
 
-export const runGenerator = param => {
-  Feflow.init(param)
+export const runGenerator = (param, execType) => {
+  Feflow.init(param, execType)
 }

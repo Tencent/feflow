@@ -17,7 +17,7 @@ class FeflowCommand {
   init(opt) {
     let arr = []
     Object.keys(opt).forEach(key => {
-      arr.push(`--${key}=${opt[key]}`)
+      arr.push(`--${key}=${opt[key] || false}`)
     })
     return exec(COMMAND, 'init', arr.join(' '))
   }

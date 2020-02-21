@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
 
-      <div v-for="(field, index) in rule" v-bind:key="index">
+      <div v-for="(field, index) in formConfig" v-bind:key="index">
         <el-form-item :label="field.title" v-if="shouldShow(field)">
           <el-col>
             <component
@@ -64,53 +64,62 @@ export default {
       generatorsConfig: {}
     }
   },
-  mounted() {
-    // 获取脚手架
-    this.$store.dispatch('getGenerator')
-    const { list, configMap } = this.$store.state.Generator
-    const gens = Object.keys(configMap)
-
-    Array.isArray(gens) &&
-      gens.forEach(genName => {
-        const key = genName
-        const gen = configMap[genName]
-
-        this.generators.push({
-          value: key,
-          label: gen.description
-        })
-
-        this.generatorsConfig[key] = configMap[key]
-      })
-
-    this.targetGenerator = list[0]
+  mounted() {},
+  created() {
+    // 载入脚手架
+    this.init()
+    // 初始化表单配置
+    this.loadFormInitData()
   },
   computed: {
-    formConfig() {
-      const _formConfig = this.generatorsConfig[this.targetGenerator] || {}
-
-      const { properties = [] } = _formConfig
-      const formDataFromConfig = {}
-      properties.map(item => (formDataFromConfig[item.field] = item.default || ''))
-      this.formData = formDataFromConfig
-
-      return _formConfig
+    targetGeneratorConfig() {
+      return this.generatorsConfig[this.targetGenerator] || {}
     },
-    rule() {
+    formConfig() {
       // 读取选中脚手架的配置
-      const { properties = [] } = this.formConfig || {}
-      return properties
+      return this.targetGeneratorConfig.properties || []
     }
   },
   methods: {
+    init() {
+      // 获取脚手架
+      this.$store.dispatch('getGenerator')
+      const { list, configMap } = this.$store.state.Generator
+      const gens = Object.keys(configMap)
+
+      Array.isArray(gens) &&
+        gens.forEach(genName => {
+          const key = genName
+          const gen = configMap[genName]
+
+          this.generators.push({
+            value: key,
+            label: gen.description
+          })
+
+          this.generatorsConfig[key] = configMap[key]
+        })
+      // 默认加载第一个脚手架
+      this.targetGenerator = list[0]
+    },
+    loadFormInitData() {
+      const formDataFromConfig = {}
+      this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
+      this.formData = formDataFromConfig
+    },
     handleClick() {
+      const { execType } = this.generatorsConfig[this.targetGenerator]
+      console.log(' this.generatorsConfig[this.targetGenerator]', this.generatorsConfig[this.targetGenerator])
       // 创建配置文件
-      this.$store.dispatch('builConfig', {
-        config: this.formData,
-        genConfig: this.generatorsConfig[this.targetGenerator]
-      })
+      if (execType === 'path') {
+        this.$store.dispatch('builConfig', {
+          config: this.formData,
+          genConfig: this.generatorsConfig[this.targetGenerator]
+        })
+      }
+      // 直接传参
       // 执行脚手架初始化命令
-      this.$store.dispatch('loadGenerator')
+      this.$store.dispatch('initGenerator', { execType, config: Object.assign({}, this.formData) })
     },
     shouldShow(field) {
       const requireList = field.require
