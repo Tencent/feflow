@@ -58,6 +58,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.13.0",
+    "import-fresh": "^3.2.1",
     "shelljs": "^0.8.3",
     "vue": "^2.6.10",
     "vue-electron": "^1.0.6",

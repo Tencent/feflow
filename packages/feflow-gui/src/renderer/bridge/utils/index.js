@@ -1,7 +1,6 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
-
 export const homeDir = os.homedir()
 
 export const feflowHomeDir = '.feflow'
@@ -12,7 +11,7 @@ export const feflowHomepath = path.resolve(homeDir, feflowHomeDir)
 
 export const feflowHomePackagePath = path.resolve(homeDir, feflowHomeDir, './package.json')
 
-export const GENERATOR_CONFIG_FILE_NAME = 'schema.json'
+export const GENERATOR_CONFIG_FILE_NAME = ['schema.config.js', 'schema.json']
 
 // basic functions
 export const isExit = path => {
@@ -33,7 +32,7 @@ export const getFileByJSON = path => {
     try {
       fileContent = JSON.parse(file)
     } catch (error) {
-      console.log('read file err')
+      console.log('read file err', error)
     }
   }
   return fileContent
@@ -65,7 +64,25 @@ export const getFeflowDependenceConfig = (dependence, configFile = 'package.json
   const dependenceConfigPath = path.resolve(dependencePath, './', configFile)
 
   if (isExit(dependenceConfigPath)) {
-    return getFileByJSON(dependenceConfigPath)
+    switch (path.extname(configFile)) {
+      case '.json': {
+        console.log('load json config', dependenceConfigPath)
+        return getFileByJSON(dependenceConfigPath)
+      }
+      case '.js': {
+        let data = null
+        try {
+          data = require('/Users/bethon/.feflow/node_modules/@tencent/generator-ivweb-startkit/schema.config.js')
+        } catch (error) {
+          console.log('load js file err', error)
+        }
+        return data
+      }
+      default:
+        return null
+    }
+  } else {
+    console.log('file path is not exit ', dependenceConfigPath)
   }
 }
 

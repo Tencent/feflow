@@ -28,6 +28,7 @@ const actions = {
     })
   },
   builConfig({ commit }, config) {
+    // 同步写
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },

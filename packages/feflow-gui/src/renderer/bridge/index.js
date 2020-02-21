@@ -30,8 +30,13 @@ export const loadGenerator = () => {
       })
 
       // 获取脚手架配置
+      // 优先级  js > json
       generators.forEach(gen => {
-        generatorConfigMap[gen] = getFeflowDependenceConfig(gen, GENERATOR_CONFIG_FILE_NAME) || {}
+        for (const configName of GENERATOR_CONFIG_FILE_NAME) {
+          if (!generatorConfigMap[gen]) {
+            generatorConfigMap[gen] = getFeflowDependenceConfig(gen, configName)
+          }
+        }
       })
     }
 

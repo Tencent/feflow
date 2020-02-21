@@ -109,7 +109,8 @@ export default {
     },
     handleClick() {
       const { execType } = this.generatorsConfig[this.targetGenerator]
-      console.log(' this.generatorsConfig[this.targetGenerator]', this.generatorsConfig[this.targetGenerator])
+      if (!this.checkFormData()) return
+
       // 创建配置文件
       if (execType === 'path') {
         this.$store.dispatch('builConfig', {
@@ -120,6 +121,35 @@ export default {
       // 直接传参
       // 执行脚手架初始化命令
       this.$store.dispatch('initGenerator', { execType, config: Object.assign({}, this.formData) })
+
+      // 提示
+      this.$notify({
+        title: '提示',
+        message: '脚手架生成中',
+        duration: 2
+      })
+    },
+    checkFormData() {
+      let errMsg = []
+      this.formConfig.slice().forEach(({ isRequire, title, regex = '.*', field }) => {
+        let value = this.formData[field]
+        if (value === undefined && isRequire) {
+          errMsg.push(`${title} 不能为空`)
+        }
+        if (!new RegExp(regex).test(this.formData[field])) {
+          errMsg.push(`${title} 格式不正确`)
+        }
+      })
+
+      if (errMsg.length) {
+        this.$notify.error({
+          title: '表单输入错误',
+          message: errMsg[0],
+          duration: 0
+        })
+      }
+
+      return !errMsg.length
     },
     shouldShow(field) {
       const requireList = field.require
