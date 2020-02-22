@@ -20,6 +20,12 @@ Vue.config.productionTip = false;
   const userInfo = await apiAuthorize.getLoginUser();
   global.username = userInfo.EngName;
   global.avatar = `//r.hrc.oa.com/photo/150/${global.username}.png`;
+  global.department = userInfo.DeptNameString;
+  store.dispatch('UserInfo/SET_USER_INFO_ACTION', {
+    username: global.username,
+    avatar: global.avatar,
+    department: global.department
+  });
 })();
 
 /* eslint-disable no-new */
@@ -27,5 +33,5 @@ new Vue({
   components: { App },
   router,
   store,
-  template: '<App/>'
+  template: '<App />'
 }).$mount('#app')

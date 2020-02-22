@@ -2,7 +2,8 @@
 
 import { app, BrowserWindow } from 'electron';
 
-// require('./request.js');
+// bug: https://zhuanlan.zhihu.com/p/66244402
+import '../renderer/store';
 
 /**
  * Set `__static` path to static files in production

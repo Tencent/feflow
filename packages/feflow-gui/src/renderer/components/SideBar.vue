@@ -1,21 +1,24 @@
 <template>
-  <div class="side-bar">
-    <ul class="nav">
-    <router-link to="/">
-        <li class="project current"><i class="icon" />我的项目</li>
-    </router-link>
-      <li class="market"><i class="icon" />插件市场</li>
-    </ul>
-    <div class="account">
-    <div class="personal-info">
-        <div class="avatar">
-        <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+    <div class="side-bar">
+        <ul class="nav">
+            <router-link to="/">
+                <li class="project current"><i class="icon" />我的项目</li>
+            </router-link>
+            <li class="market"><i class="icon" />插件市场</li>
+            <router-link to="/admin">
+                <li class="project current"><i class="icon" />管理中心</li>
+            </router-link>
+        </ul>
+        <div class="account">
+            <div class="personal-info">
+                <div class="avatar">
+                    <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+                </div>
+                <div class="nickname">cpselvis</div>
+            </div>
+            <div class="logout" />
         </div>
-        <div class="nickname">cpselvis</div>
     </div>
-    <div class="logout" />
-    </div>
-  </div>
 </template>
 
 <style>

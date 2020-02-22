@@ -6,6 +6,11 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/admin',
+      name: 'admin-page',
+      component: require('@/components/admin').default
+    },
+    {
       path: '/',
       name: 'landing-page',
       component: require('@/components/LandingPage').default
