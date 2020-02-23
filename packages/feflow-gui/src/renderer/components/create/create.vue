@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="create-inner">
     <el-form label-position="left" label-width="140px" ref="form" :model="formData">
       <el-form-item label="脚手架">
         <el-select v-model="targetGenerator" placeholder="请选择">
@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
 
-      <div v-for="(field, index) in rule" v-bind:key="index">
+      <div v-for="(field, index) in formConfig" v-bind:key="index">
         <el-form-item :label="field.title" v-if="shouldShow(field)">
           <el-col>
             <component
@@ -48,15 +48,12 @@
 
     <div class="action-btn">
       <el-button>取消</el-button>
-      <el-button type="primary">创建</el-button>
+      <el-button type="primary" @click="handleClick">创建</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import generatorsIvweb from './schema.ivweb.json'
-import generatorNow from './schema.now.json'
-
 export default {
   name: 'create-page',
   data() {
@@ -67,40 +64,92 @@ export default {
       generatorsConfig: {}
     }
   },
-  mounted() {
-    this.generatorsConfig[generatorNow.gererator] = generatorNow
-    this.generatorsConfig[generatorsIvweb.gererator] = generatorsIvweb
-    this.generators.push({
-      value: generatorNow.gererator,
-      label: generatorNow.description
-    })
-    this.generators.push({
-      value: generatorsIvweb.gererator,
-      label: generatorsIvweb.description
-    })
-
-    this.targetGenerator = generatorNow.gererator
+  mounted() {},
+  created() {
+    // 载入脚手架
+    this.init()
+    // 初始化表单配置
+    this.loadFormInitData()
   },
   computed: {
-    formConfig() {
-      const _formConfig = this.generatorsConfig[this.targetGenerator] || {}
-
-      const { properties = [] } = _formConfig
-      const formDataFromConfig = {}
-      properties.map(item => (formDataFromConfig[item.field] = item.default || ''))
-      this.formData = formDataFromConfig
-
-      return _formConfig
+    targetGeneratorConfig() {
+      return this.generatorsConfig[this.targetGenerator] || {}
     },
-    rule() {
+    formConfig() {
       // 读取选中脚手架的配置
-      const { properties = [] } = this.formConfig || {}
-      return properties
+      return this.targetGeneratorConfig.properties || []
     }
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event)
+    init() {
+      // 获取脚手架
+      this.$store.dispatch('getGenerator')
+      const { list, configMap } = this.$store.state.Generator
+      const gens = Object.keys(configMap)
+
+      Array.isArray(gens) &&
+        gens.forEach(genName => {
+          const key = genName
+          const gen = configMap[genName]
+
+          this.generators.push({
+            value: key,
+            label: gen.description
+          })
+
+          this.generatorsConfig[key] = configMap[key]
+        })
+      // 默认加载第一个脚手架
+      this.targetGenerator = list[0]
+    },
+    loadFormInitData() {
+      const formDataFromConfig = {}
+      this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
+      this.formData = formDataFromConfig
+    },
+    handleClick() {
+      const { execType } = this.generatorsConfig[this.targetGenerator]
+      if (!this.checkFormData()) return
+
+      // 创建配置文件
+      if (execType === 'path') {
+        this.$store.dispatch('builConfig', {
+          config: this.formData,
+          genConfig: this.generatorsConfig[this.targetGenerator]
+        })
+      }
+      // 直接传参
+      // 执行脚手架初始化命令
+      this.$store.dispatch('initGenerator', { execType, config: Object.assign({}, this.formData) })
+
+      // 提示
+      this.$notify({
+        title: '提示',
+        message: '脚手架生成中',
+        duration: 2
+      })
+    },
+    checkFormData() {
+      let errMsg = []
+      this.formConfig.slice().forEach(({ isRequire, title, regex = '.*', field }) => {
+        let value = this.formData[field]
+        if (value === undefined && isRequire) {
+          errMsg.push(`${title} 不能为空`)
+        }
+        if (!new RegExp(regex).test(this.formData[field])) {
+          errMsg.push(`${title} 格式不正确`)
+        }
+      })
+
+      if (errMsg.length) {
+        this.$notify.error({
+          title: '表单输入错误',
+          message: errMsg[0],
+          duration: 0
+        })
+      }
+
+      return !errMsg.length
     },
     shouldShow(field) {
       const requireList = field.require
@@ -132,6 +181,13 @@ export default {
 
 
 <style scoped>
+.create-inner {
+  width: 100%;
+  height: 500px;
+  overflow: scroll;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
 .action-btn {
   border-top: 1px solid #f3f4f5;
   padding-top: 26px;
