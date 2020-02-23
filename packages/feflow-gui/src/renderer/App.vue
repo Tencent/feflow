@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="feflow-gui">
     <router-view></router-view>
   </div>
 </template>
@@ -10,9 +10,4 @@
   }
 </script>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-}
-</style>
+<style src="./assets/scss/app.scss"></style>

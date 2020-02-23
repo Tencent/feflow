@@ -1,0 +1,512 @@
+@charset "utf-8";
+
+/**
+ * 样式编写辅助
+ * @author tentenli
+ * @date 2019-08-29
+ */
+
+/* stylelint-disable */
+
+/* no need to  check */
+
+// z-index 取值范围，z-index 最大值不得超过 700
+// floating/吸顶/吸底：101～200
+$index_float: 101;
+// 弹窗：201～300
+$index_popup: 201;
+// loading/分享蒙层：301～400
+$index_mask: 301;
+
+// 继承：
+// 使用方法：@extend %yen;
+// 默认字体
+%font_default {
+  font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+// ¥符号
+%yen {
+  font-family: arial;
+}
+// flexbox 布局
+%flexbox {
+  display: flex;
+  overflow: hidden;
+}
+// flex 均分
+%flex {
+  display: block;
+  width: 100%;
+  flex: 1;
+}
+// 取消 flex 均分
+%flex_none {
+  flex: none;
+}
+// border-box
+%border_box {
+  box-sizing: border-box;
+}
+// 清除表单样式
+%clearinput {
+  border: none;
+  background: none;
+  appearance: none;
+  border-radius: 0;
+}
+// 清除浮动
+%clearfix {
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+// 隐藏滚动条
+%scrollbar_none {
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
+// 文字省略：单行
+%oneline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+// 文字省略：两行
+%twoline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+
+// 混合：
+// 使用方法：@include line(3);
+
+// 文字省略：自定义多行
+// $num:［行数］
+// 使用：@inlucde line(3);
+@mixin line($num: 1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @if ($num == 1) {
+    white-space: nowrap;
+  }
+
+  @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $num;
+    -webkit-box-orient: vertical;
+  }
+}
+
+// 安卓设备对齐修复
+// $position:［位置］before(默认), after
+// $margintop: [偏移值] 默认 1px
+// 使用：@include alignhack; 或 @include alignhack(after,2px);
+@mixin alignhack($position: before, $margintop: 1px) {
+  &::#{$position} {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    width: 0;
+    height: 100%;
+    margin-top: $margintop;
+  }
+}
+
+// 平滑滚动
+// $orientation:［方向］x, y
+// 使用：@include scroll; 或 @include scroll(x); @include scroll(y);
+@mixin scroll($orientation: '', $scrollbar: '') {
+  -webkit-overflow-scrolling: touch;
+
+  @if ($orientation == '') {
+    overflow: auto;
+  }
+
+  @else {
+    overflow: hidden;
+    overflow-#{$orientation}: auto;
+  }
+
+  @if $scrollbar == none {
+    @extend %scrollbar_none;
+  }
+}
+
+// 箭头图标
+// $position:[指向] top, bottom, left, right
+// $borderColor:[边框颜色]
+// $width:［箭头边框长度］
+// 使用：@include arrow(left,#ddd);
+@mixin arrow($position, $borderColor: #666, $width: 8px) {
+  content: '';
+  display: block;
+  width: $width;
+  height: $width;
+  border-top: 1px solid $borderColor;
+  border-left: 1px solid $borderColor;
+  transform-origin: 50%;
+
+  @if $position == top {
+    transform: rotate(45deg);
+  }
+
+  @if $position == bottom {
+    transform: rotate(-135deg);
+  }
+
+  @if $position == left {
+    transform: rotate(-45deg);
+  }
+
+  @if $position == right {
+    transform: rotate(135deg);
+  }
+}
+
+// 占位图
+// $pre:［图片比例值］h/w
+// 使用：@include placeholder; 或 @include placeholder(150/750);
+@mixin placeholder($per: 1) {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  padding-top: percentage($per);
+
+  img {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}
+
+// 1像素边框
+// $position:［边框位置］top, bottom, left, right
+// $color:［边框颜色］
+// $radius:［圆角］
+// 使用：@include border(top, #ddd); 或 @include border(full, #ddd, 2px);
+@mixin border($position: full, $borderColor: #ddd, $radius: 0) {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background-color: $borderColor;
+
+  @if $position == top {
+    height: 1px;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+      & {
+        -webkit-transform: scaleY(0.5);
+        -webkit-transform-origin: 50% 0%;
+      }
+    }
+  }
+
+  @if $position == bottom {
+    height: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+      & {
+        -webkit-transform: scaleY(0.5);
+        -webkit-transform-origin: 50% 100%;
+      }
+    }
+  }
+
+  @if $position == left {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+      & {
+        -webkit-transform: scaleX(0.5);
+        -webkit-transform-origin: 0% 50%;
+      }
+    }
+  }
+
+  @if $position == right {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+      & {
+        -webkit-transform: scaleX(0.5);
+        -webkit-transform-origin: 100% 50%;
+      }
+    }
+  }
+
+  @if $position == full {
+    border: 1px solid #ddd;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: none;
+    border-color: $borderColor;
+
+    @if $radius != 0 {
+      border-radius: $radius;
+    }
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+      & {
+        right: -100%;
+        bottom: -100%;
+        -webkit-transform: scale(0.5);
+        -webkit-transform-origin: 0% 0%;
+        $radiusx2: null;
+
+        @each $i in $radius {
+          $radiusx2: append($radiusx2, $i * 2);
+        }
+
+        @if $radius != 0 {
+          border-radius: $radiusx2;
+        }
+      }
+    }
+  }
+}
+
+// 吸顶元素
+// $dom:［內容器选择器］
+// $height:［外容器站位高度］
+// $top:［吸顶时距离顶部距离］
+// $zIndex:［z-index数值］
+// 使用：@include sticky('ul', 40px, 0, 10); 或 @include sticky('.wrap', 40px);
+@mixin sticky($dom, $height, $top:0, $zIndex:$index_float) {
+  position: relative;
+  height: $height;
+  z-index: $zIndex;
+
+  &.fixed #{$dom} {
+    position: fixed;
+    top: $top;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 540px;
+    z-index: $zIndex;
+  }
+
+  @supports (position: -webkit-sticky) {
+    & {
+      position: -webkit-sticky;
+      top: $top;
+      &.fixed #{$dom} { position: relative; top: 0; }
+    }
+  }
+}
+
+// 滚动盒子
+// $dom:［子元素选择器］
+// $scrollbar:［是否可滚动］default, normal（可换行、不滚动）, noscroll（不换行、不滚动）
+// 使用：@include scrollbox(li); 或 @include scrollbox(li, normal); 或 @include scrollbox(li, noscroll);
+@mixin scrollbox($dom, $scrollbar: 'default') {
+  font-size: 0;
+  font-family: none;
+
+  @if ($scrollbar == 'default') or ($scrollbar == 'none') {
+    white-space: nowrap;
+
+    @include scroll('x', 'none');
+  }
+
+  @else if ($scrollbar == 'normal') {
+    white-space: normal;
+  }
+
+  @else if ($scrollbar == 'noscroll') {
+    white-space: nowrap;
+  }
+
+  #{$dom} {
+    display: inline-block;
+    vertical-align: top;
+
+    @extend %font_default;
+  }
+}
+
+// 按钮
+// $width:［按钮宽度］
+// $height:［按钮高度］
+// $fontsize:［字体大小］
+// $bgcolor:［按钮背景色］
+// $color:［文字颜色］默认 #fff
+// $radius:［按钮圆角］默认 2px
+// 使用：@include button(100px, 40px, 14px, $color_red); 或 @include button(100px, 40px, 14px, $color_red, #fff, 5px);
+@mixin button($width, $height, $fontsize, $bgcolor, $color: #fff, $radius: 2px) {
+  display: block;
+  width: $width;
+  height: $height;
+  line-height: $height;
+  text-align: center;
+  font-size: $fontsize;
+  border-radius: $radius;
+  background-color: $bgcolor;
+
+  &:active {
+    background-color: darken($bgcolor, 5%);
+  }
+
+  @if ($bgcolor == $btn_disabled) {
+    color: #999;
+  }
+
+  @else {
+    color: $color;
+  }
+}
+
+
+// 辅助函数：返回 base64 格式的 svg 链接
+// 参考文章：https://codepen.io/tigt/post/optimizing-svgs-in-data-uris
+//  Helper function to replace characters in a string
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+
+  @return if($index,
+  str-slice($string, 1, $index - 1) + $replace +
+  str-replace(str-slice($string, $index +
+  str-length($search)), $search, $replace),
+  $string);
+}
+
+// Return svg url
+@function svg-url($svg) {
+  //
+  //  Add missing namespace
+  //
+  @if not str-index($svg, xmlns) {
+    $svg: str-replace($svg, '<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  }
+  //
+  //  Chunk up string in order to avoid
+  //  "stack level too deep" error
+  //
+  $encoded:'';
+  $slice: 2000;
+  $index: 0;
+  $loops: ceil(str-length($svg)/$slice);
+
+  @for $i from 1 through $loops {
+    $chunk: str-slice($svg, $index, $index + $slice - 1);
+    //
+    //   Encode
+    //
+    $chunk: str-replace($chunk, '%', '%25');
+    $chunk: str-replace($chunk, '"', '%22');
+    $chunk: str-replace($chunk, "'", '%27');
+    $chunk: str-replace($chunk, '&', '%26');
+    $chunk: str-replace($chunk, '#', '%23');
+    $chunk: str-replace($chunk, '{', '%7B');
+    $chunk: str-replace($chunk, '}', '%7D');
+    $chunk: str-replace($chunk, '<', '%3C');
+    $chunk: str-replace($chunk, '>', '%3E');
+
+    $encoded: #{$encoded}#{$chunk};
+    $index: $index + $slice;
+  }
+
+  @return url("data:image/svg+xml,#{$encoded}");
+}
+
+// 背景图使用 svg 图片
+// 使用：
+// $svg-img: "<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M224 387.814V512L32 320l192-192v126.912C447.375 260.152 437.794 103.016 380.93 0 521.287 151.707 491.48 394.785 224 387.814z"/></svg>";
+// @include background-svg($svg-img)
+@mixin background-svg($svg) {
+  background-image: svg-url($svg);
+}
+
+
+// 媒体查询
+// 使用：@include query(320px) {...};
+@mixin query( $limit ) {
+  @media screen and (min-width: $limit) {
+    & {
+      @content;
+    }
+  }
+}
+
+// rem 函数
+// 使用：width: rem(100);
+$rem_grid: 20 !default;
+
+@function rem($val) {
+  $rem : $val / $rem_grid;
+
+  @if $rem == 0 {
+    @return #{$rem} ;
+  }
+
+  @else {
+    @return $rem / ($rem * 0 + 1) / 2 * 1rem; // 带不带px单位都支持
+  }
+}
+
+// 屏幕适配
+// $width: [设计稿宽度]，默认 375，旧设计稿 320
+// 使用： @include rem_query; 或 @include rem_query(320);
+@mixin rem_query($width: 375) {
+  $vw_base: $width;
+  $vw_fontsize: 20;
+
+  html {
+    font-size: 20px;
+    font-size: ($vw_fontsize / $vw_base) * 100vw;
+
+    @media screen and (max-width: 320px) {
+      font-size: ($vw_fontsize / $vw_base) * 320px;
+    }
+
+    @media screen and (min-width: 540px) {
+      font-size: ($vw_fontsize / $vw_base) * 540px;
+    }
+  }
+}
+
+// 逐帧动画的keyframes
+// $name: 动画帧命名
+// $width: 精灵宽度（雪碧图需要横向排列，间距为0）
+// $count: 帧数
+// $content: animations 参数设置，字符串形式传入，包括 duration delay iteration-count direction
+// 使用：@include frames-ani('demo', 140, 12, '1s 5s infinite forwards');
+@mixin frames-ani($name, $width, $count, $content) {
+  @keyframes ani-#{$name} {
+    100% {
+      background-position: ($width * $count) * 1px;
+    }
+  }
+
+  #{$name} {
+    animation: ani-#{$name} steps($count, end) #{$content};
+  }
+}
+/* stylelint-enable */

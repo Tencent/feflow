@@ -1,6 +1,8 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron';
+import { getUrl } from './common'
+import registerEvent from './event'
 
 // require('./request.js');
 
@@ -25,9 +27,7 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development'
-    ? `http://localhost:9080`
-    : `file://${__dirname}/index.html`
+const winURL = getUrl()
 
 function createWindow() {
     /**
@@ -45,6 +45,9 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null
     })
+
+    // 进程通信中心
+    registerEvent()
 }
 
 app.on('ready', createWindow)
