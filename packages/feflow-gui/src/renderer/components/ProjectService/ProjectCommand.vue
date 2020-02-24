@@ -10,7 +10,7 @@
           :key="itemIndex"
           @click="handleSelect(itemIndex)">
             <i class="project-command__item-icon"></i>
-            <p class="project-command__item-name">{{item.command}}</p>
+            <p class="project-command__item-name">{{item.name}}</p>
             <p class="project-command__item-desc">{{item.description}}</p>
         </li>
       </ul>
@@ -18,45 +18,111 @@
 
     <!-- 命令内容  -->
     <div class="project-command__detail">
+      <!-- 命令名称 & 描述 -->
       <div class="project-command__name">{{currentCommand.command}}</div>
       <div class="project-command__desc">{{currentCommand.description}}</div>
+
       <div class="project-command__operation">
+        <!-- 命令脚本 -->
         <div class="project-command__operation-command">
           {{currentCommand.command}}
-          <i class="project-command__operation-copy"></i>
+
+          <el-tooltip class="item" effect="dark" content="复制到剪贴板" placement="top">
+            <i class="project-command__operation-copy" @click="handleCopyCmd"></i>
+          </el-tooltip>
         </div>
+
+        <!-- 命令操作 -->
         <div class="project-command__operation-btns">
-          <el-button type="success" size="mini" round>运行</el-button>
-          <el-button type="danger" size="mini" round>停止</el-button>
+          <el-button
+            type="success"
+            size="mini"
+            round
+            :disabled="currentCommand.running"
+            @click="handleRunCmd">运行
+          </el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            round
+            :disabled="!currentCommand.running"
+            @click="handleStopCmd">停止
+          </el-button>
         </div>
+
       </div>
+
+      <!-- 控制台日志 -->
       <div class="project-command__console">
-        <p class="project-command__console-text">[12:00:23] Starting build dev......</p>
-        <p class="project-command__console-text">[12:00:23] Starting build dev......</p>
-        <p class="project-command__console-text">[12:00:23] Starting build dev......</p>
-        <p class="project-command__console-text">[12:00:23] Starting build dev......</p>
+        <div class="project-command__console-terminal" ref="terminal">
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+// 初始化终端
+import fs from 'fs'
+import path from 'path'
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
+
+import 'xterm/css/xterm.css'
+
+import { loadProjectCommand } from '../../bridge'
+
+const { clipboard } = require('electron')
+
+function getUrlParams(key) {
+  const search = location.href.split('?')[1] || ''
+  const paramsList = {}
+  const args = search.split('&')
+
+  args.forEach(function (item) {
+    const [ key, value ] = item.split('=')
+    if (key) {
+      paramsList[key] = decodeURIComponent(value)
+    }
+  })
+
+  return paramsList[key] || ''
+}
+
+function readJSONFileSync(filepath, file) {
+  try {
+    const content = fs.readFileSync(path.resolve(filepath, file), 'utf-8')
+    return JSON.parse(content)
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      // ENOENT === !exists()
+      throw err
+    }
+  }
+}
+
 export default {
   name: 'project-command',
   data() {
     return {
       current: 0,
+      isCmdRunning: false,
+      runningCommand: null,
+      currentCmdProcess: null,
       projectCommand: [
         {
           command: 'fef dev',
-          description: '本地构建'
+          description: '本地构建',
+          running: false
         },
         {
           command: 'fef build',
-          description: '这是命令描述，本地构建'
+          description: '这是命令描述，本地构建',
+          running: false
         },
         {
           command: 'fef release',
-          description: '这是命令描述，本地构建'
+          description: '这是命令描述，本地构建',
+          running: false
         }
       ]
     }
@@ -66,9 +132,116 @@ export default {
       return this.projectCommand[this.current]
     }
   },
+  mounted () {
+    // 获取 .feflowrc.json
+    const projectPath = getUrlParams('path')
+    this.execCommand = loadProjectCommand(projectPath)
+    this.getDevkitCommand(projectPath)
+    this.initTerminal()
+  },
   methods: {
+    initTerminal() {
+      this.term = new Terminal({
+        fontSize: 14,
+        disableStdin: true, // 禁止输入
+        cursorBlink: false,
+        cursorStyle: 'bar',
+        cursorWidth: 0
+      })
+      const fitAddon = new FitAddon()
+      this.term.loadAddon(fitAddon)
+
+      // 将 term 挂载 dom 节点上渲染
+      this.term.open(this.$refs.terminal)
+      fitAddon.fit()
+    },
+    runCommand(commandName, commandScript, exitCallback) {
+      this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Start Running Command ${commandScript}...`)
+
+      const childProcess = this.execCommand([commandName, '461251'])
+      childProcess.stdout.on('data', (data) => {
+        console.log(data)
+        this.term.writeln(data)
+      })
+      childProcess.on('close', (data) => {
+        this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Stop Run Command ${commandScript}.`)
+        exitCallback && exitCallback()
+      })
+
+      return childProcess
+    },
+    getDevkitCommand(projectPath) {
+      // 解析 .feflowrc.json，获取命令列表
+      const feflowrcJSON = readJSONFileSync(projectPath, '.feflowrc.json')
+      const { commands = {} } = feflowrcJSON.devkit
+
+      // 解析命令
+      const commandList = Object.keys(commands).map(name => {
+        const { builder, options } = commands[name]
+
+        // 可运行命令拼接
+        const option = options.length !== 0
+          ? Object.keys(options).map(optKey => `--${optKey}=${options[optKey]}`).join(' ')
+          : ''
+        const command = `fef ${name} ${option}`
+
+        // 解析脚手架依赖，从 devkit.json 中获取命令说明
+        const [ dependency, devkitCommandKey ] = builder.split(':')
+        const devkitJSON = readJSONFileSync(`${projectPath}/node_modules/${dependency}`, 'devkit.json')
+        const { description } = devkitJSON.builders[devkitCommandKey]
+
+        return {
+          name,
+          command,
+          description,
+          running: false
+        }
+      })
+
+      this.projectCommand = commandList
+    },
     handleSelect(index) {
       this.current = index
+    },
+    handleCopyCmd() {
+      const { command } = this.currentCommand
+
+      clipboard.writeText(command)
+
+      this.$message({
+        type: 'success',
+        message: '命令复制成功！'
+      })
+    },
+    handleRunCmd() {
+      if (this.isCmdRunning) {
+        this.$alert(
+          '如果想运行其他任务，请先停止当前任务。',
+          `对不起，${this.runningCommand.command}正在运行中`,
+          {
+            confirmButtonText: '确定'
+          }
+        )
+        return
+      }
+
+      this.isCmdRunning = true
+      this.runningCommand = this.currentCommand
+      this.runningCommand.running = true
+
+      const { name, command } = this.runningCommand
+      this.currentCmdProcess = this.runCommand(name, command, () => {
+        this.isCmdRunning = false
+        this.runningCommand.running = false
+        this.currentCmdProcess = null
+      })
+    },
+    handleStopCmd() {
+      if (!this.isCmdRunning) return
+      if (this.runningCommand.command !== this.currentCommand.command) return
+
+      this.isCmdRunning = false
+      this.currentCmdProcess.kill('SIGINT')
     }
   }
 }
@@ -195,13 +368,15 @@ export default {
     margin-top: 30px;
     padding: 20px;
     width: 480px;
-    height: 412px;
+    height: 410px;
     color: #767E97;
-    background: #1C1E23;
+    background: #000;
     border-radius: 4px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+
+    &-terminal {
+      width: 440px;
+      height: 370px;
+    }
 
     &-text {
       font-size: 14px;
