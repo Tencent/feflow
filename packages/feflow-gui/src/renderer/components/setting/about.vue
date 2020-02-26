@@ -26,8 +26,6 @@ export default {
       default: false
     }
   },
-  data() {
-  },
   methods: {
     close() {
       this.$emit('hideAboutDialog')
