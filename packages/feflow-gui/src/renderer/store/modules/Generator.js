@@ -40,7 +40,11 @@ const actions = {
       })
     } else {
       // 配置传入
-      runGenerator(config)
+      runGenerator(
+        Object.assign({}, config, {
+          simple: true
+        })
+      )
     }
   }
 }
