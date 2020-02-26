@@ -72,7 +72,8 @@ export const getFeflowDependenceConfig = (dependence, configFile = 'package.json
       case '.js': {
         let data = null
         try {
-          data = require('/Users/bethon/.feflow/node_modules/@tencent/generator-ivweb-startkit/schema.config.js')
+          data = require(dependenceConfigPath)
+          console.log('load js config', dependenceConfigPath)
         } catch (error) {
           console.log('load js file err', error)
         }
