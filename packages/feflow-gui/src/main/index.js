@@ -1,7 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron';
-import { getUrl } from './common'
+import { getUrl } from './common/utils'
 import registerEvent from './event'
 
 // require('./request.js');

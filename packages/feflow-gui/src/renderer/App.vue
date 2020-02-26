@@ -10,4 +10,4 @@
   }
 </script>
 
-<style src="./assets/scss/app.scss"></style>
+<style src="./assets/less/app.less" lang="less"></style>

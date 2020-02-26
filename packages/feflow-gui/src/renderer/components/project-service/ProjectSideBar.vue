@@ -51,20 +51,21 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-$rootClass: '.project-sidebar';
+<style lang="less" scoped>
+@rootClass: '.project-sidebar';
+
 .project-sidebar {
   height: 100%;
   border-right: solid 1px #e6e6e6;
 
   &.is-collapse {
-    #{$rootClass}__list {
+    #@{rootClass}__list {
       width: 54px;
     }
-    #{$rootClass}__item-icon {
+    #@{rootClass}__item-icon {
       margin-right: 0
     }
-    #{$rootClass}__item-text {
+    #@{rootClass}__item-text {
       display: none;
     }
   }

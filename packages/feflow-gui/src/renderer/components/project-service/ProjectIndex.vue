@@ -46,7 +46,7 @@
     }
   }
 </script>
-<style lang="scss">
+<style lang="less" scoped>
 .project-index {
   display: flex;
   height: 100%;

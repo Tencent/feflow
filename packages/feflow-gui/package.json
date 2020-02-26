@@ -112,6 +112,8 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "^0.0.32",
     "karma-webpack": "^3.0.0",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "0.4.0",
     "mocha": "^5.2.0",
     "multispinner": "^0.2.1",

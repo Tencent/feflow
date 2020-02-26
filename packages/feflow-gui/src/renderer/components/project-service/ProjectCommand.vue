@@ -158,7 +158,7 @@ export default {
     runCommand(commandName, commandScript, exitCallback) {
       this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Start Running Command ${commandScript}...`)
 
-      const childProcess = this.execCommand([commandName, '461251'])
+      const childProcess = this.execCommand([commandName])
       childProcess.stdout.on('data', (data) => {
         console.log(data)
         this.term.writeln(data)
@@ -246,8 +246,8 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-@import "../../assets/scss/_function.scss";
+<style lang="less" scoped>
+@import "../../assets/less/_function";
 
 .project-command {
   flex: 1;
@@ -301,7 +301,7 @@ export default {
     }
 
     &-desc {
-      @include line(1);
+      .oneline;
       width: 100%;
       font-size: 14px;
       color: #909399;

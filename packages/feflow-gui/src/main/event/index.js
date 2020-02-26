@@ -3,7 +3,7 @@
  * @description 注册通信事件
  */
 import { ipcMain, BrowserWindow } from 'electron'
-import { getUrl } from '../common'
+import { getUrl } from '../common/utils'
 
 // GUI 统一参数
 const WIN_CONF = {
