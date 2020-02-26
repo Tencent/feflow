@@ -1,0 +1,115 @@
+<template>
+<div class="about-dialog-wrapper"  v-if="visible">
+<div class="about-dialog" >
+    <div class="dialog-title">
+        <span>关于</span>
+        <div class="close-button" @click="close">
+            <i class="el-icon el-icon-close"></i>
+        </div>
+
+    </div>
+    
+    <div class="content-wrapper">
+        <div class="icon-wrapper"></div>
+        <div class="description">小程序开发工具</div>
+        <div class="version">V2.0</div>
+    </div>
+    <div class="copyright">© 2009-2019 Sketch B.V.</div>
+</div>
+</div>
+</template>
+<script>
+export default {
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+  },
+  methods: {
+    close() {
+      this.$emit('hideAboutDialog')
+    }
+  }
+}
+</script>
+<style scoped>
+.about-dialog-wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    background: rgba(128,128,128,0.6);
+}
+.about-dialog {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-200px, -150px);
+  height: 300px;
+  width: 400px;
+  background: #434650;
+  box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
+}
+.about-dialog .close-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+.about-dialog .el-icon-close {
+  color:#909399;
+}
+.about-dialog .el-icon-close::before {
+  content: "\e6db";
+}
+
+.about-dialog  .dialog-title {
+  margin-top: 9px;
+  font-size: 14px;
+  color: #FFFFFF;
+  text-align: center
+}
+.about-dialog .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.about-dialog .icon-wrapper {
+  margin-top: 21px;
+  background: #353740;
+  background: url(../../assets/img/about-logo.png) center center no-repeat;
+  background-size: cover;
+  border-radius: 8px;
+  border-radius: 8px;
+  width: 100px;
+  height: 100px;
+}
+.about-dialog .content-wrapper .description{
+  margin-top: 17px;
+  font-size: 18px;
+  color: #FFFFFF;
+}
+.about-dialog .content-wrapper .version {
+  margin-top: 7px;
+  font-size: 14px;
+  color: #8A92AF;
+}
+.about-dialog .copyright {
+  margin-top: 27px;
+  font-size: 12px;
+  color: #8A92AF;
+}
+</style>
