@@ -16,6 +16,11 @@ export default new Router({
       component: require('@/components/create').default
     },
     {
+      path: '/project-service',
+      name: 'project-service',
+      component: require('@/components/project-service/ProjectIndex').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

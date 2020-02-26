@@ -5,7 +5,7 @@
         <i class="create-icon"></i>
     </router-link>
     </div>
-    <div class="project-item">
+    <div class="project-item" @click="createProjectService('/Users/ting/work/pgg_act_v2')">
         <div class="project-screen">
             <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
         </div>
@@ -14,7 +14,7 @@
                 NOW Live
             </div>
             <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
+                /Users/ting/work/pgg_act_v2
             </div>
         </div>
     </div>
@@ -132,3 +132,15 @@
     word-wrap: break-word;
 }
 </style>
+<script>
+import electron from 'electron'
+const { ipcRenderer } = electron
+
+export default {
+  methods: {
+    createProjectService(path) {
+      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path })
+    }
+  }
+}
+</script>

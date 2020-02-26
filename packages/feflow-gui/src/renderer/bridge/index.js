@@ -61,3 +61,10 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
 export const runGenerator = (param, execType) => {
   Feflow.init(param, execType)
 }
+
+/**
+ * 生成项目支持的自定义命令
+ */
+export const loadProjectCommand = (projectPath) => {
+  return Feflow.spawn(projectPath)
+}
