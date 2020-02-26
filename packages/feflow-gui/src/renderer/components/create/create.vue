@@ -169,9 +169,6 @@ export default {
       })
       return result
     },
-    onSubmit(formData) {
-      // TODO 提交表单
-    },
     updateForm(fieldName, value) {
       this.formData[fieldName] = value
     }
