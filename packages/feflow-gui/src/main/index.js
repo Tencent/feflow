@@ -63,6 +63,9 @@ app.on('activate', () => {
         createWindow()
     }
 })
+app.on('ready', () => {
+    require('./menu.js')
+  })
 
 /**
  * Auto Updater
