@@ -51,11 +51,23 @@ const run = (ctx: any, name: string) => {
 
 module.exports = (ctx: any) => {
     ctx.commander.register('init', 'Create a new project', () => {
-        const { root, rootPkg } = ctx;
+        const { root, rootPkg, args } = ctx;
+        const { g, generator } = args;
+        const chooseGenerator = g || generator;
+        let chooseGeneratorIsValid = false;
+
         loadGenerator(root, rootPkg).then((generators: any) => {
             const options = generators.map((item: any) => {
+                if (item.name === chooseGenerator) {
+                    chooseGeneratorIsValid = true
+                }
                 return item.desc
             });
+
+            if(chooseGeneratorIsValid) {
+                return run(ctx, chooseGenerator); 
+            }
+
             if (generators.length) {
                 inquirer.prompt([{
                     type: 'list',
