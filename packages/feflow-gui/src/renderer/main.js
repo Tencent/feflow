@@ -26,6 +26,17 @@ Vue.config.productionTip = false;
     avatar: global.avatar,
     department: global.department
   });
+
+  // 获取用户配置
+  const result = await apiAuthorize.checkAuth(userInfo);
+  if (result && result.errcode === 0 && result.data) {
+    store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
+      isAdmin: result.data.isAdmin,
+      hasConfig: false,
+      scaffold: result.data.scaffold,
+      plugins: result.data.plugins
+    });
+  }
 })();
 
 /* eslint-disable no-new */

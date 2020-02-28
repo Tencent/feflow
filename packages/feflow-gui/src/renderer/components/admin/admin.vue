@@ -5,7 +5,7 @@
         </div>
         <div class="admin-main">
             <el-button
-                v-if="!hasConfig"
+                v-if="showConfigButton"
                 @click="createConfig"
             >创建配置</el-button>
             <el-form
@@ -21,7 +21,10 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="配置脚手架">
-                    <el-input v-model="form.scaffold"></el-input>
+                    <el-input
+                        v-model="form.scaffold"
+                        :disable="!isAdmin"
+                    ></el-input>
                 </el-form-item>
                 <el-form-item label="配置插件">
                     <el-input v-model="form.plugins"></el-input>
@@ -30,8 +33,8 @@
                     <el-button
                         type="primary"
                         @click="onCreate"
-                    >立即创建</el-button>
-                    <el-button>取消</el-button>
+                        :disabled="!canCreate"
+                    >提交</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -39,14 +42,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
+import apiAuthorize from '@/api/authorize';
 
 export default {
     name: 'admin-page',
     data() {
         return {
-            isAdmin: true,
-            hasConfig: false,
+            showConfigButton: true,
 
             form: {
                 groupname: '',
@@ -55,23 +58,59 @@ export default {
             }
         }
     },
+    created() {
+        this.showConfigButton = !this.isAdmin && !this.hasConfig;
+    },
     mounted() {
         if (this.groupName) {
             this.form.groupname = this.groupName;
+            this.form.scaffold = this.scaffold;
+            this.form.plugins = this.plugins;
         }
     },
     computed: {
+        ...mapState('UserInfo', [
+            'username',
+            'isAdmin',
+            'scaffold',
+            'plugins',
+            'hasConfig'
+        ]),
+
         ...mapGetters('UserInfo', [
             'groupName'
-        ])
+        ]),
+
+        canCreate() {
+            return this.form.scaffold || this.form.plugins;
+        }
     },
     methods: {
         createConfig() {
-            this.hasConfig = true;
+            this.showConfigButton = false;
         },
 
-        onCreate() {
+        async onCreate() {
             this.form.groupname = this.groupName;
+
+            let params = {
+                username: this.username,
+                ...this.form
+            };
+
+            let result = await apiAuthorize.createConfig(params);
+
+            if (result && result.errcode === 0) {
+                this.$message({
+                    message: '提交成功',
+                    type: 'success'
+                });
+            } else {
+                this.$message({
+                    message: result.errmsg,
+                    type: 'error'
+                });
+            }
         }
     }
 }

@@ -4,14 +4,11 @@
  * 2. 增加切面钩子，方便统一参数处理；
  */
 import axios from 'axios';
-import config from '@/config/index';
 import errors from '@/common/errors';
 
 const winURL = process.env.NODE_ENV === 'development'
     ? `http://localhost:9080`
     : `file://${__dirname}/index.html`;
-
-console.log(winURL);
 
 // 抛出切面，如果return false，将会中断后续执行
 let requestConfig = {
@@ -179,7 +176,7 @@ let request = function (options) {
                         console.log(401, location.href)
                         const origin = location.origin.replace(
                             /:\/\/[^\/]+/,
-                            '://' + config.hostDomain
+                            '://' + 'gui.oa.com'
                         );
                         setTimeout(() => {
                             let url = `${origin}/_sp_login_/?url=${

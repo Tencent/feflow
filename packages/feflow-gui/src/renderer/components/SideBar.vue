@@ -6,7 +6,7 @@
             </router-link>
             <li class="market"><i class="icon" />插件市场</li>
             <router-link to="/admin">
-                <li class="project current"><i class="icon" />管理中心</li>
+                <li class="project"><i class="icon" />管理中心</li>
             </router-link>
         </ul>
         <div class="account">
