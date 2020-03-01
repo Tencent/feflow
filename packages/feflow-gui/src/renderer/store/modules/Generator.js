@@ -1,4 +1,5 @@
 import { loadGenerator, buildGeneratorConfig, runGenerator } from '../../bridge'
+import { dialog } from 'electron'
 
 // Vuex 被放置在主进程中
 
@@ -7,7 +8,8 @@ const state = {
   configMap: {},
   count: 0,
   currentGeneratorConfig: {},
-  localConfigName: ''
+  localConfigName: '',
+  workSpace: ''
 }
 
 const mutations = {
@@ -18,6 +20,12 @@ const mutations = {
   },
   SET_LOCAL_CONFIG_NAME(state, localConfigName) {
     state.localConfigName = localConfigName
+  },
+  SET_WORK_SPACE(state, workSpace) {
+    state.workSpace = workSpace
+  },
+  SET_PROJECT_INIT_STATE(state, id) {
+    state.successProjectId = id
   }
 }
 
@@ -32,20 +40,35 @@ const actions = {
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },
-  initGenerator({ state }, { execType, config }) {
+  initGenerator({ state, commit }, { execType, config, sequenceId }) {
+    let params = {}
     if (execType === 'path') {
       // 传入配置文件路径
-      runGenerator({
+      params = {
         config: state.localConfigName
-      })
+      }
     } else {
       // 配置传入
-      runGenerator(
-        Object.assign({}, config, {
-          simple: true
-        })
-      )
+      params = Object.assign({}, config, {
+        simple: true
+      })
     }
+
+    runGenerator(params, state.workSpace).then(code => {
+      if (code === 0) {
+        commit('SET_PROJECT_INIT_STATE', sequenceId)
+      }
+    })
+  },
+  selectWorkSpace({ commit }) {
+    dialog.showOpenDialog(
+      {
+        properties: ['openFile', 'openDirectory']
+      },
+      function(files) {
+        commit('SET_WORK_SPACE', files[0])
+      }
+    )
   }
 }
 

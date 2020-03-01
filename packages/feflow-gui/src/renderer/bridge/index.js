@@ -58,6 +58,6 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
   return localFilePath
 }
 
-export const runGenerator = (param, execType) => {
-  Feflow.init(param, execType)
+export const runGenerator = (param, workSpace) => {
+  return Feflow.init(param, workSpace)
 }

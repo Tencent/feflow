@@ -11,7 +11,11 @@
           ></el-option>
         </el-select>
       </el-form-item>
-
+      <el-form-item label="项目目录" v-if="!!targetGenerator">
+        <el-input :value="workSpace" :disabled="true">
+          <el-button @click="handleWorkSpaceClick" slot="append">选择</el-button>
+        </el-input>
+      </el-form-item>
       <div v-for="(field, index) in formConfig" v-bind:key="index">
         <el-form-item :label="field.title" v-if="shouldShow(field)">
           <el-col>
@@ -78,6 +82,26 @@ export default {
     formConfig() {
       // 读取选中脚手架的配置
       return this.targetGeneratorConfig.properties || []
+    },
+    workSpace() {
+      return this.$store.state.Generator.workSpace
+    },
+    successProjectId() {
+      return this.$store.state.Generator.successProjectId
+    }
+  },
+  watch: {
+    successProjectId(newVal, oldVal) {
+      if (newVal === this.sequenceId) {
+        // 生成成功
+        this.messageInstance && this.messageInstance.close()
+        this.$message({
+          message: '脚手架生成成功',
+          type: 'success'
+        })
+        // 重置表单， 防止重复初始化项目
+        this.formData = {}
+      }
     }
   },
   methods: {
@@ -118,15 +142,25 @@ export default {
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
       }
-      // 直接传参
-      // 执行脚手架初始化命令
-      this.$store.dispatch('initGenerator', { execType, config: Object.assign({}, this.formData) })
+
+      const sequenceId = (this.sequenceId = (Date.now() + '').slice(-5))
+
+      if (this.messageInstance) this.messageInstance.close()
 
       // 提示
-      this.$notify({
-        title: '提示',
-        message: '脚手架生成中',
-        duration: 2
+      this.messageInstance = this.$message({
+        message: '脚手架生成中, 请稍等',
+        type: 'info',
+        duration: 0,
+        showClose: false
+      })
+
+      // 直接传参
+      // 执行脚手架初始化命令
+      this.$store.dispatch('initGenerator', {
+        execType,
+        config: Object.assign({}, this.formData, { generator: this.targetGenerator }),
+        sequenceId
       })
     },
     checkFormData() {
@@ -171,6 +205,9 @@ export default {
     },
     updateForm(fieldName, value) {
       this.formData[fieldName] = value
+    },
+    handleWorkSpaceClick() {
+      this.$store.dispatch('selectWorkSpace')
     }
   }
 }
@@ -184,6 +221,7 @@ export default {
   overflow: scroll;
   padding-bottom: 20px;
   box-sizing: border-box;
+  padding-right: 24px;
 }
 .action-btn {
   border-top: 1px solid #f3f4f5;

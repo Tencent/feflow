@@ -3,15 +3,21 @@ import os from 'os'
 import path from 'path'
 export const homeDir = os.homedir()
 
-export const feflowHomeDir = '.feflow'
+// export const feflowHomeDir = '.feflow'
+export const feflowHomeDir = '.fef'
 
-export const feflowGeneratorRegex = /@tencent\/generator-(.*)/i
+export const feflowGeneratorRegex = /^@(tencent|feflow)\/generator-(.*)/i
 
 export const feflowHomepath = path.resolve(homeDir, feflowHomeDir)
 
 export const feflowHomePackagePath = path.resolve(homeDir, feflowHomeDir, './package.json')
 
 export const GENERATOR_CONFIG_FILE_NAME = ['schema.config.js', 'schema.json']
+
+export const dirExists = filepath => {
+  const stat = fs.statSync(filepath)
+  return stat && stat.isDirectory()
+}
 
 // basic functions
 export const isExit = path => {
