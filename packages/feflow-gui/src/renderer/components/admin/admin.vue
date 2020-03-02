@@ -13,6 +13,7 @@
                 ref="form"
                 :model="form"
                 label-width="100px"
+                :rules="rules"
             >
                 <el-form-item label="组织名称">
                     <el-input
@@ -20,19 +21,29 @@
                         :disabled="true"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="配置脚手架">
+                <el-form-item
+                    label="配置脚手架"
+                    prop="scaffold"
+                >
                     <el-input
                         v-model="form.scaffold"
+                        placeholder="输入 scaffold 名称，以 ; 号分隔"
                         :disable="!isAdmin"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="配置插件">
-                    <el-input v-model="form.plugins"></el-input>
+                <el-form-item
+                    label="配置插件"
+                    prop="plugins"
+                >
+                    <el-input
+                        v-model="form.plugins"
+                        placeholder="输入 plugins 名称，以 ; 号分隔"
+                    ></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button
                         type="primary"
-                        @click="onCreate"
+                        @click="onCreate('form')"
                         :disabled="!canCreate"
                     >提交</el-button>
                 </el-form-item>
@@ -48,6 +59,26 @@ import apiAuthorize from '@/api/authorize';
 export default {
     name: 'admin-page',
     data() {
+        const validateNPM = async (rule, value, callback) => {
+            if (value) {
+                let arr = value.split(';').map(item => item.trim());
+
+                if (!arr || !arr.length) callback();
+
+                for (let i = 0; i < arr.length; i++) {
+                    let hasInNPM = await this.checkNPM(arr[i]);
+
+                    if (!hasInNPM) {
+                        callback(new Error(`${arr[i]} 不存在于 tnpm`));
+                        break;
+                    }
+                }
+
+                callback();
+            } else {
+                callback();
+            }
+        };
         return {
             showConfigButton: true,
 
@@ -55,11 +86,20 @@ export default {
                 groupname: '',
                 scaffold: '',
                 plugins: ''
+            },
+
+            rules: {
+                scaffold: [
+                    { validator: validateNPM, trigger: 'blur' }
+                ],
+                plugins: [
+                    { validator: validateNPM, trigger: 'blur' }
+                ]
             }
         }
     },
     created() {
-        this.showConfigButton = !this.isAdmin && !this.hasConfig;
+        this.showConfigButton = !this.hasConfig;
     },
     mounted() {
         if (this.groupName) {
@@ -72,17 +112,17 @@ export default {
         ...mapState('UserInfo', [
             'username',
             'isAdmin',
-            'scaffold',
-            'plugins',
             'hasConfig'
         ]),
 
         ...mapGetters('UserInfo', [
-            'groupName'
+            'groupName',
+            'scaffold',
+            'plugins'
         ]),
 
         canCreate() {
-            return this.form.scaffold || this.form.plugins;
+            return this.isAdmin && (this.form.scaffold || this.form.plugins);
         }
     },
     methods: {
@@ -90,27 +130,57 @@ export default {
             this.showConfigButton = false;
         },
 
-        async onCreate() {
-            this.form.groupname = this.groupName;
+        strToJSON(str) {
+            let arr = str.split(';').map(item => item.trim());
 
-            let params = {
-                username: this.username,
-                ...this.form
-            };
-
-            let result = await apiAuthorize.createConfig(params);
-
-            if (result && result.errcode === 0) {
-                this.$message({
-                    message: '提交成功',
-                    type: 'success'
-                });
+            if (arr && arr.length) {
+                return JSON.stringify(arr);
             } else {
-                this.$message({
-                    message: result.errmsg,
-                    type: 'error'
-                });
+                return '{}';
             }
+        },
+
+        async checkNPM(pkg) {
+            let url = `http://r.tnpm.oa.com/${pkg}`;
+            let result = await this.$http.get(url);
+
+            if (result && result.errcode !== 404) {
+                return true;
+            }
+
+            return false;
+        },
+
+        onCreate(formName) {
+            this.$refs[formName].validate(async (valid) => {
+                if (!valid) {
+                    return false;
+                };
+
+                let scaffold = this.strToJSON(this.form.scaffold);
+                let plugins = this.strToJSON(this.form.plugins);
+
+                let params = {
+                    username: this.username,
+                    groupname: this.groupName,
+                    scaffold,
+                    plugins
+                };
+
+                let result = await apiAuthorize.createConfig(params);
+
+                if (result && result.errcode === 0) {
+                    this.$message({
+                        message: '提交成功',
+                        type: 'success'
+                    });
+                } else {
+                    this.$message({
+                        message: result.errmsg,
+                        type: 'error'
+                    });
+                }
+            });
         }
     }
 }

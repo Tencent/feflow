@@ -30,6 +30,26 @@ const getters = {
     department = department.split('/');
     department.pop();
     return department.join('/');
+  },
+  scaffold: (state) => {
+    let scaffold = state.scaffold;
+
+    try {
+      scaffold = JSON.parse(scaffold);
+      if (scaffold) {
+        return scaffold.join(';');
+      }
+    } catch (e) { }
+  },
+  plugins: (state) => {
+    let plugins = state.plugins;
+
+    try {
+      plugins = JSON.parse(plugins);
+      if (plugins) {
+        return plugins.join(';');
+      }
+    } catch (e) { }
   }
 }
 

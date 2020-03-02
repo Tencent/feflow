@@ -9,5 +9,6 @@ export default {
     site: {},
 
     // 重定向域名
-    hostDomain: '127.0.0.1:13000'
+    // hostDomain: '127.0.0.1:13000'
+    hostDomain: 'gui.oa.com'
 };

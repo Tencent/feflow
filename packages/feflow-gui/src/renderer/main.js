@@ -32,7 +32,7 @@ Vue.config.productionTip = false;
   if (result && result.errcode === 0 && result.data) {
     store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
       isAdmin: result.data.isAdmin,
-      hasConfig: false,
+      hasConfig: result.data.hasConfig,
       scaffold: result.data.scaffold,
       plugins: result.data.plugins
     });
