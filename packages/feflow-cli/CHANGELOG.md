@@ -1,3 +1,12 @@
+# [0.18.0-alpha.2](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-03-02)
+
+
+### Features
+
+* **hook:** add feflow hooks ([a8076ec](https://github.com/Tencent/feflow/commit/a8076ece163013892ad9a6762f81e046275a2196))
+
+
+
 # [0.18.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.17.1...v0.18.0-alpha.1) (2020-02-29)
 
 
