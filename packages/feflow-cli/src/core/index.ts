@@ -1,4 +1,5 @@
 import Commander from './commander';
+import Hook from './hook';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
@@ -24,6 +25,7 @@ export default class Feflow {
     public version: string;
     public logger: any;
     public commander: any;
+    public hook: any;
     public root: any;
     public rootPkg: any;
     public config: any;
@@ -40,6 +42,7 @@ export default class Feflow {
         this.config = parseYaml(configPath);
         this.configPath = configPath;
         this.commander = new Commander();
+        this.hook = new Hook();
         this.logger = logger({
             debug: Boolean(args.debug),
             silent: Boolean(args.silent)
