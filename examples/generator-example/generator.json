@@ -18,7 +18,7 @@
     {
       "type": "input",
       "title": "版本号",
-      "field": "_version",
+      "field": "version",
       "default": "v0.1.0"
     }
   ],
