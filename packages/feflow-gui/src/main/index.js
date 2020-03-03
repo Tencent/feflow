@@ -1,6 +1,8 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron';
+import { getUrl } from './common/utils'
+import registerEvent from './event'
 
 // require('./request.js');
 
@@ -25,16 +27,14 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
-const winURL = process.env.NODE_ENV === 'development'
-    ? `http://localhost:9080`
-    : `file://${__dirname}/index.html`
+const winURL = getUrl()
 
 function createWindow() {
     /**
      * Initial window options
      */
     mainWindow = new BrowserWindow({
-        height: 800,
+        height: 600,
         useContentSize: true,
         width: 1200,
         webPreferences: { webSecurity: false }
@@ -45,6 +45,9 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null
     })
+
+    // 进程通信中心
+    registerEvent()
 }
 
 app.on('ready', createWindow)
@@ -60,6 +63,9 @@ app.on('activate', () => {
         createWindow()
     }
 })
+app.on('ready', () => {
+    require('./menu.js')
+  })
 
 /**
  * Auto Updater

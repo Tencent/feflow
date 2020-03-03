@@ -1,4 +1,8 @@
 import shell from 'shelljs'
+import { spawn as ProcessSpawn } from 'child_process'
+
+import { curry } from '../../common/utils'
+
 import { dirExists } from './index.js'
 const COMMAND = 'fef'
 
@@ -19,6 +23,25 @@ export const exec = (cmd, ...arg) => {
   })
 }
 
+export const spawn = curry(function (cmd, cwd, arg) {
+  if (!cmd) onStderr(`${cmd} 命令执行错误`)
+
+  const child = ProcessSpawn(
+    cmd,
+    [
+      ...arg,
+      '--color' // 保留颜色信息
+    ],
+    {
+      cwd,
+      stdio: 'pipe' // 保留颜色信息的同时需要改变输入输出形式
+    }
+  )
+  child.stdout.setEncoding('utf-8')
+
+  return child
+})
+
 class FeflowCommand {
   init(opt, workSpace) {
     let arr = []
@@ -29,6 +52,10 @@ class FeflowCommand {
 
     dirExists(workSpace) && shell.cd(workSpace)
     return exec(COMMAND, 'init', arr.join(' '))
+  }
+
+  spawn(cwd) {
+    return spawn(COMMAND)(cwd)
   }
 }
 
