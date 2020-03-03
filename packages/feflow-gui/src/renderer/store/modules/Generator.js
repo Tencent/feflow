@@ -9,7 +9,7 @@ const state = {
   count: 0,
   currentGeneratorConfig: {},
   localConfigName: '',
-  workSpace: ''
+  workSpace: '~/.fef/workspace'
 }
 
 const mutations = {
@@ -56,6 +56,7 @@ const actions = {
 
     runGenerator(params, state.workSpace).then(code => {
       if (code === 0) {
+        // 项目成功初始化
         commit('SET_PROJECT_INIT_STATE', sequenceId)
       }
     })
