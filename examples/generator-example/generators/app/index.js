@@ -5,17 +5,24 @@ const yosay = require('yosay');
 const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
-
   constructor(ctx, feflow) {
     super(ctx, feflow);
 
     this.answers = {};
 
-    const { name, description, _version } = feflow.args || {};
-    this.params = {
-      name, description, version: _version 
-    }
+    const { config = '' } = feflow.args || {};
 
+    try {
+      if (!config) return;
+      const { name, description, version } = JSON.parse(config);
+      this.params = {
+        name,
+        description,
+        version,
+      };
+    } catch (error) {
+      this.params = {};
+    }
   }
 
   /**
