@@ -4,9 +4,13 @@ import {
   feflowGeneratorRegex,
   getFeflowDependenceConfig,
   generatorConfigFile,
-  GENERATOR_CONFIG_FILE_NAME
+  GENERATOR_CONFIG_FILE_NAME,
+  feflowHomeConfigPath,
+  parseYaml,
+  safeDump
 } from './utils'
 import { Feflow } from './utils/core'
+
 /**
  * 载入全局脚手架
  */
@@ -65,6 +69,30 @@ export const runGenerator = (param, workSpace) => {
 /**
  * 生成项目支持的自定义命令
  */
-export const loadProjectCommand = (projectPath) => {
+export const loadProjectCommand = projectPath => {
   return Feflow.spawn(projectPath)
+}
+
+export const saveGeneratorConfig = (projectName, workSpace) => {
+  const doc = parseYaml(feflowHomeConfigPath)
+  let update = {}
+  if (!doc.projects) {
+    update = Object.assign({}, doc, {
+      projects: {
+        [projectName]: {
+          name: projectName,
+          path: workSpace
+        }
+      }
+    })
+  } else {
+    doc.projects[projectName] = {
+      name: projectName,
+      path: workSpace
+    }
+
+    update = Object.assign({}, doc)
+  }
+
+  safeDump(update, feflowHomeConfigPath)
 }

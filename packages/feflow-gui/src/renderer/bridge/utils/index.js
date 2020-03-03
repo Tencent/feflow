@@ -1,13 +1,19 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import yaml from 'js-yaml'
+
 export const homeDir = os.homedir()
 
 export const feflowHomeDir = '.fef'
 
+export const feflowHomeConfig = '.feflowrc.yml'
+
 export const feflowGeneratorRegex = /^@(tencent|feflow)\/generator-(.*)/i
 
 export const feflowHomepath = path.resolve(homeDir, feflowHomeDir)
+
+export const feflowHomeConfigPath = path.resolve(feflowHomepath, feflowHomeConfig)
 
 export const feflowHomePackagePath = path.resolve(homeDir, feflowHomeDir, './package.json')
 
@@ -90,6 +96,36 @@ export const getFeflowDependenceConfig = (dependence, configFile = 'package.json
   } else {
     console.log('file path is not exit ', dependenceConfigPath)
   }
+}
+
+export function safeDump(obj, path) {
+  let doc
+  try {
+    doc = yaml.safeDump(obj, {
+      styles: {
+        '!!null': 'canonical'
+      },
+      sortKeys: true
+    })
+  } catch (e) {
+    throw new Error(e)
+  }
+
+  return fs.writeFileSync(path, doc, 'utf-8')
+}
+
+export function parseYaml(path) {
+  let config
+
+  if (fs.existsSync(path)) {
+    try {
+      config = yaml.safeLoad(fs.readFileSync(path, 'utf8'))
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  return config
 }
 
 /**

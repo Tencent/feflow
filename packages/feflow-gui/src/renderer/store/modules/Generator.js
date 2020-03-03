@@ -1,4 +1,4 @@
-import { loadGenerator, buildGeneratorConfig, runGenerator } from '../../bridge'
+import { loadGenerator, buildGeneratorConfig, runGenerator, saveGeneratorConfig } from '../../bridge'
 import { dialog } from 'electron'
 import { CREATE_CODE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
@@ -43,7 +43,8 @@ const actions = {
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },
   initGenerator({ state, commit }, { execType, config, sequenceId, generator }) {
-    let opt = {}
+    const opt = {}
+    const { workSpace } = state
     if (execType === 'path') {
       // 传入配置文件路径
       opt.param = state.localConfigName
@@ -53,10 +54,12 @@ const actions = {
     }
     opt.generator = generator
 
-    runGenerator(opt, state.workSpace).then(code => {
+    runGenerator(opt, workSpace).then(code => {
       if (code === CREATE_CODE.SUCCESS) {
         // 项目成功初始化
         commit('SET_PROJECT_INIT_STATE', { sequenceId, code })
+        // 写入项目配置
+        saveGeneratorConfig(config.name, workSpace)
       } else {
         // 其他失败情况
         commit('SET_PROJECT_INIT_STATE', { code, sequenceId: '' })
