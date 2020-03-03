@@ -22,21 +22,25 @@ Then install @feflow/generator-example
 ```sh
 $ fef install @feflow/generator-example
 ```
+
 ## Usage
 
 initialize project with interactive inquiry
+
 ```sh
-$ fef init 
+$ fef init
 ```
 
 ### Params
-* name.  project name
-* description. some description for your project
-* _version. project version
+
+- name. project name
+- description. some description for your project
+- version. project version
 
 initialize project with selected generator
+
 ```sh
-fef init --generator=@feflow/generator-example --name=feflow-demo-v4 --description=测试项目 --_version=v1.0.1
+fef init --generator=@feflow/generator-example --config='{"version":"v0.1.0","description":"项目描述","name":"feflow-demo-v12"}'
 ```
 
 Note: use arrow keys to select.
