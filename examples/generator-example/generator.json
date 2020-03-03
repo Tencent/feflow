@@ -1,0 +1,26 @@
+{
+  "gererator": "generatorDemo",
+  "description": "演示脚手架",
+  "properties": [
+    {
+      "type": "input",
+      "title": "项目名字",
+      "field": "name",
+      "isRequire": true
+    },
+    {
+      "type": "input",
+      "title": "项目描述",
+      "field": "description",
+      "description": "推荐使用5-10个汉字",
+      "isRequire": true
+    },
+    {
+      "type": "input",
+      "title": "版本号",
+      "field": "version",
+      "default": "v0.1.0"
+    }
+  ],
+  "author": "bethon"
+}
