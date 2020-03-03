@@ -1,6 +1,6 @@
 import { loadGenerator, buildGeneratorConfig, runGenerator } from '../../bridge'
 import { dialog } from 'electron'
-
+import { CREATE_CODE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
 
 const state = {
@@ -9,7 +9,8 @@ const state = {
   count: 0,
   currentGeneratorConfig: {},
   localConfigName: '',
-  workSpace: '~/.fef/workspace'
+  workSpace: '~/.fef/workspace',
+  initCode: CREATE_CODE.INITIAL
 }
 
 const mutations = {
@@ -24,8 +25,9 @@ const mutations = {
   SET_WORK_SPACE(state, workSpace) {
     state.workSpace = workSpace
   },
-  SET_PROJECT_INIT_STATE(state, id) {
-    state.successProjectId = id
+  SET_PROJECT_INIT_STATE(state, { sequenceId = '', code }) {
+    state.successProjectId = sequenceId
+    state.initCode = code
   }
 }
 
@@ -40,24 +42,24 @@ const actions = {
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },
-  initGenerator({ state, commit }, { execType, config, sequenceId }) {
-    let params = {}
+  initGenerator({ state, commit }, { execType, config, sequenceId, generator }) {
+    let opt = {}
     if (execType === 'path') {
       // 传入配置文件路径
-      params = {
-        config: state.localConfigName
-      }
+      opt.param = state.localConfigName
     } else {
       // 配置传入
-      params = Object.assign({}, config, {
-        simple: true
-      })
+      opt.param = config
     }
+    opt.generator = generator
 
-    runGenerator(params, state.workSpace).then(code => {
-      if (code === 0) {
+    runGenerator(opt, state.workSpace).then(code => {
+      if (code === CREATE_CODE.SUCCESS) {
         // 项目成功初始化
-        commit('SET_PROJECT_INIT_STATE', sequenceId)
+        commit('SET_PROJECT_INIT_STATE', { sequenceId, code })
+      } else {
+        // 其他失败情况
+        commit('SET_PROJECT_INIT_STATE', { code, sequenceId: '' })
       }
     })
   },
@@ -70,6 +72,9 @@ const actions = {
         commit('SET_WORK_SPACE', files[0])
       }
     )
+  },
+  resetState({ commit }) {
+    commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL, sequenceId: '' })
   }
 }
 

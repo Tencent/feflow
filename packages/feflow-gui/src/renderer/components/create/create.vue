@@ -92,15 +92,26 @@ export default {
   },
   watch: {
     successProjectId(newVal, oldVal) {
+      this.messageInstance && this.messageInstance.close()
+      const { initCode } = this.$store.state.Generator
+
       if (newVal === this.sequenceId) {
         // 生成成功
-        this.messageInstance && this.messageInstance.close()
         this.$message({
           message: '脚手架生成成功',
           type: 'success'
         })
+
         // 重置表单， 防止重复初始化项目
         this.formData = {}
+
+        // 重置脚手架状态
+        this.$store.dispatch('resetState')
+      } else if (initCode !== 1) {
+        this.$message({
+          message: `脚手架生成失败: ${initCode}`,
+          type: 'error'
+        })
       }
     }
   },
@@ -133,7 +144,7 @@ export default {
     },
     handleClick() {
       const { execType } = this.generatorsConfig[this.targetGenerator]
-      if (!this.checkFormData()) return
+      if (!this.checkFormData() || this.messageInstance) return
 
       // 创建配置文件
       if (execType === 'path') {
@@ -145,7 +156,10 @@ export default {
 
       const sequenceId = (this.sequenceId = (Date.now() + '').slice(-5))
 
-      if (this.messageInstance) this.messageInstance.close()
+      if (this.messageInstance) {
+        this.messageInstance.close()
+        this.messageInstance = null
+      }
 
       // 提示
       this.messageInstance = this.$message({
@@ -159,8 +173,9 @@ export default {
       // 执行脚手架初始化命令
       this.$store.dispatch('initGenerator', {
         execType,
-        config: Object.assign({}, this.formData, { generator: this.targetGenerator }),
-        sequenceId
+        config: this.formData,
+        sequenceId,
+        generator: this.targetGenerator
       })
     },
     checkFormData() {
