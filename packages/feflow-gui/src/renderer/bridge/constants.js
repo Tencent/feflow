@@ -1,0 +1,6 @@
+export const CREATE_CODE = {
+  INITIAL: 1,
+  SUCCESS: 0,
+  INVALID_WORKSPACE: -99,
+  EMPTY_GENERATOR: -98
+}

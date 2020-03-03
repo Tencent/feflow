@@ -3,17 +3,26 @@ import { spawn as ProcessSpawn } from 'child_process'
 
 import { curry } from '../../common/utils'
 
+import { dirExists } from './index.js'
+import { CREATE_CODE } from '../constants.js'
+
 const COMMAND = 'fef'
 
 export const exec = (cmd, ...arg) => {
-  if (!cmd) return
+  if (!cmd) return Promise.reject(new Error('no cmd'))
   let commandArr = []
   console.log('arg', arg)
 
   commandArr.push(cmd)
   commandArr.push(...arg)
   console.log('commandArr', commandArr.join(' '))
-  return shell.exec(commandArr.join(' '))
+
+  return new Promise((resolve, reject) => {
+    shell.exec(commandArr.join(' '), function(code) {
+      console.log('Exit code:', code)
+      resolve(code)
+    })
+  })
 }
 
 export const spawn = curry(function (cmd, cwd, arg) {
@@ -36,11 +45,29 @@ export const spawn = curry(function (cmd, cwd, arg) {
 })
 
 class FeflowCommand {
-  init(opt) {
+  init({ param, generator }, workSpace) {
     let arr = []
-    Object.keys(opt).forEach(key => {
-      arr.push(`--${key}=${opt[key] || false}`)
-    })
+
+    if (!generator) {
+      // 未指定脚手架
+      return Promise.resolve(CREATE_CODE.EMPTY_GENERATOR)
+    }
+    if (!dirExists(workSpace)) {
+      // 工作目录不存在
+      return Promise.resolve(CREATE_CODE.INVALID_WORKSPACE)
+    }
+
+    arr.push(`--generator=${generator}`)
+
+    if (typeof param === 'string') {
+      // 直接传入配置文件路径
+      arr.push(`--config=${param}`)
+    } else {
+      arr.push(`--config='${JSON.stringify(param)}'`)
+    }
+
+    shell.cd(workSpace)
+
     return exec(COMMAND, 'init', arr.join(' '))
   }
 
