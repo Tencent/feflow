@@ -7,10 +7,13 @@ import {
   GENERATOR_CONFIG_FILE_NAME,
   feflowHomeConfigPath,
   parseYaml,
-  safeDump
+  safeDump,
+  dirExists,
+  isExit
 } from './utils'
 import { Feflow } from './utils/core'
-
+import path from 'path'
+import { CREATE_CODE } from './constants'
 /**
  * 载入全局脚手架
  */
@@ -62,10 +65,24 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
   return localFilePath
 }
 
-export const runGenerator = (param, workSpace) => {
-  return Feflow.init(param, workSpace)
+/**
+ *
+ * @param {*} opt
+ * @param {*} workSpace
+ */
+export const runGenerator = (opt, workSpace) => {
+  return Feflow.init(opt, workSpace)
 }
 
+export const checkBeforeRunGenerator = ({ name, workSpace }) => {
+  const projectPath = path.resolve(workSpace, name)
+
+  if (isExit(projectPath) && dirExists(projectPath)) {
+    // 项目已存在
+    return CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY
+  }
+  return 0
+}
 /**
  * 生成项目支持的自定义命令
  */

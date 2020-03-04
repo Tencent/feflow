@@ -51,13 +51,16 @@
     </el-form>
 
     <div class="action-btn">
-      <el-button>取消</el-button>
-      <el-button type="primary" @click="handleClick">创建</el-button>
+      <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
+      <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+import { CREATE_CODE } from '../../bridge/constants'
+
 export default {
   name: 'create-page',
   data() {
@@ -65,7 +68,8 @@ export default {
       targetGenerator: '',
       generators: [],
       formData: {},
-      generatorsConfig: {}
+      generatorsConfig: {},
+      isWorking: false
     }
   },
   mounted() {},
@@ -83,12 +87,11 @@ export default {
       // 读取选中脚手架的配置
       return this.targetGeneratorConfig.properties || []
     },
-    workSpace() {
-      return this.$store.state.Generator.workSpace
-    },
-    successProjectId() {
-      return this.$store.state.Generator.successProjectId
-    }
+    ...mapState({
+      workSpace: state => state.Generator.workSpace,
+      successProjectId: state => state.Generator.successProjectId,
+      initCode: state => state.Generator.initCode
+    })
   },
   watch: {
     successProjectId(newVal, oldVal) {
@@ -102,23 +105,24 @@ export default {
           type: 'success'
         })
 
-        // 重置表单， 防止重复初始化项目
-        this.formData = {}
-
-        // 重置脚手架状态
-        this.$store.dispatch('resetState')
+        this.handleReset()
       } else if (initCode !== 1) {
         this.$message({
           message: `脚手架生成失败: ${initCode}`,
           type: 'error'
         })
       }
+    },
+    initCode(a, b) {
+      console.log(a, b)
     }
   },
   methods: {
+    ...mapActions(['checkBeforeRun', 'builConfig', 'getGenerator', 'initGenerator', 'selectWorkSpace', 'resetState']),
     init() {
       // 获取脚手架
-      this.$store.dispatch('getGenerator')
+      this.getGenerator()
+      this.resetState()
       const { list, configMap } = this.$store.state.Generator
       const gens = Object.keys(configMap)
 
@@ -148,7 +152,7 @@ export default {
 
       // 创建配置文件
       if (execType === 'path') {
-        this.$store.dispatch('builConfig', {
+        this.builConfig({
           config: this.formData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
@@ -168,10 +172,10 @@ export default {
         duration: 0,
         showClose: false
       })
-
+      this.isWorking = true
       // 直接传参
       // 执行脚手架初始化命令
-      this.$store.dispatch('initGenerator', {
+      this.initGenerator({
         execType,
         config: this.formData,
         sequenceId,
@@ -180,7 +184,8 @@ export default {
     },
     checkFormData() {
       let errMsg = []
-      this.formConfig.slice().forEach(({ isRequire, title, regex = '.*', field }) => {
+      // 表单校验
+      this.formConfig.forEach(({ isRequire, title, regex = '.*', field }) => {
         let value = this.formData[field]
         if (value === undefined && isRequire) {
           errMsg.push(`${title} 不能为空`)
@@ -197,8 +202,13 @@ export default {
           duration: 0
         })
       }
+      // 项目路径检查
+      if (this.formData.name && this.workSpace) {
+        this.checkBeforeRun({ name: this.formData.name, workSpace: this.workSpace })
+        this.handleInitCode()
+      }
 
-      return !errMsg.length
+      return !errMsg.length && this.initCode === CREATE_CODE.SUCCESS
     },
     shouldShow(field) {
       const requireList = field.require
@@ -222,7 +232,35 @@ export default {
       this.formData[fieldName] = value
     },
     handleWorkSpaceClick() {
-      this.$store.dispatch('selectWorkSpace')
+      this.selectWorkSpace()
+    },
+    // 处理响应码
+    handleInitCode() {
+      const initCode = this.initCode
+      if (initCode === CREATE_CODE.SUCCESS) return
+      let msg = ''
+
+      switch (initCode) {
+        case CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY: {
+          msg = '项目路径重复'
+          break
+        }
+        default: {
+        }
+      }
+
+      this.$notify.error({
+        title: '初始化失败',
+        message: msg
+      })
+    },
+    handleReset() {
+      // 重置表单， 防止重复初始化项目
+      this.formData = {}
+      this.isWorking = false
+
+      // 重置脚手架状态
+      this.resetState()
     }
   }
 }

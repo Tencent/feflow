@@ -3,7 +3,7 @@ import { spawn as ProcessSpawn } from 'child_process'
 
 import { curry } from '../../common/utils'
 
-import { dirExists } from './index.js'
+import { dirExists, isExit } from './index.js'
 import { CREATE_CODE } from '../constants.js'
 
 const COMMAND = 'fef'
@@ -25,7 +25,7 @@ export const exec = (cmd, ...arg) => {
   })
 }
 
-export const spawn = curry(function (cmd, cwd, arg) {
+export const spawn = curry(function(cmd, cwd, arg) {
   if (!cmd) onStderr(`${cmd} 命令执行错误`)
 
   const child = ProcessSpawn(
@@ -47,6 +47,9 @@ export const spawn = curry(function (cmd, cwd, arg) {
 class FeflowCommand {
   init({ param, generator }, workSpace) {
     let arr = []
+
+    // 创建默认工作目录
+    !isExit('~/.fef/workspace') && shell.mkdir('~/.fef/workspace')
 
     if (!generator) {
       // 未指定脚手架

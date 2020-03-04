@@ -19,14 +19,14 @@ export const feflowHomePackagePath = path.resolve(homeDir, feflowHomeDir, './pac
 
 export const GENERATOR_CONFIG_FILE_NAME = ['generator.js', 'generator.json']
 
-export const dirExists = filepath => {
-  const stat = fs.statSync(filepath)
-  return stat && stat.isDirectory()
-}
-
 // basic functions
 export const isExit = path => {
   return fs.existsSync(path)
+}
+
+export const dirExists = filepath => {
+  const stat = fs.statSync(filepath)
+  return stat.isDirectory()
 }
 
 export const getFile = path => {

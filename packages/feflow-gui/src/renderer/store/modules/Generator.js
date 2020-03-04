@@ -1,4 +1,10 @@
-import { loadGenerator, buildGeneratorConfig, runGenerator, saveGeneratorConfig } from '../../bridge'
+import {
+  loadGenerator,
+  buildGeneratorConfig,
+  runGenerator,
+  saveGeneratorConfig,
+  checkBeforeRunGenerator
+} from '../../bridge'
 import { dialog } from 'electron'
 import { CREATE_CODE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
@@ -6,7 +12,6 @@ import { CREATE_CODE } from '../../bridge/constants'
 const state = {
   list: [],
   configMap: {},
-  count: 0,
   currentGeneratorConfig: {},
   localConfigName: '',
   workSpace: '~/.fef/workspace',
@@ -78,6 +83,13 @@ const actions = {
   },
   resetState({ commit }) {
     commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL, sequenceId: '' })
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, 200)
+    })
+  },
+  checkBeforeRun({ commit }, obj) {
+    const ret = checkBeforeRunGenerator(obj)
+    commit('SET_PROJECT_INIT_STATE', { code: ret })
   }
 }
 
