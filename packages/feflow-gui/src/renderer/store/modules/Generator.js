@@ -59,7 +59,7 @@ const actions = {
         // 项目成功初始化
         commit('SET_PROJECT_INIT_STATE', { sequenceId, code })
         // 写入项目配置
-        saveGeneratorConfig(config.name, workSpace)
+        saveGeneratorConfig(config.name, workSpace + '/' + config.name)
       } else {
         // 其他失败情况
         commit('SET_PROJECT_INIT_STATE', { code, sequenceId: '' })
