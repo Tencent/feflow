@@ -1,11 +1,8 @@
 import {
   checkFeflowEnv,
   getFeflowRootPackage,
-  feflowGeneratorRegex,
   getFeflowDependenceConfig,
   generatorConfigFile,
-  GENERATOR_CONFIG_FILE_NAME,
-  feflowHomeConfigPath,
   parseYaml,
   safeDump,
   dirExists,
@@ -13,7 +10,8 @@ import {
 } from './utils'
 import { Feflow } from './utils/core'
 import path from 'path'
-import { CREATE_CODE } from './constants'
+import { CREATE_CODE, FEFLOW_GENERATOR_REGEX, GENERATOR_CONFIG_FILE_NAME, FEFLOW_HOME_CONFIG_PATH } from './constants'
+
 /**
  * 载入全局脚手架
  */
@@ -33,7 +31,7 @@ export const loadGenerator = () => {
 
       // 筛选脚手架
       generators = dependencies.filter(dependence => {
-        return feflowGeneratorRegex.test(dependence)
+        return FEFLOW_GENERATOR_REGEX.test(dependence)
       })
 
       // 获取脚手架配置
@@ -59,9 +57,7 @@ export const loadGenerator = () => {
 export const buildGeneratorConfig = ({ config, genConfig }) => {
   const genName = genConfig.gererator || 'generator-default'
   const fileName = genName + '-' + (Date.now() + '').slice(4)
-
   const localFilePath = generatorConfigFile(fileName, config, genConfig)
-
   return localFilePath
 }
 
@@ -81,7 +77,7 @@ export const checkBeforeRunGenerator = ({ name, workSpace }) => {
     // 项目已存在
     return CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY
   }
-  return 0
+  return CREATE_CODE.CHECK_SUCCESS
 }
 /**
  * 生成项目支持的自定义命令
@@ -91,7 +87,7 @@ export const loadProjectCommand = projectPath => {
 }
 
 export const saveGeneratorConfig = (projectName, workSpace) => {
-  const doc = parseYaml(feflowHomeConfigPath)
+  const doc = parseYaml(FEFLOW_HOME_CONFIG_PATH)
   let update = {}
   if (!doc.projects) {
     update = Object.assign({}, doc, {
@@ -111,5 +107,5 @@ export const saveGeneratorConfig = (projectName, workSpace) => {
     update = Object.assign({}, doc)
   }
 
-  safeDump(update, feflowHomeConfigPath)
+  safeDump(update, FEFLOW_HOME_CONFIG_PATH)
 }

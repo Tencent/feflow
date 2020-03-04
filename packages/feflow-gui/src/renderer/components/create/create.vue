@@ -88,37 +88,12 @@ export default {
       return this.targetGeneratorConfig.properties || []
     },
     ...mapState({
-      workSpace: state => state.Generator.workSpace,
-      successProjectId: state => state.Generator.successProjectId,
-      initCode: state => state.Generator.initCode
+      workSpace: state => state.Generator.workSpace
     })
   },
-  watch: {
-    successProjectId(newVal, oldVal) {
-      this.messageInstance && this.messageInstance.close()
-      const { initCode } = this.$store.state.Generator
-
-      if (newVal === this.sequenceId) {
-        // 生成成功
-        this.$message({
-          message: '脚手架生成成功',
-          type: 'success'
-        })
-
-        this.handleReset()
-      } else if (initCode !== 1) {
-        this.$message({
-          message: `脚手架生成失败: ${initCode}`,
-          type: 'error'
-        })
-      }
-    },
-    initCode(a, b) {
-      console.log(a, b)
-    }
-  },
+  watch: {},
   methods: {
-    ...mapActions(['checkBeforeRun', 'builConfig', 'getGenerator', 'initGenerator', 'selectWorkSpace', 'resetState']),
+    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState']),
     init() {
       // 获取脚手架
       this.getGenerator()
@@ -146,9 +121,11 @@ export default {
       this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
       this.formData = formDataFromConfig
     },
-    handleClick() {
+    async handleClick() {
       const { execType } = this.generatorsConfig[this.targetGenerator]
-      if (!this.checkFormData() || this.messageInstance) return
+      const isValid = await this.checkFormData()
+
+      if (!isValid || this.messageInstance) return
 
       // 创建配置文件
       if (execType === 'path') {
@@ -158,32 +135,28 @@ export default {
         })
       }
 
-      const sequenceId = (this.sequenceId = (Date.now() + '').slice(-5))
-
       if (this.messageInstance) {
         this.messageInstance.close()
         this.messageInstance = null
       }
 
-      // 提示
-      this.messageInstance = this.$message({
-        message: '脚手架生成中, 请稍等',
-        type: 'info',
-        duration: 0,
-        showClose: false
-      })
+      this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true)
+
       this.isWorking = true
+
       // 直接传参
       // 执行脚手架初始化命令
-      this.initGenerator({
-        execType,
-        config: this.formData,
-        sequenceId,
-        generator: this.targetGenerator
-      })
+      this.$store
+        .dispatchPromise('initGenerator', {
+          execType,
+          config: this.formData,
+          generator: this.targetGenerator
+        })
+        .then(code => this.handleInitCode(code))
     },
-    checkFormData() {
+    async checkFormData() {
       let errMsg = []
+      let isValidWorkspace = false
       // 表单校验
       this.formConfig.forEach(({ isRequire, title, regex = '.*', field }) => {
         let value = this.formData[field]
@@ -202,13 +175,18 @@ export default {
           duration: 0
         })
       }
+
       // 项目路径检查
       if (this.formData.name && this.workSpace) {
-        this.checkBeforeRun({ name: this.formData.name, workSpace: this.workSpace })
-        this.handleInitCode()
+        const initCode = await this.$store.dispatchPromise('checkBeforeRun', {
+          name: this.formData.name,
+          workSpace: this.workSpace
+        })
+        this.handleInitCode(initCode)
+        isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS
       }
 
-      return !errMsg.length && this.initCode === CREATE_CODE.SUCCESS
+      return !errMsg.length && isValidWorkspace
     },
     shouldShow(field) {
       const requireList = field.require
@@ -235,26 +213,35 @@ export default {
       this.selectWorkSpace()
     },
     // 处理响应码
-    handleInitCode() {
-      const initCode = this.initCode
-      if (initCode === CREATE_CODE.SUCCESS) return
-      let msg = ''
-
+    handleInitCode(initCode) {
+      if (initCode === CREATE_CODE.CHECK_SUCCESS) return
       switch (initCode) {
+        case CREATE_CODE.SUCCESS: {
+          this.messageInstance && this.messageInstance.close()
+          this.handleReset()
+          this.toast('项目创建成功', '', 'success')
+          break
+        }
         case CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY: {
-          msg = '项目路径重复'
+          this.toast('项目创建失败', '项目路径重复', 'error')
           break
         }
         default: {
         }
       }
-
-      this.$notify.error({
-        title: '初始化失败',
-        message: msg
-      })
     },
-    handleReset() {
+    toast(title, msg, type = 'info', isPersistent = false) {
+      let opt = {
+        title,
+        message: msg
+      }
+      if (isPersistent) {
+        opt.duration = 0
+      }
+
+      return this.$notify[type](opt)
+    },
+    async handleReset() {
       // 重置表单， 防止重复初始化项目
       this.formData = {}
       this.isWorking = false

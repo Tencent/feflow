@@ -4,7 +4,7 @@ import { spawn as ProcessSpawn } from 'child_process'
 import { curry } from '../../common/utils'
 
 import { dirExists, isExit } from './index.js'
-import { CREATE_CODE } from '../constants.js'
+import { CREATE_CODE, DEFAULT_WORKSPACE } from '../constants.js'
 
 const COMMAND = 'fef'
 
@@ -49,7 +49,7 @@ class FeflowCommand {
     let arr = []
 
     // 创建默认工作目录
-    !isExit('~/.fef/workspace') && shell.mkdir('~/.fef/workspace')
+    !isExit(DEFAULT_WORKSPACE) && shell.mkdir(DEFAULT_WORKSPACE)
 
     if (!generator) {
       // 未指定脚手架
