@@ -1,4 +1,10 @@
-import { loadGenerator, buildGeneratorConfig, runGenerator, saveGeneratorConfig } from '../../bridge'
+import {
+  loadGenerator,
+  buildGeneratorConfig,
+  runGenerator,
+  saveGeneratorConfig,
+  checkBeforeRunGenerator
+} from '../../bridge'
 import { dialog } from 'electron'
 import { CREATE_CODE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
@@ -6,7 +12,6 @@ import { CREATE_CODE } from '../../bridge/constants'
 const state = {
   list: [],
   configMap: {},
-  count: 0,
   currentGeneratorConfig: {},
   localConfigName: '',
   workSpace: '~/.fef/workspace',
@@ -25,8 +30,7 @@ const mutations = {
   SET_WORK_SPACE(state, workSpace) {
     state.workSpace = workSpace
   },
-  SET_PROJECT_INIT_STATE(state, { sequenceId = '', code }) {
-    state.successProjectId = sequenceId
+  SET_PROJECT_INIT_STATE(state, { code }) {
     state.initCode = code
   }
 }
@@ -42,7 +46,7 @@ const actions = {
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
   },
-  initGenerator({ state, commit }, { execType, config, sequenceId, generator }) {
+  initGenerator({ state }, { execType, config, generator }) {
     const opt = {}
     const { workSpace } = state
     if (execType === 'path') {
@@ -54,16 +58,13 @@ const actions = {
     }
     opt.generator = generator
 
-    runGenerator(opt, workSpace).then(code => {
+    return runGenerator(opt, workSpace).then(code => {
       if (code === CREATE_CODE.SUCCESS) {
         // 项目成功初始化
-        commit('SET_PROJECT_INIT_STATE', { sequenceId, code })
         // 写入项目配置
         saveGeneratorConfig(config.name, workSpace + '/' + config.name)
-      } else {
-        // 其他失败情况
-        commit('SET_PROJECT_INIT_STATE', { code, sequenceId: '' })
       }
+      return code
     })
   },
   selectWorkSpace({ commit }) {
@@ -77,7 +78,13 @@ const actions = {
     )
   },
   resetState({ commit }) {
-    commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL, sequenceId: '' })
+    commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL })
+  },
+  checkBeforeRun(_, obj) {
+    return new Promise(resolve => {
+      const ret = checkBeforeRunGenerator(obj)
+      resolve(ret)
+    })
   }
 }
 

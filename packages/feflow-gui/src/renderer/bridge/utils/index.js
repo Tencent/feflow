@@ -1,32 +1,17 @@
 import fs from 'fs'
-import os from 'os'
 import path from 'path'
 import yaml from 'js-yaml'
 
-export const homeDir = os.homedir()
-
-export const feflowHomeDir = '.fef'
-
-export const feflowHomeConfig = '.feflowrc.yml'
-
-export const feflowGeneratorRegex = /^@(tencent|feflow)\/generator-(.*)/i
-
-export const feflowHomepath = path.resolve(homeDir, feflowHomeDir)
-
-export const feflowHomeConfigPath = path.resolve(feflowHomepath, feflowHomeConfig)
-
-export const feflowHomePackagePath = path.resolve(homeDir, feflowHomeDir, './package.json')
-
-export const GENERATOR_CONFIG_FILE_NAME = ['generator.js', 'generator.json']
-
-export const dirExists = filepath => {
-  const stat = fs.statSync(filepath)
-  return stat && stat.isDirectory()
-}
+import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH } from '../constants'
 
 // basic functions
 export const isExit = path => {
   return fs.existsSync(path)
+}
+
+export const dirExists = filepath => {
+  const stat = fs.statSync(filepath)
+  return stat.isDirectory()
 }
 
 export const getFile = path => {
@@ -55,15 +40,15 @@ export const getFileByJSON = path => {
  * 检查feflow根目录是否存在
  */
 export const checkFeflowEnv = () => {
-  return isExit(feflowHomepath)
+  return isExit(FEFLOW_HOME_PATH)
 }
 
 /**
  * 获取feflow更目录下的依赖
  */
 export const getFeflowRootPackage = () => {
-  if (isExit(feflowHomePackagePath)) {
-    return getFileByJSON(feflowHomePackagePath)
+  if (isExit(FEFLOW_HOME_PACKAGE_PATH)) {
+    return getFileByJSON(FEFLOW_HOME_PACKAGE_PATH)
   }
 }
 
@@ -71,7 +56,7 @@ export const getFeflowRootPackage = () => {
  * 获取feflow根目录下的依赖的配置文件
  */
 export const getFeflowDependenceConfig = (dependence, configFile = 'package.json') => {
-  const dependencePath = path.resolve(feflowHomepath, './node_modules', dependence)
+  const dependencePath = path.resolve(FEFLOW_HOME_PATH, './node_modules', dependence)
   const dependenceConfigPath = path.resolve(dependencePath, './', configFile)
 
   if (isExit(dependenceConfigPath)) {
@@ -138,7 +123,7 @@ export function parseYaml(path) {
  *
  */
 export const generatorConfigFile = (fileName, config, schema) => {
-  const filepath = path.resolve(feflowHomepath, fileName + '.js')
+  const filepath = path.resolve(FEFLOW_HOME_PATH, fileName + '.js')
   const objTypeMap = {}
   const typeMap = {}
 
