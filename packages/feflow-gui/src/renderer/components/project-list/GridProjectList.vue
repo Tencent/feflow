@@ -17,6 +17,9 @@
                 {{ item.path }}
             </div>
         </div>
+        <div class="project-setting">
+            <div class="setting-icon" @contextmenu.prevent="showSettingPanel" />
+        </div>
     </div>
 </div>
 </template>
@@ -46,6 +49,7 @@
     display: inline-block;
 }
 .grid-projects .project-item {
+    position: relative;
     width: 180px;
     box-shadow: 0 10px 20px 0 rgba(0,0,0,0.10);
     margin-right: 20px;
@@ -79,6 +83,15 @@
     line-height: 16px;
     word-wrap: break-word;
 }
+.project-setting  {
+    background: url('../../assets/project-setting.png');
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
 </style>
 <script>
 import electron from 'electron'
@@ -91,6 +104,9 @@ export default {
       const { path, name } = project
       console.log('??')
       ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
+    },
+    showSettingPanel() {
+        alert('xxx');
     }
   }
 }
