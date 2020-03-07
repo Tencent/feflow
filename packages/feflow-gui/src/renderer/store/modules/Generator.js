@@ -90,6 +90,7 @@ const actions = {
   resetState({ commit }) {
     commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL })
     commit('SET_IMPORT_WORK_SPACE', '')
+    commit('SET_WORK_SPACE', DEFAULT_WORKSPACE)
   },
   checkBeforeRun(_, obj) {
     return new Promise(resolve => {
