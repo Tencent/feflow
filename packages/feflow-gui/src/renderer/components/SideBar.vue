@@ -4,7 +4,7 @@
             <div class="account">
                 <div class="personal-info">
                     <div class="avatar">
-                        <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+                        <img v-bind:src="avatar" />
                     </div>
                     <div class="nickname">{{ username }}</div>
                 </div>
@@ -42,8 +42,8 @@ export default {
     data() {
         return {
             isSettingVisble: false,
-            username: window.username || 'xxx',
-            avatar: window.avatar
+            username: global.username,
+            avatar: global.avatar
         }
     },
     methods: {
@@ -126,6 +126,10 @@ export default {
     height: 36px;
     border-radius: 50%;
     margin-right: 8px;
+}
+
+.side-bar .account .personal-info .nickname {
+    font-size: 12px;
 }
 
 .side-bar .account .logout {

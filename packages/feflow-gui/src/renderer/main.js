@@ -35,12 +35,11 @@ Vue.config.productionTip = false;
       plugins: result.data.plugins
     });
   }
+  /* eslint-disable no-new */
+  new Vue({
+    components: { App },
+    router,
+    store,
+    template: '<App />'
+  }).$mount('#app')
 })();
-
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  router,
-  store,
-  template: '<App />'
-}).$mount('#app')
