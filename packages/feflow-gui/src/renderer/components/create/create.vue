@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="create-inner">
     <el-form label-position="left" label-width="140px" ref="form" :model="formData">
       <el-form-item label="脚手架">
         <el-select v-model="targetGenerator" placeholder="请选择">
@@ -11,8 +11,12 @@
           ></el-option>
         </el-select>
       </el-form-item>
-
-      <div v-for="(field, index) in rule" v-bind:key="index">
+      <el-form-item label="项目目录" v-if="!!targetGenerator">
+        <el-input :value="workSpace" :disabled="true">
+          <el-button @click="handleWorkSpaceClick" slot="append">选择</el-button>
+        </el-input>
+      </el-form-item>
+      <div v-for="(field, index) in formConfig" v-bind:key="index">
         <el-form-item :label="field.title" v-if="shouldShow(field)">
           <el-col>
             <component
@@ -47,62 +51,144 @@
     </el-form>
 
     <div class="action-btn">
-      <el-button>取消</el-button>
-      <el-button type="primary">创建</el-button>
+      <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
+      <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import generatorsIvweb from './schema.ivweb.json'
-import generatorNow from './schema.now.json'
+import { mapActions, mapState } from 'vuex'
+import { CREATE_CODE } from '../../bridge/constants'
 
 export default {
   name: 'create-page',
-  data () {
+  data() {
     return {
       targetGenerator: '',
       generators: [],
       formData: {},
-      generatorsConfig: {}
+      generatorsConfig: {},
+      isWorking: false
     }
   },
-  mounted () {
-    this.generatorsConfig[generatorNow.gererator] = generatorNow
-    this.generatorsConfig[generatorsIvweb.gererator] = generatorsIvweb
-    this.generators.push({
-      value: generatorNow.gererator,
-      label: generatorNow.description
-    })
-    this.generators.push({
-      value: generatorsIvweb.gererator,
-      label: generatorsIvweb.description
-    })
-
-    this.targetGenerator = generatorNow.gererator
+  mounted() {},
+  created() {
+    // 载入脚手架
+    this.init()
+    // 初始化表单配置
+    this.loadFormInitData()
   },
   computed: {
-    formConfig () {
-      const _formConfig = this.generatorsConfig[this.targetGenerator] || {}
-
-      const { properties = [] } = _formConfig
-      const formDataFromConfig = {}
-      properties.map(item => (formDataFromConfig[item.field] = item.default || ''))
-      this.formData = formDataFromConfig
-
-      return _formConfig
+    targetGeneratorConfig() {
+      return this.generatorsConfig[this.targetGenerator] || {}
     },
-    rule () {
+    formConfig() {
       // 读取选中脚手架的配置
-      const { properties = [] } = this.formConfig || {}
-      return properties
-    }
-  },
-  methods: {
-    handleClick (tab, event) {
-      console.log(tab, event)
+      return this.targetGeneratorConfig.properties || []
     },
-    shouldShow (field) {
+    ...mapState({
+      workSpace: state => state.Generator.workSpace
+    })
+  },
+  watch: {},
+  methods: {
+    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState']),
+    init() {
+      // 获取脚手架
+      this.getGenerator()
+      this.resetState()
+      const { list, configMap } = this.$store.state.Generator
+      const gens = Object.keys(configMap)
+
+      Array.isArray(gens) &&
+        gens.forEach(genName => {
+          const key = genName
+          const gen = configMap[genName]
+
+          this.generators.push({
+            value: key,
+            label: gen.description
+          })
+
+          this.generatorsConfig[key] = configMap[key]
+        })
+      // 默认加载第一个脚手架
+      this.targetGenerator = list[0]
+    },
+    loadFormInitData() {
+      const formDataFromConfig = {}
+      this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
+      this.formData = formDataFromConfig
+    },
+    async handleClick() {
+      const { execType } = this.generatorsConfig[this.targetGenerator]
+      const isValid = await this.checkFormData()
+
+      if (!isValid || this.messageInstance) return
+
+      // 创建配置文件
+      if (execType === 'path') {
+        this.builConfig({
+          config: this.formData,
+          genConfig: this.generatorsConfig[this.targetGenerator]
+        })
+      }
+
+      if (this.messageInstance) {
+        this.messageInstance.close()
+        this.messageInstance = null
+      }
+
+      this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true)
+
+      this.isWorking = true
+
+      // 直接传参
+      // 执行脚手架初始化命令
+      this.$store
+        .dispatchPromise('initGenerator', {
+          execType,
+          config: this.formData,
+          generator: this.targetGenerator
+        })
+        .then(code => this.handleInitCode(code))
+    },
+    async checkFormData() {
+      let errMsg = []
+      let isValidWorkspace = false
+      // 表单校验
+      this.formConfig.forEach(({ isRequire, title, regex = '.*', field }) => {
+        let value = this.formData[field]
+        if (value === undefined && isRequire) {
+          errMsg.push(`${title} 不能为空`)
+        }
+        if (!new RegExp(regex).test(this.formData[field])) {
+          errMsg.push(`${title} 格式不正确`)
+        }
+      })
+
+      if (errMsg.length) {
+        this.$notify.error({
+          title: '表单输入错误',
+          message: errMsg[0],
+          duration: 0
+        })
+      }
+
+      // 项目路径检查
+      if (this.formData.name && this.workSpace) {
+        const initCode = await this.$store.dispatchPromise('checkBeforeRun', {
+          name: this.formData.name,
+          workSpace: this.workSpace
+        })
+        this.handleInitCode(initCode)
+        isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS
+      }
+
+      return !errMsg.length && isValidWorkspace
+    },
+    shouldShow(field) {
       const requireList = field.require
       let result = true
       // 错误类型
@@ -120,11 +206,48 @@ export default {
       })
       return result
     },
-    onSubmit (formData) {
-      // TODO 提交表单
-    },
-    updateForm (fieldName, value) {
+    updateForm(fieldName, value) {
       this.formData[fieldName] = value
+    },
+    handleWorkSpaceClick() {
+      this.selectWorkSpace()
+    },
+    // 处理响应码
+    handleInitCode(initCode) {
+      if (initCode === CREATE_CODE.CHECK_SUCCESS) return
+      switch (initCode) {
+        case CREATE_CODE.SUCCESS: {
+          this.messageInstance && this.messageInstance.close()
+          this.handleReset()
+          this.toast('项目创建成功', '', 'success')
+          break
+        }
+        case CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY: {
+          this.toast('项目创建失败', '项目路径重复', 'error')
+          break
+        }
+        default: {
+        }
+      }
+    },
+    toast(title, msg, type = 'info', isPersistent = false) {
+      let opt = {
+        title,
+        message: msg
+      }
+      if (isPersistent) {
+        opt.duration = 0
+      }
+
+      return this.$notify[type](opt)
+    },
+    async handleReset() {
+      // 重置表单， 防止重复初始化项目
+      this.formData = {}
+      this.isWorking = false
+
+      // 重置脚手架状态
+      this.resetState()
     }
   }
 }
@@ -132,6 +255,14 @@ export default {
 
 
 <style scoped>
+.create-inner {
+  width: 100%;
+  height: 500px;
+  overflow: scroll;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+  padding-right: 24px;
+}
 .action-btn {
   border-top: 1px solid #f3f4f5;
   padding-top: 26px;

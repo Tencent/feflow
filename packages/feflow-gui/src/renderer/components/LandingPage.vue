@@ -21,7 +21,11 @@
   }
 </script>
 <style scoped>
+  #wrapper {
+    height: 100%;
+  }
   main {
+    height: 100%;
     display: flex;
   }
 </style>
