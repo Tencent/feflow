@@ -4,6 +4,7 @@
       <el-form-item label="脚手架">
         <el-select v-model="targetGenerator" placeholder="请选择">
           <el-option
+            :disabled="isWorking"
             v-for="item in generators"
             :key="item.value"
             :label="item.label"
@@ -13,7 +14,7 @@
       </el-form-item>
       <el-form-item label="项目目录" v-if="!!targetGenerator">
         <el-input :value="workSpace" :disabled="true">
-          <el-button @click="handleWorkSpaceClick" slot="append">选择</el-button>
+          <el-button @click="handleWorkSpaceClick" slot="append" :disabled="isWorking">选择</el-button>
         </el-input>
       </el-form-item>
       <div v-for="(field, index) in formConfig" v-bind:key="index">
@@ -31,6 +32,7 @@
               :options="field.options"
               :ref="field.title"
               :placeholder="field.description"
+              :disabled="isWorking"
             ></component>
 
             <el-select
@@ -223,10 +225,11 @@ export default {
           break
         }
         case CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY: {
-          this.toast('项目创建失败', '项目路径重复', 'error')
+          this.toast('项目创建失败', '项目路径重复，请修改项目名', 'error')
           break
         }
         default: {
+          this.handleReset()
         }
       }
     },
