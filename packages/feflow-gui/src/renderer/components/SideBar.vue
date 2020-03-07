@@ -6,7 +6,7 @@
         <div class="avatar">
         <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
         </div>
-        <div class="nickname">cpselvis</div>
+        <div class="nickname">{{ username }}</div>
     </div>
     <div class="logout" />
     </div>
@@ -36,7 +36,9 @@ export default {
   },
   data() {
     return {
-      isSettingVisble: false
+      isSettingVisble: false,
+      username: window.username || 'xxx',
+      avatar: window.avatar
     }
   },
   methods: {

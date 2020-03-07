@@ -34,10 +34,10 @@ function createWindow() {
      * Initial window options
      */
     mainWindow = new BrowserWindow({
-        height: 600,
-        useContentSize: true,
-        width: 1200,
-        webPreferences: { webSecurity: false }
+      height: 600,
+      useContentSize: true,
+      width: 840,
+      webPreferences: { webSecurity: false }
     })
 
     mainWindow.loadURL(winURL)
