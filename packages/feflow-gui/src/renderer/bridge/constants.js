@@ -3,19 +3,19 @@ import path from 'path'
 
 export const OS_HOME = os.homedir()
 
-export const FEFLOW_HOME = '.fef'
+export const FEFLOW_HOME_NAME = '.fef'
 
 export const FEFLOW_CONFIG_NAME = '.feflowrc.yml'
 
-export const DEFAULT_WORKSPACE = '~/.fef/workspace'
+export const DEFAULT_WORKSPACE = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 'workspace')
 
 export const FEFLOW_GENERATOR_REGEX = /^@(tencent|feflow)\/generator-(.*)/i
 
-export const FEFLOW_HOME_PATH = path.resolve(OS_HOME, FEFLOW_HOME)
+export const FEFLOW_HOME_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME)
 
 export const FEFLOW_HOME_CONFIG_PATH = path.resolve(FEFLOW_HOME_PATH, FEFLOW_CONFIG_NAME)
 
-export const FEFLOW_HOME_PACKAGE_PATH = path.resolve(OS_HOME, FEFLOW_HOME, './package.json')
+export const FEFLOW_HOME_PACKAGE_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME, './package.json')
 
 export const GENERATOR_CONFIG_FILE_NAME = ['generator.js', 'generator.json']
 
