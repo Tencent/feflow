@@ -4,133 +4,16 @@
         <i class="create-icon" />
         创建项目
     </div>
-    <div class="project-item">
+    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item.path)">
         <div class="project-logo">
             <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
         </div>
         <div class="project-info">
             <div class="project-name">
-                NOW Live
+                {{ item.name }}
             </div>
             <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
+                {{ item.path }}
             </div>
         </div>
     </div>
@@ -202,3 +85,16 @@
     word-wrap: break-word;
 }
 </style>
+<script>
+import electron from 'electron'
+const { ipcRenderer } = electron
+
+export default {
+  props: ['projects'],
+  methods: {
+    createProjectService(path) {
+      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path })
+    }
+  }
+}
+</script>

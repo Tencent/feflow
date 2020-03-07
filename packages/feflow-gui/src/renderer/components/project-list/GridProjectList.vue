@@ -5,68 +5,16 @@
             <i class="create-icon"></i>
         </router-link>
     </div>
-    <div class="project-item" @click="createProjectService('/Users/ting/work/pgg_act_v2')">
+    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item.path)">
         <div class="project-screen">
             <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
         </div>
         <div class="project-info">
             <div class="project-name">
-                NOW Live
+                {{ item.name }}
             </div>
             <div class="project-path">
-                /Users/ting/work/pgg_act_v2
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-    <div class="project-item">
-        <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
-            </div>
-        </div>
-    </div>
-        <div class="project-item">
-        <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
-        </div>
-        <div class="project-info">
-            <div class="project-name">
-                NOW Live
-            </div>
-            <div class="project-path">
-                /Users/lewischeng/code/tencent/ivweb/qqlive
+                {{ item.path }}
             </div>
         </div>
     </div>
@@ -137,6 +85,7 @@ import electron from 'electron'
 const { ipcRenderer } = electron
 
 export default {
+  props: ['projects'],
   methods: {
     createProjectService(path) {
       ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path })

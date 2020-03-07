@@ -7,24 +7,39 @@
                 <i class="list-icon" :class="{active : currIndex === 1}" @click="switchClickHandle(1)"></i>
             </div>
         </div>
-        <grid-project-list v-if="currIndex === 0"></grid-project-list>
-        <list-project-list v-if="currIndex === 1"></list-project-list>
+        <grid-project-list  v-bind:projects="projects" v-if="currIndex === 0"></grid-project-list>
+        <list-project-list  v-bind:projects="projects" v-if="currIndex === 1"></list-project-list>
     </div>
 </template>
 <script>
+  import { FEFLOW_HOME_CONFIG_PATH } from '../../bridge/constants'
+  import { parseYaml } from '../../bridge/utils/index'
   import GridProjectList from './GridProjectList'
   import ListProjectList from './ListProjectList'
+
   export default {
     name: 'project-list',
     components: { GridProjectList, ListProjectList },
     data () {
       return {
-        currIndex: 0
+        currIndex: 0,
+        projects: []
       }
+    },
+    created() {
+      this.init()
     },
     methods: {
       switchClickHandle (index) {
         this.currIndex = index
+      },
+      init() {
+        this.fetchProjects()
+      },
+      fetchProjects() {
+        const feflowConfig = parseYaml(FEFLOW_HOME_CONFIG_PATH)
+        const { projects } = feflowConfig
+        this.projects = projects
       }
     }
   }
