@@ -65,7 +65,14 @@ export default {
 
                 if (!arr || !arr.length) callback();
 
+                const reg = /^feflow-plugin-|^@[^/]+\/feflow-plugin-|^generator-|^@[^/]+\/generator-/;
+
                 for (let i = 0; i < arr.length; i++) {
+                    if (!reg.test(arr[i])) {
+                        callback(new Error(`${arr[i]} 不符合规则(feflow-plugin 或 generator)`));
+                        break;
+                    }
+
                     let hasInNPM = await this.checkNPM(arr[i]);
 
                     if (!hasInNPM) {
