@@ -6,7 +6,7 @@
     </div>
     <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
         <div class="project-logo">
-            <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
+            <img v-bind:src="item.banner || require('../../assets/default-project-banner.jpg')" />
         </div>
         <div class="project-info">
             <div class="project-name">

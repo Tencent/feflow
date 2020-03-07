@@ -7,7 +7,7 @@
     </div>
     <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
         <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
+            <img v-bind:src="item.banner || require('../../assets/default-project-banner.jpg')" />
         </div>
         <div class="project-info">
             <div class="project-name">
