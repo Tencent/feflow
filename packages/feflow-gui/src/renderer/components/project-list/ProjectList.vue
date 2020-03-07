@@ -3,8 +3,8 @@
         <div class="title-bar">
             <div class="title">我的项目</div>
             <div class="switch">
-                <i class="grid-icon" :class="{active : currIndex === 0}" @click="switchClickHandle(0)"></i>
-                <i class="list-icon" :class="{active : currIndex === 1}" @click="switchClickHandle(1)"></i>
+                <i class="grid-icon" :class="{'grid-icon-active' : currIndex === 0}" @click="switchClickHandle(0)"></i>
+                <i class="list-icon" :class="{'list-icon-active' : currIndex === 1}" @click="switchClickHandle(1)"></i>
             </div>
         </div>
         <grid-project-list  v-bind:projects="projects" v-if="currIndex === 0"></grid-project-list>
@@ -62,6 +62,13 @@
     color: #333333;
 }
 .project-list .title-bar .switch .grid-icon {
+    background: url(../../assets/grid-normal.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    margin-right: 20px;
+}
+.project-list .title-bar .switch .grid-icon-active {
     background: url(../../assets/grid-selected.png) no-repeat;
     width: 18px;
     height: 18px;
@@ -70,6 +77,13 @@
 }
 .project-list .title-bar .switch .list-icon {
     background: url(../../assets/list-normal.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+}
+
+.project-list .title-bar .switch .list-icon-active {
+    background: url(../../assets/list-selected.png) no-repeat;
     width: 18px;
     height: 18px;
     display: inline-block;
