@@ -9,7 +9,7 @@
 
 <script>
   import SideBar from './SideBar'
-  import ProjectList from './ProjectList'
+  import ProjectList from './project-list/ProjectList'
   export default {
     name: 'landing-page',
     components: { SideBar, ProjectList },
@@ -21,7 +21,11 @@
   }
 </script>
 <style scoped>
+  #wrapper {
+    height: 100%;
+  }
   main {
+    height: 100%;
     display: flex;
   }
 </style>

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import { createPersistedState, createSharedMutations } from 'vuex-electron'
+import createPromiseAction from './plugin/promise'
 
 import modules from './modules'
 
@@ -11,7 +12,8 @@ export default new Vuex.Store({
   modules,
   plugins: [
     createPersistedState(),
-    createSharedMutations()
+    createSharedMutations(),
+    createPromiseAction()
   ],
   strict: process.env.NODE_ENV !== 'production'
 })

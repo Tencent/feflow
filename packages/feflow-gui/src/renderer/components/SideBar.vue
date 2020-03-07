@@ -1,52 +1,90 @@
 <template>
     <div class="side-bar">
-        <ul class="nav">
-            <router-link to="/">
-                <li class="project current"><i class="icon" />我的项目</li>
-            </router-link>
-            <li class="market"><i class="icon" />插件市场</li>
-            <router-link to="/admin">
-                <li class="project"><i class="icon" />管理中心</li>
-            </router-link>
-        </ul>
-        <div class="account">
-            <div class="personal-info">
-                <div class="avatar">
-                    <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+        <div class="head">
+            <div class="account">
+                <div class="personal-info">
+                    <div class="avatar">
+                        <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+                    </div>
+                    <div class="nickname">{{ username }}</div>
                 </div>
-                <div class="nickname">cpselvis</div>
+                <div class="logout" />
             </div>
-            <div class="logout" />
+            <ul class="nav">
+                <router-link to="/">
+                    <li class="project current"><i class="icon" />我的项目</li>
+                </router-link>
+                <li class="market"><i class="icon" />插件市场</li>
+                <router-link to="/admin">
+                    <li class="project"><i class="icon" />管理中心</li>
+                </router-link>
+            </ul>
         </div>
+        <div class="footer">
+            <div class="setting-wrap">
+                <div class="divder"></div>
+                <li
+                    class="setting"
+                    @click="showSettingPanel(true)"
+                ><i class="icon" />设置</li>
+                <SettingPanel :visible="isSettingVisble" />
+            </div>
+        </div>
+
     </div>
 </template>
-
+<script>
+import SettingPanel from './setting'
+export default {
+    components: {
+        SettingPanel
+    },
+    data() {
+        return {
+            isSettingVisble: false,
+            username: window.username || 'xxx',
+            avatar: window.avatar
+        }
+    },
+    methods: {
+        showSettingPanel() {
+            this.isSettingVisble = !this.isSettingVisble;
+        }
+    }
+}
+</script>
 <style>
 .side-bar {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 160px;
-    height: 600px;
+    /* height: 600px; */
     background: #434650;
 }
-.side-bar .nav {
+.side-bar .nav, .footer{
     font-size: 14px;
     color: #bebebe;
     padding-top: 50px;
 }
-.side-bar .nav li {
+.side-bar .nav li, .footer li {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 48px;
 }
-
 .side-bar .nav li.current {
     background: #8a92af;
     color: #fff;
 }
-
+.footer .setting-wrap {
+    cursor: pointer;
+}
+.footer .setting-wrap .divder {
+    opacity: 0.08;
+    background: #FFFFFF;
+    height: 1px;
+}
 .side-bar .nav .project .icon {
     background: url('../assets/project.png') no-repeat;
     width: 15px;
@@ -94,4 +132,5 @@
     display: inline-block;
     margin-right: 14px;
 }
+
 </style>

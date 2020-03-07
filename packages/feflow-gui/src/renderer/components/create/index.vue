@@ -7,7 +7,9 @@
           <el-tab-pane label="创建项目" name="create">
             <create-page />
           </el-tab-pane>
-          <el-tab-pane label="导入项目" name="import">导入项目</el-tab-pane>
+          <el-tab-pane label="导入项目" name="import">
+            <import-page />
+          </el-tab-pane>
         </el-tabs>
       </section>
     </main>
@@ -17,9 +19,10 @@
 <script>
 import CreatePage from './create'
 import SideBar from '../SideBar'
+import ImportPage from './import.vue'
 export default {
   name: 'add-page',
-  components: { SideBar, CreatePage },
+  components: { SideBar, CreatePage, ImportPage },
   // components: { SideBar },
   data() {
     return {
@@ -39,8 +42,13 @@ main {
   display: flex;
 }
 .create-wrapper {
-  width: 546px;
-  padding: 0 50px;
+  height: 550px;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  /* padding: 0 50px; */
+  /* padding-top: 50px; */
+  padding-left: 50px;
   margin-top: 47px;
 }
 </style>
