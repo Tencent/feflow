@@ -155,6 +155,7 @@ export default {
           background: '#F3F4F5',
           foreground: '#434650'
         },
+        convertEol: true, // 解决换行符问题 https://xtermjs.org/docs/api/terminal/interfaces/iterminaloptions/#optional-converteol
         cols: 80,
         rows: 24,
         fontSize: 12,
