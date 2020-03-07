@@ -4,7 +4,7 @@
         <i class="create-icon" />
         创建项目
     </div>
-    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item.path)">
+    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
         <div class="project-logo">
             <img src="https://static001.geekbang.org/static/time/icon/apple-touch-icon.jpg" />
         </div>
@@ -92,8 +92,9 @@ const { ipcRenderer } = electron
 export default {
   props: ['projects'],
   methods: {
-    createProjectService(path) {
-      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path })
+    createProjectService(project) {
+      const { path, name } = project
+      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
     }
   }
 }

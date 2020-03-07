@@ -14,8 +14,8 @@ const WIN_CONF = {
  * 打开项目服务窗口
  */
 function createProjectService () {
-  ipcMain.on('create-project-service', (event, { routeName, projectPath }) => {
-    if (!routeName || !projectPath) {
+  ipcMain.on('create-project-service', (event, { routeName, projectName, projectPath }) => {
+    if (!routeName || !projectPath || !projectName) {
       return
     }
 
@@ -27,7 +27,7 @@ function createProjectService () {
     win.on('close', () => {
       win = null
     })
-    const url = `${getUrl(routeName)}?path=${projectPath}`
+    const url = `${getUrl(routeName)}?path=${projectPath}&name=${projectName}`
     win.loadURL(url)
   })
 }

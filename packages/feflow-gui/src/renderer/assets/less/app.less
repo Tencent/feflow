@@ -5,3 +5,30 @@
 html, body, .feflow-gui {
   height: 100%;
 }
+
+// 重置样式
+.project-command {
+  &__operation {
+    &-btns {
+      .el-button--mini, .el-button--mini.is-round {
+        padding: 8px 15px !important;
+      }
+    }
+    &-input {
+      .el-input {
+        flex: 1;
+        border: none;
+        height: 30px;
+        line-height: 30px;
+        background-color: transparent;
+
+        .el-input__inner {
+          height: 30px;
+          line-height: 30px;
+          border: none !important;
+          background: none !important;
+        }
+      }
+    }
+  }
+}
