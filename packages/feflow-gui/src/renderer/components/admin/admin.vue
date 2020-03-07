@@ -129,7 +129,7 @@ export default {
         ]),
 
         canCreate() {
-            return this.isAdmin && (this.form.scaffold || this.form.plugins);
+            return (this.isAdmin && (this.form.scaffold || this.form.plugins)) || (!this.isAdmin && !this.hasConfig && (this.form.scaffold || this.form.plugins));
         }
     },
     methods: {
