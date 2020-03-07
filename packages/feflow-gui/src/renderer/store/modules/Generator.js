@@ -3,19 +3,23 @@ import {
   buildGeneratorConfig,
   runGenerator,
   saveGeneratorConfig,
-  checkBeforeRunGenerator
+  checkBeforeRunGenerator,
+  openDialogToGetDirectory,
+  loadFeflowConfigFile
 } from '../../bridge'
-import { dialog } from 'electron'
-import { CREATE_CODE } from '../../bridge/constants'
+import { CREATE_CODE, DEFAULT_WORKSPACE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
 
 const state = {
+  // 脚手架列表
   list: [],
   configMap: {},
   currentGeneratorConfig: {},
   localConfigName: '',
-  workSpace: '~/.fef/workspace',
-  initCode: CREATE_CODE.INITIAL
+  workSpace: DEFAULT_WORKSPACE,
+  importWorkSpace: '',
+  initCode: CREATE_CODE.INITIAL,
+  projectListFromConfig: []
 }
 
 const mutations = {
@@ -30,8 +34,14 @@ const mutations = {
   SET_WORK_SPACE(state, workSpace) {
     state.workSpace = workSpace
   },
+  SET_IMPORT_WORK_SPACE(state, workSpace) {
+    state.importWorkSpace = workSpace
+  },
   SET_PROJECT_INIT_STATE(state, { code }) {
     state.initCode = code
+  },
+  SET_PROJECT_LIST(state, projectList) {
+    state.projectListFromConfig = projectList
   }
 }
 
@@ -68,23 +78,28 @@ const actions = {
     })
   },
   selectWorkSpace({ commit }) {
-    dialog.showOpenDialog(
-      {
-        properties: ['openFile', 'openDirectory']
-      },
-      function(files) {
-        commit('SET_WORK_SPACE', files[0])
-      }
-    )
+    openDialogToGetDirectory().then(files => {
+      commit('SET_WORK_SPACE', files[0])
+    })
+  },
+  importWorkSpace({ commit }) {
+    openDialogToGetDirectory().then(files => {
+      commit('SET_IMPORT_WORK_SPACE', files[0])
+    })
   },
   resetState({ commit }) {
     commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL })
+    commit('SET_IMPORT_WORK_SPACE', '')
   },
   checkBeforeRun(_, obj) {
     return new Promise(resolve => {
       const ret = checkBeforeRunGenerator(obj)
       resolve(ret)
     })
+  },
+  getProjectListFromConfig({ commit }) {
+    const { projects = [] } = loadFeflowConfigFile()
+    commit('SET_PROJECT_LIST', projects)
   }
 }
 
