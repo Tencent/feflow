@@ -77,6 +77,9 @@ export default {
     background: #8a92af;
     color: #fff;
 }
+.side-bar .nav a{
+    color: #bebebe;
+}
 .footer .setting-wrap {
     cursor: pointer;
 }

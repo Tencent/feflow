@@ -24,6 +24,7 @@ export default {
 <style scoped>
 .main{
   display: flex;
+  height: 100%;
 }
 </style>
 
