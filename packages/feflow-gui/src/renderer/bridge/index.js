@@ -11,6 +11,7 @@ import {
 import { Feflow } from './utils/core'
 import path from 'path'
 import { CREATE_CODE, FEFLOW_GENERATOR_REGEX, GENERATOR_CONFIG_FILE_NAME, FEFLOW_HOME_CONFIG_PATH } from './constants'
+import { dialog } from 'electron'
 
 /**
  * 载入全局脚手架
@@ -86,8 +87,12 @@ export const loadProjectCommand = projectPath => {
   return Feflow.spawn(projectPath)
 }
 
+export const loadFeflowConfigFile = () => {
+  return parseYaml(FEFLOW_HOME_CONFIG_PATH)
+}
+
 export const saveGeneratorConfig = (projectName, workSpace) => {
-  const doc = parseYaml(FEFLOW_HOME_CONFIG_PATH)
+  const doc = loadFeflowConfigFile();
   let update = {}
   if (!doc.projects) {
     update = Object.assign({}, doc, {
@@ -99,6 +104,7 @@ export const saveGeneratorConfig = (projectName, workSpace) => {
       }
     })
   } else {
+    // 覆盖/新增
     doc.projects[projectName] = {
       name: projectName,
       path: workSpace
@@ -108,4 +114,17 @@ export const saveGeneratorConfig = (projectName, workSpace) => {
   }
 
   safeDump(update, FEFLOW_HOME_CONFIG_PATH)
+}
+
+export const openDialogToGetDirectory = () => {
+  return new Promise(resolve => {
+    dialog.showOpenDialog(
+      {
+        properties: ['openFile', 'openDirectory']
+      },
+      function(files) {
+        resolve(files)
+      }
+    )
+  })
 }
