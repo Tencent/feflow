@@ -18,6 +18,23 @@ Vue.config.productionTip = false;
   const userInfo = await apiAuthorize.getLoginUser();
   global.username = userInfo.EngName;
   global.avatar = `//r.hrc.oa.com/photo/150/${global.username}.png`;
+  global.department = userInfo.DeptNameString;
+  store.dispatch('UserInfo/SET_USER_INFO_ACTION', {
+    username: global.username,
+    avatar: global.avatar,
+    department: global.department
+  });
+
+  // 获取用户配置
+  const result = await apiAuthorize.checkAuth(userInfo);
+  if (result && result.errcode === 0 && result.data) {
+    store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
+      isAdmin: result.data.isAdmin,
+      hasConfig: result.data.hasConfig,
+      scaffold: result.data.scaffold,
+      plugins: result.data.plugins
+    });
+  }
 })();
 
 /* eslint-disable no-new */
@@ -25,5 +42,5 @@ new Vue({
   components: { App },
   router,
   store,
-  template: '<App/>'
+  template: '<App />'
 }).$mount('#app')

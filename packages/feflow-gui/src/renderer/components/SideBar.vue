@@ -1,51 +1,56 @@
 <template>
-  <div class="side-bar">
-    <div class="head">
-    <div class="account">
-    <div class="personal-info">
-        <div class="avatar">
-        <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+    <div class="side-bar">
+        <div class="head">
+            <div class="account">
+                <div class="personal-info">
+                    <div class="avatar">
+                        <img src="https://avatars1.githubusercontent.com/u/18289264?s=460&v=4" />
+                    </div>
+                    <div class="nickname">{{ username }}</div>
+                </div>
+                <div class="logout" />
+            </div>
+            <ul class="nav">
+                <router-link to="/">
+                    <li class="project current"><i class="icon" />我的项目</li>
+                </router-link>
+                <li class="market"><i class="icon" />插件市场</li>
+                <router-link to="/admin">
+                    <li class="project"><i class="icon" />管理中心</li>
+                </router-link>
+            </ul>
         </div>
-        <div class="nickname">{{ username }}</div>
-    </div>
-    <div class="logout" />
-    </div>
-    <ul class="nav">
-    <router-link to="/">
-        <li class="project current"><i class="icon" />我的项目</li>
-    </router-link>
-      <li class="market"><i class="icon" />插件市场</li>
-    </ul>
-    </div>
-    <div class="footer">
-         <div class="setting-wrap">
-        <div class="divder"></div>    
-        <li class="setting" @click="showSettingPanel(true)" ><i class="icon" />设置</li>  
-               <SettingPanel :visible="isSettingVisble" />    
+        <div class="footer">
+            <div class="setting-wrap">
+                <div class="divder"></div>
+                <li
+                    class="setting"
+                    @click="showSettingPanel(true)"
+                ><i class="icon" />设置</li>
+                <SettingPanel :visible="isSettingVisble" />
+            </div>
         </div>
+
     </div>
-   
-   
-  </div>
 </template>
 <script>
 import SettingPanel from './setting'
 export default {
-  components: {
-    SettingPanel
-  },
-  data() {
-    return {
-      isSettingVisble: false,
-      username: window.username || 'xxx',
-      avatar: window.avatar
+    components: {
+        SettingPanel
+    },
+    data() {
+        return {
+            isSettingVisble: false,
+            username: window.username || 'xxx',
+            avatar: window.avatar
+        }
+    },
+    methods: {
+        showSettingPanel() {
+            this.isSettingVisble = !this.isSettingVisble;
+        }
     }
-  },
-  methods: {
-    showSettingPanel() {
-      this.isSettingVisble = !this.isSettingVisble;
-    }
-  }
 }
 </script>
 <style>
@@ -71,6 +76,9 @@ export default {
 .side-bar .nav li.current {
     background: #8a92af;
     color: #fff;
+}
+.side-bar .nav a{
+    color: #bebebe;
 }
 .footer .setting-wrap {
     cursor: pointer;
