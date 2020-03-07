@@ -12,7 +12,7 @@
             <i
               class="project-command__item-icon"
               :class="{'is-running': item.running}"></i>
-            <p class="project-command__item-name">{{item.name}}</p>
+            <p class="project-command__item-name">{{item.name | pascalCase}}</p>
             <p class="project-command__item-desc">{{item.running ? '运行中' : item.description}}</p>
         </li>
       </ul>
@@ -21,7 +21,7 @@
     <!-- 命令内容  -->
     <div class="project-command__detail">
       <!-- 命令名称 & 描述 -->
-      <div class="project-command__name">{{currentCommand.name}}</div>
+      <div class="project-command__name">{{currentCommand.name | pascalCase}}</div>
       <div class="project-command__desc">{{currentCommand.description}}</div>
 
       <div class="project-command__operation">
@@ -127,6 +127,11 @@ export default {
       commandHistory: {}
     }
   },
+  filters: {
+    pascalCase(str) {
+      return `${str.substr(0, 1).toUpperCase()}${str.substr(1).toLowerCase()}`
+    }
+  },
   computed: {
     currentCommand() {
       return this.projectCommand[this.current]
@@ -150,7 +155,9 @@ export default {
           background: '#F3F4F5',
           foreground: '#434650'
         },
-        fontSize: 14,
+        cols: 80,
+        rows: 24,
+        fontSize: 12,
         disableStdin: true, // 禁止输入
         cursorBlink: false,
         cursorStyle: 'bar',
@@ -172,11 +179,11 @@ export default {
         const { name, command, builder, options, description } = item
 
         // 读取最近的命令历史
-        const commandName = `${name.substr(0, 1).toUpperCase()}${name.substr(1).toLowerCase()}`
-        const lastCommandHistory = (history[commandName] || []).pop()
+        const lastCommandHistory = (history[name] || []).pop()
 
         return {
-          name: commandName,
+          name,
+          originCommand: command,
           command: lastCommandHistory || command,
           builder,
           options,
@@ -190,7 +197,8 @@ export default {
       this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Start Running Command ${commandScript}...`)
 
       const execCommand = spawnProjectCommand(this.projectPath)
-      const childProcess = execCommand([commandScript])
+      const commandOptions = commandScript.split(commandName)[1].trim()
+      const childProcess = execCommand([commandName, commandOptions])
       childProcess.stdout.on('data', (data) => {
         this.term.writeln(data)
       })
@@ -254,9 +262,21 @@ export default {
     handleSaveCmd() {
       this.isCmdEdited = false
 
-      const { name, command } = this.currentCommand
-      this.ProjectCommandHistory.update(name, command.trim())
+      // 校验命令
+      const { command, originCommand } = this.currentCommand
 
+      if (command.indexOf(originCommand)) {
+        // 重置为原始命令
+        this.currentCommand.command = originCommand
+
+        this.$notify.error({
+          title: '命令错误',
+          message: `命令内容不属于该任务命令 ${originCommand}`
+        })
+        return
+      }
+
+      this.ProjectCommandHistory.update(name, command.trim())
       this.$message({
         type: 'success',
         message: '命令保存成功！'

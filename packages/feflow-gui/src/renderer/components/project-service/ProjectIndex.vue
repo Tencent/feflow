@@ -1,7 +1,7 @@
 <template>
   <el-container class="project-index">
     <!-- 侧边导航 -->
-    <project-side-bar v-model="activeTabId"></project-side-bar>
+    <!-- <project-side-bar v-model="activeTabId"></project-side-bar> -->
     <!-- 侧边导航 -->
 
     <!-- 导航面板 -->
