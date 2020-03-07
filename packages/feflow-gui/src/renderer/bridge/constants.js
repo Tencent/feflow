@@ -7,6 +7,10 @@ export const FEFLOW_HOME_NAME = '.fef'
 
 export const FEFLOW_CONFIG_NAME = '.feflowrc.yml'
 
+export const FEFLOW_PROJECT_CONFIG_NAME = '.feflowrc.json' // 项目的 feflow 配置
+
+export const FEFLOW_PROJECT_DEVKIT_CONFIG_NAME = 'devkit.json' // 项目开发套件的配置
+
 export const DEFAULT_WORKSPACE = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 'workspace')
 
 export const FEFLOW_GENERATOR_REGEX = /^@(tencent|feflow)\/generator-(.*)/i

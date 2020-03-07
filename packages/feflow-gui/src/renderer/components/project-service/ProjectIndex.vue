@@ -63,8 +63,9 @@
     line-height: 60px;
     font-size: 20px;
     font-weight: bold;
-    color: #000;
-    background: #DEDEDE;
+    color: #333;
+    background: #FFFFFF;
+    border-bottom: 1px solid #F3F4F5;
   }
 }
 </style>
