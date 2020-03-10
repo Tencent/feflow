@@ -1,0 +1,22 @@
+/**
+ * 样式编写辅助
+ */
+
+// 文字省略：单行省略
+// 使用方法：.oneline;
+.oneline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 文字省略：自定义多行
+// @num:［行数］
+// 使用：.line(3);
+.line(@num: 1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: @num;
+  -webkit-box-orient: vertical;
+}
