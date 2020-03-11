@@ -72,7 +72,11 @@ const actions = {
       if (code === CREATE_CODE.SUCCESS) {
         // 项目成功初始化
         // 写入项目配置
-        saveGeneratorConfig(config.name, workSpace + '/' + config.name)
+        saveGeneratorConfig({
+          projectName: config.name,
+          workSpace: workSpace + '/' + config.name,
+          banner: config.banner
+        })
       }
       return code
     })

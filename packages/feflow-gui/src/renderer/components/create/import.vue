@@ -117,11 +117,14 @@ export default {
   padding-bottom: 20px;
   box-sizing: border-box;
   padding-right: 24px;
-  padding-top: 118px;
+  /* padding-top: 118px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 .action-btn {
   border-top: 1px solid #f3f4f5;
-  margin-top: 130px;
+  /* margin-top: 130px; */
   padding-top: 26px;
   display: flex;
   justify-content: flex-end;
