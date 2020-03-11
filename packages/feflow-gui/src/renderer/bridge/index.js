@@ -93,15 +93,16 @@ export const loadFeflowConfigFile = () => {
   return parseYaml(FEFLOW_HOME_CONFIG_PATH)
 }
 
-export const saveGeneratorConfig = (projectName, workSpace) => {
-  const doc = loadFeflowConfigFile();
+export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
+  const doc = loadFeflowConfigFile()
   let update = {}
   if (!doc.projects) {
     update = Object.assign({}, doc, {
       projects: {
         [projectName]: {
           name: projectName,
-          path: workSpace
+          path: workSpace,
+          banner
         }
       }
     })
@@ -109,7 +110,8 @@ export const saveGeneratorConfig = (projectName, workSpace) => {
     // 覆盖/新增
     doc.projects[projectName] = {
       name: projectName,
-      path: workSpace
+      path: workSpace,
+      banner
     }
 
     update = Object.assign({}, doc)
@@ -138,13 +140,16 @@ export const fetchProjectDevkitCommandList = projectPath => {
     const { builder, options } = commands[name]
 
     // 可运行命令拼接
-    const optionList = options.length !== 0
-      ? Object.keys(options).map(optKey => `--${optKey}=${options[optKey]}`).join(' ')
-      : ''
+    const optionList =
+      options.length !== 0
+        ? Object.keys(options)
+            .map(optKey => `--${optKey}=${options[optKey]}`)
+            .join(' ')
+        : ''
     const command = `fef ${name} ${optionList}`
 
     // 解析脚手架依赖，从 devkit.json 中获取命令说明
-    const [ dependency, devkitCommandKey ] = builder.split(':')
+    const [dependency, devkitCommandKey] = builder.split(':')
     const deckitJSONPath = path.resolve(`${projectPath}/node_modules/${dependency}`, FEFLOW_PROJECT_DEVKIT_CONFIG_NAME)
     const devkitJSON = getFileByJSON(deckitJSONPath)
     const { description } = devkitJSON.builders[devkitCommandKey]

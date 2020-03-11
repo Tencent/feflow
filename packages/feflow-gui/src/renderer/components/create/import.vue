@@ -2,7 +2,10 @@
   <div class="import-wrapper">
     <el-form label-position="left" label-width="140px" ref="form">
       <el-form-item label="项目名称">
-        <el-input v-model="name" placeholder="请输入内容" />
+        <el-input v-model="name" placeholder="请输入内容" clearable />
+      </el-form-item>
+      <el-form-item label="项目截图">
+        <el-input v-model="banner" placeholder="图片链接" clearable />
       </el-form-item>
       <el-form-item label="目录">
         <el-input :value="workSpace" :disabled="true">
@@ -30,7 +33,8 @@ export default {
   name: 'import-page',
   data() {
     return {
-      name: ''
+      name: '',
+      banner: ''
     }
   },
   computed: {
@@ -56,7 +60,7 @@ export default {
       if (!this.check()) return
 
       // 导入项目
-      saveGeneratorConfig(this.name, this.workSpace)
+      saveGeneratorConfig({ projectName: this.name, workSpace: this.workSpace, banner: this.banner })
       this.toast('导入成功', '', 'success')
       this.handleReset()
     },
@@ -67,6 +71,13 @@ export default {
         projectName.push(key)
         projectPath.push(this.projectListFromConfig[key].path)
       })
+
+      if (this.banner) {
+        if (!/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
+          this.toast('表单错误', '图片链接格式有误', 'error')
+          return false
+        }
+      }
 
       if (projectName.indexOf(this.name) >= 0) {
         this.toast('导入失败', '项目名重复', 'error')
@@ -110,7 +121,7 @@ export default {
 }
 .action-btn {
   border-top: 1px solid #f3f4f5;
-  margin-top: 181px;
+  margin-top: 130px;
   padding-top: 26px;
   display: flex;
   justify-content: flex-end;
