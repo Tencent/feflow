@@ -17,7 +17,10 @@
                 {{ item.path }}
             </div>
         </div>
-        <div class="project-setting" @contextmenu.prevent="showSettingPanel(index)">
+        <div class="project-setting"
+            @click.stop="showSettingPanel(index)"
+            @contextmenu.prevent="showSettingPanel(index)"
+        >
             <div class="setting-icon" />
             <div class="dropdown" :class="{'dropdown-show' : showSettig === true && index === selectedIndex}">
                 <ul class="menu">
