@@ -89,7 +89,6 @@ export default {
   methods: {
     createProjectService(project) {
       const { path, name } = project
-      console.log('??')
       ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
     }
   }
