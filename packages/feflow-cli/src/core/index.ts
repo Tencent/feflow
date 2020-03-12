@@ -168,11 +168,11 @@ export default class Feflow {
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, registryUrl).catch((err) => {
+            const latestVersion: any = await packageJson(name, registryUrl).catch((err) => {
                 logger.debug('Check plugin update error', err);
             });
 
-            if (latestVersion && latestVersion !== localVersion) {
+            if (latestVersion && semver.gt(latestVersion, localVersion)) {
                 table.cell('Name', name);
                 table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
                 table.cell('Tag', 'latest');
