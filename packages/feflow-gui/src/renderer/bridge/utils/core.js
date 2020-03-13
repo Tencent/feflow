@@ -8,23 +8,6 @@ import { CREATE_CODE, DEFAULT_WORKSPACE } from '../constants.js'
 
 const COMMAND = 'fef'
 
-export const exec = (cmd, ...arg) => {
-  if (!cmd) return Promise.reject(new Error('no cmd'))
-  let commandArr = []
-  console.log('arg', arg)
-
-  commandArr.push(cmd)
-  commandArr.push(...arg)
-  console.log('commandArr', commandArr.join(' '))
-
-  return new Promise((resolve, reject) => {
-    shell.exec(commandArr.join(' '), function(code) {
-      console.log('Exit code:', code)
-      resolve(code)
-    })
-  })
-}
-
 export const spawn = curry(function(cmd, cwd, arg) {
   if (!cmd) onStderr(`${cmd} 命令执行错误`)
 
@@ -45,7 +28,8 @@ export const spawn = curry(function(cmd, cwd, arg) {
 })
 
 class FeflowCommand {
-  init({ param, generator }, workSpace) {
+  init({ opt, workSpace }) {
+    const { param, generator } = opt
     let arr = []
 
     // 创建默认工作目录
@@ -53,12 +37,15 @@ class FeflowCommand {
 
     if (!generator) {
       // 未指定脚手架
-      return Promise.resolve(CREATE_CODE.EMPTY_GENERATOR)
+      return CREATE_CODE.EMPTY_GENERATOR
     }
     if (!dirExists(workSpace)) {
       // 工作目录不存在
-      return Promise.resolve(CREATE_CODE.INVALID_WORKSPACE)
+      return CREATE_CODE.INVALID_WORKSPACE
     }
+    arr.push(COMMAND)
+
+    arr.push('init')
 
     arr.push(`--generator=${generator}`)
 
@@ -69,9 +56,13 @@ class FeflowCommand {
       arr.push(`--config='${JSON.stringify(param)}'`)
     }
 
+    arr.push('--color')
+
     shell.cd(workSpace)
 
-    return exec(COMMAND, 'init', arr.join(' '))
+    console.log('arr', arr.join(' '))
+
+    return shell.exec(arr.join(' '), { async: true })
   }
 
   spawn(cwd) {

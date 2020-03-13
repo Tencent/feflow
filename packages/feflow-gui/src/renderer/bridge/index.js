@@ -75,8 +75,18 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
  * @param {*} opt
  * @param {*} workSpace
  */
-export const runGenerator = (opt, workSpace) => {
-  return Feflow.init(opt, workSpace)
+export const runGenerator = ({ execType, config, generator, workSpace }) => {
+  const opt = {}
+  if (execType === 'path') {
+    // 传入配置文件路径
+    opt.param = workSpace
+  } else {
+    // 配置传入
+    opt.param = config
+  }
+  opt.generator = generator
+
+  return Feflow.init({ opt, workSpace })
 }
 
 export const checkBeforeRunGenerator = ({ name, workSpace }) => {
