@@ -1,3 +1,14 @@
+# [0.18.0](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.2...v0.18.0) (2020-03-04)
+
+
+### Features
+
+* **generator-example:** generator json schema ([e411acd](https://github.com/Tencent/feflow/commit/e411acd83b73b8dd3eaef0be451f1de8ec27ad6e))
+* **generator-example:** support initialize project with params ([187119c](https://github.com/Tencent/feflow/commit/187119c87834078392eac77e073602c4211fa54e))
+* config params ([f5fcf5c](https://github.com/Tencent/feflow/commit/f5fcf5c8720f6df21930f0817922e12ee2fab39c))
+
+
+
 # [0.18.0-alpha.2](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-03-02)
 
 
