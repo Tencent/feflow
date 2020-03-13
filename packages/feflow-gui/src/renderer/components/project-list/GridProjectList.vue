@@ -5,9 +5,9 @@
             <i class="create-icon"></i>
         </router-link>
     </div>
-    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item.path)">
+    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
         <div class="project-screen">
-            <img src="https://images.unsplash.com/photo-1572731683325-58e84acdee79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" />
+            <img v-bind:src="item.banner || require('../../assets/default-project-banner.jpg')" />
         </div>
         <div class="project-info">
             <div class="project-name">
@@ -87,8 +87,9 @@ const { ipcRenderer } = electron
 export default {
   props: ['projects'],
   methods: {
-    createProjectService(path) {
-      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path })
+    createProjectService(project) {
+      const { path, name } = project
+      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <el-container class="project-index">
     <!-- 侧边导航 -->
-    <project-side-bar v-model="activeTabId"></project-side-bar>
+    <!-- <project-side-bar v-model="activeTabId"></project-side-bar> -->
     <!-- 侧边导航 -->
 
     <!-- 导航面板 -->
@@ -63,8 +63,9 @@
     line-height: 60px;
     font-size: 20px;
     font-weight: bold;
-    color: #000;
-    background: #DEDEDE;
+    color: #333;
+    background: #FFFFFF;
+    border-bottom: 1px solid #F3F4F5;
   }
 }
 </style>

@@ -50,6 +50,9 @@
           </el-col>
         </el-form-item>
       </div>
+      <el-form-item label="项目图片" v-if="!!targetGenerator">
+        <el-input v-model="banner" clearable :disabled="isWorking" />
+      </el-form-item>
     </el-form>
 
     <div class="action-btn">
@@ -71,7 +74,8 @@ export default {
       generators: [],
       formData: {},
       generatorsConfig: {},
-      isWorking: false
+      isWorking: false,
+      banner: ''
     }
   },
   mounted() {},
@@ -151,10 +155,15 @@ export default {
       this.$store
         .dispatchPromise('initGenerator', {
           execType,
-          config: this.formData,
+          config: Object.assign({}, this.formData, { banner: this.banner }),
           generator: this.targetGenerator
         })
         .then(code => this.handleInitCode(code))
+        .catch(e => {
+          this.messageInstance && this.messageInstance.close()
+          // 上报点
+          this.toast('脚手架生成过程发生异常', e, 'error')
+        })
     },
     async checkFormData() {
       let errMsg = []
@@ -169,6 +178,10 @@ export default {
           errMsg.push(`${title} 格式不正确`)
         }
       })
+
+      if (this.banner && !/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
+        errMsg.push('图片链接格式有误')
+      }
 
       if (errMsg.length) {
         this.$notify.error({
@@ -248,6 +261,7 @@ export default {
       // 重置表单， 防止重复初始化项目
       this.formData = {}
       this.isWorking = false
+      this.banner = ''
 
       // 重置脚手架状态
       this.resetState()
