@@ -5,7 +5,7 @@
             <i class="create-icon"></i>
         </router-link>
     </div>
-    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
+    <div class="project-item" v-bind:key="index" v-for="(item, index) in projects" @click="createProjectService(item)">
         <div class="project-screen">
             <img v-bind:src="item.banner || require('../../assets/default-project-banner.jpg')" />
         </div>
@@ -15,6 +15,17 @@
             </div>
             <div class="project-path">
                 {{ item.path }}
+            </div>
+        </div>
+        <div class="project-setting"
+            @click.stop="showSettingPanel(index)"
+            @contextmenu.prevent="showSettingPanel(index)"
+        >
+            <div class="setting-icon" />
+            <div class="dropdown" :class="{'dropdown-show' : showSettig === true && index === selectedIndex}">
+                <ul class="menu">
+                    <li @click.stop="deleteProject(item.name, item.path)">删除</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -46,7 +57,9 @@
     display: inline-block;
 }
 .grid-projects .project-item {
+    position: relative;
     width: 180px;
+    height: 240px;
     box-shadow: 0 10px 20px 0 rgba(0,0,0,0.10);
     margin-right: 20px;
     margin-bottom: 20px;
@@ -79,17 +92,104 @@
     line-height: 16px;
     word-wrap: break-word;
 }
+.project-setting  {
+    background: url('../../assets/project-setting.png');
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.project-setting .dropdown {
+    position: absolute;
+    left: -92px;
+    top: 24px;
+    width: 200px;
+    z-index: 100;
+    outline: none;
+    margin: 0;
+    padding: 5px 0;
+    list-style: none;
+    background: #fff;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.1);
+    border-radius: 2px;
+    display: none;
+}
+.project-setting .dropdown-show {
+    display: block;
+}
+.project-setting .dropdown:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    margin-left: -6px;
+    z-index: -1;
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    transform: rotate(45deg);
+}
+.project-setting .dropdown:after {
+    content: '';
+    display: block;
+    position: absolute;
+    border-color: transparent;
+    border-width: 6px;
+    border-style: solid;
+    left: 50%;
+    top: -12px;
+    margin-left: -6px;
+    border-bottom-color: #fff;
+}
+.project-setting .menu li {
+    font-size: 14px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
 <script>
 import electron from 'electron'
+import { deleteProject } from '../../bridge/index'
 const { ipcRenderer } = electron
 
 export default {
   props: ['projects'],
+  data() {
+    return {
+        showSettig: false,
+        selectedIndex: null
+    }
+  },
+  mounted() {
+    document.addEventListener('click', () => {
+        this.showSettig = false
+    });
+  },
   methods: {
     createProjectService(project) {
       const { path, name } = project
       ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
+    },
+    showSettingPanel(index) {
+        this.showSettig = true
+        this.selectedIndex = index
+    },
+    deleteProject(name, path) {
+        deleteProject(name, path)
+        this.toast('项目删除成功', '', 'success')
+    },
+    toast(title, msg, type = 'info', isPersistent = false) {
+      let opt = {
+        title,
+        message: msg,
+        duration: 0
+      }
+      return this.$notify[type](opt)
     }
   }
 }

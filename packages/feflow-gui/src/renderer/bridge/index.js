@@ -20,6 +20,7 @@ import {
   FEFLOW_PROJECT_DEVKIT_CONFIG_NAME
 } from './constants'
 import { dialog } from 'electron'
+import fs from 'fs'
 
 /**
  * 载入全局脚手架
@@ -118,6 +119,28 @@ export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
   }
 
   safeDump(update, FEFLOW_HOME_CONFIG_PATH)
+}
+
+const deleteFolderRecursive = function (path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function (file) {
+      const curPath = path + '/' + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        deleteFolderRecursive(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+export const deleteProject = (name, path) => {
+  const doc = loadFeflowConfigFile()
+  delete doc.projects[name]
+  const update = Object.assign({}, doc)
+  safeDump(update, FEFLOW_HOME_CONFIG_PATH)
+  deleteFolderRecursive(path)
 }
 
 /**
