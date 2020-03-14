@@ -3,6 +3,7 @@
 import { app, BrowserWindow } from 'electron';
 import { getUrl } from './common/utils'
 import registerEvent from './event'
+import createServer from './common/utils/server'
 
 /**
  *
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 let mainWindow
 const winURL = getUrl()
+const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow() {
   /**
@@ -48,7 +50,16 @@ function createWindow() {
   registerEvent()
 }
 
-app.on('ready', createWindow)
+app.on('ready', () => {
+  if (isDev) {
+    createWindow();
+  } else {
+    createServer();
+    setTimeout(() => {
+      createWindow();
+    }, 200);
+  }
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

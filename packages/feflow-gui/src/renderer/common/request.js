@@ -7,8 +7,8 @@ import axios from 'axios';
 import errors from '@/common/errors';
 
 const winURL = process.env.NODE_ENV === 'development'
-    ? `http://localhost:9080`
-    : `file://${__dirname}/index.html`;
+    ? `http://localhost:9080/`
+    : `http://localhost:9081/`;
 
 // 抛出切面，如果return false，将会中断后续执行
 let requestConfig = {

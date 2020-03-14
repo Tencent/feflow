@@ -109,11 +109,13 @@ export default {
         this.showConfigButton = !this.hasConfig;
     },
     mounted() {
-        if (this.groupName) {
-            this.form.groupname = this.groupName;
-            this.form.scaffold = this.scaffold;
-            this.form.plugins = this.plugins;
-        }
+        this.$nextTick(() => {
+            if (this.groupName) {
+                this.form.groupname = this.groupName;
+                this.form.scaffold = this.scaffold;
+                this.form.plugins = this.plugins;
+            }
+        })
     },
     computed: {
         ...mapState('UserInfo', [
@@ -158,6 +160,19 @@ export default {
             return false;
         },
 
+        async initAuth() {
+            // 获取用户配置
+            const result = await apiAuthorize.checkAuth({ EngName: username, DeptNameString: department });
+            if (result && result.errcode === 0 && result.data) {
+                this.$store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
+                    isAdmin: result.data.isAdmin,
+                    hasConfig: result.data.hasConfig,
+                    scaffold: result.data.scaffold,
+                    plugins: result.data.plugins
+                });
+            }
+        },
+
         onCreate(formName) {
             this.$refs[formName].validate(async (valid) => {
                 if (!valid) {
@@ -181,6 +196,7 @@ export default {
                         message: '提交成功',
                         type: 'success'
                     });
+                    this.initAuth();
                 } else {
                     this.$message({
                         message: result.errmsg,
