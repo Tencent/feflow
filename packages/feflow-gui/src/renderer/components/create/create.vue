@@ -58,7 +58,7 @@
     <div class="action-btn">
       <el-popover
         v-model="popoverVisible"
-        title="运行日志"
+        :title="isWorking?'运行日志' : '暂无初始化任务'"
         placement="bottom"
         width="400"
         trigger="manual"
@@ -67,15 +67,10 @@
         <div class="create-inner__console">
           <div class="create-inner__console_terminal" ref="terminal"></div>
         </div>
-        <el-button
-          :disabled="!isWorking"
-          class="create-pop-btn"
-          slot="reference"
-          @click="handleConsoleClick"
-        >运行日志</el-button>
+        <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
       </el-popover>
 
-      <el-button @click="handleReset">重置</el-button>
+      <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
       <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
     </div>
   </div>
@@ -91,6 +86,7 @@ import 'xterm/css/xterm.css'
 
 export default {
   name: 'create-page',
+  props: ['isSelected'],
   data() {
     return {
       targetGenerator: '',
@@ -122,7 +118,13 @@ export default {
       workSpace: state => state.Generator.workSpace
     })
   },
-  watch: {},
+  watch: {
+    isSelected(newValue) {
+      if (!newValue) {
+        this.popoverVisible = false
+      }
+    }
+  },
   methods: {
     ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState']),
     init() {
@@ -209,6 +211,7 @@ export default {
         generator: this.targetGenerator,
         workSpace: this.workSpace
       })
+
       if (typeof childProcess === 'number') {
         return this.handleInitCode(childProcess)
       }
@@ -220,6 +223,7 @@ export default {
       })
       childProcess.on('error', err => {
         this.messageInstance && this.messageInstance.close()
+        this.messageInstance = null
         // 上报点
         this.toast('脚手架生成过程发生异常', err, 'error')
       })
@@ -295,6 +299,7 @@ export default {
       switch (initCode) {
         case CREATE_CODE.SUCCESS: {
           this.messageInstance && this.messageInstance.close()
+          this.messageInstance = null
           // 保存
           saveGeneratorConfig({
             projectName: this.formData.name,
@@ -330,7 +335,6 @@ export default {
       this.loadFormInitData()
       this.isWorking = false
       this.banner = ''
-      this.popoverVisible = false
 
       // 重置脚手架状态
       this.resetState()
@@ -350,7 +354,6 @@ export default {
   padding-right: 24px;
   &__console {
     box-sizing: border-box;
-    margin-top: 30px;
     padding: 20px;
     width: 400px;
     height: 320px;
