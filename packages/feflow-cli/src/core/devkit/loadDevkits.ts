@@ -34,6 +34,7 @@ export default function loadDevkits(ctx: any): Promise<void> {
 
   return new Promise<any>((resolve, reject) => {
     if (configData) {
+      ctx.projectPath = directoryPath;
       ctx.projectConfig = configData;
       if (configData.devkit && configData.devkit.commands) {
         const commandsConfig = configData.devkit.commands;
