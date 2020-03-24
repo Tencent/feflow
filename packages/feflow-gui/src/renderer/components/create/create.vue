@@ -14,7 +14,12 @@
       </el-form-item>
       <el-form-item label="项目目录" v-if="!!targetGenerator">
         <el-input :value="workSpace" :disabled="true">
-          <el-button @click="handleWorkSpaceClick" slot="append" :disabled="isWorking">选择</el-button>
+          <el-button
+            @click="handleWorkSpaceClick"
+            class="workspace_btn"
+            slot="append"
+            :disabled="isWorking"
+          >选择</el-button>
         </el-input>
       </el-form-item>
       <div v-for="(field, index) in formConfig" v-bind:key="index">
@@ -366,7 +371,16 @@ export default {
       height: 320px;
     }
   }
+  .workspace_btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    color: #fff;
+    padding: 13px 20px;
+    background-color: #409eff;
+    border-color: #409eff;
+  }
 }
+
 .create-pop-btn {
   margin-right: 12px;
 }

@@ -9,7 +9,7 @@
       </el-form-item>
       <el-form-item label="目录">
         <el-input :value="workSpace" :disabled="true">
-          <el-button @click="handleWorkSpaceClick" slot="append">选择</el-button>
+          <el-button @click="handleWorkSpaceClick" slot="append" class="workspace_btn">选择</el-button>
         </el-input>
       </el-form-item>
     </el-form>
@@ -109,7 +109,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .import-wrapper {
   width: 100%;
   height: 500px;
@@ -121,6 +121,14 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  .workspace_btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    color: #fff;
+    padding: 13px 20px;
+    background-color: #409eff;
+    border-color: #409eff;
+  }
 }
 .action-btn {
   border-top: 1px solid #f3f4f5;
