@@ -55,13 +55,13 @@ export default function entry() {
   const { commander, logger } = feflow;
   const report = new Report(feflow);
 
-  if (args.v || args.version) {
-      report.report('version', args);
-      console.log(chalk.green(pkg.version));
-      return;
-  }
-
   let cmd: any = args._.shift();
+
+  if (!cmd && (args.v || args.version)) {
+    report.report('version', args);
+    console.log(chalk.green(pkg.version));
+    return;
+  }
 
   if (!cmd && !args.h && !args.help) {
       printBanner();
