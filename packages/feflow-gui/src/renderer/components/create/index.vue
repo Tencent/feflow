@@ -5,7 +5,7 @@
       <section class="create-wrapper">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="创建项目" name="create">
-            <create-page />
+            <create-page :is-selected="activeName == 'create'" />
           </el-tab-pane>
           <el-tab-pane label="导入项目" name="import">
             <import-page />

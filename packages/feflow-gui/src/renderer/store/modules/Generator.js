@@ -1,8 +1,6 @@
 import {
   loadGenerator,
   buildGeneratorConfig,
-  runGenerator,
-  saveGeneratorConfig,
   checkBeforeRunGenerator,
   openDialogToGetDirectory,
   loadFeflowConfigFile
@@ -55,31 +53,6 @@ const actions = {
     // 同步写
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
-  },
-  initGenerator({ state }, { execType, config, generator }) {
-    const opt = {}
-    const { workSpace } = state
-    if (execType === 'path') {
-      // 传入配置文件路径
-      opt.param = state.localConfigName
-    } else {
-      // 配置传入
-      opt.param = config
-    }
-    opt.generator = generator
-
-    return runGenerator(opt, workSpace).then(code => {
-      if (code === CREATE_CODE.SUCCESS) {
-        // 项目成功初始化
-        // 写入项目配置
-        saveGeneratorConfig({
-          projectName: config.name,
-          workSpace: workSpace + '/' + config.name,
-          banner: config.banner
-        })
-      }
-      return code
-    })
   },
   selectWorkSpace({ commit }) {
     openDialogToGetDirectory().then(files => {
