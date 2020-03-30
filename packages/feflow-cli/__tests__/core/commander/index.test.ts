@@ -1,20 +1,18 @@
 import chai from 'chai';
 import Commander from '../../../src/core/commander';
-const should = chai.should();
 const expect = chai.expect;
 
 describe('@feflow/core - Commander Unit Test', () => {
-
   it('register(name, desc, fn) - Register a command', () => {
     const command = new Commander();
     command.register('test', 'test description', () => {});
-    command.get('test').should.exist;
+    expect(command.get('test')).to.not.an('undefined');
   });
 
   it('get(name) - Get a command', () => {
     const command = new Commander();
     command.register('test', 'test description', () => {});
-    command.get('test').should.exist;
+    expect(command.get('test')).to.not.an('undefined');
   });
 
   it('get(name) - Get a command not a string', () => {
@@ -26,6 +24,6 @@ describe('@feflow/core - Commander Unit Test', () => {
   it('list() - List all command', () => {
     const command = new Commander();
     command.register('test', 'test description', () => {});
-    command.list().should.have.keys(['test']);
+    expect(command.list()).to.haveOwnProperty('test');
   });
 });
