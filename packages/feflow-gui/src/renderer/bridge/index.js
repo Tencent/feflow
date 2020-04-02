@@ -17,10 +17,12 @@ import {
   GENERATOR_CONFIG_FILE_NAME,
   FEFLOW_HOME_CONFIG_PATH,
   FEFLOW_PROJECT_CONFIG_NAME,
-  FEFLOW_PROJECT_DEVKIT_CONFIG_NAME
+  FEFLOW_PROJECT_DEVKIT_CONFIG_NAME,
+  FEFLOW_GENERATOR_CONFIG_HOME
 } from './constants'
 import { dialog } from 'electron'
 import fs from 'fs'
+import shell from 'shelljs'
 
 /**
  * 载入全局脚手架
@@ -67,6 +69,11 @@ export const loadGenerator = () => {
 export const buildGeneratorConfig = ({ config, genConfig }) => {
   const genName = genConfig.gererator || 'generator-default'
   const fileName = genName + '-' + (Date.now() + '').slice(4)
+
+  if (!isExit(FEFLOW_GENERATOR_CONFIG_HOME)) {
+    shell.mkdir(FEFLOW_GENERATOR_CONFIG_HOME)
+  }
+
   const localFilePath = generatorConfigFile(fileName, config, genConfig)
   return localFilePath
 }
@@ -76,15 +83,10 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
  * @param {*} opt
  * @param {*} workSpace
  */
-export const runGenerator = ({ execType, config, generator, workSpace }) => {
+export const runGenerator = ({ config, generator, workSpace }) => {
   const opt = {}
-  if (execType === 'path') {
-    // 传入配置文件路径
-    opt.param = workSpace
-  } else {
-    // 配置传入
-    opt.param = config
-  }
+
+  opt.param = config
   opt.generator = generator
 
   return Feflow.init({ opt, workSpace })
@@ -131,19 +133,19 @@ export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
   safeDump(update, FEFLOW_HOME_CONFIG_PATH)
 }
 
-const deleteFolderRecursive = function (path) {
+const deleteFolderRecursive = function(path) {
   if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function (file) {
-      const curPath = path + '/' + file;
+    fs.readdirSync(path).forEach(function(file) {
+      const curPath = path + '/' + file
       if (fs.lstatSync(curPath).isDirectory()) {
-        deleteFolderRecursive(curPath);
+        deleteFolderRecursive(curPath)
       } else {
-        fs.unlinkSync(curPath);
+        fs.unlinkSync(curPath)
       }
-    });
-    fs.rmdirSync(path);
+    })
+    fs.rmdirSync(path)
   }
-};
+}
 
 export const deleteProject = (name, path) => {
   const doc = loadFeflowConfigFile()
