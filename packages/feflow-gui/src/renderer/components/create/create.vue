@@ -31,7 +31,6 @@
               :is="'el-' + field.type"
               :label="field.title"
               :value="formData[field.field]"
-              :multiple="field.multiple"
               @input="updateForm(field.field, $event)"
               v-bind="field"
               :options="field.options"
@@ -44,6 +43,7 @@
               v-else
               :value="formData[field.field]"
               @input="updateForm(field.field, $event)"
+              :disabled="isWorking"
             >
               <el-option
                 v-for="item in field.options"
@@ -154,6 +154,8 @@ export default {
         })
       // 默认加载第一个脚手架
       this.targetGenerator = list[0]
+
+      console.log('targetGeneratorConfig', this.targetGeneratorConfig)
     },
     // 初始化控制台
     initTerminal() {
@@ -357,7 +359,7 @@ export default {
 <style scoped lang="less" >
 .create-inner {
   width: 100%;
-  height: 500px;
+  height: 466px;
   overflow: scroll;
   padding-bottom: 20px;
   box-sizing: border-box;

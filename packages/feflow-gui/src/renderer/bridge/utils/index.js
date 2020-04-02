@@ -126,12 +126,16 @@ export const generatorConfigFile = (fileName, config, schema) => {
   const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, fileName + '.js')
   const objTypeMap = {}
   const typeMap = {}
+  let hasAscription = false
 
   schema.properties.forEach(prop => {
     const ascription = prop.ascription
-    objTypeMap[prop.field] = ascription
-    if (!typeMap[ascription]) {
-      typeMap[ascription] = true
+    if (ascription) {
+      hasAscription = true
+      objTypeMap[prop.field] = ascription
+      if (!typeMap[ascription]) {
+        typeMap[ascription] = true
+      }
     }
   })
 
@@ -145,22 +149,24 @@ export const generatorConfigFile = (fileName, config, schema) => {
   }
 
   if (!isExit(filepath)) {
-    const content = [
-      `
-        const config = {
-          ${Object.keys(typeMap).join(': {}, \n\t\t')} : {}
-        }
-      `
-    ]
+    const content = []
+
+    hasAscription
+      ? content.push(`
+      const config = {
+        ${Object.keys(typeMap).join(': {}, \n\t\t')} : {}
+      }
+    `)
+      : content.push('const config = {}')
 
     Object.keys(config).forEach(key => {
       if (objTypeMap[key]) {
         content.push(`
-          config.${objTypeMap[key]}.${key} = ${getStringValue(config[key]) || 0}
+          config.${objTypeMap[key]}.${key} = "${getStringValue(config[key]) || 0}"
         `)
       } else {
         content.push(`
-          config.${key} = ${config[key] || 0}
+          config.${key} = "${config[key] || 0}"
       `)
       }
     })
