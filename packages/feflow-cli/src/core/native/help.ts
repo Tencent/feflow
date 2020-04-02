@@ -38,6 +38,10 @@ const showHelp = (commands: Array<Object>) => {
         {
           name: 'help',
           description: 'Print this help and exit successfully.'
+        },
+        {
+          name: 'disable-check',
+          description: 'Disable fef and all plugins update check'
         }
       ]
     }
