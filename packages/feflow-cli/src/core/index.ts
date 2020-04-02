@@ -57,8 +57,10 @@ export default class Feflow {
         } else {
             await this.initClient();
             await this.initPackageManager();
-            await this.checkCliUpdate();
-            await this.checkUpdate();
+            if (!this.args['disable-check']) {
+                await this.checkCliUpdate();
+                await this.checkUpdate();
+            }
             await this.loadNative();
             await this.loadInternalPlugins();
             await loadPlugins(this);
