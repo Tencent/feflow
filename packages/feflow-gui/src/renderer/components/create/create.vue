@@ -120,7 +120,8 @@ export default {
       return this.targetGeneratorConfig.properties || []
     },
     ...mapState({
-      workSpace: state => state.Generator.workSpace
+      workSpace: state => state.Generator.workSpace,
+      localConfigName: state => state.Generator.localConfigName
     })
   },
   watch: {
@@ -187,6 +188,7 @@ export default {
     async handleClick() {
       const { execType } = this.generatorsConfig[this.targetGenerator]
       const isValid = await this.checkFormData()
+      let config = {}
 
       if (!isValid || this.messageInstance) return
 
@@ -196,6 +198,9 @@ export default {
           config: this.formData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
+        config = this.localConfigName
+      } else {
+        config = Object.assign({}, this.formData, { banner: this.banner })
       }
 
       if (this.messageInstance) {
@@ -212,7 +217,7 @@ export default {
 
       const childProcess = runGenerator({
         execType,
-        config: Object.assign({}, this.formData, { banner: this.banner }),
+        config,
         generator: this.targetGenerator,
         workSpace: this.workSpace
       })
@@ -240,9 +245,9 @@ export default {
       let errMsg = []
       let isValidWorkspace = false
       // 表单校验
-      this.formConfig.forEach(({ isRequire, title, regex = '.*', field }) => {
+      this.formConfig.forEach(({ required, title, regex = '.*', field }) => {
         let value = this.formData[field]
-        if (value === undefined && isRequire) {
+        if (value === undefined && required) {
           errMsg.push(`${title} 不能为空`)
         }
         if (!new RegExp(regex).test(this.formData[field])) {

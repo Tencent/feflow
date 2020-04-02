@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 
-import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH } from '../constants'
+import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH, FEFLOW_GENERATOR_CONFIG_HOME } from '../constants'
 
 // basic functions
 export const isExit = path => {
@@ -123,7 +123,7 @@ export function parseYaml(path) {
  *
  */
 export const generatorConfigFile = (fileName, config, schema) => {
-  const filepath = path.resolve(FEFLOW_HOME_PATH, fileName + '.js')
+  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, fileName + '.js')
   const objTypeMap = {}
   const typeMap = {}
 

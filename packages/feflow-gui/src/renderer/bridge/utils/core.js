@@ -58,6 +58,9 @@ class FeflowCommand {
 
     arr.push('--color')
 
+    // 禁止更新
+    arr.push('--disable-check')
+
     shell.cd(workSpace)
 
     console.log('arr', arr.join(' '))
