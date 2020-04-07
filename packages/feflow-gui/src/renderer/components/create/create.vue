@@ -22,39 +22,8 @@
           >选择</el-button>
         </el-input>
       </el-form-item>
-      <div v-for="(field, index) in formConfig" v-bind:key="index">
-        <el-form-item :label="field.title" v-if="shouldShow(field)">
-          <el-col>
-            <component
-              v-if="field.type !== 'select'"
-              :key="index"
-              :is="'el-' + field.type"
-              :label="field.title"
-              :value="formData[field.field]"
-              @input="updateForm(field.field, $event)"
-              v-bind="field"
-              :options="field.options"
-              :ref="field.title"
-              :placeholder="field.description"
-              :disabled="isWorking"
-            ></component>
+      <schema-form :schema="targetGeneratorConfig" />
 
-            <el-select
-              v-else
-              :value="formData[field.field]"
-              @input="updateForm(field.field, $event)"
-              :disabled="isWorking"
-            >
-              <el-option
-                v-for="item in field.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col>
-        </el-form-item>
-      </div>
       <el-form-item label="项目图片" v-if="!!targetGenerator">
         <el-input v-model="banner" clearable :disabled="isWorking" />
       </el-form-item>
@@ -88,10 +57,14 @@ import { runGenerator, saveGeneratorConfig } from '../../bridge'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import 'xterm/css/xterm.css'
+import SchemaForm from './schema-parser/components/vue-form'
 
 export default {
   name: 'create-page',
   props: ['isSelected'],
+  components: {
+    'schema-form': SchemaForm
+  },
   data() {
     return {
       targetGenerator: '',
@@ -108,8 +81,6 @@ export default {
   created() {
     // 载入脚手架
     this.init()
-    // 初始化表单配置
-    this.loadFormInitData()
   },
   computed: {
     targetGeneratorConfig() {
@@ -121,7 +92,10 @@ export default {
     },
     ...mapState({
       workSpace: state => state.Generator.workSpace,
-      localConfigName: state => state.Generator.localConfigName
+      localConfigName: state => state.Generator.localConfigName,
+      jsonData: state => state.Schema.model,
+      validMessage: state => state.Schema.messages,
+      valid: state => state.Schema.valid
     })
   },
   watch: {
@@ -154,8 +128,6 @@ export default {
         })
       // 默认加载第一个脚手架
       this.targetGenerator = list[0]
-
-      console.log('targetGeneratorConfig', this.targetGeneratorConfig)
     },
     // 初始化控制台
     initTerminal() {
@@ -182,11 +154,6 @@ export default {
       this.term.open(this.$refs.terminal)
       fitAddon.fit()
     },
-    loadFormInitData() {
-      const formDataFromConfig = {}
-      this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
-      this.formData = formDataFromConfig
-    },
     async handleClick() {
       const { execType } = this.generatorsConfig[this.targetGenerator]
       const isValid = await this.checkFormData()
@@ -197,12 +164,12 @@ export default {
       // 创建配置文件
       if (execType === 'path') {
         this.builConfig({
-          config: this.formData,
+          config: this.jsonData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
         config = this.localConfigName
       } else {
-        config = Object.assign({}, this.formData, { banner: this.banner })
+        config = Object.assign({}, this.jsonData, { banner: this.banner })
       }
 
       if (this.messageInstance) {
@@ -246,16 +213,8 @@ export default {
     async checkFormData() {
       let errMsg = []
       let isValidWorkspace = false
+      this.$store.dispatch('Schema/validate')
       // 表单校验
-      this.formConfig.forEach(({ required, title, regex = '.*', field }) => {
-        let value = this.formData[field]
-        if (value === undefined && required) {
-          errMsg.push(`${title} 不能为空`)
-        }
-        if (!new RegExp(regex).test(this.formData[field])) {
-          errMsg.push(`${title} 格式不正确`)
-        }
-      })
 
       if (this.banner && !/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
         errMsg.push('图片链接格式有误')
@@ -270,37 +229,16 @@ export default {
       }
 
       // 项目路径检查
-      if (this.formData.name && this.workSpace) {
+      if (this.jsonData.name && this.workSpace) {
         const initCode = await this.$store.dispatchPromise('checkBeforeRun', {
-          name: this.formData.name,
+          name: this.jsonData.name,
           workSpace: this.workSpace
         })
         this.handleInitCode(initCode)
         isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS
       }
 
-      return !errMsg.length && isValidWorkspace
-    },
-    shouldShow(field) {
-      const requireList = field.require
-      let result = true
-      // 错误类型
-      if (!Array.isArray(requireList)) {
-        return result
-      }
-      // 空值
-      if (requireList.length === 0) {
-        return result
-      }
-      requireList.forEach(item => {
-        if (!this.formData[item]) {
-          result = false
-        }
-      })
-      return result
-    },
-    updateForm(fieldName, value) {
-      this.formData[fieldName] = value
+      return !errMsg.length && isValidWorkspace && this.valid
     },
     handleWorkSpaceClick() {
       this.selectWorkSpace()
@@ -314,7 +252,7 @@ export default {
           this.messageInstance = null
           // 保存
           saveGeneratorConfig({
-            projectName: this.formData.name,
+            projectName: this.jsonData.name,
             workSpace: this.workSpace + '/' + this.formData.name,
             banner: this.banner
           })
@@ -344,9 +282,9 @@ export default {
     },
     handleReset() {
       // 重置表单， 防止重复初始化项目
-      this.loadFormInitData()
       this.isWorking = false
       this.banner = ''
+      this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
 
       // 重置脚手架状态
       this.resetState()

@@ -1,0 +1,66 @@
+{
+  "gererator": "generatorIvwebStartkit",
+  "description": "Now直播基础脚手架",
+  "type": "object",
+  "properties": {
+    "rtxName": {
+      "title": "rtx",
+      "type": "string"
+    },
+    "AllString": {
+      "title": "string类",
+      "type": "object",
+      "properties": {
+        "input": {
+          "title": "简单输入框",
+          "type": "string"
+        },
+        "textarea": {
+          "title": "简单文本编辑框",
+          "type": "string"
+        },
+        "date": {
+          "title": "日期选择",
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "allNumber": {
+      "title": "number类",
+      "type": "object",
+      "properties": {
+        "number1": {
+          "title": "数字输入框",
+          "description": "1 - 10",
+          "type": "number",
+          "min": 1,
+          "max": 10
+        }
+      }
+    },
+    "allBoolean": {
+      "title": "boolean类",
+      "type": "object",
+      "properties": {
+        "switch": {
+          "title": "控件类使用switch",
+          "type": "boolean"
+        }
+      }
+    },
+    "allEnum": {
+      "title": "选择类",
+      "type": "object",
+      "properties": {
+        "select": {
+          "title": "单选",
+          "type": "string",
+          "enum": ["a", "b", "c"],
+          "enumNames": ["早", "中", "晚"]
+        }
+      }
+    }
+  },
+  "required": []
+}
