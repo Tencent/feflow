@@ -37,7 +37,7 @@ jobs:
     - name: Lerna bootstrap
       run: npx lerna bootstrap
     - name: Lerna build
-      run: npx lerna build
+      run: npx lerna run build
     - name: Publish with Lerna
       run: npx lerna publish --yes --message 'chore(release)' --cd-version=patch
       env:
