@@ -14,8 +14,8 @@ jobs:
       uses: actions/checkout@v1.0.0
     - name: Git Identity
       run: |
-        git config --global user.name 'bethon'
-        git config --global user.email 'fxy1044667399@163.com'
+        git config --global user.name 'feflowbot'
+        git config --global user.email 'feflowbot@gmail.com'
         git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
