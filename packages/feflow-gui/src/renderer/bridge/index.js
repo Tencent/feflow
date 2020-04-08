@@ -278,3 +278,19 @@ export const openDialogToGetDirectory = () => {
     )
   })
 }
+
+export const getProjectProxy = (projectName) => {
+  const doc = loadFeflowConfigFile()
+  if (!doc.projects || !doc.projects[projectName]) {
+    return []
+  } else {
+    return doc.projects[projectName].proxy || []
+  }
+}
+
+export const updateProjectProxy = (projectName, proxyConfig) => {
+  // 更新 .fef project配置
+  const conf = loadFeflowConfigFile()
+  conf.projects[projectName].proxy = proxyConfig
+  safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
+}

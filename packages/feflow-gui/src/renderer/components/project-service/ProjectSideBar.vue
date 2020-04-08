@@ -37,7 +37,12 @@ export default {
           name: '主页',
           icon: 'static/img/project-service/service-index.png',
           component: 'ProjectDocs'
-        }
+        },
+        {
+            name: '代理',
+            icon: 'static/img/project-service/service-index.png',
+            component: 'ProjectWhistle'
+         }
       ]
     }
   },
