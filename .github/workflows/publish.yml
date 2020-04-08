@@ -34,6 +34,10 @@ jobs:
           npm whoami
       env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: Lerna bootstrap
+      run: npx lerna bootstrap
+    - name: Lerna build
+      run: npx lerna build
     - name: Publish with Lerna
       run: npx lerna publish --yes --message 'chore(release)' --cd-version=patch
       env:
