@@ -1,6 +1,4 @@
-import chai from 'chai';
 import logger from '../../../src/core/logger';
-const should = chai.should();
 
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
