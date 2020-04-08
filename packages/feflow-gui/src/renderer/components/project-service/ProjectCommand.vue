@@ -264,7 +264,7 @@ export default {
       this.isCmdEdited = false
 
       // 校验命令
-      const { command, originCommand } = this.currentCommand
+      const { name, command, originCommand } = this.currentCommand
 
       if (command.indexOf(originCommand)) {
         // 重置为原始命令
