@@ -2,8 +2,8 @@ name: Publish with Lerna
 
 on:
   push:
-    branches:
-    - release
+    tags:
+      - "*"
 
 jobs:
   Publish_Workflow:
