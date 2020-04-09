@@ -380,7 +380,9 @@ export default class Feflow {
         }
 
         if(optionDescrition.optionList.length == 0) {
-            return this.call("help", ctx)
+            const cmd = this.commander.get("help");
+            cmd.call(this, ctx);
+            return;
         }
 
         const sections = [];
