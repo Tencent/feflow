@@ -1,6 +1,6 @@
 import path from 'path';
 import Config from './config';
-import getOptionFromCommand from "../../shared/command";
+import getOptionFromCommand from "./commandOptions";
 
 const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
   const builder = commandConfig.builder;

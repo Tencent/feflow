@@ -1,9 +1,9 @@
-export default function getOptionFromCommand(optionsDescription: object): Object[] {
+const getOptionFromCommand = (optionsDescription: object): Object[] => {
   const options: Object[] = [];
 
   const optionDescritions = Object.keys(optionsDescription);
-  if(!optionDescritions.length) return options;
-  
+  if (!optionDescritions.length) return options;
+
   optionDescritions.forEach(option => {
     let optionItemConfig = optionsDescription[option];
     const optionDescritionItem = getOptionItem(optionItemConfig, option);
@@ -11,9 +11,9 @@ export default function getOptionFromCommand(optionsDescription: object): Object
   });
 
   return options;
-}
+};
 
-function getOptionItem(optionItemConfig: any, option: any): object {
+const getOptionItem = (optionItemConfig: any, option: any): object => {
   let optionDescritionItem: any = {};
   if (typeof optionItemConfig == 'string') {
     optionDescritionItem = {
@@ -29,4 +29,6 @@ function getOptionItem(optionItemConfig: any, option: any): object {
     optionDescritionItem.type = String;
   }
   return optionDescritionItem;
-}
+};
+
+export default getOptionFromCommand;

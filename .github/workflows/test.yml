@@ -5,7 +5,12 @@ name: Test
 
 on:
   push:
-    branches: [ feat_20200330_github_action, release, master ]
+    branches:
+      - master
+      - release
+      - feat_*
+    tags:
+      - "*"
 
 jobs:
   build:
