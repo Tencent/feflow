@@ -13,6 +13,8 @@ let validator = null
 
 export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   const _state = {}
+  ajv = new Ajv()
+  let isSchemaValid = ajv.validateSchema(schema)
 
   // 根节点是array，要嵌套一层
   if (schema.type === 'array') {
@@ -53,11 +55,13 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   _state.definition = generator.parse(schema, definition)
   _state.schema = schema
   _state.validator = null
+
   const data = generator.getDefaultModal(schema)
+
   _state.model = extend(true, {}, data, model)
-  ajv = new Ajv()
   _state.messages = {}
   _state.valid = true
+  _state.isSchemaValid = isSchemaValid
 
   commit('SET_STATE', _state)
 }

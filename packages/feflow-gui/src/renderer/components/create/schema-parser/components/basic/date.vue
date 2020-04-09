@@ -3,6 +3,7 @@
     v-model="value"
     :type="config.type"
     :placeholder="definition.placeholder"
+    :disabled="isWorking"
   ></el-date-picker>
 </template>
 

@@ -5,7 +5,7 @@
       v-model="value"
       :value="item.value"
       :true-value="item.value"
-      :disabled="definition.disabled"
+      :disabled="isWorking"
       :name="name"
       :readonly="definition.readonly"
       :lazy="definition.lazy === false ? false : true"

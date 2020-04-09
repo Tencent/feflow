@@ -2,7 +2,7 @@
   <div class="checkbox">
     <el-switch
       v-model.lazy="value"
-      :disabled="definition.disabled"
+      :disabled="isWorking"
       :name="name"
       :readonly="definition.readonly"
       :required="definition.required"

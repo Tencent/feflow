@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { createNamespacedHelpers } from 'vuex'
+import { createNamespacedHelpers, mapState as mapStoreState } from 'vuex'
 
 const { mapState, mapActions } = createNamespacedHelpers('Schema')
 
@@ -36,6 +36,9 @@ export default {
   computed: {
     ...mapState({
       model: state => state.model
+    }),
+    ...mapStoreState({
+      isWorking: state => state.Generator.isWorking
     }),
     value: {
       get() {

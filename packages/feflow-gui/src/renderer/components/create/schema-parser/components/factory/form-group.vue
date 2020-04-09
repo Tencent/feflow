@@ -2,6 +2,7 @@
   <div
     class="form-group"
     :class="[name, valid.status === 1 ? 'has-success' : valid.status === 2 ? 'has-error' : '']"
+    v-if="definition"
   >
     <el-form-item :label="definition.title" v-if="definition.title">
       <!-- <label class="col-sm-2 control-label">
@@ -16,7 +17,7 @@
         <span v-show="valid.status === 2">{{valid.message}}</span>
       </div>
     </el-form-item>
-    <el-form-item v-else>
+    <!-- <el-form-item v-else>
       <div>
         <component :is="definition.type" :definition="definition" :path="path" :schema="schema"></component>
       </div>
@@ -24,7 +25,7 @@
         <span v-show="valid.status !== 2">{{ description }}</span>
         <span v-show="valid.status === 2">{{ valid.message }}</span>
       </div>
-    </el-form-item>
+    </el-form-item>-->
   </div>
 </template>
 

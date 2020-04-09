@@ -22,7 +22,7 @@
           >选择</el-button>
         </el-input>
       </el-form-item>
-      <schema-form :schema="targetGeneratorConfig" />
+      <schema-form :schema="targetGeneratorConfig" :isWorking="isWorking" />
 
       <el-form-item label="项目图片" v-if="!!targetGenerator">
         <el-input v-model="banner" clearable :disabled="isWorking" />
@@ -71,7 +71,6 @@ export default {
       generators: [],
       formData: {},
       generatorsConfig: {},
-      isWorking: false,
       banner: '',
       hasInitTerminal: false,
       popoverVisible: false
@@ -95,7 +94,8 @@ export default {
       localConfigName: state => state.Generator.localConfigName,
       jsonData: state => state.Schema.model,
       validMessage: state => state.Schema.messages,
-      valid: state => state.Schema.valid
+      valid: state => state.Schema.valid,
+      isWorking: state => state.Generator.isWorking
     })
   },
   watch: {
@@ -106,7 +106,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState']),
+    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState', 'toggleWorkStatus']),
     init() {
       // 获取脚手架
       this.getGenerator()
@@ -179,7 +179,7 @@ export default {
 
       this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true)
 
-      this.isWorking = true
+      this.toggleWorkStatus(true)
       this.popoverVisible = true
       // 直接传参
       // 执行脚手架初始化命令
@@ -282,7 +282,7 @@ export default {
     },
     handleReset() {
       // 重置表单， 防止重复初始化项目
-      this.isWorking = false
+      this.toggleWorkStatus(false)
       this.banner = ''
       this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
 

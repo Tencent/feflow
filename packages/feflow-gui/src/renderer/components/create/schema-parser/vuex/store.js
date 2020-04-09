@@ -12,8 +12,9 @@ const state = {
   ajv: null,
   validator: null,
   // exclude: [],  // 需要排除的校验字段
-  isRootArray: false
+  isRootArray: false,
   // generator: new Generator()
+  isSchemaValid: false // 校验schema是否有效
 }
 
 export default {

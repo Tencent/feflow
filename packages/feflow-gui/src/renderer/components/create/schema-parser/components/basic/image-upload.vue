@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import PictureInput from 'vue-picture-input'
 import extend from 'extend'
 import { mapActions } from 'vuex'

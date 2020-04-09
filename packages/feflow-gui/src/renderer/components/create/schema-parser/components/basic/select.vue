@@ -7,7 +7,12 @@
     :multiple="config.multiple"
     :pushTags="config.pushTags"
   >
-    <el-option v-for="option in definition.options" :value="option.value" :key="option.value" />
+    <el-option
+      v-for="option in definition.options"
+      :value="option.value"
+      :key="option.value"
+      :disabled="isWorking"
+    />
   </el-select>
 </template>
 

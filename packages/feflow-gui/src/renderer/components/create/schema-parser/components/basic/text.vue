@@ -4,7 +4,7 @@
     class="form-control spark-input"
     v-model.lazy="value"
     :placeholder="definition.placeholder"
-    :disabled="definition.disabled"
+    :disabled="isWorking"
     :maxlength="schema.maxlength"
     :minLength="schema.minLength"
     :name="name"

@@ -143,7 +143,7 @@ function defaultValue(schema, key, model) {
       defaultValue(schema.items, 0, model[key])
     }
   } else {
-    if (schema.default) {
+    if (typeof schema.default !== 'undefined') {
       model[key] = schema.default
     }
   }

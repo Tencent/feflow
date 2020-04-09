@@ -1,11 +1,17 @@
 <template>
-  <el-form class="form-horizontal" @submit.prevent label-position="left" label-width="140px">
+  <el-form
+    class="form-horizontal"
+    v-if="definition.length > 0"
+    @submit.prevent
+    label-position="left"
+    label-width="140px"
+  >
     <div
-      :label="group.title"
       v-for="(group, idx) in definition"
-      :key="`${group.key ? group.key.join('.') : ''}-${idx}`"
+      :label="(group || {}).title"
+      :key="`${(group && group.key) ? group.key.join('.') : ''}-${idx}`"
     >
-      <form-group :definition="group"></form-group>
+      <form-group v-if="group" :definition="group"></form-group>
       <slot></slot>
     </div>
   </el-form>

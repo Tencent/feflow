@@ -2,7 +2,7 @@
   <el-input-number
     v-model="number"
     :placeholder="definition.placeholder"
-    :disabled="definition.disabled"
+    :disabled="isWorking"
     :max="schema.max"
     :min="schema.min"
     :readonly="definition.readonly"

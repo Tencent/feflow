@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 import objectMixin from '../mixins/object.js'
 
 export default {
