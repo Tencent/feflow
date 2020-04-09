@@ -15,6 +15,7 @@ import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
+import commandLineUsage from 'command-line-usage';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -285,6 +286,10 @@ export default class Feflow {
 
 
     call(name: any, ctx: any) {
+        const args = ctx.args;
+        if(args.h || args.help) {
+            return this.showCommandOptionDescription(name, ctx);
+        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
@@ -353,23 +358,38 @@ export default class Feflow {
         }
     }
 
-    getOptionItem(optionItemConfig: any, option: any): object {
-        let optionDescritionItem = {};
-        if (typeof optionItemConfig == 'string') {
-            optionDescritionItem = {
-                name: option,
-                description: optionItemConfig,
-            };
-        } else {
-            const { name, description, alias, type, typeLabel } = optionItemConfig;
-            optionDescritionItem = {
-                name,
-                description,
-                alias,
-                typeLabel,
-                type: /boolean/i.test(type) ? Boolean : String,
-            };
+    async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
+        let cmdDescription;
+
+        let optionDescrition: any = {
+            header: 'Options',
+            optionList: [],
+          };
+
+        const registriedCommand = ctx.commander.get(cmd);
+
+        if (registriedCommand && registriedCommand.options) {
+            cmdDescription = registriedCommand.desc;
+            optionDescrition.optionList = registriedCommand.options;
         }
-        return optionDescritionItem;
-    };
+
+        if(optionDescrition.optionList.length == 0) {
+            return this.call("help", ctx)
+        }
+
+        const sections = [];
+        sections.push({
+            header: `fef ${cmd}`,
+            content: cmdDescription
+        })
+        sections.push({
+            header: 'Usage',
+            content: `$ fef ${cmd} [options]`
+        })
+        sections.push(optionDescrition);
+        const usage = commandLineUsage(sections);
+
+        console.log(usage);
+    }
+
 }
