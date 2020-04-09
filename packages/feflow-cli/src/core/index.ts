@@ -56,7 +56,8 @@ export default class Feflow {
         } else {
             await this.initClient();
             await this.initPackageManager();
-            if (!this.args['disable-check']) {
+            const disableCheck = !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+            if (disableCheck) {
                 await this.checkCliUpdate();
                 await this.checkUpdate();
             }
@@ -326,19 +327,24 @@ export default class Feflow {
         })
     }
 
-    async  checkCliUpdate() {
-        const { version, config, configPath } = this;
+    async checkCliUpdate() {
+        const { args, version, config, configPath } = this;
         if (!config) {
             return;
+        }
+        const packageManager = config.packageManager;
+        const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
+        if (autoUpdate) {
+            return await this.updateCli(packageManager);
         }
         if (config.lastUpdateCheck && (+new Date() - parseInt(config.lastUpdateCheck, 10)) <= 1000 * 3600 * 24) {
             return;
         }
-        const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
         const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
             this.logger.warn(`Network error, can't reach ${ registryUrl }, CLI give up verison check.`);
         });
+
         if (latestVersion && semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
