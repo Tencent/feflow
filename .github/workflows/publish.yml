@@ -11,7 +11,9 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v1.0.0
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
     - name: Git Identity
       run: |
         git config --global user.name 'feflowbot'
@@ -19,10 +21,6 @@ jobs:
         git remote set-url origin https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Prepare repository
-      run: git checkout "${GITHUB_REF:11}"
-    - name: Pulling
-      run: git pull
     - name: Install dependencies
       run: npm i
     - name: Authenticate with Registry
@@ -39,7 +37,7 @@ jobs:
     - name: Lerna build
       run: npx lerna run build
     - name: Publish with Lerna
-      run: npx lerna publish --yes --message 'chore(release)' --cd-version=patch
+      run: npx lerna publish --yes --message 'chore(release)' --cd-version=patch --no-git-tag-version  --no-push
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
