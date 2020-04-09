@@ -1,4 +1,6 @@
-const getOptionFromCommand = (optionsDescription: object): Object[] => {
+const getOptionFromCommand = (optionsDescription: any): Object[] => {
+  if(Array.isArray(optionsDescription)) return optionsDescription;
+
   const options: Object[] = [];
 
   const optionDescritions = Object.keys(optionsDescription);
