@@ -360,31 +360,18 @@ export default class Feflow {
     }
 
     async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
-        const config = new Config(ctx);
-        const kitJson = config.getDevKitConfig(ctx, cmd);
         let cmdDescription;
 
         let optionDescrition: any = {
             header: 'Options',
             optionList: [],
           };
-        if (kitJson && kitJson.builders) {
-          const commands = kitJson.builders;
-          const { optionsDescription : cmdOptionDescrition = {}, description } = commands[cmd] || {};
-          cmdDescription = description;
-          const optionDescritions = Object.keys(cmdOptionDescrition);
 
-          optionDescritions.forEach(option => {
-            let optionItemConfig = cmdOptionDescrition[option];
-            const optionDescritionItem = this.getOptionItem(optionItemConfig, option);
-            optionDescrition.optionList.push(optionDescritionItem);
-          });
-        } else {
-            const plugin = ctx.commander.get(cmd);
-            if (plugin && plugin.options) {
-                cmdDescription = plugin.desc;
-                optionDescrition.optionList = plugin.options;
-            }
+        const registriedCommand = ctx.commander.get(cmd);
+
+        if (registriedCommand && registriedCommand.options) {
+            cmdDescription = registriedCommand.desc;
+            optionDescrition.optionList = registriedCommand.options;
         }
 
         if(optionDescrition.optionList.length == 0) {
@@ -406,23 +393,4 @@ export default class Feflow {
         console.log(usage);
     }
 
-    getOptionItem(optionItemConfig: any, option: any): object {
-        let optionDescritionItem = {};
-        if (typeof optionItemConfig == 'string') {
-            optionDescritionItem = {
-                name: option,
-                description: optionItemConfig,
-            };
-        } else {
-            const { name, description, alias, type, typeLabel } = optionItemConfig;
-            optionDescritionItem = {
-                name,
-                description,
-                alias,
-                typeLabel,
-                type: /boolean/i.test(type) ? Boolean : String,
-            };
-        }
-        return optionDescritionItem;
-    };
 }
