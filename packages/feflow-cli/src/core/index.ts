@@ -367,9 +367,8 @@ export default class Feflow {
         let optionDescrition: any = {
             header: 'Options',
             optionList: [],
-          };;
-
-        if (kitJson.builders) {
+          };
+        if (kitJson && kitJson.builders) {
           const commands = kitJson.builders;
           const { optionsDescription : cmdOptionDescrition = {}, description } = commands[cmd] || {};
           cmdDescription = description;
@@ -380,6 +379,12 @@ export default class Feflow {
             const optionDescritionItem = this.getOptionItem(optionItemConfig, option);
             optionDescrition.optionList.push(optionDescritionItem);
           });
+        } else {
+            const plugin = ctx.commander.get(cmd);
+            if (plugin && plugin.options) {
+                cmdDescription = plugin.desc;
+                optionDescrition.optionList = plugin.options;
+            }
         }
 
         if(optionDescrition.optionList.length == 0) {

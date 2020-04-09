@@ -162,7 +162,7 @@ export default class Config {
     const directoryPath = this.getConfigDirectory();
     let kitJson;
 
-    if (configData.devkit && configData.devkit.commands) {
+    if (configData && configData.devkit && configData.devkit.commands) {
       const commands = configData.devkit.commands;
       const builder = commands[cmd].builder;
       const [packageName] = builder.split(':', 2);
