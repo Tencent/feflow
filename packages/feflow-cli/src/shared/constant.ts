@@ -1,11 +1,20 @@
 export const FEFLOW_ROOT = '.fef';
 
-export const DEVKIT_CONFIG = [
+export const PROJECT_CONFIG = [
     '.feflowrc.js',
     '.feflowrc.yaml',
     '.feflowrc.yml',
     '.feflowrc.json',
     '.feflowrc',
+    'package.json'
+];
+
+export const DEVKIT_CONFIG = [
+    'devkit.js',
+    'devkit.yaml',
+    'devkit.yml',
+    'devkit.json',
+    'devkitrc',
     'package.json'
 ];
 

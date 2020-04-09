@@ -3,7 +3,10 @@ import path from 'path';
 import importFresh from 'import-fresh';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
-import { DEVKIT_CONFIG } from '../../shared/constant';
+import {
+  PROJECT_CONFIG,
+  DEVKIT_CONFIG
+} from '../../shared/constant';
 
 export default class Config {
 
@@ -12,11 +15,11 @@ export default class Config {
     this.ctx = ctx;
   }
 
-  getConfigDirectory(): string {
+  getProjectDirectory(): string {
     let currDir: string = process.cwd();
 
     const isConfigExits = () => {
-      for (const filename of DEVKIT_CONFIG) {
+      for (const filename of PROJECT_CONFIG) {
         if (fs.existsSync(path.join(currDir, filename))) {
           return true;
         }
@@ -34,10 +37,17 @@ export default class Config {
     return currDir;
   }
 
-  loadConfig() {
-    const directoryPath = this.getConfigDirectory();
+  loadProjectConfig() {
+    const directoryPath = this.getProjectDirectory();
+    return this.loadConfig(directoryPath, PROJECT_CONFIG);
+  }
 
-    for (const filename of DEVKIT_CONFIG) {
+  loadDevkitConfig(directoryPath: string) {
+    return this.loadConfig(directoryPath, DEVKIT_CONFIG);
+  }
+
+  loadConfig(directoryPath: string, configArray: Array<string>) {
+    for (const filename of configArray) {
       const filePath = path.join(directoryPath, filename);
       if (fs.existsSync(filePath)) {
         let configData;
@@ -51,8 +61,8 @@ export default class Config {
         }
 
         if (configData) {
-          this.ctx.logger.debug(`Config file found: ${filePath}`);
-          this.ctx.logger.debug('config data', configData);
+          this.ctx.logger.debug('Config file found', filePath);
+          this.ctx.logger.debug('Config data', configData);
 
           return configData;
         }
@@ -155,24 +165,5 @@ export default class Config {
 
   readFile(filePath: string) {
     return fs.readFileSync(filePath, "utf8").replace(/^\ufeff/u, "");
-  }
-  getDevKitConfig(ctx:any, cmd:any) {
-    this.ctx = ctx;
-    const configData = this.loadConfig();
-    const directoryPath = this.getConfigDirectory();
-    let kitJson;
-
-    if (configData.devkit && configData.devkit.commands) {
-      const commands = configData.devkit.commands;
-      const builder = commands[cmd].builder;
-      const [packageName] = builder.split(':', 2);
-      try {
-        const pkgPath = path.join(directoryPath, 'node_modules', packageName);
-        kitJson = require(path.join(pkgPath, 'devkit.json'));
-      } catch (error) {
-        kitJson = {};
-      }
-    }
-    return kitJson
   }
 }
