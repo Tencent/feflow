@@ -16,7 +16,6 @@ import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
-import Config from './devkit/config';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -287,10 +286,6 @@ export default class Feflow {
 
 
     call(name: any, ctx: any) {
-        const args = ctx.args;
-        if((args.h || args.help) && name != "help"){
-            return this.showCommandOptionDescription(name, ctx);
-        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
