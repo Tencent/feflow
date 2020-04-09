@@ -42,6 +42,10 @@ const showHelp = (commands: Array<Object>) => {
         {
           name: 'disable-check',
           description: 'Disable @feflow/cli and installed plugins check update'
+        },
+        {
+          name: 'auto-update',
+          description: 'Auto update @feflow/cli and installed plugins'
         }
       ]
     }
