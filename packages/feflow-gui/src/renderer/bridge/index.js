@@ -294,3 +294,9 @@ export const updateProjectProxy = (projectName, proxyConfig) => {
   conf.projects[projectName].proxy = proxyConfig
   safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
 }
+export const addProjectProxy = (projectName, proxyConfig) => {
+  // 更新 .fef project配置
+  const conf = loadFeflowConfigFile()
+  conf.projects[projectName].proxy = proxyConfig
+  safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
+}
