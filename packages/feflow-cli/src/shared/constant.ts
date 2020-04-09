@@ -14,7 +14,7 @@ export const DEVKIT_CONFIG = [
     'devkit.yaml',
     'devkit.yml',
     'devkit.json',
-    'devkit.rc',
+    'devkitrc',
     'package.json'
 ];
 
