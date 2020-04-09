@@ -286,6 +286,10 @@ export default class Feflow {
 
 
     call(name: any, ctx: any) {
+        const args = ctx.args;
+        if(args.h || args.help) {
+            return this.showCommandOptionDescription(name, ctx);
+        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {

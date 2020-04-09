@@ -1,5 +1,6 @@
 import path from 'path';
 import Config from './config';
+import getOptionFromCommand from "../../shared/command";
 
 const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
   const builder = commandConfig.builder;
@@ -8,19 +9,21 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
   try {
     const devkitConfig = config.loadDevkitConfig(pkgPath);
-    const { implementation, description } = devkitConfig.builders[command];
+    const { implementation, description, optionsDescription = {} } = devkitConfig.builders[command];
+
+    const options = getOptionFromCommand(optionsDescription);
     if (Array.isArray(implementation)) {
       ctx.commander.register(command, description, async () => {
         for (let i = 0; i < implementation.length; i ++) {
           const action = path.join(pkgPath, implementation[i]);
           await require(action)(ctx);
         }
-      });
+      }, options);
     } else {
       const action = path.join(pkgPath, implementation);
       ctx.commander.register(command, description, () => {
         require(action)(ctx);
-      });
+      }, options);
     }
   } catch (e) {
     ctx.logger.debug(`${ pkgPath } not found!`);
