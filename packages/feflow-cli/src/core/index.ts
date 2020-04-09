@@ -380,8 +380,7 @@ export default class Feflow {
         }
 
         if(optionDescrition.optionList.length == 0) {
-            const cmd = this.commander.get("help");
-            cmd.call(this, ctx);
+            ctx.logger.warn(`Current command dosen't have help message`);
             return;
         }
 
