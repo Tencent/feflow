@@ -41,7 +41,7 @@ const showHelp = (commands: Array<Object>) => {
         },
         {
           name: 'disable-check',
-          description: 'Disable fef and all plugins update check'
+          description: 'Disable @feflow/cli and installed plugins check update'
         }
       ]
     }
