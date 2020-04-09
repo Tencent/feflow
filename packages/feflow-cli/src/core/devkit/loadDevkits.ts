@@ -4,11 +4,11 @@ import Config from './config';
 const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
   const builder = commandConfig.builder;
   const [ packageName ] = builder.split(':', 2);
+  const config = new Config(ctx);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
-  let kitJson;
   try {
-    kitJson = require(path.join(pkgPath, 'devkit.json'));
-    const { implementation, description } = kitJson.builders[command];
+    const devkitConfig = config.loadDevkitConfig(pkgPath);
+    const { implementation, description } = devkitConfig.builders[command];
     if (Array.isArray(implementation)) {
       ctx.commander.register(command, description, async () => {
         for (let i = 0; i < implementation.length; i ++) {
@@ -29,8 +29,8 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
 
 export default function loadDevkits(ctx: any): Promise<void> {
   const config = new Config(ctx);
-  const configData = config.loadConfig();
-  const directoryPath = config.getConfigDirectory();
+  const configData = config.loadProjectConfig();
+  const directoryPath = config.getProjectDirectory();
 
   return new Promise<any>((resolve, reject) => {
     if (configData) {
