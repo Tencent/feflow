@@ -1,5 +1,5 @@
-const getOptionFromCommand = (optionsDescription: any): Object[] => {
-  if(Array.isArray(optionsDescription)) return optionsDescription;
+const getCommandLine = (optionsDescription: any, description: any, cmd: any): Object[] => {
+  if (Array.isArray(optionsDescription)) return optionsDescription;
 
   const options: Object[] = [];
 
@@ -12,7 +12,20 @@ const getOptionFromCommand = (optionsDescription: any): Object[] => {
     options.push(optionDescritionItem);
   });
 
-  return options;
+  return [
+    {
+      header: `fef ${cmd}`,
+      content: description,
+    },
+    {
+      header: 'Usage',
+      content: `$ fef ${cmd} [options]`,
+    },
+    {
+      header: 'Options',
+      optionList: options,
+    },
+  ];
 };
 
 const getOptionItem = (optionItemConfig: any, option: any): object => {
@@ -28,9 +41,9 @@ const getOptionItem = (optionItemConfig: any, option: any): object => {
     }
 
     optionDescritionItem = optionItemConfig;
-    optionDescritionItem.type = String;
+    optionDescritionItem.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
   }
   return optionDescritionItem;
 };
 
-export default getOptionFromCommand;
+export default getCommandLine;
