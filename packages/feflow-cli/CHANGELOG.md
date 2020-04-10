@@ -1,3 +1,13 @@
+# [0.19.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.0...v0.19.0-alpha.1) (2020-04-10)
+
+
+### Bug Fixes
+
+* **core:** allow-root when update cli ([2d764dd](https://github.com/Tencent/feflow/commit/2d764dd16b2453958fbea058a887dded905fc4c6))
+* **help:** parameter format ([#212](https://github.com/Tencent/feflow/issues/212)) ([b3bb4a4](https://github.com/Tencent/feflow/commit/b3bb4a4ba2a668839bfe97cc5ff46d5817dc3ed8))
+
+
+
 # [0.19.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.18.4...v0.19.0-alpha.0) (2020-04-09)
 
 
