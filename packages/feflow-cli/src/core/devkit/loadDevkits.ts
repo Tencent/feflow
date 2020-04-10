@@ -1,6 +1,6 @@
 import path from 'path';
 import Config from './config';
-import getOptionFromCommand from "./commandOptions";
+import getCommandLine from "./commandOptions";
 
 const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
   const builder = commandConfig.builder;
@@ -9,9 +9,9 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
   try {
     const devkitConfig = config.loadDevkitConfig(pkgPath);
-    const { implementation, description, optionsDescription = {} } = devkitConfig.builders[command];
+    const { implementation, description, optionsDescription, usage = {} } = devkitConfig.builders[command];
 
-    const options = getOptionFromCommand(optionsDescription);
+    const options = getCommandLine(optionsDescription || usage, description, command);
     if (Array.isArray(implementation)) {
       ctx.commander.register(command, description, async () => {
         for (let i = 0; i < implementation.length; i ++) {

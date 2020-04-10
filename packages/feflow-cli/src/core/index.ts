@@ -9,7 +9,7 @@ import Table from 'easy-table';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
-import getOptionFromCommand from './devkit/commandOptions';
+import getCommandLine from './devkit/commandOptions';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
@@ -366,38 +366,24 @@ export default class Feflow {
     }
 
     async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
-        let cmdDescription;
-
-        let optionDescrition: any = {
-            header: 'Options',
-            optionList: [],
-          };
-
         const registriedCommand = ctx.commander.get(cmd);
+        let commandLine: object[] = [];
 
         if (registriedCommand && registriedCommand.options) {
-            cmdDescription = registriedCommand.desc;
-            optionDescrition.optionList = getOptionFromCommand(registriedCommand.options);
+            commandLine = getCommandLine(registriedCommand.options, registriedCommand.desc, cmd);
         }
 
         if (cmd === "help") {
             return registriedCommand.call(this, ctx)
         }
-        if(optionDescrition.optionList.length == 0) {
+        if(commandLine.length == 0) {
             ctx.logger.warn(`Current command dosen't have help message`);
             return;
         }
 
-        const sections = [];
-        sections.push({
-            header: `fef ${cmd}`,
-            content: cmdDescription
-        })
-        sections.push({
-            header: 'Usage',
-            content: `$ fef ${cmd} [options]`
-        })
-        sections.push(optionDescrition);
+        let sections = [];
+
+        sections.push(...commandLine);
         const usage = commandLineUsage(sections);
 
         console.log(usage);
