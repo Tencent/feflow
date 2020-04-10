@@ -311,7 +311,6 @@ export default class Feflow {
                 '--save',
                 '--save-exact',
                 '--loglevel',
-                '--allow-root',
                 'error',
                 '-g'
             ];
