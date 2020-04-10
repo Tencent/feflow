@@ -25,6 +25,9 @@ export const FEFLOW_HOME_PACKAGE_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 
 
 export const GENERATOR_CONFIG_FILE_NAME = ['generator.js', 'generator.json']
 
+export const FEFLOW_WHISTLE_JS = '.whistle.js'
+
+export const FEFLOW_WHISTLE_JS_PATH = path.resolve(FEFLOW_HOME_PATH, FEFLOW_WHISTLE_JS)
 export const CREATE_CODE = {
   // Native code
   SUCCESS: 0,
