@@ -1,5 +1,6 @@
 'use strict'
 
+import path from 'path'
 import { app, BrowserWindow } from 'electron';
 import { getUrl } from './common/utils'
 import registerEvent from './event'
@@ -30,6 +31,7 @@ const winURL = getUrl()
 const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow() {
+  const dockIcon = path.join(__dirname, '../../build/icons/256X256.png')
   /**
    * Initial window options
    */
@@ -38,8 +40,13 @@ function createWindow() {
     useContentSize: true,
     width: 840,
     webPreferences: { webSecurity: false },
-    titleBarStyle: 'hidden'
+    titleBarStyle: 'hidden',
+    icon: dockIcon
   })
+
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(dockIcon)
+  }
 
   mainWindow.loadURL(winURL)
 
