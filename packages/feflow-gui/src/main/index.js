@@ -37,7 +37,8 @@ function createWindow() {
     height: 600,
     useContentSize: true,
     width: 840,
-    webPreferences: { webSecurity: false }
+    webPreferences: { webSecurity: false },
+    titleBarStyle: 'hidden'
   })
 
   mainWindow.loadURL(winURL)

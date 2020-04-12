@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="feflow-gui">
+  <div id="app" class="feflow-gui" style="-webkit-app-region: drag">
     <router-view></router-view>
   </div>
 </template>
