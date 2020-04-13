@@ -69,7 +69,6 @@
   </div>
 </template>
 <script>
-
 import {
   getFefProjectProxy,
   updateFefProjectProxy,
@@ -77,13 +76,9 @@ import {
   updateDefaultProjectProxy,
   generatorWhistleJS
 } from '../../bridge'
-import {
-  FEFLOW_WHISTLE_JS_PATH
-} from '../../bridge/constants'
+import { FEFLOW_WHISTLE_JS_PATH } from '../../bridge/constants'
 import { spawn } from 'child_process'
-import {
-  getUrlParam
-} from '../../common/utils'
+import { getUrlParam } from '../../common/utils'
 
 export default {
   name: 'project-whistle',
@@ -107,14 +102,16 @@ export default {
   computed: {
     lastId() {
       let idList = []
-      this.completeProxyList.map(item => { return idList.push(item.id) })
+      this.completeProxyList.map(item => {
+        return idList.push(item.id)
+      })
       return Math.max(...idList) || 0
     },
     currentProxy() {
       return this.completeProxyList[this.currentIndex]
     }
   },
-  mounted () {
+  mounted() {
     this.projectPath = getUrlParam('path')
     this.projectName = getUrlParam('name')
     this.proxy = getFefProjectProxy(this.projectName)
@@ -145,8 +142,8 @@ export default {
     },
     // 切换右侧展示proxy
     changeProxyConfig(index) {
-       this.currentIndex = index
-       this.editProxy = (this.completeProxyList[index].rules || '')
+      this.currentIndex = index
+      this.editProxy = this.completeProxyList[index].rules || ''
     },
     // 删除测试环境
     deleteProxy(item, index) {
@@ -159,26 +156,30 @@ export default {
         this.changeProxyConfig(0)
       }
       if (item.isDefault) {
-        delIndex = this.defaultProxy.findIndex(proxy => { return proxy.id === item.id })
+        delIndex = this.defaultProxy.findIndex(proxy => {
+          return proxy.id === item.id
+        })
         this.defaultProxy.splice(delIndex, 1)
         this.doSaveDefault()
       } else {
-        delIndex = this.proxyList.findIndex(proxy => { return proxy.id === item.id })
+        delIndex = this.proxyList.findIndex(proxy => {
+          return proxy.id === item.id
+        })
         this.proxyList.splice(delIndex, 1)
         this.doSavePersonal()
       }
     },
     // 创建弹窗
     handelDialog(status) {
-      this.form = {rules: (this.defaultProxy[0] || {}).rules || ''}
+      this.form = { rules: (this.defaultProxy[0] || {}).rules || '' }
       this.showDialog = status
     },
     // 新增测试环境
     handelAddProxy() {
       if (!this.form.name) {
-          this.$alert('请填写测试环境名称', '温馨提示', {
-              confirmButtonText: '确定'
-          })
+        this.$alert('请填写测试环境名称', '温馨提示', {
+          confirmButtonText: '确定'
+        })
         return
       }
       this.form.id = this.lastId + 1
@@ -206,9 +207,11 @@ export default {
     handelCancel() {
       this.editProxy = this.currentProxy.rules || ''
     },
+    // 更新default配置
     doSaveDefault() {
       updateDefaultProjectProxy(this.projectPath, this.defaultProxy)
     },
+    // 更新个性化配置
     doSavePersonal() {
       updateFefProjectProxy(this.projectName, {
         port: this.whistlePort,
@@ -217,7 +220,7 @@ export default {
     },
     updateWhistleJS() {
       let config = this.completeProxyList.find(proxy => proxy.id === this.selectId)
-      generatorWhistleJS({name: config.name, rules: config.rules})
+      generatorWhistleJS({ name: config.name, rules: config.rules })
     },
     runWhistle() {
       this.startStatus = 1
@@ -229,9 +232,9 @@ export default {
       })
     },
     closeWhistle() {
-        this.startStatus = 3
+      this.startStatus = 3
       this.runCommand('stop', () => {
-          this.startStatus = 0
+        this.startStatus = 0
         console.log('kill success')
       })
     },
@@ -241,9 +244,8 @@ export default {
         stdio: 'pipe',
         shell: true
       })
-      childProcess.stdout.on('data', (data) => {
-      })
-      childProcess.on('close', (data) => {
+      childProcess.stdout.on('data', data => {})
+      childProcess.on('close', data => {
         exitCallback && exitCallback()
       })
       return childProcess
@@ -252,7 +254,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-@import "../../assets/less/_function";
+@import '../../assets/less/_function';
 
 .project-whistle {
   flex: 1;
@@ -260,11 +262,11 @@ export default {
   flex-direction: column;
   &__row {
     padding: 20px 20px 0;
-    background: #F3F4F5;
+    background: #f3f4f5;
   }
   &__row2 {
     padding: 10px 20px 20px;
-    background: #F3F4F5;
+    background: #f3f4f5;
   }
   &__port {
     width: 100px;
@@ -304,13 +306,13 @@ export default {
   &__text {
     margin-left: 6px;
   }
-  &__margin{
+  &__margin {
     margin-right: 8px;
   }
   &__content {
     display: flex;
     flex-direction: column;
-    background: #F3F4F5;
+    background: #f3f4f5;
   }
   &__operation {
     padding-left: 20px;
@@ -323,7 +325,7 @@ export default {
     box-sizing: border-box;
     padding: 20px;
     width: 480px;
-    color: #767E97;
+    color: #767e97;
     border-radius: 4px;
   }
 }
