@@ -44,6 +44,9 @@ const mutations = {
   },
   SET_WORKING_STATUS(state, isWorking) {
     state.isWorking = isWorking
+  },
+  SET_LIST(state, list) {
+    state.list = list
   }
 }
 

@@ -1,52 +1,68 @@
 <template>
   <div class="create-inner">
-    <el-form label-position="left" label-width="140px" ref="form" :model="formData">
-      <el-form-item label="脚手架">
-        <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
-          <el-option
-            :disabled="isWorking"
-            v-for="item in generators"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="项目目录" v-if="!!targetGenerator">
-        <el-input :value="workSpace" :disabled="true">
-          <el-button
-            @click="handleWorkSpaceClick"
-            class="workspace_btn"
-            slot="append"
-            :disabled="isWorking"
-          >选择</el-button>
-        </el-input>
-      </el-form-item>
-      <schema-form :schema="targetGeneratorConfig" :isWorking="isWorking" />
+    <section v-if="list.length">
+      <el-form label-position="left" label-width="140px" ref="form" :model="formData">
+        <el-form-item label="脚手架">
+          <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
+            <el-option
+              :disabled="isWorking"
+              v-for="item in generators"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="项目目录" v-if="!!targetGenerator">
+          <el-input :value="workSpace" :disabled="true">
+            <el-button
+              @click="handleWorkSpaceClick"
+              class="workspace_btn"
+              slot="append"
+              :disabled="isWorking"
+            >选择</el-button>
+          </el-input>
+        </el-form-item>
+        <schema-form
+          v-if="targetGeneratorConfig.generator"
+          :schema="targetGeneratorConfig"
+          :isWorking="isWorking"
+        />
 
-      <el-form-item label="项目图片" v-if="!!targetGenerator">
-        <el-input v-model="banner" clearable :disabled="isWorking" />
-      </el-form-item>
-    </el-form>
+        <el-form-item label="项目图片" v-if="!!targetGenerator">
+          <el-input v-model="banner" clearable :disabled="isWorking" />
+        </el-form-item>
+      </el-form>
 
-    <div class="action-btn">
-      <el-popover
-        v-model="popoverVisible"
-        :title="isWorking?'运行日志' : '暂无初始化任务'"
-        placement="bottom"
-        width="400"
-        trigger="manual"
-        @after-enter="initTerminal"
-      >
-        <div class="create-inner__console">
-          <div class="create-inner__console_terminal" ref="terminal"></div>
-        </div>
-        <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
-      </el-popover>
+      <div class="action-btn">
+        <el-popover
+          v-model="popoverVisible"
+          :title="isWorking?'运行日志' : '暂无初始化任务'"
+          placement="bottom"
+          width="400"
+          trigger="manual"
+          @after-enter="initTerminal"
+        >
+          <div class="create-inner__console">
+            <div class="create-inner__console_terminal" ref="terminal"></div>
+          </div>
+          <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
+        </el-popover>
 
-      <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
-      <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
-    </div>
+        <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
+        <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
+      </div>
+    </section>
+    <section v-else>
+      <div class="create-empty">
+        <i class="el-icon-sugar project-icon"></i>
+        <p>
+          <router-link to="/market">
+            <el-link type="primary">未找到脚手架，请去插件市场安装</el-link>
+          </router-link>
+        </p>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -73,7 +89,8 @@ export default {
       generatorsConfig: {},
       banner: '',
       hasInitTerminal: false,
-      popoverVisible: false
+      popoverVisible: false,
+      empty: false
     }
   },
   mounted() {},
@@ -85,17 +102,15 @@ export default {
     targetGeneratorConfig() {
       return this.generatorsConfig[this.targetGenerator] || {}
     },
-    formConfig() {
-      // 读取选中脚手架的配置
-      return this.targetGeneratorConfig.properties || []
-    },
     ...mapState({
       workSpace: state => state.Generator.workSpace,
       localConfigName: state => state.Generator.localConfigName,
       jsonData: state => state.Schema.model,
       validMessage: state => state.Schema.messages,
       valid: state => state.Schema.valid,
-      isWorking: state => state.Generator.isWorking
+      isWorking: state => state.Generator.isWorking,
+      list: state => state.Generator.list,
+      configMap: state => state.Generator.configMap
     })
   },
   watch: {
@@ -111,23 +126,26 @@ export default {
       // 获取脚手架
       this.getGenerator()
       this.resetState()
-      const { list, configMap } = this.$store.state.Generator
-      const gens = Object.keys(configMap)
+      this.toggleWorkStatus(false)
+      const gens = Object.keys(this.configMap)
+      if (!this.list.length) {
+        return (this.empty = true)
+      }
 
       Array.isArray(gens) &&
         gens.forEach(genName => {
           const key = genName
-          const gen = configMap[genName]
+          const gen = this.configMap[genName]
 
           this.generators.push({
             value: key,
             label: gen.description
           })
 
-          this.generatorsConfig[key] = configMap[key]
+          this.generatorsConfig[key] = this.configMap[key]
         })
       // 默认加载第一个脚手架
-      this.targetGenerator = list[0]
+      this.targetGenerator = this.list[0]
     },
     // 初始化控制台
     initTerminal() {
@@ -155,8 +173,13 @@ export default {
       fitAddon.fit()
     },
     async handleClick() {
-      const { execType } = this.generatorsConfig[this.targetGenerator]
-      const isValid = await this.checkFormData()
+      const { execType } = this.generatorsConfig[this.targetGenerator] || {}
+      let isValid = await this.checkFormData()
+      // 如果脚手架没有配置文件，那就直接生成
+      if (!this.targetGeneratorConfig.generator) {
+        isValid = true
+      }
+
       let config = {}
 
       if (!isValid || this.messageInstance) return
@@ -335,6 +358,19 @@ export default {
   display: flex;
   justify-content: flex-end;
   /* float: right; */
+}
+.create-empty {
+  text-align: center;
+  margin-top: 75px;
+  p {
+    margin-top: 30px;
+  }
+  .market-jump {
+    color: green;
+  }
+}
+.project-icon {
+  font-size: 62px;
 }
 </style>
 
