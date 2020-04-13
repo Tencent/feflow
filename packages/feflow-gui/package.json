@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "cpselvis <cpselvis@gmail.com>",
   "description": "Feflow gui",
-  "license": null,
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "feflow-gui",
+    "productName": "Feflow 桌面版",
     "appId": "com.feflow.gui",
     "directories": {
       "output": "build"
