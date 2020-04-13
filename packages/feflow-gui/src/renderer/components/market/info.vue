@@ -3,6 +3,12 @@
     <main>
       <side-bar></side-bar>
       <section class="market-info-wrapper">
+        <div class="market-back">
+          <router-link to="/market">
+            <el-link type="primary">返回</el-link>
+          </router-link>
+          <el-divider></el-divider>
+        </div>
         <div class="market-info_box">
           <div class="market-info_meta">
             <div class="market-info_meta_title">Feflow-plugin-check</div>
@@ -62,6 +68,11 @@ main {
   padding-top: 45px;
   margin-top: 4px;
   padding-bottom: 24px;
+}
+.market-back {
+  .el-link {
+    font-size: 18px;
+  }
 }
 .market-info {
   &_box {
