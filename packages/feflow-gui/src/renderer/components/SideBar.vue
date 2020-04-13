@@ -59,9 +59,9 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     width: 160px;
-    background: #434650;
+    background: #282c34;
     padding-top: 30px;
-    height: 570px;
+    height: calc(100% - 30px);
 }
 .side-bar .nav, .footer{
     font-size: 14px;

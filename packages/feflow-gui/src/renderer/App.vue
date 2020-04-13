@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'feflow-gui'
+    name: 'Feflow 桌面版'
   }
 </script>
 
