@@ -8,14 +8,12 @@ import Generator from '../core/schema'
 const ARRAY_ROOT_KEY = 'silentList'
 const generator = new Generator()
 
-let ajv = null
+let ajv = new Ajv()
 let validator = null
 
 export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   const _state = {}
-  ajv = new Ajv()
   let isSchemaValid = ajv.validateSchema(schema)
-
   // 根节点是array，要嵌套一层
   if (schema.type === 'array') {
     let newSchema = {
