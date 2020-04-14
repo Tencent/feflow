@@ -8,7 +8,13 @@
         </router-link>
         <el-divider></el-divider>
       </div>
-      <section v-if="!targetPlugin.status">
+      <div v-if="targetPlugin.isEmpty && !isTimedOut">
+        <div class="market-empty">
+          <i class="el-icon-dessert"></i>
+          <p>插件加载中，请稍等</p>
+        </div>
+      </div>
+      <section v-else-if="!targetPlugin.status && !isTimedOut">
         <div class="market-info_box">
           <div class="market-info_meta">
             <div class="market-info_meta_title">{{targetPlugin.name}}</div>
@@ -20,7 +26,7 @@
             </div>
           </div>
           <div class="market-info_action">
-            <el-button type="primary">安装</el-button>
+            <el-button type="primary" @click="handleClick(isInstalled)">{{!isInstalled?'安装':'卸载'}}</el-button>
           </div>
         </div>
 
@@ -53,32 +59,50 @@ export default {
   data() {
     return {
       activeName: 'create',
-      pluginId: null
+      pkgName: null,
+      isTimedOut: false
     }
   },
   computed: {
     ...mapState({
       plugins: state => state.Market.plugins,
-      pluginsInfoMap: state => state.Market.pluginsInfoMap
+      pluginsInfoMap: state => state.Market.pluginsInfoMap,
+      localPlugins: state => state.Market.localPlugins
     }),
     targetPlugin() {
-      const _targetPlugin = this.pluginsInfoMap[this.pluginId] || {}
+      const _targetPlugin = this.pluginsInfoMap[this.pkgName] || { isEmpty: true }
+      if (_targetPlugin.name) {
+        clearTimeout(this.timeoutPoint)
+      }
       return _targetPlugin
+    },
+    isInstalled() {
+      return this.localPlugins.includes(this.fullPkgName)
     }
   },
   created() {
     const id = this.$route.params.id
     const { key, pkgName } = this.plugins[id]
 
-    this.pluginId = pkgName
+    this.pkgName = pkgName
+    this.fullPkgName = key
     // 获取该插件信息
-    if (!this.targetPlugin) {
+    if (!this.targetPlugin.name) {
       this.getPluginInfo(key)
+      // 超时
+      this.timeoutPoint = setTimeout(() => {
+        this.isTimedOut = true
+      }, 4500)
     }
   },
   methods: {
-    ...mapActions(['getPluginInfo']),
-    handleJump(id) {}
+    ...mapActions(['getPluginInfo', 'handleInstall']),
+    handleClick(isInstall) {
+      // TODO: install
+      if (!isInstall) {
+        this.handleInstall(this.fullPkgName)
+      }
+    }
   }
 }
 </script>

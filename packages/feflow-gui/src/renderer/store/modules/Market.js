@@ -36,11 +36,15 @@ const actions = {
   getPluginInfo({ commit }, repo) {
     getPluginInfoFromTnpm(repo)
       .then(resp => {
+        console.log('resp', resp)
         commit('SET_PLUGIN_MAP', resp)
       })
-      .catch(({ response }) => {
-        const { data, status } = response
-        if (status === 404) {
+      .catch(err => {
+        console.log('err', err)
+        const { response } = err
+        // TODO 上报点
+        const { data, status } = response || {}
+        if (status !== 200) {
           commit('SET_PLUGIN_MAP', { key: '@tencent/' + repo, value: { status, data } })
         }
       })
@@ -50,6 +54,9 @@ const actions = {
       console.log('loadLocalPluginAndGenerator', plugin)
       commit('SET_LOCAL_PLUGIN', plugin)
     })
+  },
+  handleInstall({ commit }, fullPkgPath) {
+    console.log('fullPkgPath', fullPkgPath)
   }
 }
 
