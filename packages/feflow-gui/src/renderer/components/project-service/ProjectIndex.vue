@@ -1,11 +1,7 @@
 <template>
   <el-container class="project-index">
     <!-- 侧边导航 -->
-<<<<<<< Updated upstream
-     <project-side-bar v-model="activeTabId"></project-side-bar>
-=======
     <project-side-bar v-model="activeTabId"></project-side-bar>
->>>>>>> Stashed changes
     <!-- 侧边导航 -->
 
     <!-- 导航面板 -->
@@ -38,11 +34,16 @@
           icon: 'static/img/project-service/service-command.png',
           component: 'ProjectCommand'
         },
-          {
-            name: '代理',
-            icon: 'static/img/project-service/service-index.png',
-            component: 'ProjectWhistle'
-          }
+        {
+          name: '主页',
+          icon: 'static/img/project-service/service-index.png',
+          component: 'ProjectDocs'
+        },
+        {
+          name: '代理',
+          icon: 'static/img/project-service/service-index.png',
+          component: 'ProjectWhistle'
+        }
       ]
       }
     },

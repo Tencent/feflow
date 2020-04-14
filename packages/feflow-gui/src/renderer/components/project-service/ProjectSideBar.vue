@@ -29,6 +29,11 @@ export default {
       isCollapse: false,
       projectSides: [
         {
+            name: '主页',
+            icon: 'static/img/project-service/service-index.png',
+            component: 'ProjectDocs'
+        },
+        {
           name: '任务',
           icon: 'static/img/project-service/service-command.png',
           component: 'ProjectCommand'
@@ -37,7 +42,7 @@ export default {
             name: '代理',
             icon: 'static/img/project-service/service-index.png',
             component: 'ProjectWhistle'
-         }
+        }
       ]
     }
   },
@@ -52,20 +57,20 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-@rootClass: .project-sidebar;
+@rootClass: '.project-sidebar';
 
-@{rootClass} {
+.project-sidebar {
   height: 100%;
   border-right: solid 1px #e6e6e6;
 
   &.is-collapse {
-    @{rootClass}__list {
+    #@{rootClass}__list {
       width: 54px;
     }
-    @{rootClass}__item-icon {
+    #@{rootClass}__item-icon {
       margin-right: 0
     }
-    @{rootClass}__item-text {
+    #@{rootClass}__item-text {
       display: none;
     }
   }
