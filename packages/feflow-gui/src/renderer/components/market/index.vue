@@ -5,11 +5,11 @@
       <section class="market-wrapper">
         <div class="market-title">插件市场</div>
         <el-row :gutter="20">
-          <el-col :span="8" v-for="(o, index) in 12" :key="o">
+          <el-col :span="8" v-for="(plugin, index) in plugins" :key="index">
             <div @click="handleJump(index)" class="box-card">
               <el-card :class="getRandomBgColor(index)">
-                <h2 class="plugin-title">Feflow-plugin-check</h2>
-                <p class="plugin-text">鬼吹灯专业土木工程</p>
+                <h2 class="plugin-title">{{plugin.key}}</h2>
+                <p class="plugin-text">{{plugin.value}}</p>
                 <el-button>安装</el-button>
               </el-card>
             </div>
@@ -22,7 +22,7 @@
 
 <script>
 import SideBar from '../SideBar'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'market-page',
@@ -35,6 +35,11 @@ export default {
   },
   created() {
     this.getPlugins()
+  },
+  computed: {
+    ...mapState({
+      plugins: state => state.Market.plugins
+    })
   },
   methods: {
     ...mapActions(['getPlugins']),

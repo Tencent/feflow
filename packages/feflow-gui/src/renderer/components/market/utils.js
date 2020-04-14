@@ -3,7 +3,7 @@ import MarkdownIt from 'markdown-it'
 import { camelizeKeys } from 'humps'
 
 const LEGO_URL = 'https://now.qq.com/cgi-bin/now/activity_cms/form_data'
-const ACT_ID = 107898509
+const ACT_ID = 111610303
 
 const markdown = new MarkdownIt()
 
@@ -96,6 +96,14 @@ export function getAuthorName({ author = {}, maintainers = [] }) {
   const [maintainer = {}] = maintainers
 
   return name || maintainer.name || ''
+}
+
+export const formatPluginList = (plugins = []) => {
+  const pluginsMap = {}
+  plugins.forEach(({ key, value }) => {
+    pluginsMap[key] = value
+  })
+  return pluginsMap
 }
 
 export const getPluginListFromLego = () => {

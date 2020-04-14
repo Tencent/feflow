@@ -36,8 +36,6 @@ import SideBar from '../SideBar'
 
 // TODO 需要校验网络环境
 
-const targetPluginName = 'feflow-plugin-codecc'
-
 export default {
   name: 'market-info',
   components: { SideBar },
@@ -50,18 +48,20 @@ export default {
   computed: {
     ...mapState({
       plugins: state => state.Market.plugins,
-      pluginsMap: state => state.Market.pluginsMap
+      pluginsInfoMap: state => state.Market.pluginsInfoMap
     }),
     targetPlugin() {
-      const _targetPlugin = this.pluginsMap[this.pluginId]
+      const _targetPlugin = this.pluginsInfoMap[this.pluginId] || {}
       return _targetPlugin
     }
   },
   created() {
-    // const id = this.$route.params.id
+    const id = this.$route.params.id
+    const targetPluginName = this.plugins[id].key
+
     this.pluginId = targetPluginName
     // 获取该插件信息
-    this.getPluginInfo('@tencent/feflow-plugin-codecc')
+    this.getPluginInfo(targetPluginName)
   },
   methods: {
     ...mapActions(['getPluginInfo']),
