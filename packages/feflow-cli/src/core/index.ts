@@ -335,9 +335,6 @@ export default class Feflow {
         }
         const packageManager = config.packageManager;
         const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
-        if (autoUpdate) {
-            return await this.updateCli(packageManager);
-        }
         if (config.lastUpdateCheck && (+new Date() - parseInt(config.lastUpdateCheck, 10)) <= 1000 * 3600 * 24) {
             return;
         }
@@ -346,7 +343,13 @@ export default class Feflow {
             this.logger.warn(`Network error, can't reach ${ registryUrl }, CLI give up verison check.`);
         });
 
+        this.logger.debug(`Auto update: ${autoUpdate}`);
         if (latestVersion && semver.gt(latestVersion, version)) {
+            this.logger.debug(`Find new version, current version: ${version}, latest version: ${autoUpdate}`);
+            if (autoUpdate) {
+                this.logger.debug(`Auto update version from ${version} to ${latestVersion}`);
+                return await this.updateCli(packageManager);
+            }
             const askIfUpdateCli = [{
                 type: "confirm",
                 name: "ifUpdate",
@@ -362,6 +365,8 @@ export default class Feflow {
                     'lastUpdateCheck': +new Date()
                 }, configPath);
             }
+        } else {
+            this.logger.debug(`Current version is already latest.`);
         }
     }
 
