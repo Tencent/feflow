@@ -14,6 +14,7 @@ import path from 'path'
 import {
   CREATE_CODE,
   FEFLOW_GENERATOR_REGEX,
+  FEFLOW_GENERATOR_AND_PLUGIN_REGEX,
   GENERATOR_CONFIG_FILE_NAME,
   FEFLOW_HOME_CONFIG_PATH,
   FEFLOW_PROJECT_CONFIG_NAME,
@@ -29,26 +30,16 @@ import shell from 'shelljs'
  * 载入全局脚手架
  */
 export const loadGenerator = () => {
-  return new Promise(resolve => {
-    let packageContent = null
+  return getFeflowHomeDepencies().then(dependencies => {
     let generators = []
-    let generatorConfigMap = {}
+    // 筛选脚手架
+    generators = dependencies.filter(dependence => {
+      return FEFLOW_GENERATOR_REGEX.test(dependence)
+    })
 
-    // 先检查根目录是否存在
-    if (checkFeflowEnv()) {
-      // 获取Feflow项目依赖
-      packageContent = getFeflowRootPackage()
-      if (!packageContent) resolve(generators)
-
-      const dependencies = Object.keys(packageContent.dependencies)
-
-      // 筛选脚手架
-      generators = dependencies.filter(dependence => {
-        return FEFLOW_GENERATOR_REGEX.test(dependence)
-      })
-
-      // 获取脚手架配置
-      // 优先级  js > json
+    // 获取脚手架配置
+    // 优先级  js > json
+    if (generators.length) {
       generators.forEach(gen => {
         for (const configName of GENERATOR_CONFIG_FILE_NAME) {
           if (!generatorConfigMap[gen]) {
@@ -58,9 +49,42 @@ export const loadGenerator = () => {
       })
     }
 
-    resolve({ list: generators, configMap: generatorConfigMap })
+    return generators
+  })
+}
+
+/**
+ *
+ * 载入全局脚手架和插件
+ */
+export const loadLocalPluginAndGenerator = () => {
+  return getFeflowHomeDepencies().then(dependencies => {
+    let generators = []
+    // 筛选脚手架
+    generators = dependencies.filter(dependence => {
+      return FEFLOW_GENERATOR_AND_PLUGIN_REGEX.test(dependence)
+    })
+
+    return generators
+  })
+}
+
+const getFeflowHomeDepencies = () => {
+  return new Promise(resolve => {
+    let packageContent = null
+    let dependencies = []
+
+    // 先检查根目录是否存在
+    if (checkFeflowEnv()) {
+      // 获取Feflow项目依赖
+      packageContent = getFeflowRootPackage()
+      if (!packageContent) resolve(dependencies)
+      dependencies = Object.keys(packageContent.dependencies)
+    }
+
+    resolve(dependencies)
   }).catch(e => {
-    console.log('loadGenerator err', e)
+    console.log('get feflow home depencies err', e)
   })
 }
 
@@ -280,7 +304,7 @@ export const openDialogToGetDirectory = () => {
   })
 }
 
-export const getFefProjectProxy = (projectName) => {
+export const getFefProjectProxy = projectName => {
   const doc = loadFeflowConfigFile()
   if (!doc.projects || !doc.projects[projectName]) {
     return {}
@@ -314,7 +338,7 @@ export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
   fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
 }
 
-export const generatorWhistleJS = (proxyConfig) => {
+export const generatorWhistleJS = proxyConfig => {
   let filepath = FEFLOW_WHISTLE_JS_PATH
   const content = `
       module.exports = ${JSON.stringify(proxyConfig)}

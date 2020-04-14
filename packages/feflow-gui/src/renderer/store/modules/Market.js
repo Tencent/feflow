@@ -1,4 +1,5 @@
 import { getPluginListFromLego, getPluginInfoFromTnpm, formatPluginList } from '../../components/market/utils'
+import { loadLocalPluginAndGenerator } from '../../bridge'
 import { camelizeKeys } from 'humps'
 
 const state = {
@@ -6,7 +7,8 @@ const state = {
   plugins: {},
   // {[key]: [value]}
   pluginsMap: {},
-  pluginsInfoMap: {}
+  pluginsInfoMap: {},
+  localPlugins: []
 }
 
 const mutations = {
@@ -16,6 +18,9 @@ const mutations = {
   SET_PLUGIN(state, { pluginMap, pluginList }) {
     state.plugins = pluginList
     state.pluginsMap = pluginMap
+  },
+  SET_LOCAL_PLUGIN(state, pluginList) {
+    state.localPlugins = pluginList
   }
 }
 
@@ -39,6 +44,12 @@ const actions = {
           commit('SET_PLUGIN_MAP', { key: '@tencent/' + repo, value: { status, data } })
         }
       })
+  },
+  getLocalPluginList({ commit }) {
+    loadLocalPluginAndGenerator().then(plugin => {
+      console.log('loadLocalPluginAndGenerator', plugin)
+      commit('SET_LOCAL_PLUGIN', plugin)
+    })
   }
 }
 

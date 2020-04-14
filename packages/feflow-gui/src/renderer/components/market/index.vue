@@ -10,7 +10,7 @@
               <el-card :class="getRandomBgColor(index)">
                 <h2 class="plugin-title">{{plugin.key}}</h2>
                 <p class="plugin-text">{{plugin.value}}</p>
-                <el-button>安装</el-button>
+                <el-button>{{localPlugins.includes(plugin.key) ? '卸载': '安装' }}</el-button>
               </el-card>
             </div>
           </el-col>
@@ -26,7 +26,6 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'market-page',
-  // components: {  },
   components: { SideBar },
   data() {
     return {
@@ -35,14 +34,16 @@ export default {
   },
   created() {
     this.getPlugins()
+    this.getLocalPluginList()
   },
   computed: {
     ...mapState({
-      plugins: state => state.Market.plugins
+      plugins: state => state.Market.plugins,
+      localPlugins: state => state.Market.localPlugins
     })
   },
   methods: {
-    ...mapActions(['getPlugins']),
+    ...mapActions(['getPlugins', 'getLocalPluginList']),
     handleJump(id) {
       //   直接调用$router.push 实现携带参数的跳转
       this.$router.push({
