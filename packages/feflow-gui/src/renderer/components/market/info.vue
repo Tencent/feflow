@@ -9,22 +9,35 @@
           </router-link>
           <el-divider></el-divider>
         </div>
-        <div class="market-info_box">
-          <div class="market-info_meta">
-            <div class="market-info_meta_title">{{targetPlugin.name}}</div>
-            <p class="market-info_meta_description">{{targetPlugin.description}}</p>
-            <div class="market-info_meta_more">
-              <span>当前版本: {{targetPlugin.version}}</span>
-              <span>发布时间: {{targetPlugin.updateTime}}</span>
-              <span>发布者: {{targetPlugin.master}}</span>
+        <section v-if="!targetPlugin.status">
+          <div class="market-info_box">
+            <div class="market-info_meta">
+              <div class="market-info_meta_title">{{targetPlugin.name}}</div>
+              <p class="market-info_meta_description">{{targetPlugin.description}}</p>
+              <div class="market-info_meta_more">
+                <span>当前版本: {{targetPlugin.version}}</span>
+                <span>发布时间: {{targetPlugin.updateTime}}</span>
+                <span>发布者: {{targetPlugin.master}}</span>
+              </div>
+            </div>
+            <div class="market-info_action">
+              <el-button type="primary">安装</el-button>
             </div>
           </div>
-          <div class="market-info_action">
-            <el-button type="primary">安装</el-button>
-          </div>
-        </div>
 
-        <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
+          <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
+        </section>
+
+        <div v-else class="market-empty">
+          <i class="el-icon-dessert"></i>
+
+          <p>
+            <el-link
+              :href="`http://tnpm.oa.com/package/@tencent/${targetPlugin.name}`"
+              target="_blank"
+            >该插件信息获取失败，请点击这里查看</el-link>
+          </p>
+        </div>
       </section>
     </main>
   </div>
@@ -57,11 +70,13 @@ export default {
   },
   created() {
     const id = this.$route.params.id
-    const targetPluginName = this.plugins[id].key
+    const { key, pkgName } = this.plugins[id]
 
-    this.pluginId = targetPluginName
+    this.pluginId = pkgName
     // 获取该插件信息
-    this.getPluginInfo(targetPluginName)
+    if (!this.targetPlugin) {
+      this.getPluginInfo(key)
+    }
   },
   methods: {
     ...mapActions(['getPluginInfo']),
@@ -126,6 +141,18 @@ main {
     border-radius: 6px;
     padding: 16px;
     min-height: 299px;
+  }
+}
+.market-empty {
+  font-size: 56px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 66px;
+  p {
+    font-size: 16px;
+    margin-top: 20px;
   }
 }
 </style>

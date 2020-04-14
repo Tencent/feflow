@@ -1,3 +1,4 @@
 {
-    "rdhelper.cas.lastupdatefile": "packages/feflow-gui/src/renderer/store/modules/Market.js"
+    "rdhelper.cas.lastupdatefile": "packages/feflow-gui/src/renderer/components/market/info.vue",
+    "rdhelper.cas.status": "tempclose"
 }

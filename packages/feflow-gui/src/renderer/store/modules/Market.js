@@ -22,17 +22,23 @@ const mutations = {
 const actions = {
   getPlugins({ commit }) {
     getPluginListFromLego().then(({ data }) => {
-      const { pluginList } = camelizeKeys(data.result)
+      const { pluginList: _pluginList } = camelizeKeys(data.result)
       // TODO 获取用户本地已安装的插件
-      const pluginMap = formatPluginList(pluginList)
+      const { pluginMap, pluginList } = formatPluginList(_pluginList)
       commit('SET_PLUGIN', { pluginMap, pluginList })
     })
   },
   getPluginInfo({ commit }, repo) {
-    getPluginInfoFromTnpm(repo).then(resp => {
-      console.log('resp', resp)
-      commit('SET_PLUGIN_MAP', resp)
-    })
+    getPluginInfoFromTnpm(repo)
+      .then(resp => {
+        commit('SET_PLUGIN_MAP', resp)
+      })
+      .catch(({ response }) => {
+        const { data, status } = response
+        if (status === 404) {
+          commit('SET_PLUGIN_MAP', { key: '@tencent/' + repo, value: { status, data } })
+        }
+      })
   }
 }
 

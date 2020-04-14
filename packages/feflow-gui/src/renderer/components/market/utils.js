@@ -100,10 +100,13 @@ export function getAuthorName({ author = {}, maintainers = [] }) {
 
 export const formatPluginList = (plugins = []) => {
   const pluginsMap = {}
+  const pluginList = []
   plugins.forEach(({ key, value }) => {
-    pluginsMap[key] = value
+    const pkgName = key.split('/')[1]
+    pluginsMap[pkgName] = value
+    pluginList.push({ key, value, pkgName })
   })
-  return pluginsMap
+  return { pluginsMap, pluginList }
 }
 
 export const getPluginListFromLego = () => {
