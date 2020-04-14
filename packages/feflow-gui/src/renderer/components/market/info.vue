@@ -11,14 +11,12 @@
         </div>
         <div class="market-info_box">
           <div class="market-info_meta">
-            <div class="market-info_meta_title">Feflow-plugin-check</div>
-            <p
-              class="market-info_meta_description"
-            >不知道本地全局安装过哪些npm包时，可以输入以下指令进行查看npm ... info得到所有的svn信息，然后提取版本号异步获取： node-cmd包信息会 ...</p>
+            <div class="market-info_meta_title">{{targetPlugin.name}}</div>
+            <p class="market-info_meta_description">{{targetPlugin.description}}</p>
             <div class="market-info_meta_more">
-              <span>当前版本: 1.2.0</span>
-              <span>发布时间: 2020-03-02</span>
-              <span>发布者: Mike</span>
+              <span>当前版本: {{targetPlugin.version}}</span>
+              <span>发布时间: {{targetPlugin.updateTime}}</span>
+              <span>发布者: {{targetPlugin.master}}</span>
             </div>
           </div>
           <div class="market-info_action">
@@ -26,18 +24,22 @@
           </div>
         </div>
 
-        <div class="market-info_readme">this is plugin description</div>
+        <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
       </section>
     </main>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import SideBar from '../SideBar'
+
+// TODO 需要校验网络环境
+
+const targetPluginName = 'feflow-plugin-codecc'
 
 export default {
   name: 'market-info',
-  // components: {  },
   components: { SideBar },
   data() {
     return {
@@ -45,17 +47,32 @@ export default {
       pluginId: null
     }
   },
+  computed: {
+    ...mapState({
+      plugins: state => state.Market.plugins,
+      pluginsMap: state => state.Market.pluginsMap
+    }),
+    targetPlugin() {
+      const _targetPlugin = this.pluginsMap[this.pluginId]
+      return _targetPlugin
+    }
+  },
   created() {
-    const id = this.$route.params.id
-    this.pluginId = id || 0
+    // const id = this.$route.params.id
+    this.pluginId = targetPluginName
+    // 获取该插件信息
+    this.getPluginInfo('@tencent/feflow-plugin-codecc')
   },
   methods: {
+    ...mapActions(['getPluginInfo']),
     handleJump(id) {}
   }
 }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
+@import './style/content.less';
+
 main {
   display: flex;
 }
@@ -105,14 +122,11 @@ main {
   &_readme {
     width: 88%;
     margin-top: 24px;
-    background-color: #efefef;
+    background-color: #fdfbfb;
     border-radius: 6px;
     padding: 16px;
     min-height: 299px;
   }
 }
-</style>
-
-<style>
 </style>
 

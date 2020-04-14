@@ -1,14 +1,16 @@
-import API from '../../api/market'
+import { getPluginListFromLego, getPluginInfoFromTnpm } from '../../components/market/utils'
+import { camelizeKeys } from 'humps'
 
 const state = {
+  // {"plugin-name": "description"}
   plugins: [],
   // {[key]: [value]}
   pluginsMap: {}
 }
 
 const mutations = {
-  DECREMENT_MAIN_COUNTER(state) {
-    state.main--
+  SET_PLUGIN_MAP(state, value) {
+    state.pluginsMap[value.name] = value
   },
   SET_PLUGIN(state, data) {
     state.plugins = data
@@ -17,10 +19,15 @@ const mutations = {
 
 const actions = {
   getPlugins({ commit }) {
-    API.getPluginListFromLego().then(({ data }) => {
-      commit('SET_PLUGIN', data.plugin_list)
+    getPluginListFromLego().then(({ data }) => {
+      const { pluginList } = camelizeKeys(data.result)
+      commit('SET_PLUGIN', pluginList)
     })
-    // do something async
+  },
+  getPluginInfo({ commit }, repo) {
+    getPluginInfoFromTnpm(repo).then(resp => {
+      commit('SET_PLUGIN_MAP', resp)
+    })
   }
 }
 

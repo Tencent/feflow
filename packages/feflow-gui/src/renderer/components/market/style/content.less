@@ -1,0 +1,274 @@
+// Markdown content style defined.
+// @import "./code.less";
+
+@font-size: 15px;
+@font-mono: "Source Code Pro", Monaco, Menlo, Consolas, monospace;
+@line-height: 1.6em;
+
+// Colors
+@color-default: #444;
+@color-gray: #999;
+@color-border: #e3e3e3;
+@color-link: #0e83cd;
+@color-link-hover: lighten(@color-link, 10%);
+
+@highlight-foreground: #4d4d4c;
+
+.clearfix() {
+    &:before,
+    &:after {
+        content: " ";
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+.content {
+    font-size: @font-size;
+    line-height: @line-height;
+    color: @color-default;
+
+    div[class*="language-"],
+    p,
+    ol,
+    ul,
+    dl,
+    table,
+    blockquote,
+    iframe {
+        margin: 1em 0;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    h3 {
+        font-size: 1.3em;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1em;
+        font-weight: bold;
+        margin: 1em 0;
+    }
+
+    a {
+        color: @color-link;
+        text-decoration: none;
+
+        &:hover {
+            color: @color-link-hover;
+            text-decoration: underline;
+        }
+    }
+
+    strong {
+        font-weight: bold;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    ul,
+    ol,
+    dl {
+        margin-left: 20px;
+
+        ul,
+        ol,
+        dl {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+
+    ul {
+        list-style: disc;
+    }
+    ol {
+        list-style: decimal;
+    }
+    dl {
+        list-style: square;
+    }
+    li {
+        p {
+            margin: 0;
+        }
+
+        div[class*="language-"],
+        table,
+        blockquote,
+        iframe {
+            margin: 1em 0;
+        }
+    }
+    img,
+    video {
+        display: inline-block;
+        max-width: 100%;
+    }
+    blockquote {
+        padding: 0 20px;
+        position: relative;
+        border: 1px solid @color-border;
+        border-left: 5px solid #ddd;
+        footer {
+            margin: 1em 0;
+            font-style: italic;
+
+            cite {
+                &:before {
+                    content: "—";
+                    padding: 0 0.3em;
+                }
+                a {
+                    color: @color-gray;
+                }
+            }
+        }
+    }
+
+    table {
+        max-width: 100%;
+        border: 1px solid @color-border;
+        th {
+            font-weight: bold;
+        }
+        th,
+        td {
+            padding: 5px 15px;
+        }
+        tr {
+            &:nth-child(2n) {
+                background: #eee
+            }
+        }
+    }
+
+    // inline code
+    pre,
+    code {
+        font-family: @font-mono;
+        color: @highlight-foreground;
+        font-size: 0.95em;
+        background: #eee;
+    }
+
+    code {
+        padding: 0 5px;
+    }
+
+    pre {
+        padding: 10px 15px;
+        line-height: 22px;
+
+        code {
+            border: none;
+            display: block;
+            padding: 0;
+        }
+    }
+
+    // code block
+    div[class*="language-"] {
+        background: #eee;
+        padding: 10px 15px;
+        color: @highlight-foreground;
+        overflow: auto;
+        margin: 0;
+
+        table {
+            margin: 0 !important;
+            border: 0;
+            th,
+            td {
+                padding: 0;
+            }
+        }
+
+        figcaption {
+            .clearfix;
+            margin: -5px 0 5px;
+            font-size: 0.9em;
+            color: @color-gray;
+
+            a {
+                float: right;
+            }
+        }
+
+        pre {
+            padding: 0;
+            border: none;
+            background: none;
+        }
+
+        .line {
+            height: 22px;
+        }
+    }
+
+// pre
+//   .comment
+//   .title
+//     color: highlight-comment
+//   .variable
+//   .attribute
+//   .tag
+//   .regexp
+//   .ruby .constant
+//   .xml .tag .title
+//   .xml .pi
+//   .xml .doctype
+//   .html .doctype
+//   .css .id
+//   .css .class
+//   .css .pseudo
+//     color: highlight-red
+//   .number
+//   .preprocessor
+//   .built_in
+//   .literal
+//   .params
+//   .constant
+//     color: highlight-orange
+//   .class
+//   .ruby .class .title
+//   .css .rules .attribute
+//     color: highlight-green
+//   .string
+//   .value
+//   .inheritance
+//   .header
+//   .ruby .symbol
+//   .xml .cdata
+//     color: highlight-green
+//   .css .hexcolor
+//     color: highlight-aqua
+//   .function
+//   .python .decorator
+//   .python .title
+//   .ruby .function .title
+//   .ruby .title .keyword
+//   .perl .sub
+//   .javascript .title
+//   .coffeescript .title
+//     color: highlight-blue
+//   .keyword
+//   .javascript .function
+//     color: highlight-purple
+}
