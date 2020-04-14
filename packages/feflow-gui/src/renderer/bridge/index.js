@@ -18,7 +18,8 @@ import {
   FEFLOW_HOME_CONFIG_PATH,
   FEFLOW_PROJECT_CONFIG_NAME,
   FEFLOW_PROJECT_DEVKIT_CONFIG_NAME,
-  FEFLOW_GENERATOR_CONFIG_HOME
+  FEFLOW_GENERATOR_CONFIG_HOME,
+  FEFLOW_WHISTLE_JS_PATH
 } from './constants'
 import { dialog } from 'electron'
 import fs from 'fs'
@@ -277,4 +278,46 @@ export const openDialogToGetDirectory = () => {
       }
     )
   })
+}
+
+export const getFefProjectProxy = (projectName) => {
+  const doc = loadFeflowConfigFile()
+  if (!doc.projects || !doc.projects[projectName]) {
+    return {}
+  } else {
+    return doc.projects[projectName].proxy || {}
+  }
+}
+
+export const updateFefProjectProxy = (projectName, proxyConfig) => {
+  // 更新 .fef project配置
+  const conf = loadFeflowConfigFile()
+  conf.projects[projectName].proxy = proxyConfig
+  safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
+}
+
+/**
+ * 【项目模块适用】解析项目开发套件支持的命令列表
+ */
+export const getDefaultProjectProxy = projectPath => {
+  // 解析 .feflowrc.json，获取基础proxy
+  const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
+  return feflowrcJSON.proxy || []
+}
+
+export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
+  // 更新 .fef project配置
+  const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
+  const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
+  console.log(feflowrcJSON)
+  feflowrcJSON['proxy'] = proxyConfig
+  fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
+}
+
+export const generatorWhistleJS = (proxyConfig) => {
+  let filepath = FEFLOW_WHISTLE_JS_PATH
+  const content = `
+      module.exports = ${JSON.stringify(proxyConfig)}
+    `
+  fs.writeFileSync(filepath, content)
 }

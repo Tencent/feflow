@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "cpselvis <cpselvis@gmail.com>",
   "description": "Feflow gui",
-  "license": null,
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "feflow-gui",
+    "productName": "Feflow 桌面版",
     "appId": "com.feflow.gui",
     "directories": {
       "output": "build"
@@ -62,12 +62,14 @@
     "element-ui": "^2.13.0",
     "import-fresh": "^3.2.1",
     "js-yaml": "^3.13.1",
+    "jsonschema-form-vue": "^1.0.20",
     "shelljs": "^0.8.3",
     "vue": "^2.6.10",
     "vue-electron": "^1.0.6",
     "vue-router": "^3.1.3",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0",
+    "whistle": "^2.4.17",
     "xterm": "^4.4.0",
     "xterm-addon-fit": "^0.3.0"
   },

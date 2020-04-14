@@ -17,7 +17,8 @@ const state = {
   workSpace: DEFAULT_WORKSPACE,
   importWorkSpace: '',
   initCode: CREATE_CODE.INITIAL,
-  projectListFromConfig: []
+  projectListFromConfig: [],
+  isWorking: true
 }
 
 const mutations = {
@@ -40,6 +41,12 @@ const mutations = {
   },
   SET_PROJECT_LIST(state, projectList) {
     state.projectListFromConfig = projectList
+  },
+  SET_WORKING_STATUS(state, isWorking) {
+    state.isWorking = isWorking
+  },
+  SET_LIST(state, list) {
+    state.list = list
   }
 }
 
@@ -78,6 +85,9 @@ const actions = {
   getProjectListFromConfig({ commit }) {
     const { projects = [] } = loadFeflowConfigFile()
     commit('SET_PROJECT_LIST', projects)
+  },
+  toggleWorkStatus({ commit, state }, status) {
+    commit('SET_WORKING_STATUS', status !== undefined ? status : !state.isWorking)
   }
 }
 
