@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="market">
     <main>
       <side-bar></side-bar>
       <section class="market-wrapper">
@@ -60,16 +60,15 @@ export default {
 <style scoped>
 main {
   display: flex;
+  height: 100%;
 }
 .market-wrapper {
-  height: 550px;
-  overflow: scroll;
   box-sizing: border-box;
-  width: 100%;
   padding-left: 50px;
   padding-top: 45px;
   margin-top: 4px;
   padding-bottom: 24px;
+  padding-right: 50px;
 }
 .market-title {
   padding: 12px 0px;
@@ -93,6 +92,12 @@ main {
 .el-col {
   min-width: 236px;
   margin-top: 12px;
+}
+.market {
+  height: 100%;
+  .side-bar {
+    height: auto;
+  }
 }
 .market-wrapper {
   .el-card {
