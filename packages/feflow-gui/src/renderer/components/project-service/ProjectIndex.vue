@@ -1,7 +1,7 @@
 <template>
   <el-container class="project-index">
     <!-- 侧边导航 -->
-    <project-side-bar v-model="activeTabId"></project-side-bar>
+    <project-side-bar v-model="activeTabId" :nav="projectSides"></project-side-bar>
     <!-- 侧边导航 -->
 
     <!-- 导航面板 -->
@@ -41,7 +41,7 @@
           },
           {
             name: '代理',
-            icon: 'static/img/project-service/service-index.png',
+            icon: 'static/img/project-service/service-command.png',
             component: 'ProjectWhistle'
           }
         ]

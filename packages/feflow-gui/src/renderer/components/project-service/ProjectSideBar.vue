@@ -7,7 +7,7 @@
         <li
           class="project-sidebar__item"
           :class="{ 'is-active': current === itemIndex }"
-          v-for="(item, itemIndex) in projectSides"
+          v-for="(item, itemIndex) in nav"
           :key="itemIndex"
           @click="activeTab(itemIndex, item)">
           <i class="project-sidebar__item-icon" :style="{ backgroundImage: `url(${item.icon})` }"></i>
@@ -23,27 +23,16 @@ export default {
     prop: 'activeTabId', // 绑定的值，通过父组件传递
     event: 'updateTabId' // Vue 内部会自动为父组件绑定该自定义事件
   },
+  props: {
+    nav: {
+      type: Array,
+      default: []
+    }
+  },
   data() {
     return {
       current: 0,
-      isCollapse: false,
-      projectSides: [
-        {
-          name: '主页',
-          icon: 'static/img/project-service/service-index.png',
-          component: 'ProjectDocs'
-        },
-        {
-          name: '任务',
-          icon: 'static/img/project-service/service-command.png',
-          component: 'ProjectCommand'
-        },
-        {
-            name: '代理',
-            icon: 'static/img/project-service/service-index.png',
-            component: 'ProjectWhistle'
-        }
-      ]
+      isCollapse: false
     }
   },
   methods: {
@@ -76,6 +65,7 @@ export default {
   }
 
   &__list {
+    padding-top: 48px;
     width: 160px;
     font-size: 14px;
     background: #434650;
