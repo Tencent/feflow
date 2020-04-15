@@ -1,4 +1,4 @@
 {
-    "rdhelper.cas.lastupdatefile": "packages/feflow-gui/src/renderer/components/market/info.vue",
+    "rdhelper.cas.lastupdatefile": "packages/feflow-gui/src/renderer/components/market/mixins/basic.js",
     "rdhelper.cas.status": "open"
 }

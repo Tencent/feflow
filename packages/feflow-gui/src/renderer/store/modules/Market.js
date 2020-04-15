@@ -51,12 +51,8 @@ const actions = {
   },
   getLocalPluginList({ commit }) {
     loadLocalPluginAndGenerator().then(plugin => {
-      console.log('loadLocalPluginAndGenerator', plugin)
       commit('SET_LOCAL_PLUGIN', plugin)
     })
-  },
-  handleInstall({ commit }, fullPkgPath) {
-    console.log('fullPkgPath', fullPkgPath)
   }
 }
 

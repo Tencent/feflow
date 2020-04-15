@@ -20,13 +20,17 @@
             <div class="market-info_meta_title">{{targetPlugin.name}}</div>
             <p class="market-info_meta_description">{{targetPlugin.description}}</p>
             <div class="market-info_meta_more">
-              <span>当前版本: {{targetPlugin.version}}</span>
+              <span>最新版本: {{targetPlugin.version}}</span>
               <span>发布时间: {{targetPlugin.updateTime}}</span>
               <span>发布者: {{targetPlugin.master}}</span>
             </div>
           </div>
           <div class="market-info_action">
-            <el-button type="primary" @click="handleClick(isInstalled)">{{!isInstalled?'安装':'卸载'}}</el-button>
+            <el-button
+              :type="isInstalled?'info':'primary'"
+              @click="handleClick(isInstalled)"
+              :loading="isBtnPendding"
+            >{{!isInstalled?`安装${isBtnPendding?'中':''}`:`卸载${isBtnPendding?'中':''}`}}</el-button>
           </div>
         </div>
 
@@ -50,17 +54,20 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import SideBar from '../SideBar'
-
+// import { installPlugin, unInstallPlugin } from '../../bridge'
+import Basic from './mixins/basic'
 // TODO 需要校验网络环境
 
 export default {
   name: 'market-info',
   components: { SideBar },
+  mixins: [Basic],
   data() {
     return {
       activeName: 'create',
       pkgName: null,
-      isTimedOut: false
+      isTimedOut: false,
+      isBtnPendding: false
     }
   },
   computed: {
@@ -96,12 +103,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getPluginInfo', 'handleInstall']),
-    handleClick(isInstall) {
-      // TODO: install
-      if (!isInstall) {
-        this.handleInstall(this.fullPkgName)
-      }
+    ...mapActions(['getPluginInfo', 'getLocalPluginList']),
+    handleClick(isInstalled) {
+      if (!this.checkTaskValid(this.fullPkgName)) return
+      this.isBtnPendding = true
+      this.handleInstallAction(isInstalled, this.fullPkgName).then(code => {
+        this.isBtnPendding = false
+      })
     }
   }
 }

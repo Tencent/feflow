@@ -5,12 +5,17 @@
       <section class="market-wrapper">
         <div class="market-title">插件市场</div>
         <el-row :gutter="20">
-          <el-col :span="8" v-for="(plugin, index) in plugins" :key="index">
+          <el-col :span="8" v-for="(plugin, index) in pluginsFormated" :key="index">
             <div @click="handleJump(index)" class="box-card">
               <el-card :class="getRandomBgColor(index)">
                 <h2 class="plugin-title">{{plugin.key}}</h2>
                 <p class="plugin-text">{{plugin.value}}</p>
-                <el-button>{{localPlugins.includes(plugin.key) ? '卸载': '安装' }}</el-button>
+                <el-button
+                  plain
+                  :loading="plugin.isBtnPendding"
+                  :type="plugin.isInstalled?'info':'primary'"
+                  @click.stop="handleBtnClick(plugin.isInstalled, plugin.key)"
+                >{{plugin.isInstalled ? `卸载${plugin.isBtnPendding?"中":""}`: `安装${plugin.isBtnPendding?"中":""}` }}</el-button>
               </el-card>
             </div>
           </el-col>
@@ -21,15 +26,21 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import SideBar from '../SideBar'
 import { mapActions, mapState } from 'vuex'
+import Basic from './mixins/basic'
+
+const claMap = {}
 
 export default {
   name: 'market-page',
   components: { SideBar },
+  mixins: [Basic],
   data() {
     return {
-      activeName: 'create'
+      activeName: 'create',
+      paddingPlugin: []
     }
   },
   created() {
@@ -40,7 +51,21 @@ export default {
     ...mapState({
       plugins: state => state.Market.plugins,
       localPlugins: state => state.Market.localPlugins
-    })
+    }),
+    pluginsFormated() {
+      let _plugins = []
+      if (!this.plugins.length) {
+        return _plugins
+      }
+      _plugins = this.plugins.map((plugin, index) => {
+        return {
+          ...plugin,
+          isInstalled: this.localPlugins.includes(plugin.key),
+          isBtnPendding: this.paddingPlugin.includes(plugin.key)
+        }
+      })
+      return _plugins
+    }
   },
   methods: {
     ...mapActions(['getPlugins', 'getLocalPluginList']),
@@ -51,8 +76,23 @@ export default {
       })
     },
     getRandomBgColor(index) {
+      if (claMap[index]) return claMap[index]
       const randomInde = Math.floor(Math.random() * 4) + 1
-      return `el-bg-color-${randomInde}`
+      const cln = `el-bg-color-${randomInde}`
+      claMap[index] = cln
+      return cln
+    },
+    handleBtnClick(isInstalled, fullPkgName) {
+      if (!this.checkTaskValid(this.fullPkgName)) return
+      if (this.paddingPlugin.length >= 2) {
+        return this.toast('任务执行过多，请稍后再试', '', 'info')
+      }
+      this.paddingPlugin.push(fullPkgName)
+      this.handleInstallAction(isInstalled, fullPkgName).then(code => {
+        _.remove(this.paddingPlugin, function(n) {
+          return n === fullPkgName
+        })
+      })
     }
   }
 }

@@ -69,6 +69,9 @@ export const loadLocalPluginAndGenerator = () => {
   })
 }
 
+/**
+ * 获取feflow项目依赖
+ */
 const getFeflowHomeDepencies = () => {
   return new Promise(resolve => {
     let packageContent = null
@@ -101,6 +104,22 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
 
   const localFilePath = generatorConfigFile(fileName, config, genConfig)
   return localFilePath
+}
+
+/**
+ * 安装插件
+ * @param {String} plugin npm包名
+ */
+export const installPlugin = plugin => {
+  return Feflow.install(plugin)
+}
+
+/**
+ * 卸载插件
+ * @param {String} plugin npm包名
+ */
+export const unInstallPlugin = plugin => {
+  return Feflow.unInstall(plugin)
 }
 
 /**
