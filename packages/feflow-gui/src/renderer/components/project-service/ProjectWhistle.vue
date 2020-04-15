@@ -1,69 +1,81 @@
 <template>
   <div class="project-whistle">
     <div class="project-whistle__row">
-      <el-button class="project-whistle__icon" type="primary" icon="el-icon-plus" @click="handelDialog(true)" round>新增</el-button>
-      <el-button class="project-whistle__icon" type="success" :icon="startStatus == 1?'el-icon-loading':'el-icon-setting'" @click="runWhistle" round :disabled="startStatus !==0 ">{{startStatus == 1?'启动中':'启动'}}</el-button>
-      <el-button class="project-whistle__icon" type="danger" :icon="startStatus == 3?'el-icon-loading':'el-icon-close'" @click="closeWhistle" round :disabled="startStatus !== 2">{{startStatus == 3?'停止中':'停止'}}</el-button>
+      <div class="project-whistle__side">
+        <el-button class="project-whistle__button" type="success" @click="handelDialog(true)">
+          <i class="el-icon-plus"></i>新增
+        </el-button>
+        <el-button class="project-whistle__button" type="primary" @click="runWhistle" :disabled="startStatus !==0 ">
+          <i :class="startStatus === 1?'el-icon-loading':'el-icon-base el-icon-start'"></i>{{startStatus === 1?'启动中':'启动'}}
+        </el-button>
+        <el-button class="project-whistle__button" type="danger" @click="closeWhistle" :disabled="startStatus !== 2" plain>
+          <i :class="startStatus === 3?'el-icon-loading':'el-icon-base el-icon-pause'"></i>{{startStatus === 3?'停止中':'停止'}}
+        </el-button>
+      </div>
+      <div class="project-whistle__side">
+        <span class="project-whistle__font">whistle端口：</span>
+        <el-input class="project-whistle__port" v-model="whistlePort" :disabled="!isEditPort"></el-input>
+        <i class="el-icon-edit project-whistle__icon" @click="editProxyPort"></i>
+        <i class="el-icon-check project-whistle__icon" @click="saveProxyPort"></i>
+      </div>
     </div>
-    <div class="project-whistle__row2">
-      <span>whistle端口：
-      <el-input class="project-whistle__port" v-model="whistlePort" :disabled="!isEditPort"></el-input>
-        <i class="el-icon-edit project-whistle__margin" @click="editProxyPort"></i>
-        <i class="el-icon-check project-whistle__margin" @click="saveProxyPort"></i>
-      </span>
-    </div>
-
+    <span class="project-whistle__line"></span>
       <div class="project-whistle__main">
         <div class="project-whistle__menu">
-          <div :class="['project-whistle__item', index === currentIndex && 'project-whistle__color']" v-for="(item, index) in completeProxyList" @click="changeProxyConfig(index)">
+          <div :class="['project-whistle__item', index === currentIndex && 'project-whistle__current']" v-for="(item, index) in completeProxyList" @click="changeProxyConfig(index)">
             <div class="project-whistle__name">
-              <span class="project-whistle__current"><i v-if="item.id == selectId" class="el-icon-circle-check"></i></span>
+              <span class="project-whistle__select"><i v-if="item.id == selectId" class="el-icon-blue-check"></i></span>
               <span class="project-whistle__text">{{item.name}}</span>
+              <img v-if="item.isDefault" class="project-whistle__baseicon" v-bind:src="require('../../assets/img/whistle/base.png')" />
             </div>
             <div class="project-whistle__btn">
-              <i class="el-icon-delete" @click.stop="deleteProxy(item, index)"></i>
+              <i class="el-icon-close" @click.stop="deleteProxy(item, index)"></i>
             </div>
           </div>
         </div>
         <div class="project-whistle__content">
           <div class="project-whistle__operation">
-            <el-row>
-              <el-button class="project-whistle__icon" type="primary" icon="el-icon-refresh" @click="handelSelect">切换</el-button>
-              <el-button class="project-whistle__icon" type="danger" icon="el-icon-delete" @click="handelCancel">撤销</el-button>
-              <el-button class="project-whistle__icon" type="success" icon="el-icon-check" @click="handelSave">保存</el-button>
-            </el-row>
+              <div class="project-whistle__side">
+              <el-button class="project-whistle__button" plain icon="el-icon-refresh" @click="handelSelect">切换</el-button>
+              <el-button class="project-whistle__button" plain @click="handelCancel"><i class="el-icon-base el-icon-undo"></i>撤销</el-button>
+              </div>
+              <el-button class="project-whistle__button" type="primary" plain @click="handelSave"><i class="el-icon-base el-icon-save"></i>保存</el-button>
           </div>
           <div class="project-whistle__textarea">
             <el-input
                     type="textarea"
-                    :rows="16"
+                    :rows="18"
                     placeholder="请输入需要配置的代理"
                     v-model="editProxy">
             </el-input>
           </div>
         </div>
       </div>
-      <el-dialog title="添加测试环境" :visible.sync="showDialog">
+      <el-dialog class="project-whistle__dialog" title="添加测试环境" :visible.sync="showDialog">
         <el-form :model="form">
-          <el-form-item label="测试环境名称:">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="是否为通用代理:">
+          <div class="project-whistle__form">
+            <span class="project-whistle__form-title">测试环境名称</span>
+            <el-input class="project-whistle__form-input" v-model="form.name"></el-input>
+          </div>
+          <div class="project-whistle__form project-whistle__form-radio">
+            <span class="project-whistle__form-title">是否为通用代理</span>
             <el-radio v-model="form.isDefault" label="1">是</el-radio>
             <el-radio v-model="form.isDefault" label="0">否</el-radio>
-          </el-form-item>
-          <el-form-item label="代理规则配置">
+          </div>
+          <div class="project-whistle__form">
+            <span class="project-whistle__form-title">代理规则配置</span>
             <el-input
+                    class="project-whistle__form-textarea"
                     type="textarea"
                     :rows="10"
                     placeholder="请输入需要配置的代理"
                     v-model="form.rules">
             </el-input>
-          </el-form-item>
+          </div>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="handelDialog(false)">取 消</el-button>
-          <el-button type="primary" @click="handelAddProxy">确 定</el-button>
+          <el-button @click="handelDialog(false)">取消</el-button>
+          <el-button type="primary" @click="handelAddProxy">添加</el-button>
         </div>
       </el-dialog>
   </div>
@@ -260,73 +272,184 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  font-size: 12px;
+  .el-button {
+    line-height: 30px;
+    height: 30px;
+    font-size: 12px;
+    padding: 0 15px;
+  }
+  .el-button--success {
+    background: #22BCA9;
+  }
+  .el-icon-base {
+    display: inline-block;
+    vertical-align: middle;
+    margin: -2px 5px 0;
+    width: 10px;
+    height: 12px;
+  }
+  .el-icon-start {
+    background: url("../../assets/img/service-run.png") center no-repeat;
+    background-size: 100% auto;
+  }
+  .el-icon-pause {
+    background: url("../../assets/img/service-stop.png") center no-repeat;
+    background-size: 100% auto;
+  }
+  .el-icon-save {
+    margin: -3px 3px 0 0;
+    width: 14px;
+    height: 14px;
+    background: url("../../assets/img/whistle/save.png") center no-repeat;
+    background-size: 100% auto;
+  }
+  .el-icon-undo {
+    margin: -3px 3px 0 0;
+    width: 12px;
+    height: 12px;
+    background: url("../../assets/img/whistle/undo.png") center no-repeat;
+    background-size: 100% auto;
+  }
+  &__icon {
+    margin-right: 12px;
+  }
+  &__button {
+    margin-right: 12px;
+     i {
+       margin-right: 3px;
+     }
+  }
+  &__font {
+    color: #434650;
+  }
   &__row {
-    padding: 20px 20px 0;
-    background: #f3f4f5;
-  }
-  &__row2 {
-    padding: 10px 20px 20px;
-    background: #f3f4f5;
-  }
-  &__port {
-    width: 100px;
-    margin-right: 6px;
-  }
-  &__main {
-    padding-top: 20px;
-    width: 660px;
+    width: 680px;
+    padding: 25px 30px 20px 22px;
+    background: #FFFFFF;
+    border-radius: 4px;
     display: flex;
     flex-direction: row;
-    overflow-y: visible;
+    justify-content: space-between;
+    align-content: center;
+  }
+  &__side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  &__port{
+    width: 80px;
+    margin-right: 12px;
+  }
+  &__port /deep/ .el-input__inner {
+    height: 30px;
+  }
+  &__line {
+    height: 1px;
+    background: #F3F4F5;
+  }
+  &__main {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
   }
   &__menu {
-    width: 160px;
-    background: #b3c0d1;
-    margin-right: 18px;
+    width: 131px;
+    background: #F3F4F5;
+    margin-right: 36px;
   }
   &__item {
-    height: 38px;
-    padding-left: 8px;
-    padding-right: 8px;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
-  &__color {
-    background-color: #e9eef3;
+  &__current {
+    background-color: #E8EAEE;
+    border-right: 2px solid #434650;;
   }
   &__name {
-    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
-  &__current {
+  &__select {
     display: inline-block;
-    width: 14px;
+    width: 12px;
+    .el-icon-blue-check {
+      width: 12px;
+      height: 12px;
+      background: url(../../assets/img/whistle/selected.png) center center no-repeat;
+    }
   }
   &__text {
     margin-left: 6px;
   }
-  &__margin {
-    margin-right: 8px;
+  &__baseicon {
+    margin-left: 4px;
+    width: 24px;
+    height: 12px;
   }
+
   &__content {
     display: flex;
     flex-direction: column;
-    background: #f3f4f5;
+    background: #ffffff;
   }
   &__operation {
-    padding-left: 20px;
-    padding-top: 20px;
-    &__icon {
-      margin-right: 20px;
-    }
+    padding-bottom: 16px;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
   &__textarea {
     box-sizing: border-box;
-    padding: 20px;
-    width: 480px;
-    color: #767e97;
+    width: 462px;
     border-radius: 4px;
+  }
+  &__textarea /deep/ .el-textarea__inner {
+    background: #F3F4F5;
+    border: none;
+  }
+  &__dialog /deep/ .el-dialog__title {
+    font-weight: bold;
+  }
+  &__form {
+    display: flex;
+    flex-direction: row;
+    &-title {
+      width: 84px;
+      text-align: right;
+      font-size: 12px;
+      color: #434650;
+      margin-right: 18px;
+    }
+    &-input {
+      width: 340px;
+      /deep/ .el-input__inner{
+        background: #F3F4F5;
+        border-radius: 4px;
+        border: none;
+      }
+    }
+    &-textarea {
+      width: 340px;
+      /deep/ .el-textarea__inner{
+        background: #F3F4F5;
+        border-radius: 4px;
+        border: none;
+      }
+    }
+    &-radio {
+      padding-top: 27px;
+      padding-bottom: 27px;
+    }
   }
 }
 </style>

@@ -10,7 +10,7 @@
                 </div>
                 <div class="logout" />
             </div>
-            <ul class="nav">
+            <ul class="nav" v-if="!isProjectPage">
                 <router-link to="/">
                     <li class="project current"><i class="icon" />我的项目</li>
                 </router-link>
@@ -18,6 +18,12 @@
                 <router-link to="/admin">
                     <li class="project"><i class="icon" />管理中心</li>
                 </router-link>
+            </ul>
+            <ul class="nav" v-if="isProjectPage">
+                <li class="sub"  :class="{ 'current': projectCurrent === itemIndex }"
+                    v-for="(item, itemIndex) in projectSides"
+                    :key="itemIndex"
+                    @click="activeTab(itemIndex)"><i class="icon" :style="{ background: `url(${item.icon})` }"></i>{{item.name}}</li>
             </ul>
         </div>
         <div class="footer">
@@ -36,8 +42,26 @@
 <script>
 import SettingPanel from './setting'
 export default {
+    model: {
+        prop: 'activeTabId', // 绑定的值，通过父组件传递
+        event: 'updateTabId' // Vue 内部会自动为父组件绑定该自定义事件
+    },
     components: {
         SettingPanel
+    },
+    props: {
+        isProjectPage: {
+            type: Boolean,
+            default: false
+        },
+        projectSides: {
+            type: Array,
+            default: []
+        },
+        projectCurrent: {
+            type: Number,
+            default: 0
+        }
     },
     data() {
         return {
@@ -49,6 +73,10 @@ export default {
     methods: {
         showSettingPanel() {
             this.isSettingVisble = !this.isSettingVisble;
+        },
+        activeTab(index) {
+            // 子组件与父组件通讯，告知父组件更新
+            this.$emit('updateTabId', index)
         }
     }
 }
@@ -104,7 +132,12 @@ export default {
     display: inline-block;
     margin-right: 10px;
 }
-
+.side-bar .nav .sub .icon {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-right: 10px;
+}
 .side-bar .account {
     width: 160px;
     height: 60px;
