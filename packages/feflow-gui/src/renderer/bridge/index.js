@@ -32,6 +32,8 @@ import shell from 'shelljs'
 export const loadGenerator = () => {
   return getFeflowHomeDepencies().then(dependencies => {
     let generators = []
+    let generatorConfigMap = {}
+
     // 筛选脚手架
     generators = dependencies.filter(dependence => {
       return FEFLOW_GENERATOR_REGEX.test(dependence)
@@ -49,7 +51,7 @@ export const loadGenerator = () => {
       })
     }
 
-    return generators
+    return { list: generators, configMap: generatorConfigMap }
   })
 }
 

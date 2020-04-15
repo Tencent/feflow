@@ -88,6 +88,9 @@ const actions = {
   },
   toggleWorkStatus({ commit, state }, status) {
     commit('SET_WORKING_STATUS', status !== undefined ? status : !state.isWorking)
+  },
+  resetGenerateList({ commit }) {
+    commit('SET_GENERATOR_LIST', { list: [], configMap: {} })
   }
 }
 
