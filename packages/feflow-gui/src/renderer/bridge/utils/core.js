@@ -27,10 +27,24 @@ export const spawn = curry(function(cmd, cwd, arg) {
   return child
 })
 
+const getCommandLine = (subCommand, arg) => {
+  let arr = []
+  let keepParam = ['--color', '--disable-check']
+
+  arr.push(COMMAND)
+  arr.push(subCommand)
+  arr.push(...arg)
+  arr.push(...keepParam)
+
+  const commandLine = arr.join(' ')
+
+  console.log('commandLine', commandLine)
+  return commandLine
+}
+
 class FeflowCommand {
   init({ opt, workSpace }) {
     const { param, generator } = opt
-    let arr = []
 
     // 创建默认工作目录
     !isExit(DEFAULT_WORKSPACE) && shell.mkdir(DEFAULT_WORKSPACE)
@@ -43,33 +57,35 @@ class FeflowCommand {
       // 工作目录不存在
       return CREATE_CODE.INVALID_WORKSPACE
     }
-    arr.push(COMMAND)
+    let params = []
+    let commandLine = ''
 
-    arr.push('init')
-
-    arr.push(`--generator=${generator}`)
+    params.push(`--generator=${generator}`)
 
     if (typeof param === 'string') {
       // 直接传入配置文件路径
-      arr.push(`--config=${param}`)
+      params.push(`--config=${param}`)
     } else {
-      arr.push(`--config='${JSON.stringify(param)}'`)
+      params.push(`--config='${JSON.stringify(param)}'`)
     }
 
-    arr.push('--color')
-
-    // 禁止更新
-    arr.push('--disable-check')
+    commandLine = getCommandLine('init', params)
 
     shell.cd(workSpace)
 
-    console.log('arr', arr.join(' '))
-
-    return shell.exec(arr.join(' '), { async: true })
+    return shell.exec(commandLine, { async: true })
   }
 
   spawn(cwd) {
     return spawn(COMMAND)(cwd)
+  }
+  install(plugin) {
+    let commandLine = getCommandLine('install', [plugin])
+    return shell.exec(commandLine, { async: true })
+  }
+  unInstall(plugin) {
+    let commandLine = getCommandLine('uninstall', [plugin])
+    return shell.exec(commandLine, { async: true })
   }
 }
 

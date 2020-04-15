@@ -1,83 +1,68 @@
 <template>
   <div class="create-inner">
-    <el-form label-position="left" label-width="140px" ref="form" :model="formData">
-      <el-form-item label="脚手架">
-        <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
-          <el-option
-            :disabled="isWorking"
-            v-for="item in generators"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="项目目录" v-if="!!targetGenerator">
-        <el-input :value="workSpace" :disabled="true">
-          <el-button
-            @click="handleWorkSpaceClick"
-            class="workspace_btn"
-            slot="append"
-            :disabled="isWorking"
-          >选择</el-button>
-        </el-input>
-      </el-form-item>
-      <div v-for="(field, index) in formConfig" v-bind:key="index">
-        <el-form-item :label="field.title" v-if="shouldShow(field)">
-          <el-col>
-            <component
-              v-if="field.type !== 'select'"
-              :key="index"
-              :is="'el-' + field.type"
-              :label="field.title"
-              :value="formData[field.field]"
-              @input="updateForm(field.field, $event)"
-              v-bind="field"
-              :options="field.options"
-              :ref="field.title"
-              :placeholder="field.description"
+    <section v-if="list.length">
+      <el-form label-position="left" label-width="140px" ref="form" :model="formData">
+        <el-form-item label="脚手架">
+          <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
+            <el-option
               :disabled="isWorking"
-            ></component>
-
-            <el-select
-              v-else
-              :value="formData[field.field]"
-              @input="updateForm(field.field, $event)"
-              :disabled="isWorking"
-            >
-              <el-option
-                v-for="item in field.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-col>
+              v-for="item in generators"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
+        <el-form-item label="项目目录" v-if="!!targetGenerator">
+          <el-input :value="workSpace" :disabled="true">
+            <el-button
+              @click="handleWorkSpaceClick"
+              class="workspace_btn"
+              slot="append"
+              :disabled="isWorking"
+            >选择</el-button>
+          </el-input>
+        </el-form-item>
+        <schema-form
+          v-if="targetGeneratorConfig.generator"
+          :schema="targetGeneratorConfig"
+          :isWorking="isWorking"
+        />
+
+        <el-form-item label="项目图片" v-if="!!targetGenerator">
+          <el-input v-model="banner" clearable :disabled="isWorking" />
+        </el-form-item>
+      </el-form>
+
+      <div class="action-btn">
+        <el-popover
+          v-model="popoverVisible"
+          :title="isWorking?'运行日志' : '暂无初始化任务'"
+          placement="bottom"
+          width="400"
+          trigger="manual"
+          @after-enter="initTerminal"
+        >
+          <div class="create-inner__console">
+            <div class="create-inner__console_terminal" ref="terminal"></div>
+          </div>
+          <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
+        </el-popover>
+
+        <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
+        <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
       </div>
-      <el-form-item label="项目图片" v-if="!!targetGenerator">
-        <el-input v-model="banner" clearable :disabled="isWorking" />
-      </el-form-item>
-    </el-form>
-
-    <div class="action-btn">
-      <el-popover
-        v-model="popoverVisible"
-        :title="isWorking?'运行日志' : '暂无初始化任务'"
-        placement="bottom"
-        width="400"
-        trigger="manual"
-        @after-enter="initTerminal"
-      >
-        <div class="create-inner__console">
-          <div class="create-inner__console_terminal" ref="terminal"></div>
-        </div>
-        <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
-      </el-popover>
-
-      <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
-      <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
-    </div>
+    </section>
+    <section v-else>
+      <div class="create-empty">
+        <i class="el-icon-sugar project-icon"></i>
+        <p>
+          <router-link to="/market">
+            <el-link type="primary">未找到脚手架，请去插件市场安装</el-link>
+          </router-link>
+        </p>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -88,40 +73,44 @@ import { runGenerator, saveGeneratorConfig } from '../../bridge'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import 'xterm/css/xterm.css'
+import SchemaForm from './schema-parser/components/vue-form'
 
 export default {
   name: 'create-page',
   props: ['isSelected'],
+  components: {
+    'schema-form': SchemaForm
+  },
   data() {
     return {
       targetGenerator: '',
       generators: [],
       formData: {},
       generatorsConfig: {},
-      isWorking: false,
       banner: '',
       hasInitTerminal: false,
-      popoverVisible: false
+      popoverVisible: false,
+      empty: false
     }
   },
   mounted() {},
   created() {
     // 载入脚手架
     this.init()
-    // 初始化表单配置
-    this.loadFormInitData()
   },
   computed: {
     targetGeneratorConfig() {
       return this.generatorsConfig[this.targetGenerator] || {}
     },
-    formConfig() {
-      // 读取选中脚手架的配置
-      return this.targetGeneratorConfig.properties || []
-    },
     ...mapState({
       workSpace: state => state.Generator.workSpace,
-      localConfigName: state => state.Generator.localConfigName
+      localConfigName: state => state.Generator.localConfigName,
+      jsonData: state => state.Schema.model,
+      validMessage: state => state.Schema.messages,
+      valid: state => state.Schema.valid,
+      isWorking: state => state.Generator.isWorking,
+      list: state => state.Generator.list,
+      configMap: state => state.Generator.configMap
     })
   },
   watch: {
@@ -132,30 +121,31 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState']),
+    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState', 'toggleWorkStatus']),
     init() {
       // 获取脚手架
       this.getGenerator()
       this.resetState()
-      const { list, configMap } = this.$store.state.Generator
-      const gens = Object.keys(configMap)
+      this.toggleWorkStatus(false)
+      const gens = Object.keys(this.configMap)
+      if (!this.list.length) {
+        return (this.empty = true)
+      }
 
       Array.isArray(gens) &&
         gens.forEach(genName => {
           const key = genName
-          const gen = configMap[genName]
+          const gen = this.configMap[genName]
 
           this.generators.push({
             value: key,
             label: gen.description
           })
 
-          this.generatorsConfig[key] = configMap[key]
+          this.generatorsConfig[key] = this.configMap[key]
         })
       // 默认加载第一个脚手架
-      this.targetGenerator = list[0]
-
-      console.log('targetGeneratorConfig', this.targetGeneratorConfig)
+      this.targetGenerator = this.list[0]
     },
     // 初始化控制台
     initTerminal() {
@@ -182,14 +172,14 @@ export default {
       this.term.open(this.$refs.terminal)
       fitAddon.fit()
     },
-    loadFormInitData() {
-      const formDataFromConfig = {}
-      this.formConfig.forEach(item => (formDataFromConfig[item.field] = item.default))
-      this.formData = formDataFromConfig
-    },
     async handleClick() {
-      const { execType } = this.generatorsConfig[this.targetGenerator]
-      const isValid = await this.checkFormData()
+      const { execType } = this.generatorsConfig[this.targetGenerator] || {}
+      let isValid = await this.checkFormData()
+      // 如果脚手架没有配置文件，那就直接生成
+      if (!this.targetGeneratorConfig.generator) {
+        isValid = true
+      }
+
       let config = {}
 
       if (!isValid || this.messageInstance) return
@@ -197,12 +187,12 @@ export default {
       // 创建配置文件
       if (execType === 'path') {
         this.builConfig({
-          config: this.formData,
+          config: this.jsonData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
         config = this.localConfigName
       } else {
-        config = Object.assign({}, this.formData, { banner: this.banner })
+        config = Object.assign({}, this.jsonData, { banner: this.banner })
       }
 
       if (this.messageInstance) {
@@ -212,7 +202,7 @@ export default {
 
       this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true)
 
-      this.isWorking = true
+      this.toggleWorkStatus(true)
       this.popoverVisible = true
       // 直接传参
       // 执行脚手架初始化命令
@@ -246,16 +236,8 @@ export default {
     async checkFormData() {
       let errMsg = []
       let isValidWorkspace = false
+      this.$store.dispatch('Schema/validate')
       // 表单校验
-      this.formConfig.forEach(({ required, title, regex = '.*', field }) => {
-        let value = this.formData[field]
-        if (value === undefined && required) {
-          errMsg.push(`${title} 不能为空`)
-        }
-        if (!new RegExp(regex).test(this.formData[field])) {
-          errMsg.push(`${title} 格式不正确`)
-        }
-      })
 
       if (this.banner && !/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
         errMsg.push('图片链接格式有误')
@@ -270,37 +252,16 @@ export default {
       }
 
       // 项目路径检查
-      if (this.formData.name && this.workSpace) {
+      if (this.jsonData.name && this.workSpace) {
         const initCode = await this.$store.dispatchPromise('checkBeforeRun', {
-          name: this.formData.name,
+          name: this.jsonData.name,
           workSpace: this.workSpace
         })
         this.handleInitCode(initCode)
         isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS
       }
 
-      return !errMsg.length && isValidWorkspace
-    },
-    shouldShow(field) {
-      const requireList = field.require
-      let result = true
-      // 错误类型
-      if (!Array.isArray(requireList)) {
-        return result
-      }
-      // 空值
-      if (requireList.length === 0) {
-        return result
-      }
-      requireList.forEach(item => {
-        if (!this.formData[item]) {
-          result = false
-        }
-      })
-      return result
-    },
-    updateForm(fieldName, value) {
-      this.formData[fieldName] = value
+      return !errMsg.length && isValidWorkspace && this.valid
     },
     handleWorkSpaceClick() {
       this.selectWorkSpace()
@@ -314,7 +275,7 @@ export default {
           this.messageInstance = null
           // 保存
           saveGeneratorConfig({
-            projectName: this.formData.name,
+            projectName: this.jsonData.name,
             workSpace: this.workSpace + '/' + this.formData.name,
             banner: this.banner
           })
@@ -344,9 +305,9 @@ export default {
     },
     handleReset() {
       // 重置表单， 防止重复初始化项目
-      this.loadFormInitData()
-      this.isWorking = false
+      this.toggleWorkStatus(false)
       this.banner = ''
+      this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
 
       // 重置脚手架状态
       this.resetState()
@@ -397,6 +358,19 @@ export default {
   display: flex;
   justify-content: flex-end;
   /* float: right; */
+}
+.create-empty {
+  text-align: center;
+  margin-top: 75px;
+  p {
+    margin-top: 30px;
+  }
+  .market-jump {
+    color: green;
+  }
+}
+.project-icon {
+  font-size: 62px;
 }
 </style>
 

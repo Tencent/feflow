@@ -124,52 +124,13 @@ export function parseYaml(path) {
  */
 export const generatorConfigFile = (fileName, config, schema) => {
   const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, fileName + '.js')
-  const objTypeMap = {}
-  const typeMap = {}
-  let hasAscription = false
-
-  schema.properties.forEach(prop => {
-    const ascription = prop.ascription
-    if (ascription) {
-      hasAscription = true
-      objTypeMap[prop.field] = ascription
-      if (!typeMap[ascription]) {
-        typeMap[ascription] = true
-      }
-    }
-  })
-
-  const getStringValue = value => {
-    const type = typeof value
-    if (type === 'boolean') {
-      return value
-    } else if (type === 'string') {
-      return "'" + value + "'"
-    }
-  }
 
   if (!isExit(filepath)) {
     const content = []
 
-    hasAscription
-      ? content.push(`
-      const config = {
-        ${Object.keys(typeMap).join(': {}, \n\t\t')} : {}
-      }
+    content.push(`
+      const config = ${JSON.stringify(config)}
     `)
-      : content.push('const config = {}')
-
-    Object.keys(config).forEach(key => {
-      if (objTypeMap[key]) {
-        content.push(`
-          config.${objTypeMap[key]}.${key} = "${getStringValue(config[key]) || 0}"
-        `)
-      } else {
-        content.push(`
-          config.${key} = "${config[key] || 0}"
-      `)
-      }
-    })
 
     content.push(`
       module.exports = config

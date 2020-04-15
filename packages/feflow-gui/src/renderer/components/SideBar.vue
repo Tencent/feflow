@@ -14,7 +14,10 @@
                 <router-link to="/">
                     <li class="project current"><i class="icon" />我的项目</li>
                 </router-link>
-                <li class="market"><i class="icon" />插件市场</li>
+                <router-link to="/market">
+                    <li class="market"><i class="icon" />插件市场</li>
+                </router-link>
+
                 <router-link to="/admin">
                     <li class="project"><i class="icon" />管理中心</li>
                 </router-link>
@@ -59,8 +62,9 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     width: 160px;
-    /* height: 600px; */
-    background: #434650;
+    background: #282c34;
+    padding-top: 30px;
+    height: calc(100% - 30px);
 }
 .side-bar .nav, .footer{
     font-size: 14px;

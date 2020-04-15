@@ -14,11 +14,13 @@ import path from 'path'
 import {
   CREATE_CODE,
   FEFLOW_GENERATOR_REGEX,
+  FEFLOW_GENERATOR_AND_PLUGIN_REGEX,
   GENERATOR_CONFIG_FILE_NAME,
   FEFLOW_HOME_CONFIG_PATH,
   FEFLOW_PROJECT_CONFIG_NAME,
   FEFLOW_PROJECT_DEVKIT_CONFIG_NAME,
-  FEFLOW_GENERATOR_CONFIG_HOME
+  FEFLOW_GENERATOR_CONFIG_HOME,
+  FEFLOW_WHISTLE_JS_PATH
 } from './constants'
 import { dialog } from 'electron'
 import fs from 'fs'
@@ -28,26 +30,16 @@ import shell from 'shelljs'
  * 载入全局脚手架
  */
 export const loadGenerator = () => {
-  return new Promise(resolve => {
-    let packageContent = null
+  return getFeflowHomeDepencies().then(dependencies => {
     let generators = []
-    let generatorConfigMap = {}
+    // 筛选脚手架
+    generators = dependencies.filter(dependence => {
+      return FEFLOW_GENERATOR_REGEX.test(dependence)
+    })
 
-    // 先检查根目录是否存在
-    if (checkFeflowEnv()) {
-      // 获取Feflow项目依赖
-      packageContent = getFeflowRootPackage()
-      if (!packageContent) resolve(generators)
-
-      const dependencies = Object.keys(packageContent.dependencies)
-
-      // 筛选脚手架
-      generators = dependencies.filter(dependence => {
-        return FEFLOW_GENERATOR_REGEX.test(dependence)
-      })
-
-      // 获取脚手架配置
-      // 优先级  js > json
+    // 获取脚手架配置
+    // 优先级  js > json
+    if (generators.length) {
       generators.forEach(gen => {
         for (const configName of GENERATOR_CONFIG_FILE_NAME) {
           if (!generatorConfigMap[gen]) {
@@ -57,9 +49,45 @@ export const loadGenerator = () => {
       })
     }
 
-    resolve({ list: generators, configMap: generatorConfigMap })
+    return generators
+  })
+}
+
+/**
+ *
+ * 载入全局脚手架和插件
+ */
+export const loadLocalPluginAndGenerator = () => {
+  return getFeflowHomeDepencies().then(dependencies => {
+    let generators = []
+    // 筛选脚手架
+    generators = dependencies.filter(dependence => {
+      return FEFLOW_GENERATOR_AND_PLUGIN_REGEX.test(dependence)
+    })
+
+    return generators
+  })
+}
+
+/**
+ * 获取feflow项目依赖
+ */
+const getFeflowHomeDepencies = () => {
+  return new Promise(resolve => {
+    let packageContent = null
+    let dependencies = []
+
+    // 先检查根目录是否存在
+    if (checkFeflowEnv()) {
+      // 获取Feflow项目依赖
+      packageContent = getFeflowRootPackage()
+      if (!packageContent) resolve(dependencies)
+      dependencies = Object.keys(packageContent.dependencies)
+    }
+
+    resolve(dependencies)
   }).catch(e => {
-    console.log('loadGenerator err', e)
+    console.log('get feflow home depencies err', e)
   })
 }
 
@@ -76,6 +104,22 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
 
   const localFilePath = generatorConfigFile(fileName, config, genConfig)
   return localFilePath
+}
+
+/**
+ * 安装插件
+ * @param {String} plugin npm包名
+ */
+export const installPlugin = plugin => {
+  return Feflow.install(plugin)
+}
+
+/**
+ * 卸载插件
+ * @param {String} plugin npm包名
+ */
+export const unInstallPlugin = plugin => {
+  return Feflow.unInstall(plugin)
 }
 
 /**
@@ -277,4 +321,46 @@ export const openDialogToGetDirectory = () => {
       }
     )
   })
+}
+
+export const getFefProjectProxy = projectName => {
+  const doc = loadFeflowConfigFile()
+  if (!doc.projects || !doc.projects[projectName]) {
+    return {}
+  } else {
+    return doc.projects[projectName].proxy || {}
+  }
+}
+
+export const updateFefProjectProxy = (projectName, proxyConfig) => {
+  // 更新 .fef project配置
+  const conf = loadFeflowConfigFile()
+  conf.projects[projectName].proxy = proxyConfig
+  safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
+}
+
+/**
+ * 【项目模块适用】解析项目开发套件支持的命令列表
+ */
+export const getDefaultProjectProxy = projectPath => {
+  // 解析 .feflowrc.json，获取基础proxy
+  const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
+  return feflowrcJSON.proxy || []
+}
+
+export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
+  // 更新 .fef project配置
+  const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
+  const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
+  console.log(feflowrcJSON)
+  feflowrcJSON['proxy'] = proxyConfig
+  fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
+}
+
+export const generatorWhistleJS = proxyConfig => {
+  let filepath = FEFLOW_WHISTLE_JS_PATH
+  const content = `
+      module.exports = ${JSON.stringify(proxyConfig)}
+    `
+  fs.writeFileSync(filepath, content)
 }

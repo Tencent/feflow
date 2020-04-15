@@ -1,12 +1,12 @@
 <template>
-  <div id="app" class="feflow-gui">
+  <div id="app" class="feflow-gui" style="-webkit-app-region: drag">
     <router-view></router-view>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'feflow-gui'
+    name: 'Feflow 桌面版'
   }
 </script>
 

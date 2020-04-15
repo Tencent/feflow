@@ -15,6 +15,8 @@ export const DEFAULT_WORKSPACE = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 'worksp
 
 export const FEFLOW_GENERATOR_REGEX = /^@(tencent|feflow)\/generator-(.*)/i
 
+export const FEFLOW_GENERATOR_AND_PLUGIN_REGEX = /^@(tencent|feflow)\/(generator|feflow-plugin)-(.*)/i
+
 export const FEFLOW_HOME_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME)
 
 export const FEFLOW_GENERATOR_CONFIG_HOME = path.resolve(FEFLOW_HOME_PATH, 'generator_config')
@@ -25,6 +27,9 @@ export const FEFLOW_HOME_PACKAGE_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 
 
 export const GENERATOR_CONFIG_FILE_NAME = ['generator.js', 'generator.json']
 
+export const FEFLOW_WHISTLE_JS = '.whistle.js'
+
+export const FEFLOW_WHISTLE_JS_PATH = path.resolve(FEFLOW_HOME_PATH, FEFLOW_WHISTLE_JS)
 export const CREATE_CODE = {
   // Native code
   SUCCESS: 0,
