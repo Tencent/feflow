@@ -1,8 +1,5 @@
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { installPlugin, unInstallPlugin } from '../../../bridge'
-
-// 记录插件任务状态
-const taskMap = {}
 
 export default {
   data() {
@@ -10,12 +7,16 @@ export default {
       targetPkgName: ''
     }
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      taskMap: state => state.Market.taskMap
+    })
+  },
   methods: {
-    ...mapActions(['getLocalPluginList']),
+    ...mapActions(['getLocalPluginList', 'setTaskMap']),
     checkTaskValid(fullPkgName) {
       // 防止任务重复
-      if (taskMap[fullPkgName]) {
+      if (this.taskMap[fullPkgName]) {
         this.toast(`${fullPkgName}插件正在任务队列中, 请任务完成后再试`)
         return false
       }
@@ -24,11 +25,11 @@ export default {
     handleInstallAction(isInstalled, fullPkgName) {
       const targetPkgName = fullPkgName
       const handleFn = !isInstalled ? installPlugin : unInstallPlugin
-      taskMap[fullPkgName] = true
+      this.setTaskMap({ key: fullPkgName, value: true })
       return new Promise(resolve => {
         const childProcess = handleFn(targetPkgName)
         childProcess.on('close', code => {
-          taskMap[fullPkgName] = false
+          this.setTaskMap({ key: fullPkgName, value: false })
           this.handleCode(code, isInstalled ? 'uninstall' : 'install', targetPkgName)
           resolve(code)
         })

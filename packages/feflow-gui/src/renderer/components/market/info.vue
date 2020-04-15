@@ -73,7 +73,8 @@ export default {
     ...mapState({
       plugins: state => state.Market.plugins,
       pluginsInfoMap: state => state.Market.pluginsInfoMap,
-      localPlugins: state => state.Market.localPlugins
+      localPlugins: state => state.Market.localPlugins,
+      taskMap: state => state.Market.taskMap
     }),
     targetPlugin() {
       const _targetPlugin = this.pluginsInfoMap[this.pkgName] || { isEmpty: true }
@@ -92,6 +93,7 @@ export default {
 
     this.pkgName = pkgName
     this.fullPkgName = key
+
     // 获取该插件信息
     if (!this.targetPlugin.name) {
       this.getPluginInfo(key)
@@ -100,11 +102,20 @@ export default {
         this.isTimedOut = true
       }, 4500)
     }
+
+    // 同步任务状态
+    // TODO
+    // store状态变化后 未能更新
+    // if (this.taskMap[this.fullPkgName]) {
+    //   this.isBtnPendding = true
+    // } else {
+    //   this.isBtnPendding = false
+    // }
   },
   methods: {
     ...mapActions(['getPluginInfo', 'getLocalPluginList']),
     handleClick(isInstalled) {
-      if (!this.checkTaskValid(this.fullPkgName)) return
+      if (!this.checkTaskValid(this.fullPkgName) || this.isBtnPendding) return
       this.isBtnPendding = true
       this.handleInstallAction(isInstalled, this.fullPkgName).then(code => {
         this.isBtnPendding = false
