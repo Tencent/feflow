@@ -13,7 +13,7 @@ const WIN_CONF = {
 /**
  * 打开项目服务窗口
  */
-function createProjectService () {
+function createProjectService() {
   ipcMain.on('create-project-service', (event, { routeName, projectName, projectPath }) => {
     if (!routeName || !projectPath || !projectName) {
       return
@@ -21,7 +21,8 @@ function createProjectService () {
 
     let win = new BrowserWindow({
       width: WIN_CONF.width,
-      height: WIN_CONF.height
+      height: WIN_CONF.height,
+      webPreferences: { webSecurity: false }
     })
 
     win.on('close', () => {
@@ -32,6 +33,6 @@ function createProjectService () {
   })
 }
 
-export default function () {
+export default function() {
   createProjectService()
 }

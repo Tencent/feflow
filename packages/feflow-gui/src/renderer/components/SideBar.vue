@@ -56,7 +56,9 @@ export default {
         },
         projectSides: {
             type: Array,
-            default: []
+            default: () => {
+                return []
+            }
         },
         projectCurrent: {
             type: Number,
