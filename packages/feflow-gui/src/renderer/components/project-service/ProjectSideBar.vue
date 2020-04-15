@@ -29,9 +29,9 @@ export default {
       isCollapse: false,
       projectSides: [
         {
-            name: '主页',
-            icon: 'static/img/project-service/service-index.png',
-            component: 'ProjectDocs'
+          name: '主页',
+          icon: 'static/img/project-service/service-index.png',
+          component: 'ProjectDocs'
         },
         {
           name: '任务',

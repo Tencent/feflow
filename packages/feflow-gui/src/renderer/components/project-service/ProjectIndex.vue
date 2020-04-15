@@ -27,24 +27,24 @@
     name: 'project-index',
     data() {
       return {
-        activeTabId: 1,
+        activeTabId: 0,
         projectSides: [
-        {
-          name: '任务',
-          icon: 'static/img/project-service/service-command.png',
-          component: 'ProjectCommand'
-        },
-        {
-          name: '主页',
-          icon: 'static/img/project-service/service-index.png',
-          component: 'ProjectDocs'
-        },
-        {
-          name: '代理',
-          icon: 'static/img/project-service/service-index.png',
-          component: 'ProjectWhistle'
-        }
-      ]
+          {
+            name: '主页',
+            icon: 'static/img/project-service/service-index.png',
+            component: 'ProjectDocs'
+          },
+          {
+            name: '任务',
+            icon: 'static/img/project-service/service-command.png',
+            component: 'ProjectCommand'
+          },
+          {
+            name: '代理',
+            icon: 'static/img/project-service/service-index.png',
+            component: 'ProjectWhistle'
+          }
+        ]
       }
     },
     components: {

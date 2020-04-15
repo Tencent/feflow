@@ -8,7 +8,7 @@ import { getUrl } from '../common/utils'
 // GUI 统一参数
 const WIN_CONF = {
   width: 840,
-  height: 640
+  height: 600
 }
 /**
  * 打开项目服务窗口
@@ -21,7 +21,12 @@ function createProjectService () {
 
     let win = new BrowserWindow({
       width: WIN_CONF.width,
-      height: WIN_CONF.height
+      height: WIN_CONF.height,
+      useContentSize: true,
+      titleBarStyle: 'hidden',
+      webPreferences: {
+        webSecurity: false
+      }
     })
 
     win.on('close', () => {
