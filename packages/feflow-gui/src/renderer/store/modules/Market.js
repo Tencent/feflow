@@ -7,12 +7,15 @@ const state = {
   plugins: {},
   // {[key]: [value]}
   pluginsMap: {},
-  pluginsInfoMap: {},
+  pluginsInfoMap: { isEmpty: true },
   localPlugins: []
 }
 
 const mutations = {
   SET_PLUGIN_MAP(state, value) {
+    state.pluginsInfoMap = value
+  },
+  SET_PLUGIN_MAP_KEY(state, value) {
     state.pluginsInfoMap[value.name] = value
   },
   SET_PLUGIN(state, { pluginMap, pluginList }) {
@@ -25,19 +28,28 @@ const mutations = {
 }
 
 const actions = {
-  getPlugins({ commit }) {
+  getPlugins({ commit, state }) {
     getPluginListFromLego().then(({ data }) => {
       const { pluginList: _pluginList } = camelizeKeys(data.result)
-      // TODO 获取用户本地已安装的插件
+      const initPluginsInfoMap = {}
       const { pluginMap, pluginList } = formatPluginList(_pluginList)
+
       commit('SET_PLUGIN', { pluginMap, pluginList })
+
+      if (state.pluginsInfoMap.isEmpty) {
+        // 及时更新
+        pluginList.forEach(({ pkgName }) => {
+          initPluginsInfoMap[pkgName] = {}
+        })
+        commit('SET_PLUGIN_MAP', initPluginsInfoMap)
+      }
     })
   },
   getPluginInfo({ commit }, repo) {
     getPluginInfoFromTnpm(repo)
       .then(resp => {
         console.log('resp', resp)
-        commit('SET_PLUGIN_MAP', resp)
+        commit('SET_PLUGIN_MAP_KEY', resp)
       })
       .catch(err => {
         console.log('err', err)
@@ -45,7 +57,7 @@ const actions = {
         // TODO 上报点
         const { data, status } = response || {}
         if (status !== 200) {
-          commit('SET_PLUGIN_MAP', { key: '@tencent/' + repo, value: { status, data } })
+          commit('SET_PLUGIN_MAP_KEY', { key: '@tencent/' + repo, value: { status, data } })
         }
       })
   },

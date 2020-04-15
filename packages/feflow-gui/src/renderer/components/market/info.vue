@@ -14,7 +14,7 @@
           <p>插件加载中，请稍等</p>
         </div>
       </div>
-      <section v-else-if="!targetPlugin.status && !isTimedOut">
+      <section v-else-if="!targetPlugin.status && !isTimedOut && targetPlugin.name">
         <div class="market-info_box">
           <div class="market-info_meta">
             <div class="market-info_meta_title">{{targetPlugin.name}}</div>
@@ -37,7 +37,7 @@
         <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
       </section>
 
-      <div v-else class="market-empty">
+      <div v-else-if="targetPlugin.status " class="market-empty">
         <i class="el-icon-dessert"></i>
 
         <p>
@@ -54,7 +54,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import SideBar from '../SideBar'
-// import { installPlugin, unInstallPlugin } from '../../bridge'
 import Basic from './mixins/basic'
 // TODO 需要校验网络环境
 
