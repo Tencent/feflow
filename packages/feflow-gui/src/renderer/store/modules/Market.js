@@ -7,12 +7,17 @@ const state = {
   plugins: {},
   // {[key]: [value]}
   pluginsMap: {},
-  pluginsInfoMap: {},
-  localPlugins: []
+  pluginsInfoMap: { isEmpty: true },
+  localPlugins: [],
+  // 记录插件任务状态
+  taskMap: {}
 }
 
 const mutations = {
   SET_PLUGIN_MAP(state, value) {
+    state.pluginsInfoMap = value
+  },
+  SET_PLUGIN_MAP_KEY(state, value) {
     state.pluginsInfoMap[value.name] = value
   },
   SET_PLUGIN(state, { pluginMap, pluginList }) {
@@ -21,23 +26,40 @@ const mutations = {
   },
   SET_LOCAL_PLUGIN(state, pluginList) {
     state.localPlugins = pluginList
+  },
+  SET_TASK_MAP(state, taskMap) {
+    state.taskMap = taskMap
+  },
+  SET_TASK_MAP_KEY(state, { key, value }) {
+    state.taskMap[key] = value
   }
 }
 
 const actions = {
-  getPlugins({ commit }) {
+  getPlugins({ commit, state }) {
     getPluginListFromLego().then(({ data }) => {
       const { pluginList: _pluginList } = camelizeKeys(data.result)
-      // TODO 获取用户本地已安装的插件
+      const initPluginsInfoMap = {}
+      const initTaskMap = {}
       const { pluginMap, pluginList } = formatPluginList(_pluginList)
+
       commit('SET_PLUGIN', { pluginMap, pluginList })
+
+      if (state.pluginsInfoMap.isEmpty) {
+        // 及时更新
+        pluginList.forEach(({ pkgName, key }) => {
+          initPluginsInfoMap[pkgName] = {}
+          initTaskMap[key] = false
+        })
+        commit('SET_PLUGIN_MAP', initPluginsInfoMap)
+        commit('SET_TASK_MAP', initTaskMap)
+      }
     })
   },
   getPluginInfo({ commit }, repo) {
     getPluginInfoFromTnpm(repo)
       .then(resp => {
-        console.log('resp', resp)
-        commit('SET_PLUGIN_MAP', resp)
+        commit('SET_PLUGIN_MAP_KEY', resp)
       })
       .catch(err => {
         console.log('err', err)
@@ -45,7 +67,7 @@ const actions = {
         // TODO 上报点
         const { data, status } = response || {}
         if (status !== 200) {
-          commit('SET_PLUGIN_MAP', { key: '@tencent/' + repo, value: { status, data } })
+          commit('SET_PLUGIN_MAP_KEY', { key: '@tencent/' + repo, value: { status, data } })
         }
       })
   },
@@ -53,6 +75,9 @@ const actions = {
     loadLocalPluginAndGenerator().then(plugin => {
       commit('SET_LOCAL_PLUGIN', plugin)
     })
+  },
+  setTaskMap({ commit }, obj) {
+    commit('SET_TASK_MAP_KEY', obj)
   }
 }
 

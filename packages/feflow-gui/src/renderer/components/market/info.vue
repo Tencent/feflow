@@ -14,7 +14,7 @@
           <p>插件加载中，请稍等</p>
         </div>
       </div>
-      <section v-else-if="!targetPlugin.status && !isTimedOut">
+      <section v-else-if="!targetPlugin.status && !isTimedOut && targetPlugin.name">
         <div class="market-info_box">
           <div class="market-info_meta">
             <div class="market-info_meta_title">{{targetPlugin.name}}</div>
@@ -37,7 +37,7 @@
         <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
       </section>
 
-      <div v-else class="market-empty">
+      <div v-else-if="targetPlugin.status " class="market-empty">
         <i class="el-icon-dessert"></i>
 
         <p>
@@ -54,7 +54,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import SideBar from '../SideBar'
-// import { installPlugin, unInstallPlugin } from '../../bridge'
 import Basic from './mixins/basic'
 // TODO 需要校验网络环境
 
@@ -74,7 +73,8 @@ export default {
     ...mapState({
       plugins: state => state.Market.plugins,
       pluginsInfoMap: state => state.Market.pluginsInfoMap,
-      localPlugins: state => state.Market.localPlugins
+      localPlugins: state => state.Market.localPlugins,
+      taskMap: state => state.Market.taskMap
     }),
     targetPlugin() {
       const _targetPlugin = this.pluginsInfoMap[this.pkgName] || { isEmpty: true }
@@ -93,6 +93,7 @@ export default {
 
     this.pkgName = pkgName
     this.fullPkgName = key
+
     // 获取该插件信息
     if (!this.targetPlugin.name) {
       this.getPluginInfo(key)
@@ -101,11 +102,20 @@ export default {
         this.isTimedOut = true
       }, 4500)
     }
+
+    // 同步任务状态
+    // TODO
+    // store状态变化后 未能更新
+    // if (this.taskMap[this.fullPkgName]) {
+    //   this.isBtnPendding = true
+    // } else {
+    //   this.isBtnPendding = false
+    // }
   },
   methods: {
     ...mapActions(['getPluginInfo', 'getLocalPluginList']),
     handleClick(isInstalled) {
-      if (!this.checkTaskValid(this.fullPkgName)) return
+      if (!this.checkTaskValid(this.fullPkgName) || this.isBtnPendding) return
       this.isBtnPendding = true
       this.handleInstallAction(isInstalled, this.fullPkgName).then(code => {
         this.isBtnPendding = false

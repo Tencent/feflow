@@ -5,7 +5,7 @@
       <section class="market-wrapper">
         <div class="market-title">插件市场</div>
         <el-row :gutter="20">
-          <el-col :span="8" v-for="(plugin, index) in pluginsFormated" :key="index">
+          <el-col :span="8" v-for="(plugin, index) in pluginsFormated" :key="plugin.key">
             <div @click="handleJump(index)" class="box-card">
               <el-card :class="getRandomBgColor(index)">
                 <h2 class="plugin-title">{{plugin.key}}</h2>
@@ -50,7 +50,8 @@ export default {
   computed: {
     ...mapState({
       plugins: state => state.Market.plugins,
-      localPlugins: state => state.Market.localPlugins
+      localPlugins: state => state.Market.localPlugins,
+      taskMap: state => state.Market.taskMap
     }),
     pluginsFormated() {
       let _plugins = []
@@ -83,7 +84,7 @@ export default {
       return cln
     },
     handleBtnClick(isInstalled, fullPkgName) {
-      if (!this.checkTaskValid(this.fullPkgName)) return
+      if (!this.checkTaskValid(fullPkgName)) return
       if (this.paddingPlugin.length >= 2) {
         return this.toast('任务执行过多，请稍后再试', '', 'info')
       }
@@ -124,7 +125,7 @@ main {
   cursor: pointer;
 }
 .plugin-text {
-  min-height: 56px;
+  min-height: 43px;
   color: rgba(255, 255, 255, 05);
 }
 </style>
