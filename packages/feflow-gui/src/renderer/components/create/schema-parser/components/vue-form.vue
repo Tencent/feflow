@@ -29,8 +29,13 @@ export default {
   },
   created: function() {
     const { schema, definition, model } = this
-
     this.init({ schema, definition, model })
+  },
+  watch: {
+    schema(newSchema) {
+      const { definition, model } = this
+      this.init({ schema: newSchema, definition, model })
+    }
   },
   components: {
     bootstrap: Horizontal
