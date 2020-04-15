@@ -36,8 +36,8 @@
         <div class="project-whistle__content">
           <div class="project-whistle__operation">
               <div class="project-whistle__side">
-              <el-button class="project-whistle__button" plain icon="el-icon-refresh" @click="handelSelect">切换</el-button>
-              <el-button class="project-whistle__button" plain @click="handelCancel"><i class="el-icon-base el-icon-undo"></i>撤销</el-button>
+                <el-button class="project-whistle__button" plain icon="el-icon-refresh" @click="handelSelect">切换</el-button>
+                <el-button class="project-whistle__button" plain @click="handelCancel"><i class="el-icon-base el-icon-undo"></i>撤销</el-button>
               </div>
               <el-button class="project-whistle__button" type="primary" plain @click="handelSave"><i class="el-icon-base el-icon-save"></i>保存</el-button>
           </div>
