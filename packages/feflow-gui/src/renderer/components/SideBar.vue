@@ -14,7 +14,10 @@
                 <router-link to="/">
                     <li class="project current"><i class="icon" />我的项目</li>
                 </router-link>
-                <li class="market"><i class="icon" />插件市场</li>
+                <router-link to="/market">
+                    <li class="market"><i class="icon" />插件市场</li>
+                </router-link>
+
                 <router-link to="/admin">
                     <li class="project"><i class="icon" />管理中心</li>
                 </router-link>

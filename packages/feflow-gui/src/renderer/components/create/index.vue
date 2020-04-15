@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="create">
     <main>
       <side-bar></side-bar>
       <section class="create-wrapper">
@@ -40,6 +40,7 @@ export default {
 <style scoped>
 main {
   display: flex;
+  height: 100%;
 }
 .create-wrapper {
   height: 550px;
@@ -52,7 +53,13 @@ main {
 }
 </style>
 
-<style>
+<style scoped lang="less">
+.create {
+  height: 100%;
+  .side-bar {
+    height: auto;
+  }
+}
 main .el-tabs__item.is-active {
   font-size: 20px;
   color: #000;
