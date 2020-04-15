@@ -105,6 +105,7 @@ main {
   height: 100%;
 }
 .market-wrapper {
+  overflow: scroll;
   box-sizing: border-box;
   padding-left: 50px;
   padding-top: 45px;

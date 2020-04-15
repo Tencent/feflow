@@ -1,6 +1,6 @@
 <template>
   <div class="create-inner">
-    <section v-if="list.length">
+    <section v-if="generators.length">
       <el-form label-position="left" label-width="140px" ref="form" :model="formData">
         <el-form-item label="脚手架">
           <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
@@ -118,16 +118,35 @@ export default {
       if (!newValue) {
         this.popoverVisible = false
       }
+    },
+    configMap(newValue) {
+      this.getSchemaForm()
     }
   },
   methods: {
-    ...mapActions(['builConfig', 'getGenerator', 'selectWorkSpace', 'resetState', 'toggleWorkStatus']),
+    ...mapActions([
+      'builConfig',
+      'getGenerator',
+      'selectWorkSpace',
+      'resetState',
+      'toggleWorkStatus',
+      'resetGenerateList'
+    ]),
     init() {
+      // 重新获取
+      this.resetGenerateList()
       // 获取脚手架
       this.getGenerator()
-      this.resetState()
       this.toggleWorkStatus(false)
+      // 获取动态表单
+      this.getSchemaForm()
+    },
+    getSchemaForm() {
+      const _generatorsConfig = {}
+      const _generators = []
       const gens = Object.keys(this.configMap)
+
+      // 没有脚手架
       if (!this.list.length) {
         return (this.empty = true)
       }
@@ -137,15 +156,19 @@ export default {
           const key = genName
           const gen = this.configMap[genName]
 
-          this.generators.push({
+          _generators.push({
             value: key,
             label: gen.description
           })
 
-          this.generatorsConfig[key] = this.configMap[key]
+          _generatorsConfig[key] = this.configMap[key]
         })
+
+      this.generators = _generators
+      this.generatorsConfig = _generatorsConfig
+
       // 默认加载第一个脚手架
-      this.targetGenerator = this.list[0]
+      this.targetGenerator = (_generators[0] && _generators[0].value) || ''
     },
     // 初始化控制台
     initTerminal() {
@@ -307,10 +330,9 @@ export default {
       // 重置表单， 防止重复初始化项目
       this.toggleWorkStatus(false)
       this.banner = ''
-      this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
-
-      // 重置脚手架状态
-      this.resetState()
+      if (this.targetGeneratorConfig) {
+        this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
+      }
     }
   }
 }
