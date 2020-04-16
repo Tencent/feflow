@@ -110,9 +110,12 @@
   </div>
 </template>
 <script>
+import electron from 'electron'
 import { mapState, mapGetters } from 'vuex'
 import { getUrlParam } from '@/common/utils'
 import apiDocs from '@/api/project-docs'
+
+const { ipcRenderer } = electron
 
 function error(ctx, err) {
   ctx.$message({
@@ -413,8 +416,8 @@ export default {
       this.$refs[formName] && this.$refs[formName].resetFields();
     },
     // 点击跳转
-    handleHrefClick({ link }) {
-      console.log(link)
+    handleHrefClick({ docLink }) {
+      ipcRenderer.send('create-project-webview', { routeName: 'project-webview', link: docLink })
     }
   }
 }

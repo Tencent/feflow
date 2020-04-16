@@ -31,6 +31,11 @@ export default new Router({
       component: require('@/components/project-service/ProjectIndex').default
     },
     {
+      path: '/project-webview',
+      name: 'project-webview',
+      component: require('@/components/project-service/ProjectWebview').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

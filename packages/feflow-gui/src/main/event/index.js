@@ -37,6 +37,38 @@ function createProjectService () {
   })
 }
 
+/**
+ * 打开项目webview窗口
+ */
+function createProjectWebview () {
+  debugger
+  ipcMain.on('create-project-webview', (event, { routeName, link }) => {
+    if (!routeName || !link) {
+      return
+    }
+
+    let win = new BrowserWindow({
+      width: WIN_CONF.width,
+      height: WIN_CONF.height,
+      useContentSize: true,
+      titleBarStyle: 'hidden',
+      webPreferences: {
+        // webSecurity: false,
+        nodeIntegration: true, // 解决require is not defined问题
+        webviewTag: true // 解决webview无法显示问题
+      }
+    })
+
+    win.on('close', () => {
+      win = null
+    })
+
+    const url = `${getUrl(routeName)}?link=${encodeURIComponent(link)}`
+    win.loadURL(url)
+  })
+}
+
 export default function () {
   createProjectService()
+  createProjectWebview()
 }
