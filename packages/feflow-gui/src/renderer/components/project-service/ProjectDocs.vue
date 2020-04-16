@@ -137,6 +137,18 @@ export default {
         callback()
       }
     }
+
+    // 校验合法URI
+    const validateURL = (rule, value, callback) => {
+        const regex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
+        const isVaild = regex.test(value)
+        if (isVaild) {
+          callback()
+        } else {
+          callback(new Error('地址不合法'))
+        }
+    }
+
     return {
       projectPath: getUrlParam('path'),
       projectName: getUrlParam('name'),
@@ -159,7 +171,8 @@ export default {
           { required: true, message: '请输入名称', trigger: 'blur' }
         ],
         docLink: [
-          { required: true, message: '请输入路径地址', trigger: 'blur' }
+          { required: true, message: '请输入路径地址', trigger: 'blur' },
+          { validator: validateURL, trigger: 'change' }
         ]
       },
       itemEditForm: {},
