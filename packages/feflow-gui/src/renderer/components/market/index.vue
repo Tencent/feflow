@@ -84,15 +84,18 @@ export default {
       return cln
     },
     handleBtnClick(isInstalled, fullPkgName) {
+      let tmpPaddingPlugin = []
       if (!this.checkTaskValid(fullPkgName)) return
       if (this.paddingPlugin.length >= 2) {
         return this.toast('任务执行过多，请稍后再试', '', 'info')
       }
       this.paddingPlugin.push(fullPkgName)
       this.handleInstallAction(isInstalled, fullPkgName).then(code => {
-        _.remove(this.paddingPlugin, function(n) {
+        tmpPaddingPlugin.push(...this.paddingPlugin)
+        _.remove(tmpPaddingPlugin, function(n) {
           return n === fullPkgName
         })
+        this.paddingPlugin = tmpPaddingPlugin
       })
     }
   }

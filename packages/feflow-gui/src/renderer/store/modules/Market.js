@@ -64,10 +64,11 @@ const actions = {
       .catch(err => {
         console.log('err', err)
         const { response } = err
+        console.log('response', response)
         // TODO 上报点
         const { data, status } = response || {}
         if (status !== 200) {
-          commit('SET_PLUGIN_MAP_KEY', { key: '@tencent/' + repo, value: { status, data } })
+          commit('SET_PLUGIN_MAP_KEY', { name: repo.split('/')[1], status, data })
         }
       })
   },
