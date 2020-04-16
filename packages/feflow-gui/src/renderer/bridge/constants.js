@@ -15,6 +15,8 @@ export const DEFAULT_WORKSPACE = path.resolve(OS_HOME, FEFLOW_HOME_NAME, 'worksp
 
 export const FEFLOW_GENERATOR_REGEX = /^@(tencent|feflow)\/generator-(.*)/i
 
+export const FEFLOW_GENERATOR_AND_PLUGIN_REGEX = /^@(tencent|feflow)\/(generator|feflow-plugin)-(.*)/i
+
 export const FEFLOW_HOME_PATH = path.resolve(OS_HOME, FEFLOW_HOME_NAME)
 
 export const FEFLOW_GENERATOR_CONFIG_HOME = path.resolve(FEFLOW_HOME_PATH, 'generator_config')

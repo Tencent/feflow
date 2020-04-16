@@ -71,6 +71,8 @@
     "vuex-electron": "^1.0.0",
     "whistle": "^2.4.17",
     "xterm": "^4.4.0",
+    "humps": "^2.0.1",
+    "markdown-it": "^10.0.0",
     "xterm-addon-fit": "^0.3.0"
   },
   "devDependencies": {

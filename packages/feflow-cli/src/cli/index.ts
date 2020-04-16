@@ -4,6 +4,11 @@ import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
 import Report from '@feflow/report';
+import {
+  HOOK_TYPE_BEFORE,
+  HOOK_TYPE_AFTER,
+  EVENT_COMMAND_BEGIN
+} from '../shared/constant';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -78,10 +83,15 @@ export default function entry() {
 
     report.report(cmd, args);
 
-    return feflow.call(cmd, feflow).then(() => {
-      logger.debug(`call ${cmd} success`);
-    }).catch((err) => {
-      handleError(err);
+    feflow.hook.emit(HOOK_TYPE_BEFORE);
+
+    feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
+      return feflow.call(cmd, feflow).then(() => {
+        feflow.hook.emit(HOOK_TYPE_AFTER);
+        logger.debug(`call ${cmd} success`);
+      }).catch((err) => {
+        handleError(err);
+      });
     });
   });
 }

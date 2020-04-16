@@ -1,4 +1,5 @@
 import Commander from './commander';
+import Hook from './hook';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
@@ -24,6 +25,7 @@ export default class Feflow {
     public version: string;
     public logger: any;
     public commander: any;
+    public hook: any;
     public root: any;
     public rootPkg: any;
     public config: any;
@@ -40,6 +42,7 @@ export default class Feflow {
         this.config = parseYaml(configPath);
         this.configPath = configPath;
         this.commander = new Commander();
+        this.hook = new Hook();
         this.logger = logger({
             debug: Boolean(args.debug),
             silent: Boolean(args.silent)
@@ -113,6 +116,10 @@ export default class Feflow {
                         installed: isInstalled('tnpm')
                     },
                     {
+                        name: 'cnpm',
+                        installed: isInstalled('cnpm')
+                    },
+                    {
                         name: 'yarn',
                         installed: isInstalled('yarn')
                     }
@@ -161,11 +168,11 @@ export default class Feflow {
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, 'latest', registryUrl).catch((err) => {
+            const latestVersion: any = await packageJson(name, registryUrl).catch((err) => {
                 logger.debug('Check plugin update error', err);
             });
 
-            if (latestVersion && latestVersion !== localVersion) {
+            if (latestVersion && semver.gt(latestVersion, localVersion)) {
                 table.cell('Name', name);
                 table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
                 table.cell('Tag', 'latest');
@@ -327,8 +334,10 @@ export default class Feflow {
         }
         const packageManager = config.packageManager;
         const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson('@feflow/cli', 'latest', registryUrl);
-        if (semver.gt(latestVersion, version)) {
+        const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
+            this.logger.warn(`Network error, can't reach ${ registryUrl }, CLI give up verison check.`);
+        });
+        if (latestVersion && semver.gt(latestVersion, version)) {
             const askIfUpdateCli = [{
                 type: "confirm",
                 name: "ifUpdate",

@@ -11,10 +11,10 @@
     
     <div class="content-wrapper">
         <div class="icon-wrapper"></div>
-        <div class="description">小程序开发工具</div>
-        <div class="version">V2.0</div>
+        <div class="description">Feflow 桌面版</div>
+        <div class="version">V1.0</div>
     </div>
-    <div class="copyright">© 2009-2019 Sketch B.V.</div>
+    <div class="copyright">© 2020 Feflow</div>
 </div>
 </div>
 </template>
@@ -36,6 +36,7 @@ export default {
 <style scoped>
 .about-dialog-wrapper {
     position: fixed;
+    z-index: 999;
     top: 0;
     right: 0;
     bottom: 0;
@@ -88,7 +89,7 @@ export default {
 .about-dialog .icon-wrapper {
   margin-top: 21px;
   background: #353740;
-  background: url(../../assets/img/about-logo.png) center center no-repeat;
+  background: url(../../assets/img/about-logo.jpg) center center no-repeat;
   background-size: cover;
   border-radius: 8px;
   border-radius: 8px;

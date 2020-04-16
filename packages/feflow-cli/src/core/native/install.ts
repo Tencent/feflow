@@ -12,7 +12,7 @@ module.exports = (ctx: any) => {
 
       await Promise.all(
         dependencies.map((dependency: string) => {
-          return packageJson(dependency, 'latest', registryUrl)
+          return packageJson(dependency, registryUrl)
             .catch(() => {
               ctx.logger.error(`${ dependency } not found on ${ packageManager }`);
               process.exit(2);

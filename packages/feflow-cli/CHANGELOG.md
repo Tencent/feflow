@@ -1,3 +1,49 @@
+# [0.18.0](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.2...v0.18.0) (2020-03-04)
+
+
+### Features
+
+* **generator-example:** generator json schema ([e411acd](https://github.com/Tencent/feflow/commit/e411acd83b73b8dd3eaef0be451f1de8ec27ad6e))
+* **generator-example:** support initialize project with params ([187119c](https://github.com/Tencent/feflow/commit/187119c87834078392eac77e073602c4211fa54e))
+* config params ([f5fcf5c](https://github.com/Tencent/feflow/commit/f5fcf5c8720f6df21930f0817922e12ee2fab39c))
+
+
+
+# [0.18.0-alpha.2](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-03-02)
+
+
+### Features
+
+* **hook:** add feflow hooks ([a8076ec](https://github.com/Tencent/feflow/commit/a8076ece163013892ad9a6762f81e046275a2196))
+
+
+
+# [0.18.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.17.1...v0.18.0-alpha.1) (2020-02-29)
+
+
+### Bug Fixes
+
+* **package-manager:** npm and yarn source ([3384f8f](https://github.com/Tencent/feflow/commit/3384f8f04c057cb37666b673521516b943160562))
+
+
+### Features
+
+* **devtool:** add devtool internal plugin ([4c98456](https://github.com/Tencent/feflow/commit/4c98456782a23af0c0900368c0696ee5160544ae))
+* **devtool:** add internal devtool plugin ([ef053c5](https://github.com/Tencent/feflow/commit/ef053c544964c63be206004f0ae4c10dca8fd0ee))
+* **devtool:** copy templates according to user input ([7557299](https://github.com/Tencent/feflow/commit/75572990fc7697f7693c40e71a60a615e43af7ea))
+* **devtool:** create template logic ([41afeeb](https://github.com/Tencent/feflow/commit/41afeeb578d0e07d101137356d175e11b7a3fd1b))
+* **devtool:** support feflow-plugin dev ([2f2323e](https://github.com/Tencent/feflow/commit/2f2323e7900bb6debc0245a110aba1391bf701ac))
+* support cnpm when initialize ([6095912](https://github.com/Tencent/feflow/commit/6095912ff00140d2b29839bd478f8e1ca970d893))
+* **init:** remove -g param ([1d91a32](https://github.com/Tencent/feflow/commit/1d91a3201949f660f22d34810a6f6e0d11335c74))
+* **init:** support initialize project with selected generator ([fff9b24](https://github.com/Tencent/feflow/commit/fff9b244c8b3e44c6d659d1558551465d996aeb6))
+
+
+### Performance Improvements
+
+* **core:** network error check. ([9565309](https://github.com/Tencent/feflow/commit/9565309da4439d73924ae927e3dbf0f1ab867f73))
+
+
+
 ## [0.17.1](https://github.com/Tencent/feflow/compare/v0.17.0...v0.17.1) (2019-12-17)
 
 
@@ -313,6 +359,13 @@
 # [0.12.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2017-12-10)
 
 
+### Features
+
+* add feflow lint ([c235e8b](https://github.com/Tencent/feflow/commit/c235e8b0db7591ab31170e18dd037e945aaff484))
+* ignore files ([b6d07fb](https://github.com/Tencent/feflow/commit/b6d07fbd161d43ad094238187987efae48ab7c3b))
+* 新增feflow lint ([3814216](https://github.com/Tencent/feflow/commit/3814216b0ea16d0a9eab40ee86f9897a142bc985))
+
+
 
 # [0.12.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.11.3...v0.12.0-alpha.0) (2017-12-09)
 
@@ -331,13 +384,6 @@
 
 * process should exit after client init success ([572eac5](https://github.com/Tencent/feflow/commit/572eac5dbd897c7a5e7d57f2385dfe96c3087f82))
 * trim space after user input registry and proxy. ([cb25ea6](https://github.com/Tencent/feflow/commit/cb25ea6138d179b8ddfccf7060027314f28c8ab3)), closes [#6](https://github.com/Tencent/feflow/issues/6)
-
-
-### Features
-
-* add feflow lint ([c235e8b](https://github.com/Tencent/feflow/commit/c235e8b0db7591ab31170e18dd037e945aaff484))
-* ignore files ([b6d07fb](https://github.com/Tencent/feflow/commit/b6d07fbd161d43ad094238187987efae48ab7c3b))
-* 新增feflow lint ([3814216](https://github.com/Tencent/feflow/commit/3814216b0ea16d0a9eab40ee86f9897a142bc985))
 
 
 
