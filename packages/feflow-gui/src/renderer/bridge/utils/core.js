@@ -27,10 +27,12 @@ export const spawn = curry(function(cmd, cwd, arg) {
   return child
 })
 
-const getCommandLine = (subCommand, arg) => {
+const getCommandLine = (subCommand, arg, isRoot = false) => {
   let arr = []
   let keepParam = ['--color', '--disable-check']
-
+  if (isRoot) {
+    arr.push('sudo')
+  }
   arr.push(COMMAND)
   arr.push(subCommand)
   arr.push(...arg)

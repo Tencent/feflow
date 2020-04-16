@@ -140,6 +140,8 @@ export default {
         },
 
         strToJSON(str) {
+            if (!str) return;
+
             let arr = str.split(';').map(item => item.trim());
 
             if (arr && arr.length) {

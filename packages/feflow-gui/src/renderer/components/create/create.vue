@@ -74,6 +74,9 @@ import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import 'xterm/css/xterm.css'
 import SchemaForm from './schema-parser/components/vue-form'
+// import tKill from 'tree-kill'
+
+const TimeOutTsp = 20 * 10000
 
 export default {
   name: 'create-page',
@@ -90,7 +93,8 @@ export default {
       banner: '',
       hasInitTerminal: false,
       popoverVisible: false,
-      empty: false
+      empty: false,
+      watcherTimer: null
     }
   },
   mounted() {},
@@ -240,17 +244,60 @@ export default {
       if (typeof childProcess === 'number') {
         return this.handleInitCode(childProcess)
       }
+
+      this.childProcessPid = childProcess.pid
+      this.childProcess = childProcess
+
+      // 清理上次的日志
+      this.term && this.term.clear()
+
       childProcess.stdout.on('data', data => {
+        this.steamWatcher()
         this.term.writeln(data)
       })
       childProcess.on('close', code => {
+        this.steamWatcherClose()
         this.handleInitCode(code)
       })
       childProcess.on('error', err => {
+        this.steamWatcherClose()
         this.messageInstance && this.messageInstance.close()
         this.messageInstance = null
         // 上报点
         this.toast('脚手架生成过程发生异常', err, 'error')
+      })
+    },
+    steamWatcher() {
+      if (watcherTimer) clearTimeout(watcherTimer)
+      watcherTimer = setTimeout(() => {
+        this.handleTimeout()
+      }, TimeOutTsp)
+    },
+    steamWatcherClose() {
+      if (watcherTimer) clearTimeout(watcherTimer)
+    },
+    handleTimeout() {
+      this.$alert('检测到当前任务耗时异常，是否中止？', '任务异常', {
+        confirmButtonText: '中止',
+        cancelButtonText: '再等等',
+        showCancelButton: true,
+        callback: action => {
+          // 拿到子进程pid然后kill
+          if (action === 'confirm') {
+            if (this.childProcess.exitCode === null) {
+              console.log('还未退出')
+              // 尝试退出子进程
+              this.childProcess.kill('SIGHUP')
+              this.messageInstance && this.messageInstance.close()
+              this.messageInstance = null
+              this.popoverVisible = false
+              this.toggleWorkStatus(false)
+            }
+          } else {
+            // 继续超时逻辑
+            this.steamWatcher()
+          }
+        }
       })
     },
     handleConsoleClick() {
@@ -316,6 +363,7 @@ export default {
       }
     },
     toast(title, msg, type = 'info', isPersistent = false) {
+      // TODO mixins
       let opt = {
         title,
         message: msg
