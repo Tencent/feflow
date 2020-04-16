@@ -41,7 +41,8 @@ export default {
           success: `${targetPkgName}安装成功`,
           fail: `${targetPkgName}安装失败`,
           failMessage: `请尝试手动下载 
-          fef install ${targetPkgName}`
+          fef install ${targetPkgName}`,
+          network: '请检查网络状况后重试'
         },
         uninstall: {
           success: `${targetPkgName}卸载成功`,
@@ -57,10 +58,15 @@ export default {
         return
       }
       if (code === 0) {
+        // 任务成功
         this.toast(message.success, '', 'success')
-        // 再次再入
+        // 刷新插件
         this.getLocalPluginList()
+      } else if (code === 2) {
+        // 网络异常
+        this.toast(message.fail, message.network, 'error')
       } else {
+        // 其他状态
         this.toast(message.fail, message.failMessage, 'error')
       }
     },

@@ -37,14 +37,14 @@
         <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
       </section>
 
-      <div v-else-if="targetPlugin.status " class="market-empty">
+      <div v-else-if="targetPlugin.status || isTimedOut" class="market-empty">
         <i class="el-icon-dessert"></i>
 
         <p>
           <el-link
-            :href="`http://tnpm.oa.com/package/@tencent/${targetPlugin.name}`"
+            :href="`http://tnpm.oa.com/package/@tencent/${fullPkgName}`"
             target="_blank"
-          >该插件信息获取失败，请点击这里查看</el-link>
+          >【{{targetPlugin.status}}】插件信息获取失败，请检查网络状况后重试，或点击这里查看</el-link>
         </p>
       </div>
     </section>
@@ -77,10 +77,13 @@ export default {
       taskMap: state => state.Market.taskMap
     }),
     targetPlugin() {
-      const _targetPlugin = this.pluginsInfoMap[this.pkgName] || { isEmpty: true }
+      let _targetPlugin = this.pluginsInfoMap[this.pkgName] || {}
       if (_targetPlugin.name) {
         clearTimeout(this.timeoutPoint)
+      } else {
+        _targetPlugin = { isEmpty: true }
       }
+
       return _targetPlugin
     },
     isInstalled() {
