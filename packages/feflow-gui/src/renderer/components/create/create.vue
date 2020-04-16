@@ -299,7 +299,7 @@ export default {
           // 保存
           saveGeneratorConfig({
             projectName: this.jsonData.name,
-            workSpace: this.workSpace + '/' + this.formData.name,
+            workSpace: this.workSpace + '/' + this.jsonData.name,
             banner: this.banner
           })
           this.toast('项目创建成功', '', 'success')
