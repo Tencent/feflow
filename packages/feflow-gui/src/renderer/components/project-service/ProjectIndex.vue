@@ -61,6 +61,7 @@
 .project-index {
   display: flex;
   height: 100%;
+  overflow: hidden;
 }
 .project-pane {
   flex: 1;

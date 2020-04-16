@@ -8,7 +8,7 @@ import { getUrl } from '../common/utils'
 // GUI 统一参数
 const WIN_CONF = {
   width: 840,
-  height: 600
+  height: 640
 }
 /**
  * 打开项目服务窗口
@@ -53,7 +53,7 @@ function createProjectWebview () {
       useContentSize: true,
       titleBarStyle: 'hidden',
       webPreferences: {
-        // webSecurity: false,
+        webSecurity: false, // true时会影响 info.ashx 请求用户信息
         nodeIntegration: true, // 解决require is not defined问题
         webviewTag: true // 解决webview无法显示问题
       }
