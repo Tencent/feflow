@@ -11,9 +11,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules,
   plugins: [
-    createPersistedState(),
+    createPersistedState({
+      whitelist: []
+    }),
     createSharedMutations(),
     createPromiseAction()
   ],
+  // plugins: [createSharedMutations(), createPromiseAction()],
   strict: process.env.NODE_ENV !== 'production'
 })

@@ -13,7 +13,7 @@ const WIN_CONF = {
 /**
  * 打开项目服务窗口
  */
-function createProjectService () {
+function createProjectService() {
   ipcMain.on('create-project-service', (event, { routeName, projectName, projectPath }) => {
     if (!routeName || !projectPath || !projectName) {
       return
@@ -68,7 +68,7 @@ function createProjectWebview () {
   })
 }
 
-export default function () {
+export default function() {
   createProjectService()
   createProjectWebview()
 }
