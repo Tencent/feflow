@@ -94,7 +94,7 @@ export default {
       hasInitTerminal: false,
       popoverVisible: false,
       empty: false,
-      watcherTimer: null
+      watchTimer: null
     }
   },
   mounted() {},
@@ -268,13 +268,13 @@ export default {
       })
     },
     steamWatcher() {
-      if (watcherTimer) clearTimeout(watcherTimer)
-      watcherTimer = setTimeout(() => {
+      if (this.watchTimer) clearTimeout(this.watchTimer)
+      this.watchTimer = setTimeout(() => {
         this.handleTimeout()
       }, TimeOutTsp)
     },
     steamWatcherClose() {
-      if (watcherTimer) clearTimeout(watcherTimer)
+      if (this.watchTimer) clearTimeout(this.watchTimer)
     },
     handleTimeout() {
       this.$alert('检测到当前任务耗时异常，是否中止？', '任务异常', {
