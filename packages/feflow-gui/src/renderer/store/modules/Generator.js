@@ -1,8 +1,6 @@
 import {
   loadGenerator,
   buildGeneratorConfig,
-  runGenerator,
-  saveGeneratorConfig,
   checkBeforeRunGenerator,
   openDialogToGetDirectory,
   loadFeflowConfigFile
@@ -19,7 +17,8 @@ const state = {
   workSpace: DEFAULT_WORKSPACE,
   importWorkSpace: '',
   initCode: CREATE_CODE.INITIAL,
-  projectListFromConfig: []
+  projectListFromConfig: [],
+  isWorking: true
 }
 
 const mutations = {
@@ -42,6 +41,12 @@ const mutations = {
   },
   SET_PROJECT_LIST(state, projectList) {
     state.projectListFromConfig = projectList
+  },
+  SET_WORKING_STATUS(state, isWorking) {
+    state.isWorking = isWorking
+  },
+  SET_LIST(state, list) {
+    state.list = list
   }
 }
 
@@ -55,31 +60,6 @@ const actions = {
     // 同步写
     const localConfigName = buildGeneratorConfig(config)
     commit('SET_LOCAL_CONFIG_NAME', localConfigName)
-  },
-  initGenerator({ state }, { execType, config, generator }) {
-    const opt = {}
-    const { workSpace } = state
-    if (execType === 'path') {
-      // 传入配置文件路径
-      opt.param = state.localConfigName
-    } else {
-      // 配置传入
-      opt.param = config
-    }
-    opt.generator = generator
-
-    return runGenerator(opt, workSpace).then(code => {
-      if (code === CREATE_CODE.SUCCESS) {
-        // 项目成功初始化
-        // 写入项目配置
-        saveGeneratorConfig({
-          projectName: config.name,
-          workSpace: workSpace + '/' + config.name,
-          banner: config.banner
-        })
-      }
-      return code
-    })
   },
   selectWorkSpace({ commit }) {
     openDialogToGetDirectory().then(files => {
@@ -105,6 +85,12 @@ const actions = {
   getProjectListFromConfig({ commit }) {
     const { projects = [] } = loadFeflowConfigFile()
     commit('SET_PROJECT_LIST', projects)
+  },
+  toggleWorkStatus({ commit, state }, status) {
+    commit('SET_WORKING_STATUS', status !== undefined ? status : !state.isWorking)
+  },
+  resetGenerateList({ commit }) {
+    commit('SET_GENERATOR_LIST', { list: [], configMap: {} })
   }
 }
 

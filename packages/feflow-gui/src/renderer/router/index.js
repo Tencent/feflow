@@ -21,6 +21,16 @@ export default new Router({
       component: require('@/components/create').default
     },
     {
+      path: '/market',
+      name: 'market-page',
+      component: require('@/components/market').default
+    },
+    {
+      path: '/market-info/:id',
+      name: 'market-info',
+      component: require('@/components/market/info').default
+    },
+    {
       path: '/import',
       name: 'import-page',
       component: require('@/components/create/import').default

@@ -1,7 +1,8 @@
 <template>
   <el-container class="project-index">
     <!-- 侧边导航 -->
-    <!-- <project-side-bar v-model="activeTabId"></project-side-bar> -->
+    <side-bar v-model="activeTabId" :project-sides="projectSides" :project-current="activeTabId" :is-project-page="true"></side-bar>
+<!--     <project-side-bar v-model="activeTabId"></project-side-bar>-->
     <!-- 侧边导航 -->
 
     <!-- 导航面板 -->
@@ -17,8 +18,9 @@
 
 <script>
   import ProjectSideBar from './ProjectSideBar'
+  import SideBar from '../SideBar'
   import ProjectCommand from './ProjectCommand'
-
+  import ProjectWhistle from './ProjectWhistle'
   export default {
     name: 'project-index',
     data() {
@@ -30,17 +32,19 @@
           icon: 'static/img/project-service/service-command.png',
           component: 'ProjectCommand'
         },
-        {
-          name: '主页',
-          icon: 'static/img/project-service/service-index.png',
-          component: 'ProjectDocs'
-        }
+          {
+            name: '代理',
+            icon: 'static/img/project-service/service-whistle.png',
+            component: 'ProjectWhistle'
+          }
       ]
       }
     },
     components: {
       ProjectSideBar,
-      ProjectCommand
+      ProjectCommand,
+      ProjectWhistle,
+      SideBar
     },
     methods: {
     }

@@ -8,23 +8,6 @@ import { CREATE_CODE, DEFAULT_WORKSPACE } from '../constants.js'
 
 const COMMAND = 'fef'
 
-export const exec = (cmd, ...arg) => {
-  if (!cmd) return Promise.reject(new Error('no cmd'))
-  let commandArr = []
-  console.log('arg', arg)
-
-  commandArr.push(cmd)
-  commandArr.push(...arg)
-  console.log('commandArr', commandArr.join(' '))
-
-  return new Promise((resolve, reject) => {
-    shell.exec(commandArr.join(' '), function(code) {
-      console.log('Exit code:', code)
-      resolve(code)
-    })
-  })
-}
-
 export const spawn = curry(function(cmd, cwd, arg) {
   if (!cmd) onStderr(`${cmd} 命令执行错误`)
 
@@ -44,38 +27,67 @@ export const spawn = curry(function(cmd, cwd, arg) {
   return child
 })
 
+const getCommandLine = (subCommand, arg, isRoot = false) => {
+  let arr = []
+  let keepParam = ['--color', '--disable-check']
+  if (isRoot) {
+    arr.push('sudo')
+  }
+  arr.push(COMMAND)
+  arr.push(subCommand)
+  arr.push(...arg)
+  arr.push(...keepParam)
+
+  const commandLine = arr.join(' ')
+
+  console.log('commandLine', commandLine)
+  return commandLine
+}
+
 class FeflowCommand {
-  init({ param, generator }, workSpace) {
-    let arr = []
+  init({ opt, workSpace }) {
+    const { param, generator } = opt
 
     // 创建默认工作目录
     !isExit(DEFAULT_WORKSPACE) && shell.mkdir(DEFAULT_WORKSPACE)
 
     if (!generator) {
       // 未指定脚手架
-      return Promise.resolve(CREATE_CODE.EMPTY_GENERATOR)
+      return CREATE_CODE.EMPTY_GENERATOR
     }
     if (!dirExists(workSpace)) {
       // 工作目录不存在
-      return Promise.resolve(CREATE_CODE.INVALID_WORKSPACE)
+      return CREATE_CODE.INVALID_WORKSPACE
     }
+    let params = []
+    let commandLine = ''
 
-    arr.push(`--generator=${generator}`)
+    params.push(`--generator=${generator}`)
 
     if (typeof param === 'string') {
       // 直接传入配置文件路径
-      arr.push(`--config=${param}`)
+      params.push(`--config=${param}`)
     } else {
-      arr.push(`--config='${JSON.stringify(param)}'`)
+      params.push(`--config='${JSON.stringify(param)}'`)
     }
+
+    commandLine = getCommandLine('init', params)
 
     shell.cd(workSpace)
 
-    return exec(COMMAND, 'init', arr.join(' '))
+    return shell.exec(commandLine, { async: true })
   }
 
   spawn(cwd) {
     return spawn(COMMAND)(cwd)
+  }
+  install(plugin) {
+    let commandLine = getCommandLine('install', [plugin])
+    return shell.exec(commandLine, { async: true })
+  }
+  unInstall(plugin) {
+    let commandLine = getCommandLine('uninstall', [plugin])
+    return shell.exec(commandLine, { async: true })
   }
 }
 

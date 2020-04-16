@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="create">
     <main>
       <side-bar></side-bar>
       <section class="create-wrapper">
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="创建项目" name="create">
-            <create-page />
+            <create-page :is-selected="activeName == 'create'" />
           </el-tab-pane>
           <el-tab-pane label="导入项目" name="import">
             <import-page />
@@ -40,6 +40,7 @@ export default {
 <style scoped>
 main {
   display: flex;
+  height: 100%;
 }
 .create-wrapper {
   height: 550px;
@@ -52,7 +53,13 @@ main {
 }
 </style>
 
-<style>
+<style scoped lang="less">
+.create {
+  height: 100%;
+  .side-bar {
+    height: auto;
+  }
+}
 main .el-tabs__item.is-active {
   font-size: 20px;
   color: #000;

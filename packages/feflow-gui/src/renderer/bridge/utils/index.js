@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 
-import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH } from '../constants'
+import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH, FEFLOW_GENERATOR_CONFIG_HOME } from '../constants'
 
 // basic functions
 export const isExit = path => {
@@ -123,47 +123,14 @@ export function parseYaml(path) {
  *
  */
 export const generatorConfigFile = (fileName, config, schema) => {
-  const filepath = path.resolve(FEFLOW_HOME_PATH, fileName + '.js')
-  const objTypeMap = {}
-  const typeMap = {}
-
-  schema.properties.forEach(prop => {
-    const ascription = prop.ascription
-    objTypeMap[prop.field] = ascription
-    if (!typeMap[ascription]) {
-      typeMap[ascription] = true
-    }
-  })
-
-  const getStringValue = value => {
-    const type = typeof value
-    if (type === 'boolean') {
-      return value
-    } else if (type === 'string') {
-      return "'" + value + "'"
-    }
-  }
+  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, fileName + '.js')
 
   if (!isExit(filepath)) {
-    const content = [
-      `
-        const config = {
-          ${Object.keys(typeMap).join(': {}, \n\t\t')} : {}
-        }
-      `
-    ]
+    const content = []
 
-    Object.keys(config).forEach(key => {
-      if (objTypeMap[key]) {
-        content.push(`
-          config.${objTypeMap[key]}.${key} = ${getStringValue(config[key]) || 0}
-        `)
-      } else {
-        content.push(`
-          config.${key} = ${config[key] || 0}
-      `)
-      }
-    })
+    content.push(`
+      const config = ${JSON.stringify(config)}
+    `)
 
     content.push(`
       module.exports = config
