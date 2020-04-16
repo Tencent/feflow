@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'Feflow 桌面版'
+    name: 'FeflowDesktopVersion'
   }
 </script>
 
