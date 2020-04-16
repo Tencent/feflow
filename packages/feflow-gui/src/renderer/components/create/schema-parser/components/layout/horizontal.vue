@@ -11,7 +11,7 @@
       :label="(group || {}).title"
       :key="`${(group && group.key) ? group.key.join('.') : ''}-${idx}`"
     >
-      <form-group v-if="group" :definition="group"></form-group>
+      <form-group v-if="group" :definition="group" :showType="showType"></form-group>
       <slot></slot>
     </div>
   </el-form>
@@ -28,7 +28,8 @@ const { mapState } = createNamespacedHelpers('Schema')
 
 export default {
   computed: mapState({
-    definition: state => state.definition
+    definition: state => state.definition,
+    showType: state => state.schema.showType
   })
 }
 </script>

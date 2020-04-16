@@ -72,9 +72,32 @@ class Generator {
 
     const options = { path: [], lookup: {} }
     const schemaForm = []
+    let requiredList = []
+
+    // required的逻辑
+    // then 和 else 中也可能有required
+    const branch = schema['if']
+    if (branch) {
+      const branchThen = schema['then']
+      const branchElse = schema['else']
+
+      // 整合required
+      const barnchKeys = Object.keys(branch.properties)
+      let isMatchCount = 0
+
+      barnchKeys.forEach(key => {
+        if (schema.properties[key].default === branch.properties[key].const) {
+          isMatchCount++
+        }
+      })
+
+      requiredList = isMatchCount === barnchKeys.length ? branchThen.required : branchElse.required
+    }
+
+    requiredList = requiredList.length ? requiredList : schema.required
 
     _.each(schema.properties, (val, key) => {
-      const required = schema.required && _.indexOf(schema.required, key) !== -1
+      const required = _.indexOf(requiredList, key) !== -1
 
       this._parse(key, val, schemaForm, {
         path: [key],
