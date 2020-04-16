@@ -4,3 +4,6 @@ node_modules
 *.log
 *-lock.json
 coverage/
+packages/*/lib
+.vscode
+**/.nyc_output
