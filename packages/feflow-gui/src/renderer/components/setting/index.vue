@@ -62,6 +62,7 @@ export default {
 <style scoped>
 .setting-wrapper {
   position: absolute;
+  z-index: 999;
   bottom: 0;
   left: 160px;
   height: 100px;

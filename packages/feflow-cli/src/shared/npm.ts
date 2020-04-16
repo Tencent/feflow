@@ -28,7 +28,7 @@ export function getRegistryUrl(packageManager: string) {
                 });
                 return;
             }
-            output = output.replace(/\n/, '');
+            output = output.replace(/\n/, '').replace(/\/$/, '');
             resolve(output);
         });
     });
