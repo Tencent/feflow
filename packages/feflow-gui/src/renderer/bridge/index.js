@@ -280,7 +280,7 @@ export const openDialogToGetDirectory = () => {
   })
 }
 
-export const getFefProjectProxy = (projectName) => {
+export const getFefProjectProxy = projectName => {
   const doc = loadFeflowConfigFile()
   if (!doc.projects || !doc.projects[projectName]) {
     return {}
@@ -309,12 +309,11 @@ export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
   // 更新 .fef project配置
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
   const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
-  console.log(feflowrcJSON)
   feflowrcJSON['proxy'] = proxyConfig
   fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
 }
 
-export const generatorWhistleJS = (proxyConfig) => {
+export const generatorWhistleJS = proxyConfig => {
   let filepath = FEFLOW_WHISTLE_JS_PATH
   const content = `
       module.exports = ${JSON.stringify(proxyConfig)}
