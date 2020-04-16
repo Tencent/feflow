@@ -4,6 +4,7 @@ import { app, BrowserWindow } from 'electron';
 import { getUrl } from './common/utils'
 import registerEvent from './event'
 import createServer from './common/utils/server'
+import portfinder from 'portfinder';
 
 /**
  *
@@ -26,7 +27,7 @@ if (process.env.NODE_ENV !== 'development') {
 }
 
 let mainWindow
-const winURL = getUrl()
+let winURL = getUrl()
 const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow() {
@@ -54,10 +55,17 @@ app.on('ready', () => {
   if (isDev) {
     createWindow();
   } else {
-    createServer();
-    setTimeout(() => {
-      createWindow();
-    }, 200);
+    portfinder.getPortPromise().then(port => {
+      app.guiPort = port;
+      winURL = getUrl();
+
+      createServer();
+      setTimeout(() => {
+        createWindow();
+      }, 200);
+    }).catch(err => {
+      throw new Error(err);
+    });
   }
 })
 
