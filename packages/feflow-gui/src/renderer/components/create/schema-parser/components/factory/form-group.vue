@@ -2,7 +2,7 @@
   <div
     class="form-group"
     :class="[name, valid.status === 1 ? 'has-success' : valid.status === 2 ? 'has-error' : '']"
-    v-if="visible"
+    v-show="visible"
   >
     <el-form-item :label="definition.title" v-if="definition.title">
       <!-- <label class="col-sm-2 control-label">
@@ -78,17 +78,23 @@ export default {
     }
   },
   created() {
-    let itemVisible = true
-
-    if (this.showType === 'strict') {
-      itemVisible = !!this.definition.required
-    }
-
-    this.visible = itemVisible
+    this.flushVisble()
   },
   watch: {
     definition() {
       console.log('definition change', this.definition)
+      this.flushVisble()
+    }
+  },
+  methods: {
+    flushVisble() {
+      let itemVisible = true
+
+      if (this.showType === 'strict') {
+        itemVisible = !!this.definition.required
+      }
+
+      this.visible = itemVisible
     }
   },
   computed: {

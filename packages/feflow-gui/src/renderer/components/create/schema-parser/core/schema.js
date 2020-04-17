@@ -86,7 +86,7 @@ class Generator {
       let isMatchCount = 0
 
       barnchKeys.forEach(key => {
-        const currentValue = model[key] || schema.properties[key].default || ''
+        const currentValue = model[key] !== undefined ? model[key] : schema.properties[key].default
         if (currentValue === branch.properties[key].const) {
           isMatchCount++
         }
@@ -140,7 +140,18 @@ class Generator {
 
     definition.push(def)
   }
-
+  /**
+   * 解析条件属性
+   * @param {Object} schema
+   */
+  parseSwitchProperties(schema) {
+    let switchProperties = []
+    const branch = schema['if']
+    if (branch) {
+      switchProperties = Object.keys(branch.properties)
+    }
+    return switchProperties
+  }
   getDefaultModal(schema) {
     const model = {}
 

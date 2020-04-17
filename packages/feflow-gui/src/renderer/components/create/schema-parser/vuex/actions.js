@@ -51,6 +51,7 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   }
 
   _state.definition = generator.parse(schema, definition)
+  _state.switchProperties = generator.parseSwitchProperties(schema)
   _state.schema = schema
   _state.validator = null
 
@@ -158,10 +159,11 @@ export const setValue = ({ commit, state }, { path, value }) => {
     _state.model = Object.assign({}, model)
   }
 
-  if(state.schema.showType === "strict") {
-    _state.definition = generator.parse(schema, [])
+  // 只有在严格模式下
+  // 并且条件属性发生了变化才会更新definition
+  if (state.schema.showType === 'strict' && state.switchProperties.includes(path[0])) {
+    _state.definition = generator.parse(state.schema, [], _state.model)
   }
-
 
   validate({ commit, state: _.cloneDeep(Object.assign({}, state, _state)) }, path)
 

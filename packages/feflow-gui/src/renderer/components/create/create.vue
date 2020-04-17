@@ -76,7 +76,7 @@ import 'xterm/css/xterm.css'
 import SchemaForm from './schema-parser/components/vue-form'
 // import tKill from 'tree-kill'
 
-const TimeOutTsp = 20 * 10000
+const TimeOutTsp = 20 * 1000
 
 export default {
   name: 'create-page',
