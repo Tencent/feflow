@@ -154,10 +154,14 @@ export const setValue = ({ commit, state }, { path, value }) => {
     last >= model.length ? model.push(value) : model.splice(last, 1, value)
   } else {
     const model = Object.assign({}, state.model)
-
     _.set(model, path, value)
     _state.model = Object.assign({}, model)
   }
+
+  if(state.schema.showType === "strict") {
+    _state.definition = generator.parse(schema, [])
+  }
+
 
   validate({ commit, state: _.cloneDeep(Object.assign({}, state, _state)) }, path)
 

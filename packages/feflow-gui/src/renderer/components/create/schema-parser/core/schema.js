@@ -65,7 +65,7 @@ class Generator {
    * @param {Object} schema
    * @param {Array} definition
    */
-  parse(schema, definition = []) {
+  parse(schema, definition = [], model = {}) {
     if (!(schema && schema.properties)) {
       throw new Error('schema no validate!')
     }
@@ -86,7 +86,8 @@ class Generator {
       let isMatchCount = 0
 
       barnchKeys.forEach(key => {
-        if (schema.properties[key].default === branch.properties[key].const) {
+        const currentValue = model[key] || schema.properties[key].default || ''
+        if (currentValue === branch.properties[key].const) {
           isMatchCount++
         }
       })
