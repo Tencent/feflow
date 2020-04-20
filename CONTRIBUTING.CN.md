@@ -33,7 +33,7 @@
 $ git clone git@github.com:<yourname>/feflow.git
 ```
 
-#### 添加 WePY 仓库
+#### 添加 Feflow 仓库
 
 将 fork 源仓库连接到本地仓库：
 
