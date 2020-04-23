@@ -151,6 +151,10 @@ export default {
     handelSelect() {
       this.selectId = this.currentProxy.id
       this.updateWhistleJS()
+      this.$message({
+        type: 'success',
+        message: 'whistle配置切换成功！'
+      })
     },
     // 切换右侧展示proxy
     changeProxyConfig(index) {
@@ -205,6 +209,10 @@ export default {
         this.doSavePersonal()
       }
       this.handelDialog(false)
+      this.$message({
+        type: 'success',
+        message: '测试环境增加成功！'
+      })
     },
     // 修改proxy
     handelSave() {
@@ -214,6 +222,10 @@ export default {
       } else {
         this.doSavePersonal()
       }
+      this.$message({
+        type: 'success',
+        message: '测试环境保存成功！'
+      })
     },
     // 取消修改
     handelCancel() {
