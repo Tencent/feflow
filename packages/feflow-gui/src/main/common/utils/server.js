@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const { app } = require('electron');
 
 function createServer(callback) {
   http.createServer((req, res) => {
@@ -13,7 +14,7 @@ function createServer(callback) {
     res.end();
 
     callback && callback();
-  }).listen(9081);
+  }).listen(app.guiPort);
 }
 
 export default createServer;
