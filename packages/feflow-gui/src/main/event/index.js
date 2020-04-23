@@ -22,7 +22,11 @@ function createProjectService() {
     let win = new BrowserWindow({
       width: WIN_CONF.width,
       height: WIN_CONF.height,
-      webPreferences: { webSecurity: false }
+      useContentSize: true,
+      titleBarStyle: 'hidden',
+      webPreferences: {
+        webSecurity: false
+      }
     })
 
     win.on('close', () => {
@@ -33,6 +37,38 @@ function createProjectService() {
   })
 }
 
+/**
+ * 打开项目webview窗口
+ */
+function createProjectWebview () {
+  debugger
+  ipcMain.on('create-project-webview', (event, { routeName, link }) => {
+    if (!routeName || !link) {
+      return
+    }
+
+    let win = new BrowserWindow({
+      width: WIN_CONF.width,
+      height: WIN_CONF.height,
+      useContentSize: true,
+      titleBarStyle: 'hidden',
+      webPreferences: {
+        webSecurity: false, // true时会影响 info.ashx 请求用户信息
+        nodeIntegration: true, // 解决require is not defined问题
+        webviewTag: true // 解决webview无法显示问题
+      }
+    })
+
+    win.on('close', () => {
+      win = null
+    })
+
+    const url = `${getUrl(routeName)}?link=${encodeURIComponent(link)}`
+    win.loadURL(url)
+  })
+}
+
 export default function() {
   createProjectService()
+  createProjectWebview()
 }
