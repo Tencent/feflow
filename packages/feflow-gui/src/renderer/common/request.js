@@ -5,10 +5,13 @@
  */
 import axios from 'axios';
 import errors from '@/common/errors';
+import { remote } from 'electron';
 
 const winURL = process.env.NODE_ENV === 'development'
     ? `http://localhost:9080/`
-    : `http://localhost:9081/`;
+    : `http://localhost:${remote.app.guiPort}/`;
+
+console.log('winURL', winURL);
 
 // 抛出切面，如果return false，将会中断后续执行
 let requestConfig = {
