@@ -1,3 +1,17 @@
+# [0.19.0-alpha.5](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.4...v0.19.0-alpha.5) (2020-04-27)
+
+
+### Bug Fixes
+
+* **install:** use add/remove when select yarn as package manager ([ab5a06b](https://github.com/Tencent/feflow/commit/ab5a06bc667816b5be7111c6ce2a0d1a214048b1)), closes [#221](https://github.com/Tencent/feflow/issues/221)
+
+
+### Features
+
+* **example:** JSON Schema ([#218](https://github.com/Tencent/feflow/issues/218)) ([17c0f9c](https://github.com/Tencent/feflow/commit/17c0f9c6be25c0d25d145cb149b07eae53292e5f))
+
+
+
 # [0.19.0-alpha.4](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.3...v0.19.0-alpha.4) (2020-04-14)
 
 
