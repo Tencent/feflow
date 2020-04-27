@@ -1,3 +1,12 @@
+# [0.19.0-alpha.6](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.0-alpha.6) (2020-04-27)
+
+
+### Bug Fixes
+
+* **install:** cli and plugins update when use yarn as package manager ([f450bc2](https://github.com/Tencent/feflow/commit/f450bc2e36ae69f205c8de15d8840632b8837df1))
+
+
+
 # [0.19.0-alpha.5](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.4...v0.19.0-alpha.5) (2020-04-27)
 
 
