@@ -25,7 +25,7 @@ module.exports = (ctx: any) => {
       return install(
         packageManager,
         ctx.root,
-        'install',
+        packageManager === 'yarn' ? 'add' : 'install',
         dependencies,
         false,
         true
@@ -41,7 +41,7 @@ module.exports = (ctx: any) => {
       return install(
         packageManager,
         ctx.root,
-        'uninstall',
+        packageManager === 'yarn' ? 'remove' : 'uninstall',
         dependencies,
         false,
         true
