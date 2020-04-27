@@ -76,7 +76,7 @@ import 'xterm/css/xterm.css'
 import SchemaForm from './schema-parser/components/vue-form'
 // import tKill from 'tree-kill'
 
-const TimeOutTsp = 20 * 1000
+const TimeOutTsp = 40 * 1000
 
 export default {
   name: 'create-page',
@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'builConfig',
+      // 'builConfig',
       'getGenerator',
       'selectWorkSpace',
       'resetState',
@@ -213,11 +213,10 @@ export default {
 
       // 创建配置文件
       if (execType === 'path') {
-        this.builConfig({
+        config = await this.$store.dispatchPromise('builConfig', {
           config: this.jsonData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
-        config = this.localConfigName
       } else {
         config = Object.assign({}, this.jsonData, { banner: this.banner })
       }

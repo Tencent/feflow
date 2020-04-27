@@ -140,7 +140,6 @@ export const validate = ({ commit, state }, path) => {
  */
 export const setValue = ({ commit, state }, { path, value }) => {
   const _state = {}
-
   if (!path || typeof value === 'undefined') {
     throw new Error('path and value is required!')
   }
@@ -154,7 +153,7 @@ export const setValue = ({ commit, state }, { path, value }) => {
     const model = _.get(state.model, path)
     last >= model.length ? model.push(value) : model.splice(last, 1, value)
   } else {
-    const model = Object.assign({}, state.model)
+    const model = _.cloneDeep(state.model)
     _.set(model, path, value)
     _state.model = Object.assign({}, model)
   }

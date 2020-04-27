@@ -58,8 +58,11 @@ const actions = {
   },
   builConfig({ commit }, config) {
     // 同步写
-    const localConfigName = buildGeneratorConfig(config)
-    commit('SET_LOCAL_CONFIG_NAME', localConfigName)
+    return new Promise(resolve => {
+      const localConfigName = buildGeneratorConfig(config)
+      commit('SET_LOCAL_CONFIG_NAME', localConfigName)
+      resolve(localConfigName)
+    })
   },
   selectWorkSpace({ commit }) {
     openDialogToGetDirectory().then(files => {
