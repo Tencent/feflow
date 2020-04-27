@@ -208,7 +208,7 @@ export default class Feflow {
                 return install(
                     packageManager,
                     root,
-                    'install',
+                    packageManager === 'yarn' ? 'add' : 'install',
                     needUpdatePlugins,
                     false,
                     true
@@ -304,7 +304,12 @@ export default class Feflow {
 
     async updateCli(packageManager: string) {
         return new Promise((resolve, reject) => {
-            const args = [
+            const args = packageManager === 'yarn' ? [
+                'global',
+                'add',
+                '@feflow/cli@latest',
+                '--extract'
+            ] : [
                 'install',
                 '@feflow/cli@latest',
                 '--color=always',
@@ -325,7 +330,7 @@ export default class Feflow {
                 }
                 resolve();
             });
-        })
+        });
     }
 
     async checkCliUpdate() {
