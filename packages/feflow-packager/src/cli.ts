@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import minimist from 'minimist';
 import semver from 'semver';
+import Packager from './index';
 const pkg = require('../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -19,7 +20,7 @@ export default function entry() {
   const requiredVersion = pkg.engines.node;
   checkNodeVersion(requiredVersion, '@feflow/packager');
 
-  let cmd: any = args._.shift();
+  const cmd: any = args._.shift();
 
-  console.log('cmd', cmd);
+  new Packager(cmd).pack()
 }
