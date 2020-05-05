@@ -76,7 +76,7 @@ import 'xterm/css/xterm.css'
 import SchemaForm from './schema-parser/components/vue-form'
 // import tKill from 'tree-kill'
 
-const TimeOutTsp = 20 * 10000
+const TimeOutTsp = 40 * 1000
 
 export default {
   name: 'create-page',
@@ -94,7 +94,7 @@ export default {
       hasInitTerminal: false,
       popoverVisible: false,
       empty: false,
-      watcherTimer: null
+      watchTimer: null
     }
   },
   mounted() {},
@@ -129,7 +129,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'builConfig',
+      // 'builConfig',
       'getGenerator',
       'selectWorkSpace',
       'resetState',
@@ -213,11 +213,10 @@ export default {
 
       // 创建配置文件
       if (execType === 'path') {
-        this.builConfig({
+        config = await this.$store.dispatchPromise('builConfig', {
           config: this.jsonData,
           genConfig: this.generatorsConfig[this.targetGenerator]
         })
-        config = this.localConfigName
       } else {
         config = Object.assign({}, this.jsonData, { banner: this.banner })
       }
@@ -268,13 +267,13 @@ export default {
       })
     },
     steamWatcher() {
-      if (watcherTimer) clearTimeout(watcherTimer)
-      watcherTimer = setTimeout(() => {
+      if (this.watchTimer) clearTimeout(this.watchTimer)
+      this.watchTimer = setTimeout(() => {
         this.handleTimeout()
       }, TimeOutTsp)
     },
     steamWatcherClose() {
-      if (watcherTimer) clearTimeout(watcherTimer)
+      if (this.watchTimer) clearTimeout(this.watchTimer)
     },
     handleTimeout() {
       this.$alert('检测到当前任务耗时异常，是否中止？', '任务异常', {
@@ -346,7 +345,7 @@ export default {
           // 保存
           saveGeneratorConfig({
             projectName: this.jsonData.name,
-            workSpace: this.workSpace + '/' + this.formData.name,
+            workSpace: this.workSpace + '/' + this.jsonData.name,
             banner: this.banner
           })
           this.toast('项目创建成功', '', 'success')

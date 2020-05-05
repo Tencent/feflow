@@ -61,6 +61,9 @@ export default {
     },
     required() {
       return this.definition.required
+    },
+    showType() {
+      return this.$store.state.Schema.schema.showType
     }
   },
   methods: {

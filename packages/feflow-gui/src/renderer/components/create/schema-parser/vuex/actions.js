@@ -51,6 +51,7 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   }
 
   _state.definition = generator.parse(schema, definition)
+  _state.switchProperties = generator.parseSwitchProperties(schema)
   _state.schema = schema
   _state.validator = null
 
@@ -139,7 +140,6 @@ export const validate = ({ commit, state }, path) => {
  */
 export const setValue = ({ commit, state }, { path, value }) => {
   const _state = {}
-
   if (!path || typeof value === 'undefined') {
     throw new Error('path and value is required!')
   }
@@ -153,10 +153,15 @@ export const setValue = ({ commit, state }, { path, value }) => {
     const model = _.get(state.model, path)
     last >= model.length ? model.push(value) : model.splice(last, 1, value)
   } else {
-    const model = Object.assign({}, state.model)
-
+    const model = _.cloneDeep(state.model)
     _.set(model, path, value)
     _state.model = Object.assign({}, model)
+  }
+
+  // 只有在严格模式下
+  // 并且条件属性发生了变化才会更新definition
+  if (state.schema.showType === 'strict' && state.switchProperties.includes(path[0])) {
+    _state.definition = generator.parse(state.schema, [], _state.model)
   }
 
   validate({ commit, state: _.cloneDeep(Object.assign({}, state, _state)) }, path)

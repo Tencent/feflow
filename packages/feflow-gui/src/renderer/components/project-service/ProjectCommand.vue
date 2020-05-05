@@ -95,14 +95,12 @@ import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import 'xterm/css/xterm.css'
 
+import { getUrlParam } from '@/common/utils'
 import {
   ProjectCommandHistory,
   spawnProjectCommand,
   fetchProjectDevkitCommandList
-} from '../../bridge'
-import {
-  getUrlParam
-} from '../../common/utils'
+} from '@/bridge'
 
 const { clipboard } = require('electron')
 

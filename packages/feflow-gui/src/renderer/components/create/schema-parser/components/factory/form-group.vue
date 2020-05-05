@@ -2,7 +2,7 @@
   <div
     class="form-group"
     :class="[name, valid.status === 1 ? 'has-success' : valid.status === 2 ? 'has-error' : '']"
-    v-if="definition"
+    v-show="visible"
   >
     <el-form-item :label="definition.title" v-if="definition.title">
       <!-- <label class="col-sm-2 control-label">
@@ -52,7 +52,18 @@ const DEFAULT_VALID = {
   message: ''
 }
 
+// TODO
+// 在stric模式下，非required的字段都给屏蔽掉，配合if-then-else实现JSON Schema的分支能力
+//
+// 获取当前required
+// match 信息
+
 export default {
+  date() {
+    return {
+      visible: true
+    }
+  },
   props: {
     definition: {
       type: Object,
@@ -61,6 +72,29 @@ export default {
     index: {
       type: Number,
       default: -1
+    },
+    showType: {
+      type: String
+    }
+  },
+  created() {
+    this.flushVisble()
+  },
+  watch: {
+    definition() {
+      console.log('definition change', this.definition)
+      this.flushVisble()
+    }
+  },
+  methods: {
+    flushVisble() {
+      let itemVisible = true
+
+      if (this.showType === 'strict') {
+        itemVisible = !!this.definition.required
+      }
+
+      this.visible = itemVisible
     }
   },
   computed: {

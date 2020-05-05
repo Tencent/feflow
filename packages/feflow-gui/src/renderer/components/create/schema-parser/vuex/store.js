@@ -14,7 +14,8 @@ const state = {
   // exclude: [],  // 需要排除的校验字段
   isRootArray: false,
   // generator: new Generator()
-  isSchemaValid: false // 校验schema是否有效
+  isSchemaValid: false, // 校验schema是否有效
+  switchProperties: [] // 条件属性
 }
 
 export default {
