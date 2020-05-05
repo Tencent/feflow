@@ -1,34 +1,36 @@
 @charset "utf-8";
 
 @import "./_reset";
+@imgpath: '~@/assets/img';
 
 html, body, .feflow-gui {
   height: 100%;
 }
 
-// 重置样式
-.project-command {
-  &__operation {
-    &-btns {
-      .el-button--mini, .el-button--mini.is-round {
-        padding: 8px 15px !important;
-      }
-    }
-    &-input {
-      .el-input {
-        flex: 1;
-        border: none;
-        height: 30px;
-        line-height: 30px;
-        background-color: transparent;
 
-        .el-input__inner {
-          height: 30px;
-          line-height: 30px;
-          border: none !important;
-          background: none !important;
-        }
-      }
+// ----------------------公共提示
+.icon-empty{
+    display: block;
+    width: 84px;
+    height: 67px;
+    background: url("@{imgpath}/icon-empty.png") center no-repeat;
+    background-size: 100% auto;
+}
+.mod-tips {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+
+    &__icon {
+        margin: 150px  auto  30px;
+        display: block;
     }
-  }
+
+    &__text {
+        line-height: 14px;
+        font-size: 10px;
+        color: #8A92AF;
+    }
 }

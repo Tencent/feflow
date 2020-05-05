@@ -8,7 +8,7 @@
         <el-button class="project-whistle__button" type="primary" @click="runWhistle" :disabled="startStatus !==0 ">
           <i :class="startStatus === 1?'el-icon-loading':'el-icon-base el-icon-start'"></i>{{startStatus === 1?'启动中':'启动'}}
         </el-button>
-        <el-button class="project-whistle__button" type="danger" @click="closeWhistle" :disabled="startStatus !== 2" plain>
+        <el-button class="project-whistle__button" type="danger" @click="closeWhistle" :disabled="startStatus !== 2">
           <i :class="startStatus === 3?'el-icon-loading':'el-icon-base el-icon-pause'"></i>{{startStatus === 3?'停止中':'停止'}}
         </el-button>
       </div>
@@ -336,7 +336,7 @@ export default {
     color: #434650;
   }
   &__row {
-    width: 680px;
+    width: 100%;
     padding: 25px 30px 20px 22px;
     background: #FFFFFF;
     border-radius: 4px;

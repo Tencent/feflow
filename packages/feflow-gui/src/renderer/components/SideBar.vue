@@ -12,7 +12,7 @@
             </div>
             <ul class="nav" v-if="!isProjectPage">
                 <router-link to="/">
-                    <li class="project current"><i class="icon" />我的项目</li>
+                    <li class="project"><i class="icon" />我的项目</li>
                 </router-link>
                 <router-link to="/market">
                     <li class="market"><i class="icon" />插件市场</li>
@@ -20,6 +20,10 @@
 
                 <router-link to="/admin">
                     <li class="project"><i class="icon" />管理中心</li>
+                </router-link>
+
+                <router-link to="/wiki">
+                    <li class="wiki"><i class="icon" />团队WIKI</li>
                 </router-link>
             </ul>
             <ul class="nav" v-if="isProjectPage">
@@ -137,6 +141,16 @@ export default {
     display: inline-block;
     margin-right: 10px;
 }
+
+.side-bar .nav .wiki .icon {
+    background: url('../assets/img/index-wiki.png') no-repeat;
+    background-size: 100% auto;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
 .side-bar .nav .sub .icon {
     width: 15px;
     height: 15px;

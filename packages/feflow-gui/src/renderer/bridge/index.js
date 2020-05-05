@@ -20,11 +20,13 @@ import {
   FEFLOW_PROJECT_CONFIG_NAME,
   FEFLOW_PROJECT_DEVKIT_CONFIG_NAME,
   FEFLOW_GENERATOR_CONFIG_HOME,
-  FEFLOW_WHISTLE_JS_PATH
+  FEFLOW_WHISTLE_JS_PATH,
+  FEFLOW_PROJECT_NPM_CONFIG_NAME
 } from './constants'
 import { dialog } from 'electron'
 import fs from 'fs'
 import shell from 'shelljs'
+import { execSync as ProcessExecSync } from 'child_process'
 
 /**
  * 载入全局脚手架
@@ -364,4 +366,36 @@ export const generatorWhistleJS = proxyConfig => {
       module.exports = ${JSON.stringify(proxyConfig)}
     `
   fs.writeFileSync(filepath, content)
+}
+
+/**
+ * 获取指定项目的远程 Git 仓库名称（groupName/projectName)
+ * @param {String} [projectList] 指定项目列表，若不传则默认指定为已导入的全部项目
+ */
+export const getProjectGitNames = (projectList) => {
+    // 不传参时，默认取所有的项目gitName
+    let projects = projectList
+    if (!projects || projects.length === 0) {
+        const { projects: feflowProjects } = loadFeflowConfigFile()
+        projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
+    }
+    const gitList = projects.map(projectPath => {
+        const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', { cwd: projectPath, encoding: 'utf-8' })
+        if (gitRepoUrl) {
+            const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
+            const projectName = gitRepo.pop()
+            const groupName = gitRepo.pop()
+            return `${groupName}/${projectName}`
+        }
+        return ''
+    })
+    return gitList
+}
+
+/**
+ * 【项目模块适用】获取项目的 package.json
+ */
+export const getProjectNpmConfig = (projectPath) => {
+    const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
+    return parseYaml(filePath)
 }

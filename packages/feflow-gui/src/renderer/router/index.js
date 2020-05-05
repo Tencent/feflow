@@ -36,6 +36,11 @@ export default new Router({
       component: require('@/components/create/import').default
     },
     {
+      path: '/wiki',
+      name: 'wiki-page',
+      component: require('@/components/wiki').default
+    },
+    {
       path: '/project-service',
       name: 'project-service',
       component: require('@/components/project-service/ProjectIndex').default
