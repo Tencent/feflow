@@ -1,7 +1,7 @@
 'use strict'
 
 import path from 'path'
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron'
 import { getUrl } from './common/utils'
 import registerEvent from './event'
 import createServer from './common/utils/server'
@@ -23,12 +23,14 @@ import '../renderer/store'
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
 if (process.env.NODE_ENV !== 'development') {
-  global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+  global.__static = require('path')
+    .join(__dirname, '/static')
+    .replace(/\\/g, '\\\\')
 }
 
 let mainWindow
 const winURL = getUrl()
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development'
 
 function createWindow() {
   const dockIcon = path.join(__dirname, '../../build/icons/256X256.png')
@@ -56,16 +58,19 @@ function createWindow() {
 
   // 进程通信中心
   registerEvent()
+  global.isUsingWhistle = {
+    value: false
+  }
 }
 
 app.on('ready', () => {
   if (isDev) {
-    createWindow();
+    createWindow()
   } else {
-    createServer();
+    createServer()
     setTimeout(() => {
-      createWindow();
-    }, 200);
+      createWindow()
+    }, 200)
   }
 })
 
