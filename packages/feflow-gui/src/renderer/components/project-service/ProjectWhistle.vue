@@ -91,6 +91,7 @@ import {
 import { FEFLOW_WHISTLE_JS_PATH } from '../../bridge/constants'
 import { spawn } from 'child_process'
 import { getUrlParam } from '../../common/utils'
+const electron = require('electron')
 
 export default {
   name: 'project-whistle',
@@ -247,11 +248,26 @@ export default {
       generatorWhistleJS({ name: config.name, rules: config.rules })
     },
     runWhistle() {
+      let status = this.getGlobalConfig()
+      if (!status) {
+         this.doRunAction()
+      } else {
+        this.$confirm('当前存在whistle进程，是否覆盖?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.doRunAction('restart')
+        })
+      }
+    },
+    doRunAction(command = 'start') {
       this.startStatus = 1
-      this.runCommand('start', () => {
+      this.runCommand(command, () => {
         this.runCommand(`add ${FEFLOW_WHISTLE_JS_PATH} --force`, () => {
           this.startStatus = 2
           this.$electron.shell.openExternal(`http://127.0.0.1:${this.whistlePort}/`)
+          this.setGlobalConfig(true)
         })
       })
     },
@@ -259,6 +275,7 @@ export default {
       this.startStatus = 3
       this.runCommand('stop', () => {
         this.startStatus = 0
+        this.setGlobalConfig(false)
         console.log('kill success')
       })
     },
@@ -273,6 +290,12 @@ export default {
         exitCallback && exitCallback()
       })
       return childProcess
+    },
+    getGlobalConfig() {
+     return electron.remote.getGlobal('isUsingWhistle').value
+    },
+    setGlobalConfig(status) {
+      electron.remote.getGlobal('isUsingWhistle').value = status
     }
   }
 }
