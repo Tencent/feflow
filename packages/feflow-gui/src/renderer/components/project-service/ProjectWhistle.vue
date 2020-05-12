@@ -109,7 +109,8 @@ export default {
       editProxy: '',
       whistlePort: 0,
       isEditPort: false,
-      startStatus: 0
+      startStatus: 0,
+      needWhistle: false // whistle.js 文件中是否有内容
     }
   },
   computed: {
@@ -118,10 +119,10 @@ export default {
       this.completeProxyList.map(item => {
         return idList.push(item.id)
       })
-      return Math.max(...idList) || 0
+      return idList.length > 0 ? Math.max(...idList) || 0 : 0
     },
     currentProxy() {
-      return this.completeProxyList[this.currentIndex]
+      return this.completeProxyList[this.currentIndex] || {}
     }
   },
   mounted() {
@@ -245,9 +246,21 @@ export default {
     },
     updateWhistleJS() {
       let config = this.completeProxyList.find(proxy => proxy.id === this.selectId)
-      generatorWhistleJS({ name: config.name, rules: config.rules })
+      if (config) {
+        this.needWhistle = false
+        generatorWhistleJS({ name: config.name, rules: config.rules })
+      } else {
+        this.needWhistle = true
+      }
     },
     runWhistle() {
+      if (this.needWhistle) {
+        this.$message({
+          type: 'error',
+          message: '请先切换测试环境！'
+        })
+        return;
+      }
       let status = this.getGlobalConfig()
       if (!status) {
          this.doRunAction()

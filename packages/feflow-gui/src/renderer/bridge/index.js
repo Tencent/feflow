@@ -332,14 +332,14 @@ export const getFefProjectProxy = projectName => {
   if (!doc.projects || !doc.projects[projectName]) {
     return {}
   } else {
-    return doc.projects[projectName].proxy || {}
+    return doc.projects[projectName]['proxy-plugin'] || {}
   }
 }
 
 export const updateFefProjectProxy = (projectName, proxyConfig) => {
   // 更新 .fef project配置
   const conf = loadFeflowConfigFile()
-  conf.projects[projectName].proxy = proxyConfig
+  conf.projects[projectName]['proxy-plugin'] = proxyConfig
   safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
 }
 
@@ -349,22 +349,20 @@ export const updateFefProjectProxy = (projectName, proxyConfig) => {
 export const getDefaultProjectProxy = projectPath => {
   // 解析 .feflowrc.json，获取基础proxy
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
-  return feflowrcJSON.proxy || []
+  return feflowrcJSON['proxy-plugin'] || []
 }
 
 export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
   // 更新 .fef project配置
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
   const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
-  feflowrcJSON['proxy'] = proxyConfig
+  feflowrcJSON['proxy-plugin'] = proxyConfig
   fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
 }
 
 export const generatorWhistleJS = proxyConfig => {
   let filepath = FEFLOW_WHISTLE_JS_PATH
-  const content = `
-      module.exports = ${JSON.stringify(proxyConfig)}
-    `
+  const content = `module.exports = ${JSON.stringify(proxyConfig)}`
   fs.writeFileSync(filepath, content)
 }
 
@@ -372,30 +370,33 @@ export const generatorWhistleJS = proxyConfig => {
  * 获取指定项目的远程 Git 仓库名称（groupName/projectName)
  * @param {String} [projectList] 指定项目列表，若不传则默认指定为已导入的全部项目
  */
-export const getProjectGitNames = (projectList) => {
-    // 不传参时，默认取所有的项目gitName
-    let projects = projectList
-    if (!projects || projects.length === 0) {
-        const { projects: feflowProjects } = loadFeflowConfigFile()
-        projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
-    }
-    const gitList = projects.map(projectPath => {
-        const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', { cwd: projectPath, encoding: 'utf-8' })
-        if (gitRepoUrl) {
-            const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
-            const projectName = gitRepo.pop()
-            const groupName = gitRepo.pop()
-            return `${groupName}/${projectName}`
-        }
-        return ''
+export const getProjectGitNames = projectList => {
+  // 不传参时，默认取所有的项目gitName
+  let projects = projectList
+  if (!projects || projects.length === 0) {
+    const { projects: feflowProjects } = loadFeflowConfigFile()
+    projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
+  }
+  const gitList = projects.map(projectPath => {
+    const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', {
+      cwd: projectPath,
+      encoding: 'utf-8'
     })
-    return gitList
+    if (gitRepoUrl) {
+      const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
+      const projectName = gitRepo.pop()
+      const groupName = gitRepo.pop()
+      return `${groupName}/${projectName}`
+    }
+    return ''
+  })
+  return gitList
 }
 
 /**
  * 【项目模块适用】获取项目的 package.json
  */
-export const getProjectNpmConfig = (projectPath) => {
-    const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
-    return parseYaml(filePath)
+export const getProjectNpmConfig = projectPath => {
+  const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
+  return parseYaml(filePath)
 }
