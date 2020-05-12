@@ -47,7 +47,14 @@ export const loadGenerator = () => {
       generators.forEach(gen => {
         for (const configName of GENERATOR_CONFIG_FILE_NAME) {
           if (!generatorConfigMap[gen]) {
-            generatorConfigMap[gen] = getFeflowDependenceConfig(gen, configName)
+            const generatorConfig = getFeflowDependenceConfig(gen, configName)
+            if (!generatorConfig) continue
+            // 保存properties顺序
+            let propsOrder = []
+            if (generatorConfig.properties) {
+              propsOrder = Object.keys(generatorConfig.properties)
+            }
+            generatorConfigMap[gen] = Object.assign({}, generatorConfig, { propsOrder })
           }
         }
       })
@@ -372,30 +379,33 @@ export const generatorWhistleJS = proxyConfig => {
  * 获取指定项目的远程 Git 仓库名称（groupName/projectName)
  * @param {String} [projectList] 指定项目列表，若不传则默认指定为已导入的全部项目
  */
-export const getProjectGitNames = (projectList) => {
-    // 不传参时，默认取所有的项目gitName
-    let projects = projectList
-    if (!projects || projects.length === 0) {
-        const { projects: feflowProjects } = loadFeflowConfigFile()
-        projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
-    }
-    const gitList = projects.map(projectPath => {
-        const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', { cwd: projectPath, encoding: 'utf-8' })
-        if (gitRepoUrl) {
-            const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
-            const projectName = gitRepo.pop()
-            const groupName = gitRepo.pop()
-            return `${groupName}/${projectName}`
-        }
-        return ''
+export const getProjectGitNames = projectList => {
+  // 不传参时，默认取所有的项目gitName
+  let projects = projectList
+  if (!projects || projects.length === 0) {
+    const { projects: feflowProjects } = loadFeflowConfigFile()
+    projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
+  }
+  const gitList = projects.map(projectPath => {
+    const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', {
+      cwd: projectPath,
+      encoding: 'utf-8'
     })
-    return gitList
+    if (gitRepoUrl) {
+      const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
+      const projectName = gitRepo.pop()
+      const groupName = gitRepo.pop()
+      return `${groupName}/${projectName}`
+    }
+    return ''
+  })
+  return gitList
 }
 
 /**
  * 【项目模块适用】获取项目的 package.json
  */
-export const getProjectNpmConfig = (projectPath) => {
-    const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
-    return parseYaml(filePath)
+export const getProjectNpmConfig = projectPath => {
+  const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
+  return parseYaml(filePath)
 }
