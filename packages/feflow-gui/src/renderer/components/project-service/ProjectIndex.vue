@@ -12,9 +12,10 @@
                     <el-tooltip class="item" effect="dark" content="打开项目所在文件夹" placement="bottom">
                         <span class="project-pane__action-item project-pane__action-item--finder" @click="openInFinder"></span>
                     </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="唤起编辑器打开项目" placement="bottom">
+                    <!-- TODO: 待开发 -->
+                    <!-- <el-tooltip class="item" effect="dark" content="唤起编辑器打开项目" placement="bottom">
                         <span class="project-pane__action-item project-pane__action-item--editor" @click="openInEditor"></span>
-                    </el-tooltip>
+                    </el-tooltip> -->
                 </div>
             </div>
             <div class="project-pane__content">
