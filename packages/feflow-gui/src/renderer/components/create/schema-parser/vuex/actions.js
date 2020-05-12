@@ -50,6 +50,14 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
     _state.isRootArray = true
   }
 
+  if (Array.isArray(schema.propsOrder)) {
+    const propsInOrder = {}
+    schema.propsOrder.forEach(function(key) {
+      propsInOrder[key] = schema.properties[key]
+    })
+    schema.properties = propsInOrder
+  }
+
   _state.definition = generator.parse(schema, definition)
   _state.switchProperties = generator.parseSwitchProperties(schema)
   _state.schema = schema

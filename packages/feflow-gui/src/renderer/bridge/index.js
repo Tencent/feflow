@@ -47,7 +47,14 @@ export const loadGenerator = () => {
       generators.forEach(gen => {
         for (const configName of GENERATOR_CONFIG_FILE_NAME) {
           if (!generatorConfigMap[gen]) {
-            generatorConfigMap[gen] = getFeflowDependenceConfig(gen, configName)
+            const generatorConfig = getFeflowDependenceConfig(gen, configName)
+            if (!generatorConfig) continue
+            // 保存properties顺序
+            let propsOrder = []
+            if (generatorConfig.properties) {
+              propsOrder = Object.keys(generatorConfig.properties)
+            }
+            generatorConfigMap[gen] = Object.assign({}, generatorConfig, { propsOrder })
           }
         }
       })

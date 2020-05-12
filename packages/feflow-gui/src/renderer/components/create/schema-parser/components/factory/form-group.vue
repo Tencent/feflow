@@ -82,7 +82,6 @@ export default {
   },
   watch: {
     definition() {
-      console.log('definition change', this.definition)
       this.flushVisble()
     }
   },
