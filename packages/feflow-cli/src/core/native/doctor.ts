@@ -71,31 +71,6 @@ module.exports = (ctx: any) => {
                     }
                 ]
             },
-            // {
-            //     header: 'Network access info',
-            //     optionList: [
-            //         {
-            //             name: 'curl http://git.code.oa.com ',
-            //             typeLabel: '{underline access:}',
-            //             description: executeSync('curl http://git.code.oa.com')
-            //         },
-            //         {
-            //             name: 'curl https://git.code.oa.com ',
-            //             typeLabel: '{underline access:}',
-            //             description: executeSync('curl https://git.code.oa.com')
-            //         },
-            //         {
-            //             name: 'curl http://tnpm.oa.com ',
-            //             typeLabel: '{underline access:}',
-            //             description: executeSync('curl http://tnpm.oa.com')
-            //         },
-            //         {
-            //             name: 'curl http://r.tnpm.oa.com ',
-            //             typeLabel: '{underline access:}',
-            //             description: executeSync('curl http://r.tnpm.oa.com')
-            //         }
-            //     ]
-            // },
           ];
         const result = commandLineUsage(sections);
         return result;
