@@ -339,14 +339,14 @@ export const getFefProjectProxy = projectName => {
   if (!doc.projects || !doc.projects[projectName]) {
     return {}
   } else {
-    return doc.projects[projectName].proxy || {}
+    return doc.projects[projectName]['proxy-plugin'] || {}
   }
 }
 
 export const updateFefProjectProxy = (projectName, proxyConfig) => {
   // 更新 .fef project配置
   const conf = loadFeflowConfigFile()
-  conf.projects[projectName].proxy = proxyConfig
+  conf.projects[projectName]['proxy-plugin'] = proxyConfig
   safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
 }
 
@@ -356,22 +356,20 @@ export const updateFefProjectProxy = (projectName, proxyConfig) => {
 export const getDefaultProjectProxy = projectPath => {
   // 解析 .feflowrc.json，获取基础proxy
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
-  return feflowrcJSON.proxy || []
+  return feflowrcJSON['proxy-plugin'] || []
 }
 
 export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
   // 更新 .fef project配置
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
   const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
-  feflowrcJSON['proxy'] = proxyConfig
+  feflowrcJSON['proxy-plugin'] = proxyConfig
   fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
 }
 
 export const generatorWhistleJS = proxyConfig => {
   let filepath = FEFLOW_WHISTLE_JS_PATH
-  const content = `
-      module.exports = ${JSON.stringify(proxyConfig)}
-    `
+  const content = `module.exports = ${JSON.stringify(proxyConfig)}`
   fs.writeFileSync(filepath, content)
 }
 
