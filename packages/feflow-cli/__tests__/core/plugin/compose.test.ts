@@ -1,24 +1,17 @@
-import chai from 'chai';
 import compose from '../../../src/core/plugin/compose';
-const should = chai.should();
+import chai from 'chai';
+const expect = chai.expect;
 
 describe('@feflow/core - Plugin compose', () => {
   it('Composes from right to left', () => {
     const double = (x: number) => x * 2;
     const square = (x: number) => x * x;
 
-    compose(square)(5).should.eql(25);
+    expect(compose(square)(5)).to.be.eql(25);
 
-    compose(
-      square,
-      double
-    )(5).should.eql(100);
+    expect(compose(square, double)(5)).to.eql(100);
 
-    compose(
-      double,
-      square,
-      double
-    )(5).should.eql(200);
+    expect(compose(double, square, double)(5)).to.be.eql(200);
   });
 
   it('Composes functions from right to left', () => {
@@ -26,38 +19,23 @@ describe('@feflow/core - Plugin compose', () => {
     const b = (next: any) => (x: string) => next(x + 'b');
     const c = (next: any) => (x: string) => next(x + 'c');
     const final = (x: any) => x;
-    compose(
-      a,
-      b,
-      c
-    )(final)('').should.eql('abc');
+    expect(compose(a, b, c)(final)('')).to.be.eql('abc');
 
-    compose(
-      b,
-      c,
-      a
-    )(final)('').should.eql('bca');
+    expect(compose(b, c, a)(final)('')).to.be.eql('bca');
 
-    compose(
-      c,
-      a,
-      b
-    )(final)('').should.eql('cab');
+    expect(compose(c, a, b)(final)('')).to.be.eql('cab');
   });
 
   it('Can be seeded with multiple arguments', () => {
-    const square = (x: number) => x * x
-    const add = (x: number, y: number) => x + y
+    const square = (x: number) => x * x;
+    const add = (x: number, y: number) => x + y;
 
-    compose(
-      square,
-      add
-    )(1, 2).should.eql(9);
+    expect(compose(square, add)(1, 2)).to.be.eql(9);
   });
 
   it('Returns the first function if given only one', () => {
     const fn = () => {};
 
-    compose(fn).should.eql(fn);
+    expect(compose(fn)).to.be.eql(fn);
   });
 });

@@ -1,0 +1,44 @@
+{
+  "generator": "generatorDemo",
+  "description": "演示脚手架",
+  "type": "object",
+  "execType": "",
+  "properties": {
+    "name": {
+      "title": "项目名称",
+      "type": "string"
+    },
+    "description": {
+      "title": "项目描述",
+      "type": "string"
+    },
+    "version": {
+      "title": "版本号",
+      "type": "string",
+      "default": "v0.1.0",
+      "pattern": "^v"
+    },
+    "ci": {
+      "title": "ci接入方式",
+      "type": "string",
+      "enum": ["oCI", "tencentCI"]
+    },
+    "date": {
+      "title": "日期选择",
+      "type": "string",
+      "format": "date-time"
+    },
+    "number": {
+      "title": "数字输入框",
+      "type": "number",
+      "min": 1,
+      "max": 10
+    },
+    "switch": {
+      "title": "是否接入Aegis",
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": ["name","description", "version"]
+}

@@ -1,4 +1,5 @@
 import Commander from './commander';
+import Hook from './hook';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
@@ -8,18 +9,24 @@ import Table from 'easy-table';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
+import getCommandLine from './devkit/commandOptions';
 import { FEFLOW_ROOT } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
+import chalk from 'chalk';
+import semver from 'semver';
+import commandLineUsage from 'command-line-usage';
 const pkg = require('../../package.json');
 
 export default class Feflow {
     public args: any;
     public projectConfig: any;
+    public projectPath: any;
     public version: string;
     public logger: any;
     public commander: any;
+    public hook: any;
     public root: any;
     public rootPkg: any;
     public config: any;
@@ -36,6 +43,7 @@ export default class Feflow {
         this.config = parseYaml(configPath);
         this.configPath = configPath;
         this.commander = new Commander();
+        this.hook = new Hook();
         this.logger = logger({
             debug: Boolean(args.debug),
             silent: Boolean(args.silent)
@@ -49,8 +57,13 @@ export default class Feflow {
         } else {
             await this.initClient();
             await this.initPackageManager();
-            await this.checkUpdate();
+            const disableCheck = !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+            if (disableCheck) {
+                await this.checkCliUpdate();
+                await this.checkUpdate();
+            }
             await this.loadNative();
+            await this.loadInternalPlugins();
             await loadPlugins(this);
             await loadDevkits(this);
         }
@@ -81,7 +94,7 @@ export default class Feflow {
     }
 
     initPackageManager() {
-        const { root } = this;
+        const { root, logger } = this;
 
         return new Promise<any>((resolve, reject) => {
             if (!this.config || !this.config.packageManager) {
@@ -107,6 +120,10 @@ export default class Feflow {
                         installed: isInstalled('tnpm')
                     },
                     {
+                        name: 'cnpm',
+                        installed: isInstalled('cnpm')
+                    },
+                    {
                         name: 'yarn',
                         installed: isInstalled('yarn')
                     }
@@ -129,10 +146,13 @@ export default class Feflow {
                     }]).then((answer: any) => {
                         const configPath = path.join(root, '.feflowrc.yml');
                         safeDump(answer, configPath);
+                        this.config = parseYaml(configPath);
                         resolve();
                     });
                 }
                 return;
+            } else {
+                logger.debug('Use packageManager is: ', this.config.packageManager);
             }
             resolve();
         });
@@ -152,9 +172,11 @@ export default class Feflow {
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
             const registryUrl = await getRegistryUrl(packageManager);
-            const latestVersion = await packageJson(name, 'latest', registryUrl);
+            const latestVersion: any = await packageJson(name, registryUrl).catch((err) => {
+                logger.debug('Check plugin update error', err);
+            });
 
-            if (latestVersion !== localVersion) {
+            if (latestVersion && semver.gt(latestVersion, localVersion)) {
                 table.cell('Name', name);
                 table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
                 table.cell('Tag', 'latest');
@@ -186,7 +208,7 @@ export default class Feflow {
                 return install(
                     packageManager,
                     root,
-                    'install',
+                    packageManager === 'yarn' ? 'add' : 'install',
                     needUpdatePlugins,
                     false,
                     true
@@ -251,7 +273,25 @@ export default class Feflow {
         });
     }
 
+    loadInternalPlugins() {
+        [
+            '@feflow/feflow-plugin-devtool'
+        ].map((name: string) => {
+            try {
+                this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
+                return require(name)(this);
+            } catch (err) {
+                this.logger.error({err: err}, 'Plugin load failed: %s', chalk.magenta(name));
+            }
+        });
+    }
+
+
     call(name: any, ctx: any) {
+        const args = ctx.args;
+        if(args.h || args.help) {
+            return this.showCommandOptionDescription(name, ctx);
+        }
         return new Promise<any>((resolve, reject) => {
             const cmd = this.commander.get(name);
             if (cmd) {
@@ -261,4 +301,102 @@ export default class Feflow {
             }
         });
     }
+
+    async updateCli(packageManager: string) {
+        return new Promise((resolve, reject) => {
+            const args = packageManager === 'yarn' ? [
+                'global',
+                'add',
+                '@feflow/cli@latest',
+                '--extract'
+            ] : [
+                'install',
+                '@feflow/cli@latest',
+                '--color=always',
+                '--save',
+                '--save-exact',
+                '--loglevel',
+                'error',
+                '-g'
+            ];
+
+            const child = spawn(packageManager, args, { stdio: 'inherit' });
+            child.on('close', code => {
+                if (code !== 0) {
+                    reject({
+                        command: `${packageManager} ${args.join(' ')}`,
+                    });
+                    return;
+                }
+                resolve();
+            });
+        });
+    }
+
+    async checkCliUpdate() {
+        const { args, version, config, configPath } = this;
+        if (!config) {
+            return;
+        }
+        const packageManager = config.packageManager;
+        const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
+        if (config.lastUpdateCheck && (+new Date() - parseInt(config.lastUpdateCheck, 10)) <= 1000 * 3600 * 24) {
+            return;
+        }
+        const registryUrl = await getRegistryUrl(packageManager);
+        const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
+            this.logger.warn(`Network error, can't reach ${ registryUrl }, CLI give up verison check.`);
+        });
+
+        this.logger.debug(`Auto update: ${autoUpdate}`);
+        if (latestVersion && semver.gt(latestVersion, version)) {
+            this.logger.debug(`Find new version, current version: ${version}, latest version: ${autoUpdate}`);
+            if (autoUpdate) {
+                this.logger.debug(`Auto update version from ${version} to ${latestVersion}`);
+                return await this.updateCli(packageManager);
+            }
+            const askIfUpdateCli = [{
+                type: "confirm",
+                name: "ifUpdate",
+                message: `${chalk.yellow(`@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)}, but your version is ${chalk.red(`${version}`)}, Do you want to update it?`)}`,
+                default: true
+            }]
+            const answer = await inquirer.prompt(askIfUpdateCli);
+            if (answer.ifUpdate) {
+                await this.updateCli(packageManager);
+            } else {
+                safeDump({
+                    ...config,
+                    'lastUpdateCheck': +new Date()
+                }, configPath);
+            }
+        } else {
+            this.logger.debug(`Current version is already latest.`);
+        }
+    }
+
+    async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
+        const registriedCommand = ctx.commander.get(cmd);
+        let commandLine: object[] = [];
+
+        if (registriedCommand && registriedCommand.options) {
+            commandLine = getCommandLine(registriedCommand.options, registriedCommand.desc, cmd);
+        }
+
+        if (cmd === "help") {
+            return registriedCommand.call(this, ctx)
+        }
+        if(commandLine.length == 0) {
+            ctx.logger.warn(`Current command dosen't have help message`);
+            return;
+        }
+
+        let sections = [];
+
+        sections.push(...commandLine);
+        const usage = commandLineUsage(sections);
+
+        console.log(usage);
+    }
+
 }

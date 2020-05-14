@@ -1,4 +1,203 @@
-## [0.16.3](https://github.com/Tencent/feflow/compare/v0.16.2...v0.16.3) (2019-11-21)
+# [0.19.0-alpha.6](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.0-alpha.6) (2020-04-27)
+
+
+### Bug Fixes
+
+* **install:** cli and plugins update when use yarn as package manager ([f450bc2](https://github.com/Tencent/feflow/commit/f450bc2e36ae69f205c8de15d8840632b8837df1))
+
+
+
+# [0.19.0-alpha.5](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.4...v0.19.0-alpha.5) (2020-04-27)
+
+
+### Bug Fixes
+
+* **install:** use add/remove when select yarn as package manager ([ab5a06b](https://github.com/Tencent/feflow/commit/ab5a06bc667816b5be7111c6ce2a0d1a214048b1)), closes [#221](https://github.com/Tencent/feflow/issues/221)
+
+
+### Features
+
+* **example:** JSON Schema ([#218](https://github.com/Tencent/feflow/issues/218)) ([17c0f9c](https://github.com/Tencent/feflow/commit/17c0f9c6be25c0d25d145cb149b07eae53292e5f))
+
+
+
+# [0.19.0-alpha.4](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.3...v0.19.0-alpha.4) (2020-04-14)
+
+
+### Bug Fixes
+
+* auto update ([33f9b94](https://github.com/Tencent/feflow/commit/33f9b94261e6c382e38a638c0f9fcf2e6cfff247))
+
+
+
+# [0.19.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.0...v0.19.0-alpha.3) (2020-04-10)
+
+
+### Bug Fixes
+
+* **core:** allow-root when update cli ([2d764dd](https://github.com/Tencent/feflow/commit/2d764dd16b2453958fbea058a887dded905fc4c6))
+* **help:** parameter format ([#212](https://github.com/Tencent/feflow/issues/212)) ([b3bb4a4](https://github.com/Tencent/feflow/commit/b3bb4a4ba2a668839bfe97cc5ff46d5817dc3ed8))
+
+
+### Features
+
+* **help:** add config help info ([b437682](https://github.com/Tencent/feflow/commit/b4376829467c05e2b3518b14769f31ccdf9cc9bf))
+* **help:** support array command description ([#214](https://github.com/Tencent/feflow/issues/214)) ([b7549da](https://github.com/Tencent/feflow/commit/b7549da89317638f2974d7168ade1423ef2c8b3a))
+
+
+
+# [0.19.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.18.4...v0.19.0-alpha.0) (2020-04-09)
+
+
+### Bug Fixes
+
+* **devkit:** spelling error ([c059638](https://github.com/Tencent/feflow/commit/c0596382fd3dc0e8c95fad6dbaac0cb4df7ddbb9))
+* fix help command without option ([#211](https://github.com/Tencent/feflow/issues/211)) ([754348f](https://github.com/Tencent/feflow/commit/754348fdb23c52c43f2745ae68965bf3c8512998))
+
+
+### Features
+
+* support devkit.js/devkit.yaml/devkit.yml/devkitrc/package.json format ([2ddeccb](https://github.com/Tencent/feflow/commit/2ddeccb1e50983f378c51c493016a7f5ce949010))
+* **cli:** support auto-update params ([115e742](https://github.com/Tencent/feflow/commit/115e74279c339e16f1d2815e5daf99d252ba12a2))
+* **devkit:** support plugin/devkit sub command help ([#207](https://github.com/Tencent/feflow/issues/207)) ([17be24d](https://github.com/Tencent/feflow/commit/17be24d8c5bbb2eb3c3faedc1f441e219997210a))
+
+
+
+## [0.18.4](https://github.com/Tencent/feflow/compare/v0.18.3...v0.18.4) (2020-04-09)
+
+
+### Features
+
+* disable check ([f8ff642](https://github.com/Tencent/feflow/commit/f8ff642b5e75896938d042bc6c643453d2efedbd))
+
+
+
+## [0.18.3](https://github.com/Tencent/feflow/compare/v0.18.2...v0.18.3) (2020-03-25)
+
+
+### Bug Fixes
+
+* **command:** do not display version info when has a command ([063549b](https://github.com/Tencent/feflow/commit/063549bac8405f7c96b67f12b3bd36efc8c4a3d0))
+
+
+
+## [0.18.2](https://github.com/Tencent/feflow/compare/v0.18.1...v0.18.2) (2020-03-22)
+
+
+### Bug Fixes
+
+* **core:** plugin version check ([d7d0f2f](https://github.com/Tencent/feflow/commit/d7d0f2f221365a2a33e27d29e87746709fb81984))
+
+
+### Features
+
+* add generator.json to npm file ([cf3b21a](https://github.com/Tencent/feflow/commit/cf3b21aaf7875dfae2a74f5e8131287fa9a35435))
+* **devkit:** support projectPath for devkit ([9505e04](https://github.com/Tencent/feflow/commit/9505e04ceea326495138982f0e2cba8b8cf20c2d))
+
+
+
+# [0.18.0](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.2...v0.18.0) (2020-03-04)
+
+
+### Features
+
+* **generator-example:** generator json schema ([e411acd](https://github.com/Tencent/feflow/commit/e411acd83b73b8dd3eaef0be451f1de8ec27ad6e))
+* **generator-example:** support initialize project with params ([187119c](https://github.com/Tencent/feflow/commit/187119c87834078392eac77e073602c4211fa54e))
+* config params ([f5fcf5c](https://github.com/Tencent/feflow/commit/f5fcf5c8720f6df21930f0817922e12ee2fab39c))
+
+
+
+# [0.18.0-alpha.2](https://github.com/Tencent/feflow/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-03-02)
+
+
+### Features
+
+* **hook:** add feflow hooks ([a8076ec](https://github.com/Tencent/feflow/commit/a8076ece163013892ad9a6762f81e046275a2196))
+
+
+
+# [0.18.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.17.1...v0.18.0-alpha.1) (2020-02-29)
+
+
+### Bug Fixes
+
+* **package-manager:** npm and yarn source ([3384f8f](https://github.com/Tencent/feflow/commit/3384f8f04c057cb37666b673521516b943160562))
+
+
+### Features
+
+* **devtool:** add devtool internal plugin ([4c98456](https://github.com/Tencent/feflow/commit/4c98456782a23af0c0900368c0696ee5160544ae))
+* **devtool:** add internal devtool plugin ([ef053c5](https://github.com/Tencent/feflow/commit/ef053c544964c63be206004f0ae4c10dca8fd0ee))
+* **devtool:** copy templates according to user input ([7557299](https://github.com/Tencent/feflow/commit/75572990fc7697f7693c40e71a60a615e43af7ea))
+* **devtool:** create template logic ([41afeeb](https://github.com/Tencent/feflow/commit/41afeeb578d0e07d101137356d175e11b7a3fd1b))
+* **devtool:** support feflow-plugin dev ([2f2323e](https://github.com/Tencent/feflow/commit/2f2323e7900bb6debc0245a110aba1391bf701ac))
+* support cnpm when initialize ([6095912](https://github.com/Tencent/feflow/commit/6095912ff00140d2b29839bd478f8e1ca970d893))
+* **init:** remove -g param ([1d91a32](https://github.com/Tencent/feflow/commit/1d91a3201949f660f22d34810a6f6e0d11335c74))
+* **init:** support initialize project with selected generator ([fff9b24](https://github.com/Tencent/feflow/commit/fff9b244c8b3e44c6d659d1558551465d996aeb6))
+
+
+### Performance Improvements
+
+* **core:** network error check. ([9565309](https://github.com/Tencent/feflow/commit/9565309da4439d73924ae927e3dbf0f1ab867f73))
+
+
+
+## [0.17.1](https://github.com/Tencent/feflow/compare/v0.17.0...v0.17.1) (2019-12-17)
+
+
+### Bug Fixes
+
+* local develop a scallfold cause upgrade check ([#172](https://github.com/Tencent/feflow/issues/172)) ([eab5fa3](https://github.com/Tencent/feflow/commit/eab5fa36d6e38cd2fa58761336ab9374edcfd2b6))
+
+
+### Features
+
+* support sub command description ([#168](https://github.com/Tencent/feflow/issues/168)) ([2cc18fb](https://github.com/Tencent/feflow/commit/2cc18fbd975af77cddd73d77fd8679bd3bfaa16b))
+
+
+
+# [0.17.0](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.3...v0.17.0) (2019-11-29)
+
+
+
+# [0.17.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.1...v0.17.0-alpha.3) (2019-11-28)
+
+
+### Bug Fixes
+
+* install packages when not exists ([#161](https://github.com/Tencent/feflow/issues/161)) ([#163](https://github.com/Tencent/feflow/issues/163)) ([721f1d8](https://github.com/Tencent/feflow/commit/721f1d82b984ace1ca2466e63e6e047a9dad76ca))
+
+
+
+# [0.17.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.17.0-alpha.0...v0.17.0-alpha.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* run commands error when in a feflow project but not installed devkit ([#159](https://github.com/Tencent/feflow/issues/159)) ([a7b987d](https://github.com/Tencent/feflow/commit/a7b987d098ee84e0bf03958204412d2c4c63a143)), closes [#157](https://github.com/Tencent/feflow/issues/157)
+
+
+### Features
+
+* **example:** make example in private scope ([39d021b](https://github.com/Tencent/feflow/commit/39d021bab261854c88f0d0ff2937a10dfec48e48))
+
+
+
+# [0.17.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.16.2...v0.17.0-alpha.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* get username from os.hostname ([#143](https://github.com/Tencent/feflow/issues/143)) ([c3b0db2](https://github.com/Tencent/feflow/commit/c3b0db22eec02fc1a55d1e602cb218a7ad161d9b))
+* handle exception cases while no plugins ([#142](https://github.com/Tencent/feflow/issues/142)) ([aed5b58](https://github.com/Tencent/feflow/commit/aed5b5892ef656dba758b9ab13d6ed1ec11c2e74)), closes [#139](https://github.com/Tencent/feflow/issues/139)
+* support windows report with proxy ([#149](https://github.com/Tencent/feflow/issues/149)) ([3cd0463](https://github.com/Tencent/feflow/commit/3cd046326b68e5f61174bb747fbcf4d950a84d93))
+* **native:** fix install commands when client is first config ([680442f](https://github.com/Tencent/feflow/commit/680442f8c6920cb707ffd6e3fd07ac5a29f78c1b))
+
+
+### Features
+
+* support feature cli update tip ([90ab127](https://github.com/Tencent/feflow/commit/90ab12773075d60457530d2de66647104679ed60))
+* **devkit:** support multiple builders. ([3e3f241](https://github.com/Tencent/feflow/commit/3e3f2411af781c10fe5cfc06cbdb2b84b84cbb38)), closes [#111](https://github.com/Tencent/feflow/issues/111)
 
 
 
@@ -258,6 +457,13 @@
 # [0.12.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2017-12-10)
 
 
+### Features
+
+* add feflow lint ([c235e8b](https://github.com/Tencent/feflow/commit/c235e8b0db7591ab31170e18dd037e945aaff484))
+* ignore files ([b6d07fb](https://github.com/Tencent/feflow/commit/b6d07fbd161d43ad094238187987efae48ab7c3b))
+* 新增feflow lint ([3814216](https://github.com/Tencent/feflow/commit/3814216b0ea16d0a9eab40ee86f9897a142bc985))
+
+
 
 # [0.12.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.11.3...v0.12.0-alpha.0) (2017-12-09)
 
@@ -276,13 +482,6 @@
 
 * process should exit after client init success ([572eac5](https://github.com/Tencent/feflow/commit/572eac5dbd897c7a5e7d57f2385dfe96c3087f82))
 * trim space after user input registry and proxy. ([cb25ea6](https://github.com/Tencent/feflow/commit/cb25ea6138d179b8ddfccf7060027314f28c8ab3)), closes [#6](https://github.com/Tencent/feflow/issues/6)
-
-
-### Features
-
-* add feflow lint ([c235e8b](https://github.com/Tencent/feflow/commit/c235e8b0db7591ab31170e18dd037e945aaff484))
-* ignore files ([b6d07fb](https://github.com/Tencent/feflow/commit/b6d07fbd161d43ad094238187987efae48ab7c3b))
-* 新增feflow lint ([3814216](https://github.com/Tencent/feflow/commit/3814216b0ea16d0a9eab40ee86f9897a142bc985))
 
 
 

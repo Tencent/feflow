@@ -4,6 +4,11 @@ import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
 import Report from '@feflow/report';
+import {
+  HOOK_TYPE_BEFORE,
+  HOOK_TYPE_AFTER,
+  EVENT_COMMAND_BEGIN
+} from '../shared/constant';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -36,7 +41,7 @@ const printBanner = () => {
     console.log(chalk.green(data));
     console.log(chalk.green(` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `));
     console.log(chalk.green(' (c) powered by Tencent, aims to improve front end workflow.                                       '));
-    console.log(chalk.green(' Run feflow --help to see usage.                                                                   '));
+    console.log(chalk.green(' Run fef --help to see usage.                                                                      '));
   });
 }
 
@@ -50,20 +55,21 @@ export default function entry() {
   const { commander, logger } = feflow;
   const report = new Report(feflow);
 
-  if (args.v || args.version) {
-      report.report('version', args);
-      console.log(chalk.green(pkg.version));
-      return;
-  }
-
   let cmd: any = args._.shift();
 
-  if (!cmd) {
+  if (!cmd && (args.v || args.version)) {
+    report.report('version', args);
+    console.log(chalk.green(pkg.version));
+    return;
+  }
+
+  if (!cmd && !args.h && !args.help) {
       printBanner();
       return;
   }
 
   return feflow.init(cmd).then(() => {
+    const isInvalidCmd = !(cmd && (args.h || args.help));
     if (!args.h && !args.help) {
       if (cmd) {
         const c = commander.get(cmd);
@@ -71,16 +77,21 @@ export default function entry() {
           cmd = 'help';
         }
       }
-    } else {
+    } else if (isInvalidCmd) {
       cmd = 'help';
     }
 
     report.report(cmd, args);
 
-    return feflow.call(cmd, feflow).then(() => {
-      logger.debug(`call ${cmd} success`);
-    }).catch((err) => {
-      handleError(err);
+    feflow.hook.emit(HOOK_TYPE_BEFORE);
+
+    feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
+      return feflow.call(cmd, feflow).then(() => {
+        feflow.hook.emit(HOOK_TYPE_AFTER);
+        logger.debug(`call ${cmd} success`);
+      }).catch((err) => {
+        handleError(err);
+      });
     });
   });
 }
