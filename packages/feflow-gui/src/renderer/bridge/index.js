@@ -383,7 +383,7 @@ export const getProjectGitNames = projectList => {
   // 不传参时，默认取所有的项目gitName
   let projects = projectList
   if (!projects || projects.length === 0) {
-    const { projects: feflowProjects } = loadFeflowConfigFile()
+    const { projects: feflowProjects = {} } = loadFeflowConfigFile()
     projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
   }
   const gitList = projects.map(projectPath => {
