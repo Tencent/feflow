@@ -8,6 +8,7 @@ import path from 'path';
 import Table from 'easy-table';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
+import loadUniversalPlugin from './plugin/loadUniversalPlugin';
 import loadDevkits from './devkit/loadDevkits';
 import getCommandLine from './devkit/commandOptions';
 import { FEFLOW_ROOT } from '../shared/constant';
@@ -65,6 +66,7 @@ export default class Feflow {
             await this.loadNative();
             await this.loadInternalPlugins();
             await loadPlugins(this);
+            await loadUniversalPlugin(this);
             await loadDevkits(this);
         }
     }
