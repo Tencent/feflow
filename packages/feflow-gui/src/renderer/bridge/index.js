@@ -380,25 +380,37 @@ export const generatorWhistleJS = proxyConfig => {
  * @param {String} [projectList] 指定项目列表，若不传则默认指定为已导入的全部项目
  */
 export const getProjectGitNames = projectList => {
-  // 不传参时，默认取所有的项目gitName
+  // 不传参时，默认取本地已导入的项目列表
   let projects = projectList
   if (!projects || projects.length === 0) {
     const { projects: feflowProjects = {} } = loadFeflowConfigFile()
     projects = Object.keys(feflowProjects).map(key => feflowProjects[key].path)
   }
-  const gitList = projects.map(projectPath => {
-    const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', {
-      cwd: projectPath,
-      encoding: 'utf-8'
-    })
-    if (gitRepoUrl) {
-      const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
-      const projectName = gitRepo.pop()
-      const groupName = gitRepo.pop()
-      return `${groupName}/${projectName}`
+
+  // 提取项目的远程仓库名
+  let gitList = []
+  projects.forEach(projectPath => {
+    try {
+      const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', {
+        cwd: projectPath,
+        encoding: 'utf-8'
+      })
+
+      if (gitRepoUrl) {
+        const gitRepo = gitRepoUrl.replace(/\.git(\n|\r|\t)$/, '').split('/')
+        const projectName = gitRepo.pop()
+        const groupName = gitRepo.pop()
+        gitList.push(`${groupName}/${projectName}`)
+      }
+    } catch (err) {
+      // 不存在 .git 或者是 git remote 的时候非零退出导致报错
+      // 忽略错误
     }
-    return ''
   })
+
+  // 去重
+  gitList = [ ...new Set(gitList) ]
+
   return gitList
 }
 
