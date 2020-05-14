@@ -1,81 +1,50 @@
-# <a href='https://feflowjs.com/'>Feflow</a>
+English | [简体中文](./README.CN.md)
 
-Feflow is a workflow tool aims to improve front-end engineer workflow and standard, powered by Typescript.
+<h1 align="center">Feflow</h1>
 
-[![build status](https://img.shields.io/travis/Tencent/feflow/master.svg?style=flat-square)](https://travis-ci.org/Tencent/feflow)
-[![npm version](https://img.shields.io/npm/v/@feflow/cli.svg?style=flat-square)](https://www.npmjs.com/package/@feflow/cli)
+<p align="center">
+  🚀 A tool aims to improve front-end engineer workflow and standard, powered by TypeScript.
+</p>
 
-## Learn Feflow
+<br>
 
-Before you use Feflow, you need to understand the basic concepts.
+[![npm][npm]][npm-url]
+[![Build Status][build-status]][build-status-url]
+[![deps][deps]][deps-url]
+[![Install Size][size]][size-url]
+[![Downloads][downloads]][downloads-url]
+[![lerna][lerna]][lerna-url]
+[![GitHub contributors][contributors]][contributors-url]
+[![Issue resolution][issue-resolution]][issue-resolution-url]
+[![PR's welcome][pr-welcome]][pr-welcome-url]
 
-### Just the Basics
+## Introduction
 
-There are three type of commands in Feflow:
+Feflow is an engineering solution of Tencent's open source front-end field, which is committed to improving development efficiency and specification.
 
-- **Native commands**: Commands that Feflow native provide, such as init, install, uninstall, info, help.
-- **Devkit commands**: Commands extended by Feflow devkit, a devkit usually has a series of commands and used for a real world project, Feflow devkit must have `feflow-devkit` prefix.
-- **Plugin commands**: Commands extended by Feflow plugin, Feflow plugin must have `feflow-plugin` prefix.
+## Getting Started
 
-### Feflow config file
+Let's start by installing Feflow with npm.
 
-When you use Feflow to develop a project, Feflow will load config file and load devkit described in config file. Config load order is:
-- .feflowrc.js,
-- .feflowrc.yaml,
-- .feflowrc.yml,
-- .feflowrc.json,
-- .feflowrc,
-- package.json
-
-## Installation
-
-To install the stable version:
-
-```sh
+```
 npm install @feflow/cli -g
 ```
 
-This assumes you are using [npm](https://www.npmjs.com/) as your package manager.
+There are three kinds of commands in Feflow
 
-### Create a project
-This will use Feflow native command `init`
+- Native Commands
+  - `fef config`
+  - `fef help`
+  - `fef info`
+  - `fef install`
+  - `fef uninstall`
+  - `fef list`
 
-```sh
-feflow init
-```
+You can write a Feflow devkit or plugin to extends commands.
 
-### Develop a project
-This will use Feflow devkit commands, eg:
-
-- Local development
-
-```sh
-feflow dev
-```
-
-- Build for production
-
-``` sh
-feflow build
-```
-
-- Lint JS
-
-```sh
-feflow lint
-```
-
-- Deploy project
-
-``` sh
-feflow deploy
-```
-
-- Generate changelog
-
-```sh
-feflow changelog
-```
+More detail document can be found:
+- [Github Wiki](https://github.com/Tencent/feflow/wiki)
+- [Website](https://feflowjs.com/)
 
 ## Change Log
 
@@ -85,3 +54,23 @@ Every release, along with the migration instructions, is documented on the GitHu
 ## License
 
 [MIT](LICENSE.txt)
+
+
+[build-status]: https://travis-ci.org/Tencent/feflow.svg
+[build-status-url]: https://travis-ci.org/Tencent/feflow
+[contributors]: https://img.shields.io/github/contributors/Tencent/feflow.svg
+[contributors-url]: https://github.com/Tencent/feflow/graphs/contributors
+[deps]: https://img.shields.io/david/Tencent/feflow.svg
+[deps-url]: https://david-dm.org/Tencent/feflow
+[downloads]: https://img.shields.io/npm/dw/@feflow/cli.svg
+[downloads-url]: https://www.npmjs.com/package/@feflow/cli
+[issue-resolution]: https://isitmaintained.com/badge/resolution/Tencent/feflow.svg
+[issue-resolution-url]: https://github.com/Tencent/feflow/issues
+[lerna]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
+[lerna-url]: http://www.lernajs.io/
+[npm]: https://img.shields.io/npm/v/@feflow/cli.svg
+[npm-url]: https://www.npmjs.com/package/@feflow/cli
+[pr-welcome]: https://img.shields.io/badge/PRs%20-welcome-brightgreen.svg
+[pr-welcome-url]: https://github.com/Tencent/feflow/blob/next/.github/CONTRIBUTING.md
+[size]: https://packagephobia.now.sh/badge?p=@feflow/cli
+[size-url]: https://packagephobia.now.sh/result?p=@feflow/cli

@@ -23,5 +23,20 @@ module.exports = (ctx: any) => {
             default:
                 return null;
         }
-    });
+    }, [{
+        header: `Usage`,
+        content: [
+            'fef config list                         list all configs',
+            'fef config set <key> <value>            set key value',
+            'fef config get <key>                    get key value'
+        ]
+    }, {
+        header: `Example`,
+        content: [
+            'fef config set packageManager npm       set package manager',
+            'fef config set disableCheck true        disable check when has new version',
+            'fef config set autoUpdate true          autoupdate when has new version',
+            'fef config get <key>                    get key config'
+        ]
+    }]);
 };

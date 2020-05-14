@@ -6,7 +6,7 @@ import chalk from 'chalk'
 function loadModuleList(ctx: any) {
     const packagePath = ctx.rootPkg;
     const pluginDir = path.join(ctx.root, 'node_modules');
-    const extend = function (target:any, source:any) {
+    const extend = function (target: any, source: any) {
         for (var obj in source) {
             target[obj] = source[obj];
         }
@@ -32,21 +32,37 @@ function loadModuleList(ctx: any) {
 module.exports = (ctx: any) => {
     ctx.commander.register('list', 'Show all plugins installed.', () => {
         const list = loadModuleList(ctx);
+        let templateCnt  = 0;
+        let pluginCnt = 0;
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');
+        if (!list.length) {
+            console.log(chalk.magenta('No templates and plugins have been installed'));
+            return;
+        }
+
         console.log('templates');
         list.map(function (name) {
-            if (!/generator-|^@[^/]+\/generator-/.test(name)){
+            if (/generator-|^@[^/]+\/generator-/.test(name)) {
                 console.log(chalk.magenta(name));
+                templateCnt = 1;
             }
         });
+        if (!templateCnt) {
+            console.log(chalk.magenta('No templates have been installed'));
+        }
+
         console.log('plugins');
         list.map(function (name) {
-            if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
+            if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
                 console.log(chalk.magenta(name));
+                pluginCnt = 1;
             }
         });
+        if (!pluginCnt) {
+            console.log(chalk.magenta('No plugins have been installed'));
+        }
     });
 };
 

@@ -1,30 +1,22 @@
-import shell from 'shelljs';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
-import objectFactory from "./objectFactory";
+import objectFactory from './objectFactory';
 
 export const getUserNameFromGit = () => {
-  let username = '';
-
-  if (shell.which('git')) {
-    username = shell
-      .exec('git config --get user.name', { silent: true })
-      .stdout.trim();
-  } else {
-    shell.echo('git is not avialble, you should make git is ok and set user.name in config');
-  }
-  return username;
+  const hostname = os.hostname();
+  const [upperUserName, ...device] = hostname.split('-');
+  return upperUserName.toLowerCase();
 };
 
 export const getSystemInfoByOS = () => {
   return objectFactory
     .create()
-    .load("hostname", os.hostname())
-    .load("type", os.type())
-    .load("platform", os.platform())
-    .load("arch", os.arch())
-    .load("release", os.release())
+    .load('hostname', os.hostname())
+    .load('type', os.type())
+    .load('platform', os.platform())
+    .load('arch', os.arch())
+    .load('release', os.release())
     .done();
 };
 
