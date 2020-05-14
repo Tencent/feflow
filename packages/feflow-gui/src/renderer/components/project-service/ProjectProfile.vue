@@ -89,16 +89,19 @@ export default {
         this.projectVersion = `v${this.projectNpmConf.version}`
         this.projectNpmConf.repository && (this.projectRepo = this.projectNpmConf.repository.url || '')
 
-        // 从 git 读取项目
-        this.projectGitName = getProjectGitNames([this.projectPath])[0]
+        // 获取文档展示
         this.fetchWikiList()
     },
     methods: {
         // 获取团队公共以及所属该项目级别的维基内容
         async fetchWikiList() {
             const { groupName } = this
-            const projectName = ['common', this.projectGitName]
+            const projectName = ['common']
+            const projectGitName = getProjectGitNames([this.projectPath])[0]
+
             try {
+                // 若存在项目git名，一并查询
+                projectGitName && projectName.push(projectGitName)
                 const docsList = await apiWiki.getDocList({ groupName, projectName })
 
                 // 过滤无效数据：0 为有效
@@ -122,18 +125,10 @@ export default {
         // 点击跳转
         handleHrefClick(link) {
             openWebview(link)
-            // if (!link) return
-            // ipcRenderer.send('create-project-webview', { routeName: 'project-webview', link })
         },
         // 复制文本到剪贴板
         handleCopy(text) {
             copyText(text)
-            // clipboard.writeText(text)
-
-            // this.$message({
-            //     type: 'success',
-            //     message: '复制成功!'
-            // })
         }
     }
 }

@@ -52,7 +52,8 @@
                         <!-- 列表 -->
                         <li class="wiki-docs__item"
                             v-for="item in filterDocsList"
-                            :key="item.docId">
+                            :key="item.docId"
+                            @click="handleHrefClick(item.docLink)">
                             <p class="wiki-docs__title">{{ item.docName }}</p>
                             <p class="wiki-docs__desc">{{ item.docDesc }}</p>
                             <div class="wiki-docs__project" v-if="item.projectName">
@@ -69,14 +70,14 @@
                                         class="wiki-docs__operation-edit"
                                         type="primary"
                                         size="small"
-                                        @click="showDialog(dialogType.EDIT, item)">
+                                        @click.stop="showDialog(dialogType.EDIT, item)">
                                         <i class="icon-edit el-icon--left"></i>编辑
                                     </el-button>
                                     <el-button
                                         class="wiki-docs__operation-delete"
                                         type="danger"
                                         size="small"
-                                        @click="deleteDoc(item)">
+                                        @click.stop="deleteDoc(item)">
                                         <i class="icon-delete"></i>
                                     </el-button>
                                 </div>
@@ -145,6 +146,7 @@
 import { mapState, mapGetters } from 'vuex'
 import { getUrlParam } from '@/common/utils'
 import { getProjectGitNames } from '@/bridge'
+import { openWebview } from '@/common/native'
 import apiWiki from '@/api/wiki'
 
 import SideBar from '../SideBar'
@@ -500,6 +502,11 @@ export default {
         // 重置表单
         resetForm(formName) {
             this.$refs[formName] && this.$refs[formName].resetFields();
+        },
+        // 内嵌打开超链接
+        // 点击跳转
+        handleHrefClick(link) {
+            openWebview(link)
         }
     }
 }
