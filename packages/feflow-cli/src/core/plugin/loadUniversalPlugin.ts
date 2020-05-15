@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { parseYaml } from '../../shared/yaml';
 import spawn from 'cross-spawn';
 import os from 'os';
+import { parseYaml } from '../../shared/yaml';
+import { UNIVERSAL_MODULES, UNIVERSAL_PKG_JSON, UNIVERSAL_PLUGIN_CONFIG } from '../../shared/constant';
 
 type PluginCommandMap = {
-  default: string;
+  default?: string;
   windows?: string;
   linux?: string;
   mac?: string;
@@ -17,9 +18,6 @@ type PluginPkgConfig = {
   name: string;
 };
 
-const pluginConfigName = 'plugin.yml';
-const pluginDirName = 'universal_modules';
-const pluginPkgName = 'universal-package.json';
 const toolRegex = /^feflow-(?:devkit|plugin)-tool-(.*)/i;
 
 const platformMap = {
@@ -65,13 +63,18 @@ const parseCommand = (command: string) => {
 
 export default function loadUniversalPlugin(ctx: any): Promise<any> {
   const { root, logger } = ctx;
-  const pluginPkg = path.resolve(root, pluginDirName, pluginPkgName);
+  const pluginPkg = path.resolve(root, UNIVERSAL_MODULES, UNIVERSAL_PKG_JSON);
 
-  return new Promise((resolve, reject) => {
+  if (!fs.existsSync(pluginPkg)) {
+    logger.debug(`${pluginPkg} is not found`);
+    return Promise.resolve();
+  }
+
+  return new Promise(resolve => {
     fs.readFile(pluginPkg, 'utf8', (err, data) => {
       if (err) {
         logger.debug(err);
-        reject(err);
+        resolve();
       }
 
       let pluginPkgConfig = {} as PluginPkgConfig;
@@ -79,15 +82,14 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
         pluginPkgConfig = JSON.parse(data);
       } catch (error) {
         logger.debug(`can not parse plugin package: ${pluginPkg}`);
-        reject(error);
+        resolve();
       }
 
       // traverse universal plugins and register command
       const { dependencies = {} } = pluginPkgConfig;
       Object.keys(dependencies).forEach(pluginName => {
-        const pluginPath = path.resolve(root, pluginDirName, pluginName);
-        const pluginConfigPath = path.resolve(pluginPath, pluginConfigName);
-        // store pluginPath
+        const pluginPath = path.resolve(root, UNIVERSAL_MODULES, pluginName);
+        const pluginConfigPath = path.resolve(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
         envVars.push(pluginPath);
 
         // get universal plugin command, like fef [universal-plugin-command]
