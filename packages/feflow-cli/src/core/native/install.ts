@@ -52,9 +52,10 @@ module.exports = (ctx: any) => {
         if (!fs.existsSync(repoPath)) {
           ctx.logger.info(`Start download from ${ repoUrl }`);
           await download(repoUrl, repoPath);
+          ctx.logger.debug('Write package to universal-package.json');
+          await writeDependencies(repoName, universalPkgJsonPath);
+          ctx.logger.info('install success');
         }
-        ctx.logger.debug('Write package to universal-package.json');
-        await writeDependencies(repoName, universalPkgJsonPath);
       } else {
         await Promise.all(
           dependencies.map((dependency: string) => {
