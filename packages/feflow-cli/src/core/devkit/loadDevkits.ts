@@ -46,7 +46,13 @@ export default function loadDevkits(ctx: any): Promise<void> {
           registerDevkitCommand(command, commandConfig, directoryPath, ctx);
         }
       } else {
-        ctx.logger.error('Your project config is not correct.');
+        if (path.basename(directoryPath) === '.fef') {
+          ctx.logger.debug('Run commands in .fef root will not work.');
+        } else {
+          ctx.logger.error(
+            `A config file .feflowrc(.js|.yaml|.yml) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
+          );
+        }
       }
     } else {
       ctx.logger.debug('Run commands not in a feflow project.');
