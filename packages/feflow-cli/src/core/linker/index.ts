@@ -15,23 +15,23 @@ export default class Linker {
         this.currentOs = os.platform();
     }
 
-    register(binPath: string, libPath: string, command: string) {
+    register(binPath: string, libPath: string, name: string, command: string) {
         if (this.currentOs === 'win32') {
-            this.linkToWin32(binPath, command);
+            this.linkToWin32(binPath, name, command);
         }
-        this.linkToUnixLike(binPath, libPath, command);
+        this.linkToUnixLike(binPath, libPath, name, command);
     }
 
-    private linkToWin32(binPath: string, command: string) {
-        const file = this.cmdFile(binPath, command);
+    private linkToWin32(binPath: string, name: string, command: string) {
+        const file = this.cmdFile(binPath, name);
         const template = this.cmdTemplate(command);
         this.writeExecFile(file, template);
     }
 
-    private linkToUnixLike(binPath: string, libPath: string, command: string) {
-        const file = this.shellFile(libPath, command);
+    private linkToUnixLike(binPath: string, libPath: string, name: string, command: string) {
+        const file = this.shellFile(libPath, name);
         const template = this.shellTemplate(command);
-        const commandLink = path.join(binPath, command);
+        const commandLink = path.join(binPath, name);
         this.writeExecFile(file, template);
         fs.symlinkSync(file, commandLink);
     }
@@ -64,12 +64,12 @@ export default class Linker {
         `;
     }
 
-    private shellFile(libPath: string, command: string): string {
-        return path.join(libPath, `${command}.sh`);
+    private shellFile(libPath: string, name: string): string {
+        return path.join(libPath, `${name}.sh`);
     }
 
-    private cmdFile(binPath: string, command: string): string {
-        return path.join(binPath, `${command}.cmd`)
+    private cmdFile(binPath: string, name: string): string {
+        return path.join(binPath, `${name}.cmd`)
     }
 
 }
