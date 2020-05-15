@@ -13,8 +13,9 @@ module.exports = (ctx: any) => {
       await Promise.all(
         dependencies.map((dependency: string) => {
           return packageJson(dependency, registryUrl)
-            .catch(() => {
+            .catch((err) => {
               ctx.logger.error(`${ dependency } not found on ${ packageManager }`);
+              ctx.logger.debug(`Install Error detail msg: ${ err }`);
               process.exit(2);
             });
         })
