@@ -39,3 +39,8 @@ export const EVENT_COMMAND_BEGIN = 'command begin';
  * Emitted when totally finished
  */
 export const EVENT_DONE = 'done';
+
+
+export const UNIVERSAL_MODULES = 'universal_modules';
+
+export const UNIVERSAL_PKG_JSON = 'universal-package.json';
