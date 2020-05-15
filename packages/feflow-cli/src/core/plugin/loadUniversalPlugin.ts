@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
-// import spawn from 'cross-spawn';
-import shelljs from 'shelljs';
+import execa from 'execa';
 import os from 'os';
 
 type PluginCommandMap = {
@@ -95,14 +94,16 @@ export default function loadplugins(ctx: any): Promise<any> {
 
           // register universal command
           ctx.commander.register(pluginCommand, pluginDescriptions, () => {
-            const commandGroup = [];
+            const commandGroup: string[] = [];
             const nativeArgs = process.argv.slice(3);
             commandGroup.push(commandMap[platform] || commandMap.default);
             // deliver parameters
             commandGroup.push(...nativeArgs);
-            logger.debug('commandGroup', commandGroup.join(' '));
-            // run universal plugin with child_process.execFileSync
-            shelljs.exec(commandGroup.join(' '));
+
+            // run universal plugin
+            const commandStr = commandGroup.join(' ');
+            logger.debug('command: ', commandStr);
+            execa.commandSync(commandStr, { shell: true, stdout: process.stdout, stderr: process.stderr });
           });
         }
       });
