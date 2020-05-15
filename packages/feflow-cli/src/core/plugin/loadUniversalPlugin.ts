@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
-import execa from 'execa';
+import spawn from 'cross-spawn';
 import os from 'os';
 
 type PluginCommandMap = {
@@ -39,7 +39,31 @@ const platform = platformMap[os.platform()];
 const envVarsAnchors = [/\${var:td}/gi];
 const envVars = [] as any;
 
-export default function loadplugins(ctx: any): Promise<any> {
+const SPACES_REGEXP = / +/g;
+
+// Allow spaces to be escaped by a backslash if not meant as a delimiter
+const handleEscaping = (tokens: string[], token: string, index: number) => {
+  if (index === 0) {
+    return [token];
+  }
+
+  const previousToken = tokens[tokens.length - 1];
+
+  if (previousToken.endsWith('\\')) {
+    return [...tokens.slice(0, -1), `${previousToken.slice(0, -1)} ${token}`];
+  }
+
+  return [...tokens, token];
+};
+
+const parseCommand = (command: string) => {
+  return command
+    .trim()
+    .split(SPACES_REGEXP)
+    .reduce(handleEscaping, []);
+};
+
+export default function loadUniversalPlugin(ctx: any): Promise<any> {
   const { root, logger } = ctx;
   const pluginPkg = path.resolve(root, pluginDirName, pluginPkgName);
 
@@ -94,16 +118,20 @@ export default function loadplugins(ctx: any): Promise<any> {
 
           // register universal command
           ctx.commander.register(pluginCommand, pluginDescriptions, () => {
-            const commandGroup: string[] = [];
+            const argGroup: string[] = [];
             const nativeArgs = process.argv.slice(3);
-            commandGroup.push(commandMap[platform] || commandMap.default);
+            const commandStrFromConfig = commandMap[platform] || commandMap.default;
+            if (!commandStrFromConfig) {
+              return logger.error(`universal plugin ${pluginCommand} is not supported on ${platform}`);
+            }
+            const [command, ...commandArgs] = parseCommand(commandStrFromConfig);
             // deliver parameters
-            commandGroup.push(...nativeArgs);
-
+            argGroup.push(...commandArgs);
+            argGroup.push(...nativeArgs);
+            logger.debug('command: ', command);
+            logger.debug('argGroup: ', argGroup);
             // run universal plugin
-            const commandStr = commandGroup.join(' ');
-            logger.debug('command: ', commandStr);
-            execa.commandSync(commandStr, { shell: true, stdout: process.stdout, stderr: process.stderr });
+            spawn(command, argGroup, { stdio: 'inherit' });
           });
         }
       });
