@@ -63,7 +63,7 @@ const parseCommand = (command: string) => {
 
 export default function loadUniversalPlugin(ctx: any): Promise<any> {
   const { root, logger } = ctx;
-  const pluginPkg = path.resolve(root, UNIVERSAL_MODULES, UNIVERSAL_PKG_JSON);
+  const pluginPkg = path.resolve(root, UNIVERSAL_PKG_JSON);
 
   if (!fs.existsSync(pluginPkg)) {
     logger.debug(`${pluginPkg} is not found`);
@@ -118,7 +118,6 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
 
           const pluginDescriptions = description || `${pluginCommand} universal plugin description`;
 
-          // register universal command
           ctx.commander.register(pluginCommand, pluginDescriptions, () => {
             const argGroup: string[] = [];
             const nativeArgs = process.argv.slice(3);
@@ -127,7 +126,6 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
               return logger.error(`universal plugin ${pluginCommand} is not supported on ${platform}`);
             }
             const [command, ...commandArgs] = parseCommand(commandStrFromConfig);
-            // deliver parameters
             argGroup.push(...commandArgs);
             argGroup.push(...nativeArgs);
             logger.debug('command: ', command);
