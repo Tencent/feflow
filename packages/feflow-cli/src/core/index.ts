@@ -1,5 +1,6 @@
 import Commander from './commander';
 import Hook from './hook';
+import Binp from './binp';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
@@ -32,6 +33,8 @@ export default class Feflow {
     public rootPkg: any;
     public config: any;
     public configPath: any;
+    public bin: string;
+    public lib: string;
 
     constructor(args: any) {
         args = args || {};
@@ -99,7 +102,7 @@ export default class Feflow {
         });
     }
 
-    private initBinPath(): Promise<any> {
+    private initBinPath() {
         const { bin } = this;
 
         if (fs.existsSync(bin) && fs.statSync(bin).isFile()) {
@@ -109,7 +112,7 @@ export default class Feflow {
         if (!fs.existsSync(bin)) {
             fs.mkdirSync(bin);
         }
-        return new Binp().register(bin);
+        new Binp().register(bin);
     }
 
 
