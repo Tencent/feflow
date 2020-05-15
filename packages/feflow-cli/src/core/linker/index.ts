@@ -18,8 +18,9 @@ export default class Linker {
     register(binPath: string, libPath: string, name: string, command: string) {
         if (this.currentOs === 'win32') {
             this.linkToWin32(binPath, name, command);
+        } else {
+            this.linkToUnixLike(binPath, libPath, name, command);
         }
-        this.linkToUnixLike(binPath, libPath, name, command);
     }
 
     private linkToWin32(binPath: string, name: string, command: string) {
