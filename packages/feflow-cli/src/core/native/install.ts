@@ -43,8 +43,11 @@ module.exports = (ctx: any) => {
       if (/(.git)/.test(dependencies[0])) {
         const repoUrl = dependencies[0];
         const match = repoUrl.match(/\/([a-zA-Z0-9]*).git$/);
-        const repoName = match && match[1];
+        let repoName = match && match[1];
         ctx.logger.debug(`Repo name is: ${ repoName }`);
+        if (!/^feflow-plugin/.test(repoName)) {
+          repoName = `feflow-plugin-${ repoName }`;
+        }
         const repoPath = path.join(universalModules, repoName);
         if (!fs.existsSync(repoPath)) {
           ctx.logger.info(`Start download from ${ repoUrl }`);
