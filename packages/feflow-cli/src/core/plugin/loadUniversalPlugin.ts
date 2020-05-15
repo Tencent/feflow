@@ -5,26 +5,22 @@ import { parseYaml } from '../../shared/yaml';
 import shelljs from 'shelljs';
 import os from 'os';
 
-//
-// 1. 目录读取
-// 2. 统一插件的配置读取 command、description、options
-// 3. 变量替换
-// 4. 获取平台
-// 5. 运行 child_process.execFileSync运行插件
-
-// TODO
-// descriptions/options
-
-type universalPluginCommandMap = {
-  default?: string;
+type PluginCommandMap = {
+  default: string;
   windows?: string;
   linux?: string;
   mac?: string;
 };
 
-const universalPluginConfigName = 'plugin.yml';
-const universalPluginDirName = 'universal_modules';
-const universalPluginPkgName = 'universal-package.json';
+type PluginPkgConfig = {
+  dependencies: object;
+  version: string;
+  name: string;
+};
+
+const pluginConfigName = 'plugin.yml';
+const pluginDirName = 'universal_modules';
+const pluginPkgName = 'universal-package.json';
 const toolRegex = /^feflow-(?:devkit|plugin)-tool-(.*)/i;
 
 const platformMap = {
@@ -39,51 +35,74 @@ const platformMap = {
 
 const platform = platformMap[os.platform()];
 
-export default function loadUniversalPlugins(ctx: any): Promise<void> {
+// environment variables in universal plugin command
+// var:td  => universal plugin absolute path
+const envVarsAnchors = [/\${var:td}/gi];
+const envVars = [] as any;
+
+export default function loadplugins(ctx: any): Promise<any> {
   const { root, logger } = ctx;
-  const universalPluginPkg = path.resolve(root, universalPluginDirName, universalPluginPkgName);
+  const pluginPkg = path.resolve(root, pluginDirName, pluginPkgName);
+
   return new Promise((resolve, reject) => {
-    fs.readFile(universalPluginPkg, 'utf8', (err, data) => {
+    fs.readFile(pluginPkg, 'utf8', (err, data) => {
       if (err) {
         logger.debug(err);
         reject(err);
       }
 
-      const universalPluginPkgConfig = JSON.parse(data);
-      const { dependencies = [] } = universalPluginPkgConfig;
+      let pluginPkgConfig = {} as PluginPkgConfig;
+      try {
+        pluginPkgConfig = JSON.parse(data);
+      } catch (error) {
+        logger.debug(`can not parse plugin package: ${pluginPkg}`);
+        reject(error);
+      }
 
-      Object.keys(dependencies).forEach(universalPluginName => {
-        const universalPluginPath = path.resolve(root, universalPluginDirName, universalPluginName);
-        const universalPluginConfigPath = path.resolve(
-          root,
-          universalPluginDirName,
-          universalPluginName,
-          universalPluginConfigName,
-        );
-        const universalPluginCommand = (toolRegex.exec(universalPluginName) || [])[1];
+      // traverse universal plugins and register command
+      const { dependencies = {} } = pluginPkgConfig;
+      Object.keys(dependencies).forEach(pluginName => {
+        const pluginPath = path.resolve(root, pluginDirName, pluginName);
+        const pluginConfigPath = path.resolve(pluginPath, pluginConfigName);
+        // store pluginPath
+        envVars.push(pluginPath);
 
-        if (!universalPluginCommand) {
-          logger.debug(`${universalPluginCommand} 命名不规范`);
+        // get universal plugin command, like fef [universal-plugin-command]
+        const pluginCommand = (toolRegex.exec(pluginName) || [])[1];
+        if (!pluginCommand) {
+          logger.debug(`invalid universal plugin name: ${pluginCommand}`);
           return;
         }
 
-        if (fs.existsSync(universalPluginConfigPath)) {
-          const config = parseYaml(universalPluginConfigPath);
-          const { command, description } = config;
-          const commandMap: universalPluginCommandMap = {};
-
-          Object.keys(command).forEach(platform => {
-            // TODO
-            // 变量替换
-            commandMap[platform] = command[platform].replace(/\${var:td}/g, universalPluginPath);
+        if (fs.existsSync(pluginConfigPath)) {
+          const config = parseYaml(pluginConfigPath) || {};
+          const { command = {}, description } = config;
+          const commandMap = {} as PluginCommandMap;
+          const supportPlatform = Object.keys(command);
+          if (!supportPlatform.length) {
+            return logger.debug(`there is no default command in ${pluginName}`);
+          }
+          // parse universal plugin command form it's config ,
+          // it provides kinds of command which dependencies user os platform .
+          // repalce env variable
+          supportPlatform.forEach(platform => {
+            commandMap[platform] = envVarsAnchors.reduce((previousValue, currentEnvVar, index) => {
+              return previousValue.replace(currentEnvVar, envVars[index] || '');
+            }, command[platform]);
           });
 
-          ctx.commander.register(universalPluginCommand, description || 'lint your code', () => {
-            const commandStr = [];
-            commandStr.push(commandMap[platform] || commandMap.default);
-            commandStr.push(...process.argv.slice(3));
-            logger.debug('commandStr', commandStr.join(' '));
-            shelljs.exec(commandStr.join(' '));
+          const pluginDescriptions = description || `${pluginCommand} universal plugin description`;
+
+          // register universal command
+          ctx.commander.register(pluginCommand, pluginDescriptions, () => {
+            const commandGroup = [];
+            const nativeArgs = process.argv.slice(3);
+            commandGroup.push(commandMap[platform] || commandMap.default);
+            // deliver parameters
+            commandGroup.push(...nativeArgs);
+            logger.debug('commandGroup', commandGroup.join(' '));
+            // run universal plugin with child_process.execFileSync
+            shelljs.exec(commandGroup.join(' '));
           });
         }
       });
