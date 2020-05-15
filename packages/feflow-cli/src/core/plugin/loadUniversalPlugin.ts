@@ -18,7 +18,7 @@ type PluginPkgConfig = {
   name: string;
 };
 
-const toolRegex = /^feflow-(?:devkit|plugin)-tool-(.*)/i;
+const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
 const platformMap = {
   aix: 'linux',
