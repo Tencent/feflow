@@ -34,13 +34,13 @@
             </ul>
         </div>
         <div class="footer">
-            <div class="setting-wrap">
+            <div class="setting-wrap" id="settingContainer">
                 <div class="divder"></div>
                 <li
                     class="setting"
                     @click="showSettingPanel(true)"
                 ><i class="icon" />设置</li>
-                <SettingPanel :visible="isSettingVisble" />
+                <SettingPanel :visible="isSettingVisble" @closeSettingPanel="closeSettingPanel"/>
             </div>
         </div>
 
@@ -82,6 +82,10 @@ export default {
     methods: {
         showSettingPanel() {
             this.isSettingVisble = !this.isSettingVisble;
+        },
+        closeSettingPanel() {
+            debugger
+            this.isSettingVisble = false;
         },
         activeTab(index) {
             // 子组件与父组件通讯，告知父组件更新
