@@ -54,6 +54,7 @@
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "0.0.1",
     "@feflow/report": "^0.1.0",
+    "@types/execa": "^2.0.0",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
