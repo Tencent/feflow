@@ -1,4 +1,29 @@
-# [0.19.0-alpha.6](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.0-alpha.6) (2020-04-27)
+## [0.19.2](https://github.com/Tencent/feflow/compare/v0.19.0...v0.19.2) (2020-05-15)
+
+
+### Bug Fixes
+
+* fix message ([24d07e4](https://github.com/Tencent/feflow/commit/24d07e4d21939ea13fcbb503cebf7ca81035f8d6))
+* while load devkits,check the directoryPath first; make error specific ([9cbc591](https://github.com/Tencent/feflow/commit/9cbc591bdc98bfa198123674fc7898bb35ae6de7))
+
+
+### Features
+
+* **install:** add install error log info ([49ec214](https://github.com/Tencent/feflow/commit/49ec2149b78b08cfdd97d7125bccb165688abbb7))
+
+
+
+# [0.19.0](https://github.com/Tencent/feflow/compare/v0.19.5...v0.19.0) (2020-05-14)
+
+
+### Features
+
+* **pack:** cli parse args ([521383b](https://github.com/Tencent/feflow/commit/521383b14da06fdf2cbd7ae3e0adb7120689e721))
+* pack to tarball ([9c12c3f](https://github.com/Tencent/feflow/commit/9c12c3f7a30a4466756aafaf976765c41d67f99b))
+
+
+
+## [0.19.5](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.5) (2020-04-27)
 
 
 ### Bug Fixes

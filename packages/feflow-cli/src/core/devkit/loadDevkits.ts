@@ -1,6 +1,7 @@
 import path from 'path';
 import Config from './config';
 import getCommandLine from "./commandOptions";
+import { FEFLOW_ROOT } from '../../shared/constant';
 
 const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
   const builder = commandConfig.builder;
@@ -46,7 +47,13 @@ export default function loadDevkits(ctx: any): Promise<void> {
           registerDevkitCommand(command, commandConfig, directoryPath, ctx);
         }
       } else {
-        ctx.logger.error('Your project config is not correct.');
+        if (path.basename(directoryPath) === FEFLOW_ROOT) {
+          ctx.logger.debug('Run commands in .fef root will not work.');
+        } else {
+          ctx.logger.error(
+            `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
+          );
+        }
       }
     } else {
       ctx.logger.debug('Run commands not in a feflow project.');
