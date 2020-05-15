@@ -10,7 +10,7 @@ import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadDevkits from './devkit/loadDevkits';
 import getCommandLine from './devkit/commandOptions';
-import { FEFLOW_ROOT } from '../shared/constant';
+import { FEFLOW_ROOT, FEFLOW_BIN, FEFLOW_LIB } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
@@ -37,6 +37,10 @@ export default class Feflow {
         const root = path.join(osenv.home(), FEFLOW_ROOT);
         const configPath = path.join(root, '.feflowrc.yml');
         this.root = root;
+        const bin = path.join(root, FEFLOW_BIN);
+        const lib = path.join(root, FEFLOW_LIB);
+        this.bin = bin;
+        this.lib = lib;
         this.rootPkg = path.join(root, 'package.json');
         this.args = args;
         this.version = pkg.version;
@@ -88,10 +92,24 @@ export default class Feflow {
                     'private': true
                 }, null, 2));
             }
-
+            this.initBinPath()
             resolve();
         });
     }
+
+    private initBinPath(): Promise<any> {
+        const { bin } = this;
+
+        if (fs.existsSync(bin) && fs.statSync(bin).isFile()) {
+            fs.unlinkSync(bin);
+        }
+
+        if (!fs.existsSync(bin)) {
+            fs.mkdirSync(bin);
+        }
+        return new Binp().register(bin);
+    }
+
 
     initPackageManager() {
         const { root, logger } = this;
