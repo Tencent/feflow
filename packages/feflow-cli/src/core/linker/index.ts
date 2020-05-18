@@ -15,26 +15,40 @@ export default class Linker {
         this.currentOs = os.platform();
     }
 
-    register(binPath: string, libPath: string, name: string, command: string) {
+    register(binPath: string, libPath: string, command: string) {
         if (this.currentOs === 'win32') {
-            this.linkToWin32(binPath, name, command);
+            this.linkToWin32(binPath, command);
         } else {
-            this.linkToUnixLike(binPath, libPath, name, command);
+            this.linkToUnixLike(binPath, libPath, command);
         }
     }
 
-    private linkToWin32(binPath: string, name: string, command: string) {
-        const file = this.cmdFile(binPath, name);
+    private linkToWin32(binPath: string, command: string) {
+        const file = this.cmdFile(binPath, command);
         const template = this.cmdTemplate(command);
         this.writeExecFile(file, template);
     }
 
-    private linkToUnixLike(binPath: string, libPath: string, name: string, command: string) {
-        const file = this.shellFile(libPath, name);
+    private linkToUnixLike(binPath: string, libPath: string, command: string) {
+        this.enableLibPath(libPath);
+        const file = this.shellFile(libPath, command);
         const template = this.shellTemplate(command);
-        const commandLink = path.join(binPath, name);
+        const commandLink = path.join(binPath, command);
         this.writeExecFile(file, template);
+        if (fs.existsSync(commandLink) && fs.statSync(commandLink).isSymbolicLink) {
+            return
+        }
         fs.symlinkSync(file, commandLink);
+    }
+
+    private enableLibPath(path: string) {
+        if (fs.existsSync(path) && fs.statSync(path).isFile()) {
+            fs.unlinkSync(path);
+        }
+
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+        }
     }
 
     private writeExecFile(file: string, content: string) {
@@ -54,15 +68,11 @@ export default class Linker {
     }
 
     private shellTemplate(command: string): string {
-        return `#!/bin/sh
-        fef ${command} "$@"
-        `;
+        return `#!/bin/sh\nfef ${command} $@`;
     }
 
     private cmdTemplate(command: string): string {
-        return `@echo off
-        fef ${command} %*
-        `;
+        return `@echo off\nfef ${command} %*`;
     }
 
     private shellFile(libPath: string, name: string): string {
