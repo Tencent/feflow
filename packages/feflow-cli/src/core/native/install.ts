@@ -3,6 +3,10 @@ import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
 import packageJson from '../../shared/packageJson';
+import {
+  getLtsTag,
+  checkoutVersion
+} from '../../shared/npm';
 import { parseYaml } from '../../shared/yaml';
 import {
   UNIVERSAL_MODULES,
@@ -18,7 +22,7 @@ function download(url: string, filepath: string): Promise<any> {
   });
 }
 
-function writeDependencies(plugin: string, universalPkgJsonPath: string) {
+function writeDependencies(plugin: string, ltsTag: string, universalPkgJsonPath: string) {
   if (!fs.existsSync(universalPkgJsonPath)) {
     fs.writeFileSync(universalPkgJsonPath, JSON.stringify({
         'name': 'universal-home',
@@ -28,7 +32,7 @@ function writeDependencies(plugin: string, universalPkgJsonPath: string) {
   }
 
   const universalPkgJson = require(universalPkgJsonPath);
-  universalPkgJson.dependencies[plugin] = '0.0.0';
+  universalPkgJson.dependencies[plugin] = ltsTag;
   fs.writeFileSync(universalPkgJsonPath, JSON.stringify(universalPkgJson, null, 4));
 }
 
@@ -58,22 +62,26 @@ module.exports = (ctx: any) => {
 
       if (/(.git)/.test(dependencies[0])) {
         const repoUrl = dependencies[0];
-        const match = repoUrl.match(/\/(.*).git$/);
+        const ltsTag = await getLtsTag(repoUrl);
+        ctx.logger.debug('Latest tag version:', ltsTag);
+        const match = repoUrl.match(/\/([a-zA-Z0-9]*).git$/);
         const command = match && match[1];
         let repoName: string;
         ctx.logger.debug(`Repo name is: ${ command }`);
         if (/^feflow-plugin/.test(command)) {
-            repoName = command;
+            repoName = `${ command }`;
         } else {
             repoName = `feflow-plugin-${ command }`;
         }
-        const repoPath = path.join(universalModules, repoName);
+        const repoPath = path.join(universalModules, `${repoName}@${ltsTag}`);
         if (!fs.existsSync(repoPath)) {
           ctx.logger.info(`Start download from ${ repoUrl }`);
           await download(repoUrl, repoPath);
-        } 
+          ctx.logger.info(`Switch to version ${ ltsTag}`);
+          await checkoutVersion(repoPath, ltsTag);
+        }
         ctx.logger.debug('Write package to universal-package.json');
-      
+
         const plugin = resolvePlugin(ctx, repoPath);
         // check the validity of the plugin before installing it
         await plugin.check();
@@ -82,7 +90,7 @@ module.exports = (ctx: any) => {
         plugin.preInstall.run();
         new Linker().register(ctx.bin, ctx.lib, command);
 
-        writeDependencies(repoName, universalPkgJsonPath);
+        writeDependencies(repoName, ltsTag, universalPkgJsonPath);
         plugin.test.run();
         plugin.postInstall.run([], (out: string, err?: any): boolean => {
             out && console.log(out);
