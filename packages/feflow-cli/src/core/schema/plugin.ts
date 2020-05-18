@@ -42,12 +42,12 @@ export class Plugin {
         this.command = new Command(this.ctx, this.path, config?.command);
         this.autoUpdate = config['auto-update'] || false;
         this.test = new Command(this.ctx, this.path, config?.test);
-        this.preInstall = new Command(this.ctx, this.path, config?.preInstall);
-        this.postInstall = new Command(this.ctx, this.path, config?.postInstall);
-        this.preRun = new Command(this.ctx, this.path, config?.preRun);
-        this.postRun = new Command(this.ctx, this.path, config?.postRun);
-        this.preUpgrade = new Command(this.ctx, this.path, config?.preUpgrade);
-        this.postUpgrade = new Command(this.ctx, this.path, config?.postUpgrade);
+        this.preInstall = new Command(this.ctx, this.path, config?.['pre-install']);
+        this.postInstall = new Command(this.ctx, this.path, config?.['post-install']);
+        this.preRun = new Command(this.ctx, this.path, config?.['pre-run']);
+        this.postRun = new Command(this.ctx, this.path, config?.['post-run']);
+        this.preUpgrade = new Command(this.ctx, this.path, config?.['pre-upgrade']);
+        this.postUpgrade = new Command(this.ctx, this.path, config?.['post-upgrade']);
     }
 
     async check() {
