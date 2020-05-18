@@ -20,6 +20,16 @@ export const DEVKIT_CONFIG = [
     'package.json'
 ];
 
+export const PLATFORM_MAP = {
+    aix: 'linux',
+    freebsd: 'linux',
+    linux: 'linux',
+    openbsd: 'linux',
+    sunos: 'linux',
+    win32: 'windows',
+    darwin: 'macos',
+};
+
 /**
  * Namespace for collection of "before" hooks
  */
