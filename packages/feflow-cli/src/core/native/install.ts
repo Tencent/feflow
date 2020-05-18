@@ -58,7 +58,7 @@ module.exports = (ctx: any) => {
 
       if (/(.git)/.test(dependencies[0])) {
         const repoUrl = dependencies[0];
-        const match = repoUrl.match(/\/([a-zA-Z0-9]*).git$/);
+        const match = repoUrl.match(/\/(.*).git$/);
         const command = match && match[1];
         let repoName: string;
         ctx.logger.debug(`Repo name is: ${ command }`);
@@ -84,7 +84,10 @@ module.exports = (ctx: any) => {
 
         writeDependencies(repoName, universalPkgJsonPath);
         plugin.test.run();
-        plugin.postInstall.run();
+        plugin.postInstall.run([], (out: string, err?: any): boolean => {
+            out && console.log(out);
+            return err ? false : true;
+        });
 
         ctx.logger.info('install success');
       } else {
