@@ -64,20 +64,26 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
   });
 }
 
-export async function getLtsTag(repoUrl: string) {
+export async function getTag(repoUrl: string, version?: string) {
   const execFile = promisify(childProcess.execFile);
-  const { stdout } = await execFile('git', ['ls-remote', '--tags', repoUrl]);
-  const tags = new Map();
-  if (stdout.trim() === '') {
-    throw 'no tag was found';
-  }
-  for (const line of stdout.trim().split('\n')) {
-    const [hash, tagReference] = line.split('\t');
-    const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
+  const { stdout } = await execFile('git', ['ls-remote', '--tags', '--refs', repoUrl]);
 
-    tags.set(tagName, hash);
+  const tagStr = stdout?.trim();
+  if (tagStr) {
+    const tagList = tagStr.split('\n');
+  
+    for (let i = tagList.length - 1; i > 0; i--) {
+      const [, tagReference] = tagList[i].split('\t');
+      // v0.1.2
+      if (/^refs\/tags\/v\d+.\d+.\d+$/i.test(tagReference)) {
+        const tag = tagReference.substring('refs/tags/'.length);
+        if (!version || version === tag) {
+          return Promise.resolve(tag);
+        }
+      }
+    }
   }
-  return [...tags][tags.size - 1][0];
+  return Promise.reject('no valid tag was found');
 }
 
 export function checkoutVersion(repoPath: string, version: string) {
