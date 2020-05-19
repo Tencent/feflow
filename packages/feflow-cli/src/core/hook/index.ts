@@ -27,19 +27,19 @@ export default class Hook {
         }
     }
 
-    emit(type: any) {
+    emit(type: any, arg?: any) {
         const args = Array.prototype.slice.call(arguments);
         args.shift();
         switch (type) {
             case HOOK_TYPE_BEFORE:
                 this.hook(HOOK_TYPE_BEFORE, () => {
-                    this.emit(EVENT_COMMAND_BEGIN);
-                });
+                    this.emit(EVENT_COMMAND_BEGIN, ...args);
+                }, args);
                 break;
             case HOOK_TYPE_AFTER:
                 this.hook(HOOK_TYPE_AFTER, () => {
-                    this.emit(EVENT_DONE);
-                });
+                    this.emit(EVENT_DONE, ...args);
+                }, args);
                 break;
             default:
                 const listeners = this.listeners[type];
@@ -60,7 +60,7 @@ export default class Hook {
      * @param {string} type
      * @param {Function} fn
      */
-    hook(type: any, fn: any) {
+    hook(type: any, fn: any, args?: any) {
         const hooks = this.listeners[type];
 
         const next = (i: any) => {
@@ -68,8 +68,7 @@ export default class Hook {
             if (!hook) {
                 return fn();
             }
-
-            const result = hook.call();
+            const result = hook(...args);
             if (result && typeof result.then === 'function') {
                 result.then(
                     () => {
@@ -89,7 +88,7 @@ export default class Hook {
                 return fn();
             } else {
                 next(0);
-            } 
+            }
         });
     }
 }
