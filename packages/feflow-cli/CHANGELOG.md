@@ -1,3 +1,34 @@
+# [0.20.0-alpha.0](https://github.com/Tencent/feflow/compare/v0.19.2...v0.20.0-alpha.0) (2020-05-19)
+
+
+### Bug Fixes
+
+* compile fail ([d04eb91](https://github.com/Tencent/feflow/commit/d04eb913968cb7265563b660b43c568824f6a4ac))
+* **universal_plugin:** change universal plugin config path ([f76b73b](https://github.com/Tencent/feflow/commit/f76b73b63940d8d9f460f984804e1c47a366f76a))
+* **universal_plugin:** check plugin config path ([8f71a08](https://github.com/Tencent/feflow/commit/8f71a082a9bb3557fd27c793d060c5388206d903))
+* error taking hook parameter ([634ab47](https://github.com/Tencent/feflow/commit/634ab4777a820f451936bd9c59ace4a2099db3ef))
+* link select ([f24792d](https://github.com/Tencent/feflow/commit/f24792dcc105db64505f3a9a7b07c5018f6a3e4b))
+* register as a system command with the specified name ([a8bb7a2](https://github.com/Tencent/feflow/commit/a8bb7a276506df71f3683fd6ddda08b38805e08d))
+* repo dosen't has tag version case ([7503f7e](https://github.com/Tencent/feflow/commit/7503f7ebc7a57b3b823f14e2ee90df12f2336754))
+
+
+### Features
+
+* add feflow-plugin prefix when from git ([a0c3066](https://github.com/Tencent/feflow/commit/a0c3066583d69baa5e1b5680781d9f7a8d20438d))
+* add system command registry ([4eb3e5a](https://github.com/Tencent/feflow/commit/4eb3e5a017c8be63fb79af58441352c47d5e24fc))
+* **universal_plugin:** replace execa to cross-spawn ([9da8153](https://github.com/Tencent/feflow/commit/9da8153ba8f06497633b49a123bf189790dee7c7))
+* define universal folder and file name ([bc80050](https://github.com/Tencent/feflow/commit/bc80050f81f6aaab1f7ceccd0c9df10a7c2bbcd7))
+* **install:** support install repo from git ([80960cd](https://github.com/Tencent/feflow/commit/80960cd468c55004056b6599c9b8a9bf2d7085a0))
+* installed as the system command and supports hooks ([f0970b2](https://github.com/Tencent/feflow/commit/f0970b23b878d2e30be9f6d17ec4fbe65b3417f4))
+* run universal plugin ([46be839](https://github.com/Tencent/feflow/commit/46be8394b3e432a4732cffe682d9bc7997396b6c))
+* support install using package name ([638e3c7](https://github.com/Tencent/feflow/commit/638e3c786f59713f1acd26582c43b3dd5476fc21))
+* **plugin:** add plugin install success tip ([bf3a34a](https://github.com/Tencent/feflow/commit/bf3a34ad88cccd6138e94c0ec1d5aaf83a57cc83))
+* **universal_plugin:** change plugin name regex ([8384b58](https://github.com/Tencent/feflow/commit/8384b5871204a7e90780fa0fab712504c11b0b94))
+* **universal_plugin:** replace shelljs to execa ([d7223ac](https://github.com/Tencent/feflow/commit/d7223acef619123d0542f7825369d9b89add2e8d))
+* **universal-package:** support download latest version ([c70dd66](https://github.com/Tencent/feflow/commit/c70dd66eb7c7b9b96a336551c39b7ad4070c917a))
+
+
+
 ## [0.19.2](https://github.com/Tencent/feflow/compare/v0.19.0...v0.19.2) (2020-05-15)
 
 
@@ -13,22 +44,18 @@
 
 
 
-# [0.19.0](https://github.com/Tencent/feflow/compare/v0.19.5...v0.19.0) (2020-05-14)
+# [0.19.0](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.0) (2020-05-14)
+
+
+### Bug Fixes
+
+* **install:** cli and plugins update when use yarn as package manager ([f450bc2](https://github.com/Tencent/feflow/commit/f450bc2e36ae69f205c8de15d8840632b8837df1))
 
 
 ### Features
 
 * **pack:** cli parse args ([521383b](https://github.com/Tencent/feflow/commit/521383b14da06fdf2cbd7ae3e0adb7120689e721))
 * pack to tarball ([9c12c3f](https://github.com/Tencent/feflow/commit/9c12c3f7a30a4466756aafaf976765c41d67f99b))
-
-
-
-## [0.19.5](https://github.com/Tencent/feflow/compare/v0.19.0-alpha.5...v0.19.5) (2020-04-27)
-
-
-### Bug Fixes
-
-* **install:** cli and plugins update when use yarn as package manager ([f450bc2](https://github.com/Tencent/feflow/commit/f450bc2e36ae69f205c8de15d8840632b8837df1))
 
 
 
