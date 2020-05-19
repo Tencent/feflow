@@ -1,4 +1,6 @@
 export const FEFLOW_ROOT = '.fef';
+export const FEFLOW_BIN = 'bin';
+export const FEFLOW_LIB = 'lib';
 
 export const PROJECT_CONFIG = [
     '.feflowrc.js',
@@ -37,3 +39,10 @@ export const EVENT_COMMAND_BEGIN = 'command begin';
  * Emitted when totally finished
  */
 export const EVENT_DONE = 'done';
+
+
+export const UNIVERSAL_MODULES = 'universal_modules';
+
+export const UNIVERSAL_PKG_JSON = 'universal-package.json';
+
+export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';

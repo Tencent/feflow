@@ -1,4 +1,6 @@
 import spawn from 'cross-spawn';
+import childProcess from 'child_process';
+import { promisify } from 'util';
 
 export function getRegistryUrl(packageManager: string) {
     return new Promise<any>((resolve, reject) => {
@@ -50,6 +52,49 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
     }
 
     const child = spawn(command, args, { stdio: 'inherit', cwd: root });
+    child.on('close', code => {
+      if (code !== 0) {
+        reject({
+          command: `${command} ${args.join(' ')}`,
+        });
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+export async function getLtsTag(repoUrl: string) {
+  const execFile = promisify(childProcess.execFile);
+  const { stdout } = await execFile('git', ['ls-remote', '--tags', repoUrl]);
+
+  return new Promise((resolve, reject) => {
+    const tags = new Map();
+
+    for (const line of stdout.trim().split('\n')) {
+      const [hash, tagReference] = line.split('\t');
+
+      if (tagReference) {
+        const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
+        tags.set(tagName, hash);
+      } else {
+        reject(`Repo ${repoUrl} doesn't has tag version`);
+      }
+    }
+    resolve([...tags][tags.size - 1][0]);
+  });
+}
+
+export async function checkoutVersion(repoPath: string, version: string) {
+  return new Promise((resolve, reject) => {
+    const command = 'git';
+    const args = [
+        '-C',
+        repoPath,
+        'checkout',
+        version
+    ];
+    const child = spawn(command, args, { stdio: 'ignore'});
     child.on('close', code => {
       if (code !== 0) {
         reject({
