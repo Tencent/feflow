@@ -64,41 +64,44 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
   });
 }
 
-export async function getLtsTag(repoUrl: string) {
+export async function getTag(repoUrl: string, version?: string) {
   const execFile = promisify(childProcess.execFile);
-  const { stdout } = await execFile('git', ['ls-remote', '--tags', repoUrl]);
+  const { stdout } = await execFile('git', ['ls-remote', '--tags', '--refs', repoUrl]);
 
-  return new Promise((resolve, reject) => {
-    const tags = new Map();
-
-    for (const line of stdout.trim().split('\n')) {
-      const [hash, tagReference] = line.split('\t');
-
-      if (tagReference) {
-        const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
-        tags.set(tagName, hash);
-      } else {
-        reject(`Repo ${repoUrl} doesn't has tag version`);
+  const tagStr = stdout?.trim();
+  if (tagStr) {
+    const tagList = tagStr.split('\n');
+  
+    for (let i = tagList.length - 1; i > 0; i--) {
+      const [, tagReference] = tagList[i].split('\t');
+      // v0.1.2
+      if (/^refs\/tags\/v\d+.\d+.\d+$/i.test(tagReference)) {
+        const tag = tagReference.substring('refs/tags/'.length);
+        if (!version || version === tag) {
+          return Promise.resolve(tag);
+        }
       }
     }
-    resolve([...tags][tags.size - 1][0]);
-  });
+  }
+  return Promise.reject('no valid tag was found');
 }
 
-export async function checkoutVersion(repoPath: string, version: string) {
+export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
-    const args = [
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
+    const checkArgs = [
         '-C',
         repoPath,
         'checkout',
         version
     ];
-    const child = spawn(command, args, { stdio: 'ignore'});
+    const child = spawn(command, checkArgs, { stdio: 'ignore'});
     child.on('close', code => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${checkArgs.join(' ')}`,
+          code
         });
         return;
       }

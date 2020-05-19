@@ -45,7 +45,7 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
       // traverse universal plugins and register command
       const { dependencies = {} } = pluginPkgConfig;
       for (const pluginName of Object.keys(dependencies)) {
-        const pluginPath = path.resolve(root, UNIVERSAL_MODULES, pluginName);
+        const pluginPath = path.resolve(root, UNIVERSAL_MODULES, `${pluginName}@${dependencies[pluginName]}`);
         const pluginConfigPath = path.resolve(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
 
         // get universal plugin command, like fef [universal-plugin-command]
@@ -65,10 +65,7 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
           ctx.commander.register(pluginCommand, pluginDescriptions, () => {
             plugin.preRun.run();
             const args = process.argv.slice(3);
-            plugin.command.run(args, (out: string, err?: any): boolean => {
-              out && console.log(out);
-              return err ? false : true;
-            });
+            plugin.command.run(args);
             plugin.postRun.run();
           });
         }
