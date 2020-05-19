@@ -2,6 +2,7 @@ import { getRegistryUrl, install } from '../../shared/npm';
 import execa from 'execa';
 import fs from 'fs';
 import path from 'path';
+import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
   getLtsTag,
@@ -51,20 +52,42 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
     return new Plugin(ctx, repoPath, config)
 }
 
+function getRepoInfo(serverUrl: string, packageName: string): any {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${serverUrl}apply/getlist?name=${ packageName }`,
+      method: 'GET'
+    };
+
+    rp(options)
+      .then((response: any) => {
+        const data = JSON.parse(response);
+        resolve(data.data[0]);
+      })
+      .catch((err: object) => {
+        reject(err);
+      });
+  });
+}
+
 module.exports = (ctx: any) => {
     const packageManager = ctx.config && ctx.config.packageManager;
+    const serverUrl = ctx.config && ctx.config.serverUrl;
     const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
     const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
 
     ctx.commander.register('install', 'Install a devkit or plugin', async () => {
       const registryUrl = await getRegistryUrl(packageManager);
       const dependencies = ctx.args['_'];
-
-      if (/(.git)/.test(dependencies[0])) {
-        const repoUrl = dependencies[0];
+      let repoInfo: any = {};
+      if (serverUrl) {
+        repoInfo = await getRepoInfo(serverUrl, dependencies[0]);
+      }
+      const repoUrl = (repoInfo && repoInfo.repo) || dependencies[0];
+      if (/(.git)/.test(repoUrl)) {
         const ltsTag = await getLtsTag(repoUrl);
         ctx.logger.debug('Latest tag version:', ltsTag);
-        const match = repoUrl.match(/\/([a-zA-Z0-9]*).git$/);
+        const match = repoUrl.match(/\/([a-zA-Z0-9\-_]*).git$/);
         const command = match && match[1];
         let repoName: string;
         ctx.logger.debug(`Repo name is: ${ command }`);
@@ -79,25 +102,26 @@ module.exports = (ctx: any) => {
           await download(repoUrl, repoPath);
           ctx.logger.info(`Switch to version ${ ltsTag}`);
           await checkoutVersion(repoPath, ltsTag);
+          ctx.logger.debug('Write package to universal-package.json');
+
+          const plugin = resolvePlugin(ctx, repoPath);
+          await plugin.check();
+          ctx.logger.debug('check plugin success');
+
+          plugin.preInstall.run();
+          new Linker().register(ctx.bin, ctx.lib, command);
+
+          writeDependencies(repoName, ltsTag, universalPkgJsonPath);
+          plugin.test.run();
+          plugin.postInstall.run([], (out: string, err?: any): boolean => {
+              out && console.log(out);
+              return err ? false : true;
+          });
+
+          ctx.logger.info('install success');
+        } else {
+          ctx.logger.info(`${ repoName } has already be installed`);
         }
-        ctx.logger.debug('Write package to universal-package.json');
-
-        const plugin = resolvePlugin(ctx, repoPath);
-        // check the validity of the plugin before installing it
-        await plugin.check();
-        ctx.logger.debug('check plugin success');
-
-        plugin.preInstall.run();
-        new Linker().register(ctx.bin, ctx.lib, command);
-
-        writeDependencies(repoName, ltsTag, universalPkgJsonPath);
-        plugin.test.run();
-        plugin.postInstall.run([], (out: string, err?: any): boolean => {
-            out && console.log(out);
-            return err ? false : true;
-        });
-
-        ctx.logger.info('install success');
       } else {
         await Promise.all(
           dependencies.map((dependency: string) => {
