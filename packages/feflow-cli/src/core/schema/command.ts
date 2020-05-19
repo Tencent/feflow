@@ -46,33 +46,15 @@ export class Command {
         });
     }
 
-    run(args?: string[], cb?: (out: string, err?: any) => boolean) {
+    run(...args: string[]) {
         const commands = this.getCommands();
         for (let command of commands) {
             if (args && args.length > 0) {
                 command = `${command} ${args.join(' ')}`
             }
-            try {
-                const ret = execSync(command);
-                let next = true;
-                if (cb) {
-                    next = cb(ret?.toString());
-                } else {
-                    ret?.toString() && console.log(ret?.toString());
-                }
-                if (!next) {
-                    return;
-                }
-            } catch(e) {
-                const stdout = e?.stdout?.toString();
-                let next = false;
-                if (cb) {
-                    next = cb(stdout, e);
-                }
-                if (!next) {
-                    throw e;
-                }
-            }
+            execSync(command, {
+                stdio: 'inherit'
+            });
         }
     }
 
