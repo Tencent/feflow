@@ -68,7 +68,9 @@ export async function getLtsTag(repoUrl: string) {
   const execFile = promisify(childProcess.execFile);
   const { stdout } = await execFile('git', ['ls-remote', '--tags', repoUrl]);
   const tags = new Map();
-
+  if (stdout.trim() === '') {
+    throw 'no tag was found';
+  }
   for (const line of stdout.trim().split('\n')) {
     const [hash, tagReference] = line.split('\t');
     const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
@@ -78,20 +80,22 @@ export async function getLtsTag(repoUrl: string) {
   return [...tags][tags.size - 1][0];
 }
 
-export async function checkoutVersion(repoPath: string, version: string) {
+export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
-    const args = [
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
+    const checkArgs = [
         '-C',
         repoPath,
         'checkout',
         version
     ];
-    const child = spawn(command, args, { stdio: 'ignore'});
+    const child = spawn(command, checkArgs, { stdio: 'ignore'});
     child.on('close', code => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${checkArgs.join(' ')}`,
+          code
         });
         return;
       }

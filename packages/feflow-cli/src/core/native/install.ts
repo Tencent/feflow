@@ -12,6 +12,7 @@ import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PKG_JSON,
   UNIVERSAL_PLUGIN_CONFIG,
+  LATEST_VERSION
 } from '../../shared/constant';
 import { Plugin } from '../schema/plugin';
 import Linker from '../linker';
@@ -53,8 +54,6 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
 
 module.exports = (ctx: any) => {
     const packageManager = ctx.config && ctx.config.packageManager;
-    const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
-    const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
 
     ctx.commander.register('install', 'Install a devkit or plugin', async () => {
       const registryUrl = await getRegistryUrl(packageManager);
@@ -62,42 +61,7 @@ module.exports = (ctx: any) => {
 
       if (/(.git)/.test(dependencies[0])) {
         const repoUrl = dependencies[0];
-        const ltsTag = await getLtsTag(repoUrl);
-        ctx.logger.debug('Latest tag version:', ltsTag);
-        const match = repoUrl.match(/\/([a-zA-Z0-9]*).git$/);
-        const command = match && match[1];
-        let repoName: string;
-        ctx.logger.debug(`Repo name is: ${ command }`);
-        if (/^feflow-plugin/.test(command)) {
-            repoName = `${ command }`;
-        } else {
-            repoName = `feflow-plugin-${ command }`;
-        }
-        const repoPath = path.join(universalModules, `${repoName}@${ltsTag}`);
-        if (!fs.existsSync(repoPath)) {
-          ctx.logger.info(`Start download from ${ repoUrl }`);
-          await download(repoUrl, repoPath);
-          ctx.logger.info(`Switch to version ${ ltsTag}`);
-          await checkoutVersion(repoPath, ltsTag);
-        }
-        ctx.logger.debug('Write package to universal-package.json');
-
-        const plugin = resolvePlugin(ctx, repoPath);
-        // check the validity of the plugin before installing it
-        await plugin.check();
-        ctx.logger.debug('check plugin success');
-
-        plugin.preInstall.run();
-        new Linker().register(ctx.bin, ctx.lib, command);
-
-        writeDependencies(repoName, ltsTag, universalPkgJsonPath);
-        plugin.test.run();
-        plugin.postInstall.run([], (out: string, err?: any): boolean => {
-            out && console.log(out);
-            return err ? false : true;
-        });
-
-        ctx.logger.info('install success');
+        return installUniversalPlugin(ctx, repoUrl);
       } else {
         await Promise.all(
           dependencies.map((dependency: string) => {
@@ -141,3 +105,49 @@ module.exports = (ctx: any) => {
       });
     });
 };
+
+
+async function installUniversalPlugin(ctx: any, repoUrl: string, version?: string) {
+    const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
+    const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
+    const installVersion = version || LATEST_VERSION;
+    const checkoutTag = version || await getLtsTag(repoUrl);
+    ctx.logger.debug('install version:', checkoutTag);
+    const match = repoUrl.match(/\/([a-zA-Z0-9_\-]*).git$/);
+    const command = match && match[1];
+    if (!command) {
+        throw `unknown command`;
+    }
+    let repoName: string;
+    ctx.logger.debug(`Repo name is: ${ command }`);
+    if (/^feflow-plugin/.test(command)) {
+        repoName = `${ command }`;
+    } else {
+        repoName = `feflow-plugin-${ command }`;
+    }
+    const repoPath = path.join(universalModules, `${repoName}@${installVersion}`);
+    if (!fs.existsSync(repoPath)) {
+        ctx.logger.info(`Start download from ${ repoUrl }`);
+        await download(repoUrl, repoPath);
+    }
+    ctx.logger.info(`Switch to version ${ installVersion}`);
+    await checkoutVersion(repoPath, checkoutTag);
+    ctx.logger.debug('Write package to universal-package.json');
+
+    const plugin = resolvePlugin(ctx, repoPath);
+    // check the validity of the plugin before installing it
+    await plugin.check();
+    ctx.logger.debug('check plugin success');
+
+    plugin.preInstall.run();
+    new Linker().register(ctx.bin, ctx.lib, command);
+
+    writeDependencies(repoName, installVersion, universalPkgJsonPath);
+    plugin.test.run();
+    plugin.postInstall.run([], (out: string, err?: any): boolean => {
+        out && console.log(out);
+        return err ? false : true;
+    });
+
+    ctx.logger.info('install success');
+}
