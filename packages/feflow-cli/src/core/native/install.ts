@@ -85,8 +85,14 @@ module.exports = (ctx: any) => {
       }
       const repoUrl = (repoInfo && repoInfo.repo) || dependencies[0];
       if (/(.git)/.test(repoUrl)) {
-        const ltsTag = await getLtsTag(repoUrl);
-        ctx.logger.debug('Latest tag version:', ltsTag);
+        let ltsTag: any;
+        try {
+          ltsTag = await getLtsTag(repoUrl);
+          ctx.logger.debug('Latest tag version:', ltsTag);
+        } catch (ex) {
+          ctx.logger.error(ex);
+          return;
+        }
         const match = repoUrl.match(/\/([a-zA-Z0-9\-_]*).git$/);
         const command = match && match[1];
         let repoName: string;

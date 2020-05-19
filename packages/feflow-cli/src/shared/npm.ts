@@ -67,15 +67,22 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
 export async function getLtsTag(repoUrl: string) {
   const execFile = promisify(childProcess.execFile);
   const { stdout } = await execFile('git', ['ls-remote', '--tags', repoUrl]);
-  const tags = new Map();
 
-  for (const line of stdout.trim().split('\n')) {
-    const [hash, tagReference] = line.split('\t');
-    const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
+  return new Promise((resolve, reject) => {
+    const tags = new Map();
 
-    tags.set(tagName, hash);
-  }
-  return [...tags][tags.size - 1][0];
+    for (const line of stdout.trim().split('\n')) {
+      const [hash, tagReference] = line.split('\t');
+
+      if (tagReference) {
+        const tagName = tagReference.replace(/^refs\/tags\//, '').replace(/\^\{\}$/, '');
+        tags.set(tagName, hash);
+      } else {
+        reject(`Repo ${repoUrl} doesn't has tag version`);
+      }
+    }
+    resolve([...tags][tags.size - 1][0]);
+  });
 }
 
 export async function checkoutVersion(repoPath: string, version: string) {
