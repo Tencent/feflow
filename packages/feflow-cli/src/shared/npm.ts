@@ -72,7 +72,7 @@ export async function getTag(repoUrl: string, version?: string) {
   if (tagStr) {
     const tagList = tagStr.split('\n');
   
-    for (let i = tagList.length - 1; i > 0; i--) {
+    for (let i = tagList.length - 1; i >= 0; i--) {
       const [, tagReference] = tagList[i].split('\t');
       // v0.1.2
       if (/^refs\/tags\/v\d+.\d+.\d+$/i.test(tagReference)) {
