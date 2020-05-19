@@ -83,11 +83,11 @@ export default function entry() {
 
     report.report(cmd, args);
 
-    feflow.hook.emit(HOOK_TYPE_BEFORE);
+    feflow.hook.emit(HOOK_TYPE_BEFORE, cmd, args);
 
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
       return feflow.call(cmd, feflow).then(() => {
-        feflow.hook.emit(HOOK_TYPE_AFTER);
+        feflow.hook.emit(HOOK_TYPE_AFTER, cmd, args);
         logger.debug(`call ${cmd} success`);
       }).catch((err) => {
         handleError(err);
