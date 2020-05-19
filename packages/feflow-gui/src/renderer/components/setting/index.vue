@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="setting-wrapper" v-if="visible">
+  <div class="setting-wrapper" v-if="visible" ref="settingContainer">
     <div 
     class="tab"  
     @mouseenter="setActiveTab('checkUpdate')" 
@@ -38,6 +38,12 @@ export default {
       default: false
     }
   },
+  mounted() {
+    debugger
+    window.addEventListener('click', (e) => {
+      this.queryHide(e);
+    });
+  },
   methods: {
     setActiveTab(tabName) {
       this.activeTab = tabName
@@ -47,6 +53,13 @@ export default {
     },
     hideAboutDialog() {
       this.isOpenAbout = false
+    },
+    queryHide (e) {
+      let dom = document.getElementById('settingContainer');
+      if ((!dom.contains(e.target)) && this.visible) {
+    /* 关闭元素 */
+        this.$emit('closeSettingPanel')
+      }
     }
   },
   watch: {

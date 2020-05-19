@@ -13,12 +13,16 @@
         <div class="icon-wrapper"></div>
         <div class="description">Feflow 桌面版</div>
         <div class="version">V1.0</div>
+        <div class="feedback" @click="feedback">
+          Bug反馈
+        </div>
     </div>
     <div class="copyright">© 2020 Feflow</div>
 </div>
 </div>
 </template>
 <script>
+import { openBrowser } from '@/common/native'
 export default {
   props: {
     visible: {
@@ -29,6 +33,10 @@ export default {
   methods: {
     close() {
       this.$emit('hideAboutDialog')
+    },
+    feedback() {
+      openBrowser('https://github.com/Tencent/feflow/issues');
+      this.close();
     }
   }
 }
@@ -51,8 +59,8 @@ export default {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-200px, -150px);
-  height: 300px;
+  transform: translate(-200px, -180px);
+  height: 360px;
   width: 400px;
   background: #434650;
   box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
@@ -105,6 +113,21 @@ export default {
   margin-top: 7px;
   font-size: 14px;
   color: #8A92AF;
+}
+.about-dialog .content-wrapper .feedback {
+  width: 140px;
+  height: 40px;
+
+  margin: 27px auto 0 auto;
+  line-height: 40px;
+
+  text-align: center;
+  font-size: 12px;
+  color: #8A92AF;
+
+  border: 1px solid #8A92AF;
+  border-radius: 4px;
+  border-radius: 4px;
 }
 .about-dialog .copyright {
   margin-top: 27px;
