@@ -1,3 +1,17 @@
+# [0.20.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.1...v0.20.0-alpha.3) (2020-05-19)
+
+
+### Bug Fixes
+
+* get tag miss ([c0a8eb2](https://github.com/Tencent/feflow/commit/c0a8eb29a569c3f50de3bc616830ad700a25a86c))
+
+
+### Features
+
+* run commands inherit stdio ([eb7caee](https://github.com/Tencent/feflow/commit/eb7caee77987eb4f96e09286e5d549c20f4407f9))
+
+
+
 # [0.20.0-alpha.1](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.0...v0.20.0-alpha.1) (2020-05-19)
 
 
