@@ -51,8 +51,8 @@ export class Plugin {
     }
 
     async check() {
-        await this.dep.check()
-        this.command.check()
+        await this.dep.check();
+        this.command.check();
     }
 
 }

@@ -7,14 +7,14 @@ export class Dependencies {
 
     command: string[];
 
-    tool: string[];
+    plugin: string[];
 
     arch: string[];
 
     constructor(dep: any) {
         this.os = toArray(dep?.os, 'os');
         this.command = toArray(dep?.command, 'command');
-        this.tool = toArray(dep?.tool, 'tool');
+        this.plugin = toArray(dep?.plugin, 'plugin');
         this.arch = toArray(dep?.arch, 'arch');
     }
 
