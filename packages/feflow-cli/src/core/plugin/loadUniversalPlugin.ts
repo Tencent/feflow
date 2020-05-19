@@ -65,7 +65,7 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
           ctx.commander.register(pluginCommand, pluginDescriptions, () => {
             plugin.preRun.run();
             const args = process.argv.slice(3);
-            plugin.command.run(args);
+            plugin.command.run(...args);
             plugin.postRun.run();
           });
         }
