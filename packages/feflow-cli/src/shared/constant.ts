@@ -2,6 +2,8 @@ export const FEFLOW_ROOT = '.fef';
 export const FEFLOW_BIN = 'bin';
 export const FEFLOW_LIB = 'lib';
 
+export const LATEST_VERSION = 'latest';
+
 export const PROJECT_CONFIG = [
     '.feflowrc.js',
     '.feflowrc.yaml',
