@@ -54,13 +54,21 @@ export class Command {
             }
             try {
                 const ret = execSync(command);
-                const next = cb && cb(ret?.toString()) || true;
+                let next = true;
+                if (cb) {
+                    next = cb(ret?.toString());
+                } else {
+                    ret?.toString() && console.log(ret?.toString());
+                }
                 if (!next) {
                     return;
                 }
             } catch(e) {
                 const stdout = e?.stdout?.toString();
-                const next = cb && cb(stdout, e);
+                let next = false;
+                if (cb) {
+                    next = cb(stdout, e);
+                }
                 if (!next) {
                     throw e;
                 }
