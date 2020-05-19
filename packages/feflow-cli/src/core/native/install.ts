@@ -1,10 +1,11 @@
 import { getRegistryUrl, install } from '../../shared/npm';
-import execa from 'execa';
+import spawn from 'cross-spawn';
 import fs from 'fs';
 import path from 'path';
+import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
-  getLtsTag,
+    getTag,
   checkoutVersion
 } from '../../shared/npm';
 import { parseYaml } from '../../shared/yaml';
@@ -17,8 +18,8 @@ import {
 import { Plugin } from '../schema/plugin';
 import Linker from '../linker';
 
-function download(url: string, filepath: string): Promise<any> {
-  return execa('git', ['clone', url, filepath], {
+async function download(url: string, filepath: string): Promise<any> {
+  return spawn.sync('git', ['clone', url, filepath], {
     stdio: 'inherit'
   });
 }
@@ -52,16 +53,53 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
     return new Plugin(ctx, repoPath, config)
 }
 
+function getRepoInfo(serverUrl: string, packageName: string): any {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: `${serverUrl}apply/getlist?name=${ packageName }`,
+      method: 'GET'
+    };
+
+    rp(options)
+      .then((response: any) => {
+        const data = JSON.parse(response);
+        resolve(data.data[0]);
+      })
+      .catch((err: object) => {
+        reject(err);
+      });
+  });
+}
+
 module.exports = (ctx: any) => {
     const packageManager = ctx.config && ctx.config.packageManager;
+    const serverUrl = ctx.config && ctx.config.serverUrl;
 
     ctx.commander.register('install', 'Install a devkit or plugin', async () => {
       const registryUrl = await getRegistryUrl(packageManager);
       const dependencies = ctx.args['_'];
-
-      if (/(.git)/.test(dependencies[0])) {
-        const repoUrl = dependencies[0];
-        return installUniversalPlugin(ctx, repoUrl);
+      const installPluginStr = dependencies[0];
+      if (!installPluginStr) {
+        throw 'parameter error';
+      }
+      const [installPkg, version] = installPluginStr.split('@');
+      if (version && !/^v\d+.\d+.\d+$/i.test(version)) {
+        throw `unrecognized version: ${version}`;
+      }
+      let repoInfo: any = {};
+      if (serverUrl) {
+        repoInfo = await getRepoInfo(serverUrl, installPkg);
+      } else {
+        throw 'the server url is not configured';
+      }
+      const repoUrl = repoInfo?.repo;
+      if (/(.git)/.test(repoUrl) && !(repoInfo?.tnpm)) {
+        try {
+          return installUniversalPlugin(ctx, repoInfo?.name, repoUrl, version);
+        } catch (ex) {
+          ctx.logger.error(ex);
+          return;
+        }
       } else {
         await Promise.all(
           dependencies.map((dependency: string) => {
@@ -107,24 +145,13 @@ module.exports = (ctx: any) => {
 };
 
 
-async function installUniversalPlugin(ctx: any, repoUrl: string, version?: string) {
+async function installUniversalPlugin(ctx: any, repoName: string, repoUrl: string, version?: string) {
     const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
     const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
+    version && await getTag(repoUrl, version);
     const installVersion = version || LATEST_VERSION;
-    const checkoutTag = version || await getLtsTag(repoUrl);
+    const checkoutTag = version || await getTag(repoUrl);
     ctx.logger.debug('install version:', checkoutTag);
-    const match = repoUrl.match(/\/([a-zA-Z0-9_\-]*).git$/);
-    const command = match && match[1];
-    if (!command) {
-        throw `unknown command`;
-    }
-    let repoName: string;
-    ctx.logger.debug(`Repo name is: ${ command }`);
-    if (/^feflow-plugin/.test(command)) {
-        repoName = `${ command }`;
-    } else {
-        repoName = `feflow-plugin-${ command }`;
-    }
     const repoPath = path.join(universalModules, `${repoName}@${installVersion}`);
     if (!fs.existsSync(repoPath)) {
         ctx.logger.info(`Start download from ${ repoUrl }`);
@@ -140,14 +167,11 @@ async function installUniversalPlugin(ctx: any, repoUrl: string, version?: strin
     ctx.logger.debug('check plugin success');
 
     plugin.preInstall.run();
-    new Linker().register(ctx.bin, ctx.lib, command);
+    new Linker().register(ctx.bin, ctx.lib, repoName.replace('feflow-plugin-', ''));
 
     writeDependencies(repoName, installVersion, universalPkgJsonPath);
     plugin.test.run();
-    plugin.postInstall.run([], (out: string, err?: any): boolean => {
-        out && console.log(out);
-        return err ? false : true;
-    });
+    plugin.postInstall.run();
 
     ctx.logger.info('install success');
 }
