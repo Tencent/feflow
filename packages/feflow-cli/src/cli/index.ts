@@ -53,7 +53,7 @@ export default function entry() {
 
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
-  const report = new Report(feflow);
+  const report = new Report(feflow, cmd, args);
 
   let cmd: any = args._.shift();
 
