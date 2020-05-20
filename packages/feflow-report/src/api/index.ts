@@ -26,14 +26,13 @@ export default {
       })
       .catch(e => {
         this.log.debug('feflow report fail', e.message);
-        if (/ETIMEDOUT/.test(e.message || '')) {
-          if (this.retryCount > 2) return;
+        if (/ETIMEDOUT|ECONNREFUSED/.test(e.message || '')) {
+          if (this.retryCount > 3) return;
           // timeout retry
           this.log.debug('feflow report 超时重试', this.retryCount);
           // 3nd rp request, remove rp proxy
-          const needProxy = this.retryCount != 2;
           this.retryCount++;
-          this.report(Object.assign({}, param), this.log, needProxy);
+          this.report(Object.assign({}, param), this.log, !needProxy);
         }
       });
   },
