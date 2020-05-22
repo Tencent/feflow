@@ -1,6 +1,6 @@
 import rp from 'request-promise';
 
-export default function packageJson(name: string, registry: string) {
+export default function packageJson(name: string, registry: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const options = {
       url: `${registry}/${name}`,

@@ -1,6 +1,6 @@
 import Commander from './commander';
 import Hook from './hook';
-import Binp from './binp';
+import Binp from './universal-pkg/binp';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import logger from './logger';
@@ -12,13 +12,14 @@ import loadPlugins from './plugin/loadPlugins';
 import loadUniversalPlugin from './plugin/loadUniversalPlugin';
 import loadDevkits from './devkit/loadDevkits';
 import getCommandLine from './devkit/commandOptions';
-import { FEFLOW_ROOT, FEFLOW_BIN, FEFLOW_LIB } from '../shared/constant';
+import { FEFLOW_ROOT, FEFLOW_BIN, FEFLOW_LIB, UNIVERSAL_PKG_JSON } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
+import { UniversalPkg } from './universal-pkg/dep/dependencies';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -31,10 +32,12 @@ export default class Feflow {
     public hook: any;
     public root: any;
     public rootPkg: any;
+    public universalPkgPath: string;
     public config: any;
     public configPath: any;
     public bin: string;
     public lib: string;
+    public universalPkg: UniversalPkg;
 
     constructor(args: any) {
         args = args || {};
@@ -46,6 +49,7 @@ export default class Feflow {
         this.bin = bin;
         this.lib = lib;
         this.rootPkg = path.join(root, 'package.json');
+        this.universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
         this.args = args;
         this.version = pkg.version;
         this.config = parseYaml(configPath);
@@ -56,6 +60,7 @@ export default class Feflow {
             debug: Boolean(args.debug),
             silent: Boolean(args.silent)
         });
+        this.universalPkg = new UniversalPkg(this.universalPkgPath);
     }
 
     async init(cmd: string) {
