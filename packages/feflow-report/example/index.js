@@ -13,7 +13,7 @@ const HOOK_TYPE_AFTER = 'after';
 
 
 const fakeCtx = {
-  log: {
+  logger: {
     info: console.log,
     debug: console.log,
     error: console.log,

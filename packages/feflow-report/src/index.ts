@@ -48,14 +48,14 @@ class Report {
   private registerHook() {
     const { cmd, args } = this;
     this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
-      this.ctx.logger.debug('HOOK_TYPE_BEFORE');
+      this.ctx.log.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);
     });
 
     // report some performance data after command executed
     this.ctx.hook.on(HOOK_TYPE_AFTER, () => {
-      this.ctx.logger.debug('HOOK_TYPE_AFTER');
+      this.ctx.log.debug('HOOK_TYPE_AFTER');
       this.costTime = Date.now() - this.startTime;
       this.recallReport();
     });
@@ -141,7 +141,7 @@ class Report {
       const report = new ApiController(reCallBody, this.ctx.log);
       report.doReport();
     } catch (error) {
-      this.ctx.log.debug('feflow recallReport，please contact administractor to resolve ', error);
+      this.ctx.log.debug('feflow recallReport got error，please contact administractor to resolve ', error);
     }
   }
 }
