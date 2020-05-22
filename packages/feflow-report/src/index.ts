@@ -48,14 +48,15 @@ class Report {
   private registerHook() {
     const { cmd, args } = this;
     this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
+      this.ctx.logger.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);
     });
 
     // report some performance data after command executed
     this.ctx.hook.on(HOOK_TYPE_AFTER, () => {
+      this.ctx.logger.debug('HOOK_TYPE_AFTER');
       this.costTime = Date.now() - this.startTime;
-      console.log('this.costTime', this.costTime);
       this.recallReport();
     });
   }
@@ -131,7 +132,7 @@ class Report {
     }
   }
 
-  private recallReport() {
+  recallReport() {
     this.isRecallActivating = true;
     if (!this.reCallId) return;
     try {
