@@ -144,7 +144,6 @@ module.exports = (ctx: any) => {
     });
 };
 
-
 async function installUniversalPlugin(ctx: any, repoName: string, repoUrl: string, version?: string) {
     const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
     const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
@@ -175,3 +174,6 @@ async function installUniversalPlugin(ctx: any, repoName: string, repoUrl: strin
 
     ctx.logger.info('install success');
 }
+
+module.exports.installUniversalPlugin = installUniversalPlugin
+module.exports.getRepoInfo = getRepoInfo
