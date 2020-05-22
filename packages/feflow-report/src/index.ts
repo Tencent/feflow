@@ -128,7 +128,7 @@ class Report {
         }
       });
     } catch (error) {
-      this.ctx.log.debug('feflow 上报出错，请联系相关负责人排查 ', error);
+      this.ctx.log.debug('feflow report got error，please contact administractor to resolve ', error);
     }
   }
 
@@ -141,7 +141,7 @@ class Report {
       const report = new ApiController(reCallBody, this.ctx.log);
       report.doReport();
     } catch (error) {
-      this.ctx.log.debug('feflow recallReport 上报出错，请联系相关负责人排查 ', error);
+      this.ctx.log.debug('feflow recallReport，please contact administractor to resolve ', error);
     }
   }
 }

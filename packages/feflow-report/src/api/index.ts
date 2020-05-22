@@ -33,7 +33,7 @@ export default class ApiController {
 
   private retryReport(cb) {
     this.retryCount++;
-    this.log.debug('feflow report 超时重试', this.retryCount);
+    this.log.debug('feflow report timeout, and retry. ', this.retryCount);
     this.needProxy = !this.needProxy;
     this.loadProxy();
     this.doReport(cb);
@@ -45,7 +45,7 @@ export default class ApiController {
         cb(response || {});
       })
       .catch(e => {
-        this.log.debug('feflow report fail', e.message);
+        this.log.debug('feflow report fail. ', e.message);
         // timeout retry
         if (/ETIMEDOUT|ECONNREFUSED|ESOCKETTIMEDOUT/.test(e.message || '')) {
           if (this.retryCount >= 3) return;
