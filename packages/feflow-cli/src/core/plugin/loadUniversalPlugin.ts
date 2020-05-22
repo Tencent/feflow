@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
-import { Plugin } from '../schema/plugin';
+import { Plugin } from '../universal-pkg/schema/plugin';
 import { 
   UNIVERSAL_MODULES, 
   UNIVERSAL_PKG_JSON, 
