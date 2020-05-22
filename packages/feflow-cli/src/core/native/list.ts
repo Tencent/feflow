@@ -2,6 +2,7 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk'
+import { UNIVERSAL_PKG_JSON } from "../../shared/constant"
 
 function loadModuleList(ctx: any) {
     const packagePath = ctx.rootPkg;
@@ -28,12 +29,41 @@ function loadModuleList(ctx: any) {
     }
 }
 
+const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
+
+function loadUniversalPlugin(ctx: any): any[] {
+  const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
+  let availablePluigns: any[] = [];
+
+  if (fs.existsSync(universalPkgJsonPath)) {
+    try {
+			const content = fs.readFileSync(universalPkgJsonPath, 'utf8');
+      const json = JSON.parse(content);
+      const pluginsInConfig = Object.keys(json.dependencies || {});
+      const pluginsInCommand = ctx.commander.store;
+      // make sure universal plugin is available which listed
+      availablePluigns = pluginsInConfig.filter(plugin => {
+        const pluginCommand = (universalPluginRegex.exec(plugin) || [])[1];
+        return pluginsInCommand[pluginCommand];
+      });
+    } catch (error) {
+      ctx.logger.error('universal plugin config parse error. ', error);
+    }
+  } else {
+    ctx.logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in ~/.fef`);
+  }
+
+  return availablePluigns;
+}
+
 
 module.exports = (ctx: any) => {
     ctx.commander.register('list', 'Show all plugins installed.', () => {
         const list = loadModuleList(ctx);
+        const universalPlugins = loadUniversalPlugin(ctx);
         let templateCnt  = 0;
         let pluginCnt = 0;
+        let universalPluginCnt = 0;
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');
@@ -62,6 +92,15 @@ module.exports = (ctx: any) => {
         });
         if (!pluginCnt) {
             console.log(chalk.magenta('No plugins have been installed'));
+        }
+
+        console.log('universal plugin');
+        for (const plugin of universalPlugins) {
+            universalPluginCnt += 1;
+            console.log(chalk.magenta(plugin));
+        }
+        if (!universalPluginCnt) {
+            console.log(chalk.magenta('No universal plugin have been installed'));
         }
     });
 };
