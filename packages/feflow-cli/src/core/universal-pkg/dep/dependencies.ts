@@ -1,22 +1,30 @@
 import { Relation } from './relation';
 import fs from 'fs';
-import { toPkg, checkVersion } from './base';
+import { toPkg } from './base';
+import versionImpl from './version';
+import path from 'path';
 
 export class UniversalPkg {
 
     private pkgFile: string;
 
-    version: string = '0.0.0';
+    private version: string = '0.0.0';
 
     // pkg: version
-    installed: Map<string, string> = new Map();
+    private installed: Map<string, string> = new Map();
 
-    relation: Map<string, Map<string, Relation>> = new Map();
+    private relation: Map<string, Map<string, Relation>> = new Map();
 
     constructor(pkgFile: string) {
         this.pkgFile = pkgFile;
         if (!fs.existsSync(pkgFile)) {
-            fs.writeFileSync(pkgFile, JSON.stringify(this, null, 4))
+            const d = path.resolve(pkgFile, '..');
+            if (!fs.existsSync(d)) {
+                fs.mkdirSync(d, {
+                    recursive: true
+                });
+            }
+            this.saveChange();
             return;
         }
         const universalPkg = require(pkgFile);
@@ -38,7 +46,7 @@ export class UniversalPkg {
             let pkgRelation = new Map<string, Relation>();
             for (const version in versionRelationMap) {
                 const oVersionRelation = versionRelationMap[version];
-                if (checkVersion(version)) {
+                if (versionImpl.check(version)) {
                     pkgRelation[version] = new Relation(oVersionRelation);
                 }
             }
@@ -49,8 +57,23 @@ export class UniversalPkg {
         return relation;
     }
 
-    has(pkg: string): boolean {
-        return !!this.installed.get(pkg);
+    isInstalled(pkg: string, version?: string): boolean {
+        const v = this.installed.get(pkg);
+        if (v) {
+            return version ? v === version : true;
+        }
+        return false;
+    }
+
+    isRequiredByOther(pkg: string, version: string): boolean {
+        const vRelation = this.relation.get(pkg);
+        if (vRelation) {
+            const r = vRelation.get(version);
+            if (r && r.requiredBy.size > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     install(pkg: string, version: string) {

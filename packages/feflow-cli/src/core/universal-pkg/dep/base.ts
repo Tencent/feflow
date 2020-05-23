@@ -1,14 +1,4 @@
-export const LATEST_VERSION = "latest"
-
-export function checkVersion(version: any): boolean {
-    if (typeof version !== 'string') {
-        return false;
-    }
-    if (version === LATEST_VERSION) {
-        return true;
-    }
-    return /^v?\d+.\d+.\d+$/i.test(version);
-}
+import versionImpl from './version';
 
 export function toPkg(oPkg: any): Map<string, string> {
     let installed = new Map<string, string>();
@@ -17,7 +7,7 @@ export function toPkg(oPkg: any): Map<string, string> {
     }
     for (const k in oPkg) {
         const version = oPkg[k];
-        if (checkVersion(version)) {
+        if (versionImpl.check(version)) {
             installed.set(k, version);
         }
     }
