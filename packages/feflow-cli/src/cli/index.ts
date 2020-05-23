@@ -11,10 +11,6 @@ import {
 } from '../shared/constant';
 const pkg = require('../../package.json');
 
-console.log('__dir', __dirname)
-console.log('参数是', ...process.argv)
-console.log('pwd2', process.cwd())
-
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
     console.log(chalk.red(

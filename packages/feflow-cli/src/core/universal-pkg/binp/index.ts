@@ -22,14 +22,14 @@ export default class Binp {
         this.currentOs = os.platform();
     }
 
-    register(binPath: string) {
+    register(binPath: string, prior: boolean = false) {
         if (this.isRegisted(binPath)) {
             return;
         }
         if (this.currentOs === 'win32') {
-            this.registerToWin32(binPath);
+            this.registerToWin32(binPath, prior);
         } else {
-            this.registerToUnixLike(binPath);
+            this.registerToUnixLike(binPath, prior);
         }
     }
 
@@ -42,37 +42,52 @@ export default class Binp {
         return pathList.includes(binPath);
     }
 
-    private registerToWin32(binPath: string) {
-        const toPath = `${binPath};%path%`;
-        spawn.sync('setx', ['path', toPath], { stdio: 'ignore' });
+    private registerToWin32(binPath: string, prior: boolean) {
+        const pathStr = process.env['PATH'];
+        let toPath: string;
+        if (prior) {
+            toPath = `${binPath};${pathStr}`;
+        } else {
+            toPath = `${pathStr};${binPath}`;
+        }
+        spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore' });
     }
 
-    private registerToUnixLike(binPath: string) {
-        const [profile, setStatement] = this.detectProfile(binPath);
+    private registerToUnixLike(binPath: string, prior: boolean) {
+        const [profile, setStatement] = this.detectProfile(binPath, prior);
         if (!profile) {
             throw 'not profile';
         }
         fs.appendFileSync(profile, setStatement);
     }
 
-    private detectProfile(binPath: string): [string | undefined, string | undefined] {
+    private detectProfile(binPath: string, prior: boolean): [string | undefined, string | undefined] {
         const home = osenv.home();
         const shell = process.env['SHELL'];
-        const bashLinkeToPath = `\nexport PATH=${binPath}:$PATH\n`;
-        const cshToPath = `\nset path = (${binPath} $path)\n`
+        let toPath: string;
+        if (prior) {
+            toPath = `\nexport PATH=${binPath}:$PATH\n`;
+        } else {
+            toPath = `\nexport PATH=$PATH:${binPath}\n`;
+        }
         switch (shell) {
             case '/bin/zsh':
-                return [this.detectZshProfile(home), bashLinkeToPath];
+                return [this.detectZshProfile(home), toPath];
             case '/bin/bash':
             case '/bin/sh':
-                return [this.detectBashProfile(home), bashLinkeToPath];
+                return [this.detectBashProfile(home), toPath];
             case '/bin/zcsh':
             case '/bin/csh':
-                return [this.detectCshProfile(home), cshToPath];
+                if (prior) {
+                    toPath = `\nset path = (${binPath} $path)\n`;
+                } else {
+                    toPath = `\nset path = ($path ${binPath})\n`;
+                }
+                return [this.detectCshProfile(home), toPath];
         }
         const profile = this.detectAlternativeProfiles(home);
         if (profile) {
-            return [profile, bashLinkeToPath]
+            return [profile, toPath]
         }
         return [undefined, undefined]
     }

@@ -1,0 +1,58 @@
+import spawn from 'cross-spawn';
+import childProcess from 'child_process';
+import { promisify } from 'util';
+import versionImpl from '../dep/version';
+
+export async function getTag(repoUrl: string, version?: string): Promise<string | undefined> {
+  const execFile = promisify(childProcess.execFile);
+  const { stdout } = await execFile('git', ['ls-remote', '--tags', '--refs', repoUrl]);
+
+  const tagListStr = stdout?.trim();
+  if (!tagListStr) {
+    return;
+  }
+  
+  const tagList = tagListStr.split('\n');
+  let satisfiedMaxVersion: string | undefined;
+  for (const tagStr of tagList) {
+    const [, tagReference] = tagStr.split('\t');
+    const tag = tagReference?.substring('refs/tags/'.length);
+    if (!versionImpl.check(tag)) {
+        continue;
+    }
+    if (tag === version) {
+        return tag;
+    }
+    if (version && !versionImpl.satisfies(tag, version)) {
+        continue;
+    }
+    if (!satisfiedMaxVersion || versionImpl.gt(tag, satisfiedMaxVersion)) {
+        satisfiedMaxVersion = tag;
+    }
+  }
+  return satisfiedMaxVersion;
+}
+
+export function checkoutVersion(repoPath: string, version: string) {
+  return new Promise((resolve, reject) => {
+    const command = 'git';
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
+    const checkArgs = [
+        '-C',
+        repoPath,
+        'checkout',
+        version
+    ];
+    const child = spawn(command, checkArgs, { stdio: 'ignore'});
+    child.on('close', code => {
+      if (code !== 0) {
+        reject({
+          command: `${command} ${checkArgs.join(' ')}`,
+          code
+        });
+        return;
+      }
+      resolve();
+    });
+  });
+}

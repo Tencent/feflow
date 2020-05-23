@@ -5,9 +5,9 @@ import path from 'path';
 import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
-    getTag,
+  getTag,
   checkoutVersion
-} from '../../shared/npm';
+} from '../universal-pkg/repository/git';
 import { parseYaml } from '../../shared/yaml';
 import {
   UNIVERSAL_MODULES,
@@ -17,8 +17,7 @@ import {
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/dependencies';
-import { checkVersion } from '../universal-pkg/dep/base';
-import Logger from 'bunyan';
+import versionImpl from '../universal-pkg/dep/version';
 
 async function download(url: string, filepath: string): Promise<any> {
   return spawn.sync('git', ['clone', url, filepath], {
@@ -56,6 +55,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
       const data = JSON.parse(response);
       return data.data && data.data[0];
     });
+  // return JSON.parse(`{"id":8,"type":1,"name":"feflow-plugin-epc-commit-check","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589895655,"create_time":1589895653,"status":1,"reason":null,"data_version":1,"tnpm":null}`);
 }
 
 function getRepoName(repoUrl: string): string | undefined {
@@ -133,15 +133,23 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
 }
 
 async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean) {
-    const { logger, universalPkg, bin, lib }: 
-    { logger: Logger, universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
+    const { logger, universalPkg, bin, lib }
+    : { logger: any, universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
     const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
+    installPlugin = installPlugin.trim();
     const pkgInfo = await getPkgInfo(ctx, installPlugin);
     if (!pkgInfo) {
       return installNpmPlugin(ctx, ctx?.args['_']);
     }
     if (!pkgInfo.repoName) {
       throw `plugin [${pkgInfo.repoName}] does not exist`;
+    }
+    // if the specified version is already installed, skip it
+    if (universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag)) {
+      return;
+    }
+    if (!global && universalPkg.isRequiredByOther(pkgInfo.repoName, pkgInfo.checkoutTag)) {
+      return;
     }
     logger.debug('install version:', pkgInfo.checkoutTag);
     const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
@@ -151,14 +159,13 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     }
     logger.info(`switch to version ${pkgInfo.installVersion}`);
     await checkoutVersion(repoPath, pkgInfo.checkoutTag);
-    logger.debug('write package to universal-package.json');
 
     const plugin = resolvePlugin(ctx, repoPath);
     // check the validity of the plugin before installing it
     await plugin.check();
     logger.debug('check plugin success');
 
-    for (let depPlugin in plugin.dep.plugin) {
+    for (let depPlugin of plugin.dep.plugin) {
       try {
         let curPkgInfo = await getPkgInfo(ctx, depPlugin);
         if (!curPkgInfo) {
@@ -176,7 +183,7 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     plugin.preInstall.run();
     new Linker().register(bin, lib, pkgInfo.repoName.replace('feflow-plugin-', ''));
     // install when global or not exists
-    if (!universalPkg.has(pkgInfo.repoName) || global) {
+    if (global || !universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag)) {
       universalPkg.install(pkgInfo.repoName, pkgInfo.installVersion);
     } 
     plugin.test.run();
@@ -202,7 +209,7 @@ async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | un
     repoUrl = repoInfo?.repo;
     repoName = repoInfo?.name;
     if (isGitRepo(repoUrl) && !(repoInfo?.tnpm)) {
-      if (pluginVersion && !checkVersion(pluginVersion)) {
+      if (pluginVersion && !versionImpl.check(pluginVersion)) {
         throw `invalid version: ${pluginVersion}`;
       } else {
         installVersion = pluginVersion || LATEST_VERSION;
@@ -214,6 +221,9 @@ async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | un
   }
   if (!repoName) {
     throw `plugin [${repoName}] does not exist`;
+  }        
+  if (!checkoutTag) {
+    throw `the version [${installVersion}] was not found`;
   }
   return new PkgInfo(repoName, repoUrl, installVersion, checkoutTag);
 }
