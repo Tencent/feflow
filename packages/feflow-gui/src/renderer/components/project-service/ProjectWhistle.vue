@@ -157,18 +157,19 @@ export default {
         type: 'success',
         message: 'whistle配置切换成功！'
       })
+      this.doRunAction('restart')
     },
     // 切换右侧展示proxy
     changeProxyConfig(index) {
       this.currentIndex = index
-      this.editProxy = this.completeProxyList[index].rules || ''
+      this.editProxy = (this.completeProxyList[index] || {}).rules || ''
     },
     // 删除测试环境
     deleteProxy(item, index) {
       let delIndex = 0
       this.completeProxyList.splice(index, 1)
       if (this.selectId === item.id) {
-        this.selectId = this.completeProxyList[0].id || 1
+        this.selectId = (this.completeProxyList[0] || {}).id || 0
       }
       if (this.currentIndex === index) {
         this.changeProxyConfig(0)

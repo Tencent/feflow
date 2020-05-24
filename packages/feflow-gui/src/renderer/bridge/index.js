@@ -364,7 +364,7 @@ export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
   const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
   const filePath = path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME)
   feflowrcJSON['proxy-plugin'] = proxyConfig
-  fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON))
+  fs.writeFileSync(filePath, JSON.stringify(feflowrcJSON, null, '\t'))
 }
 
 export const generatorWhistleJS = proxyConfig => {
@@ -407,7 +407,7 @@ export const getProjectGitNames = projectList => {
   })
 
   // 去重
-  gitList = [ ...new Set(gitList) ]
+  gitList = [...new Set(gitList)]
 
   return gitList
 }
