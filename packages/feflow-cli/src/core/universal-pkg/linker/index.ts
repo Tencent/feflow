@@ -9,13 +9,17 @@ export default class Linker {
     
     private currentOs: NodeJS.Platform;
 
+    private startCommand: string = 'fef';
+
     private fileMode = 0o744;
 
-    constructor() {
+    constructor(startCommand?: string) {
         this.currentOs = os.platform();
+        startCommand && (this.startCommand = startCommand);
     }
 
     register(binPath: string, libPath: string, command: string) {
+        this.enableDir(binPath, libPath);
         if (this.currentOs === 'win32') {
             this.linkToWin32(binPath, command);
         } else {
@@ -68,11 +72,11 @@ export default class Linker {
     }
 
     private shellTemplate(command: string): string {
-        return `#!/bin/sh\nfef ${command} $@`;
+        return `#!/bin/sh\n${this.startCommand} ${command} $@`;
     }
 
     private cmdTemplate(command: string): string {
-        return `@echo off\nfef ${command} %*`;
+        return `@echo off\n${this.startCommand} ${command} %*`;
     }
 
     private shellFile(libPath: string, name: string): string {
@@ -81,6 +85,21 @@ export default class Linker {
 
     private cmdFile(binPath: string, name: string): string {
         return path.join(binPath, `${name}.cmd`)
+    }
+
+    private enableDir(...dirs: string[]) {
+        if (!dirs) {
+            return;
+        }
+        dirs.forEach(d => {
+            if (fs.existsSync(d) && fs.statSync(d).isFile()) {
+                fs.unlinkSync(d);
+            }
+    
+            if (!fs.existsSync(d)) {
+                fs.mkdirSync(d, { recursive: true });
+            }
+        });
     }
 
 }

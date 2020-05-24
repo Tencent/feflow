@@ -1,77 +1,61 @@
-import fs from 'fs';
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
 import { Plugin } from '../universal-pkg/schema/plugin';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import { 
   UNIVERSAL_MODULES, 
-  UNIVERSAL_PKG_JSON, 
-  UNIVERSAL_PLUGIN_CONFIG
+  UNIVERSAL_PLUGIN_CONFIG,
+  FEFLOW_BIN
 } from '../../shared/constant';
-
-
-type PluginPkgConfig = {
-  dependencies: object;
-  version: string;
-  name: string;
-};
+import Binp from '../universal-pkg/binp';
+import Commander from '../commander';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
+function register(ctx: any, pkg: string, version: string, global = false) {
+  const commander: Commander = ctx.commander;
+  const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
+  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG)
+  const config = parseYaml(pluginConfigPath) || {};
+  const plugin = new Plugin(ctx, pluginPath, config);
+  const pluginCommand = (toolRegex.exec(pkg) || [])[1];
+  if (!pluginCommand) {
+    ctx.logger.debug(`invalid universal plugin name: ${pluginCommand}`);
+    return;
+  }
+  if (global) {
+    const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
+    commander.register(pluginCommand, pluginDescriptions, () => {
+      // make it find dependencies
+      new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
+      plugin.preRun.run();
+      const args = process.argv.slice(3);
+      plugin.command.run(...args);
+      plugin.postRun.run();
+    });
+  } else {
+    commander.registerInvisible(`${pluginCommand}@${version}`, () => {
+      plugin.preRun.run();
+      const args = process.argv.slice(3);
+      plugin.command.run(...args);
+      plugin.postRun.run();
+    });
+  }
+}
 
-export default function loadUniversalPlugin(ctx: any): Promise<any> {
-  const { root, logger } = ctx;
-  const pluginPkg = path.resolve(root, UNIVERSAL_PKG_JSON);
+export default async function loadUniversalPlugin(ctx: any): Promise<any> {
+  const universalPkg: UniversalPkg = ctx.universalPkg;
 
-  if (!fs.existsSync(pluginPkg)) {
-    logger.debug(`${pluginPkg} is not found`);
-    return Promise.resolve();
+  const installed = universalPkg.getInstalled();
+  for (const [pkg, version] of installed) {
+    register(ctx, pkg, version, true);
   }
 
-  return new Promise(resolve => {
-    fs.readFile(pluginPkg, 'utf8', async (err, data) => {
-      if (err) {
-        logger.debug(err);
-        resolve();
-      }
+  const relations = universalPkg.getRelations();
+  for (const [pkg, versionRelations] of relations) {
+    for (const [version] of versionRelations) {
+      register(ctx, pkg, version, false);
+    }
+  }
 
-      let pluginPkgConfig = {} as PluginPkgConfig;
-      try {
-        pluginPkgConfig = JSON.parse(data);
-      } catch (error) {
-        logger.debug(`can not parse plugin package: ${pluginPkg}`);
-        resolve();
-      }
-
-      // traverse universal plugins and register command
-      const { dependencies = {} } = pluginPkgConfig;
-      for (const pluginName of Object.keys(dependencies)) {
-        const pluginPath = path.resolve(root, UNIVERSAL_MODULES, `${pluginName}@${dependencies[pluginName]}`);
-        const pluginConfigPath = path.resolve(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
-
-        // get universal plugin command, like fef [universal-plugin-command]
-        const pluginCommand = (toolRegex.exec(pluginName) || [])[1];
-        if (!pluginCommand) {
-          logger.debug(`invalid universal plugin name: ${pluginCommand}`);
-          return;
-        }
-
-        if (fs.existsSync(pluginConfigPath)) {
-          const config = parseYaml(pluginConfigPath) || {};
-          const plugin = new Plugin(ctx, pluginPath, config);
-          await plugin.check()
-
-          const pluginDescriptions = plugin.desc || `${pluginCommand} universal plugin description`;
-
-          ctx.commander.register(pluginCommand, pluginDescriptions, () => {
-            plugin.preRun.run();
-            const args = process.argv.slice(3);
-            plugin.command.run(...args);
-            plugin.postRun.run();
-          });
-        }
-      }
-
-      resolve();
-    });
-  });
 }

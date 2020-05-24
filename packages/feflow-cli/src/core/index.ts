@@ -19,7 +19,7 @@ import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
-import { UniversalPkg } from './universal-pkg/dep/dependencies';
+import { UniversalPkg } from './universal-pkg/dep/pkg';
 const pkg = require('../../package.json');
 
 export default class Feflow {
