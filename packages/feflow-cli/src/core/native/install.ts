@@ -2,7 +2,7 @@ import { getRegistryUrl, install } from '../../shared/npm';
 import spawn from 'cross-spawn';
 import fs from 'fs';
 import path from 'path';
-import rp from 'request-promise';
+// import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
   getTag,
@@ -12,11 +12,12 @@ import { parseYaml } from '../../shared/yaml';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
-  LATEST_VERSION
+  LATEST_VERSION,
+  FEFLOW_BIN, FEFLOW_LIB, 
 } from '../../shared/constant';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
-import { UniversalPkg } from '../universal-pkg/dep/dependencies';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 
 async function download(url: string, filepath: string): Promise<any> {
@@ -41,21 +42,21 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
 }
 
 async function getRepoInfo(ctx: any, packageName: string) {
-  const serverUrl = ctx.config?.serverUrl
-  if (!serverUrl) {
-    throw 'the server url is not configured';
-  } 
-  const options = {
-    url: `${serverUrl}apply/getlist?name=${ packageName }`,
-    method: 'GET'
-  };
+  // const serverUrl = ctx.config?.serverUrl
+  // if (!serverUrl) {
+  //   throw 'the server url is not configured';
+  // } 
+  // const options = {
+  //   url: `${serverUrl}apply/getlist?name=${ packageName }`,
+  //   method: 'GET'
+  // };
 
-  return rp(options)
-    .then((response: any) => {
-      const data = JSON.parse(response);
-      return data.data && data.data[0];
-    });
-  // return JSON.parse(`{"id":8,"type":1,"name":"feflow-plugin-epc-commit-check","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589895655,"create_time":1589895653,"status":1,"reason":null,"data_version":1,"tnpm":null}`);
+  // return rp(options)
+  //   .then((response: any) => {
+  //     const data = JSON.parse(response);
+  //     return data.data && data.data[0];
+  //   });
+  return JSON.parse(`[{"id":9,"type":1,"name":"feflow-plugin-local-ci","repo":"http://git.code.oa.com/cli-market/local-ci.git","username":"blurooochen","update_time":1589896140,"create_time":1589896137,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":8,"type":1,"name":"feflow-plugin-epc-commit-check","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589895655,"create_time":1589895653,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":4,"type":1,"name":"feflow-plugin-git-hook","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589894652,"create_time":1589875560,"status":1,"reason":" 命名","data_version":5,"tnpm":null},{"id":6,"type":1,"name":"feflow-plugin-py-echo","repo":"git@git.code.oa.com:cli-market/py-echo.git","username":"blurooochen","update_time":1589894277,"create_time":1589894274,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":3,"type":1,"name":"feflow-plugin-checkstyle","repo":"http://git.code.oa.com/cli-market/checkstyle.git","username":"lewischeng","update_time":1589854912,"create_time":1589854894,"status":1,"reason":null,"data_version":2,"tnpm":null}]`).find((d: any) => d.name === packageName);
 }
 
 function getRepoName(repoUrl: string): string | undefined {
@@ -151,6 +152,7 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     if (!global && universalPkg.isRequiredByOther(pkgInfo.repoName, pkgInfo.checkoutTag)) {
       return;
     }
+    const linker = new Linker();
     logger.debug('install version:', pkgInfo.checkoutTag);
     const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
     if (!fs.existsSync(repoPath)) {
@@ -165,6 +167,9 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     await plugin.check();
     logger.debug('check plugin success');
 
+    const pluginBin = path.join(repoPath, `.${FEFLOW_BIN}`);
+    const pluginLib = path.join(repoPath, `.${FEFLOW_LIB}`);
+
     for (let depPlugin of plugin.dep.plugin) {
       try {
         let curPkgInfo = await getPkgInfo(ctx, depPlugin);
@@ -173,6 +178,8 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
         } else {
           await installAnyPlugin(ctx, depPlugin, false);
         }
+
+        linker.register(pluginBin, pluginLib, `${toSimpleCommand(curPkgInfo.repoName)}@${curPkgInfo.checkoutTag}`);
         universalPkg.require(pkgInfo.repoName, pkgInfo.installVersion, curPkgInfo.repoName, curPkgInfo.installVersion);
       } catch(e) {
         logger.error(`failed to install plugin dependency ${depPlugin}`);
@@ -181,7 +188,7 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     }
 
     plugin.preInstall.run();
-    new Linker().register(bin, lib, pkgInfo.repoName.replace('feflow-plugin-', ''));
+    linker.register(bin, lib, toSimpleCommand(pkgInfo.repoName));
     // install when global or not exists
     if (global || !universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag)) {
       universalPkg.install(pkgInfo.repoName, pkgInfo.installVersion);
@@ -190,6 +197,10 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     plugin.postInstall.run();
 
     logger.info('install success');
+}
+
+function toSimpleCommand(command: string): string {
+  return command.replace('feflow-plugin-', '');
 }
 
 async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {

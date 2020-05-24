@@ -13,7 +13,7 @@ export class UniversalPkg {
     // pkg: version
     private installed: Map<string, string> = new Map();
 
-    private relation: Map<string, Map<string, Relation>> = new Map();
+    private relations: Map<string, Map<string, Relation>> = new Map();
 
     constructor(pkgFile: string) {
         this.pkgFile = pkgFile;
@@ -30,13 +30,13 @@ export class UniversalPkg {
         const universalPkg = require(pkgFile);
         this.version = universalPkg?.version || this.version;
         this.installed = toPkg(universalPkg?.installed);
-        this.relation = this.toRelation(universalPkg?.relation);
+        this.relations = this.toRelations(universalPkg?.relation);
     }
 
-    private toRelation(oRelation: any): Map<string, Map<string, Relation>> {
-        let relation = new Map<string, Map<string, Relation>>();
+    private toRelations(oRelation: any): Map<string, Map<string, Relation>> {
+        let relations = new Map<string, Map<string, Relation>>();
         if (!oRelation) {
-            return relation;
+            return relations;
         }
         for (const pkg in oRelation) {
             const versionRelationMap = oRelation[pkg];
@@ -47,14 +47,18 @@ export class UniversalPkg {
             for (const version in versionRelationMap) {
                 const oVersionRelation = versionRelationMap[version];
                 if (versionImpl.check(version)) {
-                    pkgRelation[version] = new Relation(oVersionRelation);
+                    pkgRelation.set(version, new Relation(oVersionRelation));
                 }
             }
             if (pkgRelation.size > 0) {
-                relation[pkg] = pkgRelation;
+                relations.set(pkg, pkgRelation);
             }
         }
-        return relation;
+        return relations;
+    }
+
+    getInstalled(): Map<string, string> {
+        return this.installed;
     }
 
     isInstalled(pkg: string, version?: string): boolean {
@@ -66,7 +70,7 @@ export class UniversalPkg {
     }
 
     isRequiredByOther(pkg: string, version: string): boolean {
-        const vRelation = this.relation.get(pkg);
+        const vRelation = this.relations.get(pkg);
         if (vRelation) {
             const r = vRelation.get(version);
             if (r && r.requiredBy.size > 0) {
@@ -82,7 +86,7 @@ export class UniversalPkg {
     }
 
     require(pkg: string, version: string, requirePkg: string, requirePkgVersion: string) {
-        let versionMap = this.relation.get(pkg);
+        let versionMap = this.relations.get(pkg);
         if (!versionMap) {
             versionMap = new Map<string, Relation>();
         }
@@ -92,13 +96,13 @@ export class UniversalPkg {
         }
         r.required.set(requirePkg, requirePkgVersion);
         versionMap.set(version, r);
-        this.relation.set(pkg, versionMap);
+        this.relations.set(pkg, versionMap);
         this.requireBy(requirePkg, requirePkgVersion, pkg, version);
         this.saveChange();
     }
 
     private requireBy(pkg: string, version: string, requireByPkg: string, requireByPkgVersion: string) {
-        let versionMap = this.relation.get(pkg);
+        let versionMap = this.relations.get(pkg);
         if (!versionMap) {
             versionMap = new Map<string, Relation>();
         }
@@ -108,7 +112,7 @@ export class UniversalPkg {
         }
         r.requiredBy.set(requireByPkg, requireByPkgVersion);
         versionMap.set(version, r);
-        this.relation.set(pkg, versionMap);
+        this.relations.set(pkg, versionMap);
     }
 
     uninstall(pkg: string, version: string, skipError?: boolean) {
@@ -134,7 +138,7 @@ export class UniversalPkg {
         if (this.installed.get(pkg) === version) {
             this.installed.delete(pkg);
         }
-        const versionRelation = this.relation.get(pkg);
+        const versionRelation = this.relations.get(pkg);
         if (versionRelation) {
             const r = versionRelation.get(version);
             if (r) {
@@ -161,33 +165,45 @@ export class UniversalPkg {
     }
 
     getRelation(pkg: string, version: string): Relation | undefined {
-        const versionRelation = this.relation.get(pkg);
+        const versionRelation = this.relations.get(pkg);
         if (!versionRelation) {
             return;
         }
         return versionRelation.get(version);
     }
 
+    getRelations(): Map<string, Map<string, Relation>> {
+        return this.relations;
+    }
+
     private saveChange() {
         fs.writeFileSync(this.pkgFile, JSON.stringify({
             version: this.version,
-            installed: this._mapToObject(this.installed),
-            relation: this._mapToObject(this.relation)
+            installed: this.toObject(this.installed),
+            relation: this.toObject(this.relations)
         }, null, 4))
     }
 
-    private _mapToObject(m: Map<any, any>): object {
-        let o = Object.create(null);
-        if (!m) {
-            return o;
+    private toObject(obj: any): object {
+        let newObj = Object.create(null);
+        if (!obj) {
+            return newObj;
         }
-        const keys = m.keys();
-        for (const k of keys) {
-            let v = m.get(k);
-            v = v instanceof Map ? this._mapToObject(v) : v;
-            o[k] = v;
+        if (obj instanceof Map) {
+            const keys = obj.keys();
+            for (const k of keys) {
+                let v = obj.get(k);
+                v = typeof v === 'object' ? this.toObject(v) : v;
+                newObj[k] = v;
+            }
+        } else {
+            for (const k in obj) {
+                let v = obj[k];
+                v = typeof v === 'object' ? this.toObject(v) : v;
+                newObj[k] = v;
+            }
         }
-        return o;
+        return newObj;
     }
 
 }

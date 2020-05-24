@@ -22,8 +22,18 @@ export default class Binp {
         this.currentOs = os.platform();
     }
 
-    register(binPath: string, prior: boolean = false) {
+    register(binPath: string, prior: boolean = false, temporary = false) {
         if (this.isRegisted(binPath)) {
+            return;
+        }
+        if (temporary) {
+            let newPath: string;
+            if (prior) {
+                newPath = `${binPath}${path.delimiter}${process.env['PATH']}`;
+            } else {
+                newPath = `${process.env['PATH']}${path.delimiter}${binPath}`;
+            }
+            process.env['PATH'] = newPath;
             return;
         }
         if (this.currentOs === 'win32') {
@@ -58,7 +68,7 @@ export default class Binp {
         if (!profile) {
             throw 'not profile';
         }
-        fs.appendFileSync(profile, setStatement);
+        fs.appendFileSync(profile, `\n${setStatement}\n`);
     }
 
     private detectProfile(binPath: string, prior: boolean): [string | undefined, string | undefined] {
@@ -66,9 +76,9 @@ export default class Binp {
         const shell = process.env['SHELL'];
         let toPath: string;
         if (prior) {
-            toPath = `\nexport PATH=${binPath}:$PATH\n`;
+            toPath = `export PATH=${binPath}:$PATH`;
         } else {
-            toPath = `\nexport PATH=$PATH:${binPath}\n`;
+            toPath = `export PATH=$PATH:${binPath}`;
         }
         switch (shell) {
             case '/bin/zsh':
@@ -79,9 +89,9 @@ export default class Binp {
             case '/bin/zcsh':
             case '/bin/csh':
                 if (prior) {
-                    toPath = `\nset path = (${binPath} $path)\n`;
+                    toPath = `set path = (${binPath} $path)`;
                 } else {
-                    toPath = `\nset path = ($path ${binPath})\n`;
+                    toPath = `set path = ($path ${binPath})`;
                 }
                 return [this.detectCshProfile(home), toPath];
         }
