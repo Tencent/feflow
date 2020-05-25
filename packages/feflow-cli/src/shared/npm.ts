@@ -93,9 +93,9 @@ export async function getTag(repoUrl: string, version?: string) {
 
   if (tagList.length) {
     for (const tag of tagList) {
-        if (!version || version === tag) {
-          return Promise.resolve(tag);
-        }
+      if (!version || version === tag) {
+        return Promise.resolve(tag);
+      }
     }
   }
   return Promise.reject('no valid tag was found');
@@ -104,6 +104,7 @@ export async function getTag(repoUrl: string, version?: string) {
 export async function getLatestTag(repoUrl: string) {
   const tagList = await listRepoTag(repoUrl);
   let lastVersion = '';
+
   if (tagList.length) {
     for (const tag of tagList) {
       if (!lastVersion) {
@@ -113,7 +114,7 @@ export async function getLatestTag(repoUrl: string) {
       }
     }
   }
-  return lastVersion || "latest"
+  return lastVersion || 'latest';
 }
 
 export function checkoutVersion(repoPath: string, version: string) {
