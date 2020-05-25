@@ -37,7 +37,7 @@ function loadUniversalPlugin(ctx: any): any[] {
 
   if (fs.existsSync(universalPkgJsonPath)) {
     try {
-			const content = fs.readFileSync(universalPkgJsonPath, 'utf8');
+	    const content = fs.readFileSync(universalPkgJsonPath, 'utf8');
       const json = JSON.parse(content);
       const pluginsInConfig = Object.keys(json.dependencies || {});
       const pluginsInCommand = ctx.commander.store;
