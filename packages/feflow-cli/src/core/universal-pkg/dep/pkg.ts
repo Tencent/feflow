@@ -1,6 +1,6 @@
-import { Relation } from './relation';
+import { PkgRelation } from './relation';
 import fs from 'fs';
-import { toPkg } from './base';
+import { toInstalled } from './base';
 import versionImpl from './version';
 import path from 'path';
 
@@ -13,48 +13,42 @@ export class UniversalPkg {
     // pkg: version
     private installed: Map<string, string> = new Map();
 
-    private relations: Map<string, Map<string, Relation>> = new Map();
+    private dependencies: Map<string, Map<string, PkgRelation>> = new Map();
 
     constructor(pkgFile: string) {
         this.pkgFile = pkgFile;
         if (!fs.existsSync(pkgFile)) {
-            const d = path.resolve(pkgFile, '..');
-            if (!fs.existsSync(d)) {
-                fs.mkdirSync(d, {
-                    recursive: true
-                });
-            }
             this.saveChange();
             return;
         }
         const universalPkg = require(pkgFile);
         this.version = universalPkg?.version || this.version;
-        this.installed = toPkg(universalPkg?.installed);
-        this.relations = this.toRelations(universalPkg?.relation);
+        this.installed = toInstalled(universalPkg?.installed);
+        this.dependencies = this.toDependencies(universalPkg?.dependencies);
     }
 
-    private toRelations(oRelation: any): Map<string, Map<string, Relation>> {
-        let relations = new Map<string, Map<string, Relation>>();
-        if (!oRelation) {
-            return relations;
+    private toDependencies(oDependencies: any): Map<string, Map<string, PkgRelation>> {
+        let dependencies = new Map<string, Map<string, PkgRelation>>();
+        if (!oDependencies) {
+            return dependencies;
         }
-        for (const pkg in oRelation) {
-            const versionRelationMap = oRelation[pkg];
+        for (const pkg in oDependencies) {
+            const versionRelationMap = oDependencies[pkg];
             if (!versionRelationMap) {
                 continue;
             }
-            let pkgRelation = new Map<string, Relation>();
+            let pkgRelation = new Map<string, PkgRelation>();
             for (const version in versionRelationMap) {
                 const oVersionRelation = versionRelationMap[version];
                 if (versionImpl.check(version)) {
-                    pkgRelation.set(version, new Relation(oVersionRelation));
+                    pkgRelation.set(version, new PkgRelation(oVersionRelation));
                 }
             }
             if (pkgRelation.size > 0) {
-                relations.set(pkg, pkgRelation);
+                dependencies.set(pkg, pkgRelation);
             }
         }
-        return relations;
+        return dependencies;
     }
 
     getInstalled(): Map<string, string> {
@@ -69,11 +63,11 @@ export class UniversalPkg {
         return false;
     }
 
-    isRequiredByOther(pkg: string, version: string): boolean {
-        const vRelation = this.relations.get(pkg);
+    isDepdenedOnOther(pkg: string, version: string): boolean {
+        const vRelation = this.dependencies.get(pkg);
         if (vRelation) {
             const r = vRelation.get(version);
-            if (r && r.requiredBy.size > 0) {
+            if (r && r.dependedOn.size > 0) {
                 return true;
             }
         }
@@ -82,117 +76,129 @@ export class UniversalPkg {
 
     install(pkg: string, version: string) {
         this.installed.set(pkg, version);
-        this.saveChange();
     }
 
-    require(pkg: string, version: string, requirePkg: string, requirePkgVersion: string) {
-        let versionMap = this.relations.get(pkg);
+    depend(pkg: string, version: string, dependPkg: string, dependPkgVersion: string) {
+        let versionMap = this.dependencies.get(pkg);
         if (!versionMap) {
-            versionMap = new Map<string, Relation>();
+            versionMap = new Map<string, PkgRelation>();
         }
         let r = versionMap.get(version);
         if (!r) {
-            r = new Relation(null);
+            r = new PkgRelation(null);
         }
-        r.required.set(requirePkg, requirePkgVersion);
+        r.dependencies.set(dependPkg, dependPkgVersion);
         versionMap.set(version, r);
-        this.relations.set(pkg, versionMap);
-        this.requireBy(requirePkg, requirePkgVersion, pkg, version);
-        this.saveChange();
+        this.dependencies.set(pkg, versionMap);
+        this.dependedOn(dependPkg, dependPkgVersion, pkg, version);
     }
 
-    private requireBy(pkg: string, version: string, requireByPkg: string, requireByPkgVersion: string) {
-        let versionMap = this.relations.get(pkg);
+    private dependedOn(pkg: string, version: string, dependedOnPkg: string, dependedOnPkgVersion: string) {
+        let versionMap = this.dependencies.get(pkg);
         if (!versionMap) {
-            versionMap = new Map<string, Relation>();
+            versionMap = new Map<string, PkgRelation>();
         }
         let r = versionMap.get(version);
         if (!r) {
-            r = new Relation(null);
+            r = new PkgRelation(null);
         }
-        r.requiredBy.set(requireByPkg, requireByPkgVersion);
+        r.dependedOn.set(dependedOnPkg, dependedOnPkgVersion);
         versionMap.set(version, r);
-        this.relations.set(pkg, versionMap);
+        this.dependencies.set(pkg, versionMap);
     }
 
-    uninstall(pkg: string, version: string, skipError?: boolean) {
-        const requireBy = this.getRequireBy(pkg, version);
-        if (!requireBy || requireBy.size === 0) {
-            if (skipError) {
+    uninstall(pkg: string, version: string, isDep?: boolean) {
+        const requiredBy = this.getDepended(pkg, version);
+        if (requiredBy && requiredBy.size > 0) {
+            if (isDep) {
                 return;
             }
             throw `refusing to uninstall ${pkg}@${version} because it is required by
-            ${requireBy?.keys[0]}@${requireBy?.values[0]} ...`;
+            ${requiredBy?.keys[0]}@${requiredBy?.values[0]} ...`;
         }
-        const required = this.getRequired(pkg, version);
+        const required = this.getDependencies(pkg, version);
         if (required) {
-            for (const r in required.keys()) {
-                const v = required.get(r) || '';
-                const curRequireBy = this.getRequireBy(pkg, version);
-                if (!curRequireBy || curRequireBy.size === 0) {
-                    return
-                }
-                this.uninstall(r, v, true);
+            for (const [requiredPkg, requiredVersion] of required) {
+                this.uninstall(requiredPkg, requiredVersion, true);
+                this.removeDepended(requiredPkg, requiredVersion, pkg, version);
             }
         }
-        if (this.installed.get(pkg) === version) {
+        if (!isDep && this.installed.get(pkg) === version) {
             this.installed.delete(pkg);
         }
-        const versionRelation = this.relations.get(pkg);
+        const versionRelation = this.dependencies.get(pkg);
         if (versionRelation) {
             const r = versionRelation.get(version);
             if (r) {
                 versionRelation.delete(version);
             }
         }
-        this.saveChange();
+        if (!isDep) {
+            this.saveChange();
+        }
     }
 
-    getRequireBy(pkg: string, version: string): Map<string, string> | undefined {
-        const r = this.getRelation(pkg, version);
+    private removeDepended(pkg: string, version: string, dependedPkg: string, dependedVersion: string) {
+        const dependedOn = this.getDepended(pkg, version);
+        if (!dependedOn) {
+            return;
+        }
+        if (dependedOn.get(dependedPkg) === dependedVersion) {
+            dependedOn.delete(dependedPkg);
+        }
+    }
+
+    getDepended(pkg: string, version: string): Map<string, string> | undefined {
+        const r = this.getPkgRelation(pkg, version);
         if (!r) {
             return;
         }
-        return r.requiredBy;
+        return r.dependedOn;
     }
 
-    getRequired(pkg: string, version: string): Map<string, string> | undefined {
-        const r = this.getRelation(pkg, version);
+    getDependencies(pkg: string, version: string): Map<string, string> | undefined {
+        const r = this.getPkgRelation(pkg, version);
         if (!r) {
             return;
         }
-        return r.required;
+        return r.dependencies;
     }
 
-    getRelation(pkg: string, version: string): Relation | undefined {
-        const versionRelation = this.relations.get(pkg);
+    getPkgRelation(pkg: string, version: string): PkgRelation | undefined {
+        const versionRelation = this.dependencies.get(pkg);
         if (!versionRelation) {
             return;
         }
         return versionRelation.get(version);
     }
 
-    getRelations(): Map<string, Map<string, Relation>> {
-        return this.relations;
+    getAllDependencies(): Map<string, Map<string, PkgRelation>> {
+        return this.dependencies;
     }
 
-    private saveChange() {
+    saveChange() {
+        if (!fs.existsSync(this.pkgFile)) {
+            const d = path.resolve(this.pkgFile, '..');
+            if (!fs.existsSync(d)) {
+                fs.mkdirSync(d, {
+                    recursive: true
+                });
+            }
+        }
         fs.writeFileSync(this.pkgFile, JSON.stringify({
             version: this.version,
             installed: this.toObject(this.installed),
-            relation: this.toObject(this.relations)
+            dependencies: this.toObject(this.dependencies)
         }, null, 4))
     }
 
     private toObject(obj: any): object {
-        let newObj = Object.create(null);
-        if (!obj) {
-            return newObj;
+        if (!obj || typeof obj !== 'object') {
+            return obj;
         }
+        let newObj = Object.create(null);
         if (obj instanceof Map) {
-            const keys = obj.keys();
-            for (const k of keys) {
-                let v = obj.get(k);
+            for (let [k, v] of obj) {
                 v = typeof v === 'object' ? this.toObject(v) : v;
                 newObj[k] = v;
             }

@@ -18,41 +18,31 @@ export default class Linker {
         startCommand && (this.startCommand = startCommand);
     }
 
-    register(binPath: string, libPath: string, command: string) {
-        this.enableDir(binPath, libPath);
+    register(binPath: string, libPath: string, command: string, name?: string) {
         if (this.currentOs === 'win32') {
-            this.linkToWin32(binPath, command);
+            this.linkToWin32(binPath, command, name);
         } else {
-            this.linkToUnixLike(binPath, libPath, command);
+            this.linkToUnixLike(binPath, libPath, command, name);
         }
     }
 
-    private linkToWin32(binPath: string, command: string) {
-        const file = this.cmdFile(binPath, command);
+    private linkToWin32(binPath: string, command: string, name?: string) {
+        this.enableDir(binPath);
+        const file = this.cmdFile(binPath, name || command);
         const template = this.cmdTemplate(command);
         this.writeExecFile(file, template);
     }
 
-    private linkToUnixLike(binPath: string, libPath: string, command: string) {
-        this.enableLibPath(libPath);
+    private linkToUnixLike(binPath: string, libPath: string, command: string, name?: string) {
+        this.enableDir(binPath, libPath);
         const file = this.shellFile(libPath, command);
         const template = this.shellTemplate(command);
-        const commandLink = path.join(binPath, command);
+        const commandLink = path.join(binPath, name || command);
         this.writeExecFile(file, template);
         if (fs.existsSync(commandLink) && fs.statSync(commandLink).isSymbolicLink) {
             return
         }
         fs.symlinkSync(file, commandLink);
-    }
-
-    private enableLibPath(path: string) {
-        if (fs.existsSync(path) && fs.statSync(path).isFile()) {
-            fs.unlinkSync(path);
-        }
-
-        if (!fs.existsSync(path)) {
-            fs.mkdirSync(path);
-        }
     }
 
     private writeExecFile(file: string, content: string) {
