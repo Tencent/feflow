@@ -6,6 +6,7 @@ import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
   getTag,
+  getCurrentTag,
   checkoutVersion
 } from '../universal-pkg/repository/git';
 import { parseYaml } from '../../shared/yaml';
@@ -41,7 +42,7 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
     return new Plugin(ctx, repoPath, config)
 }
 
-async function getRepoInfo(ctx: any, packageName: string) {
+export async function getRepoInfo(ctx: any, packageName: string) {
   const serverUrl = ctx.config?.serverUrl
   if (!serverUrl) {
     throw 'the server url is not configured';
@@ -56,7 +57,6 @@ async function getRepoInfo(ctx: any, packageName: string) {
       const data = JSON.parse(response);
       return data.data && data.data[0];
     });
-  // return JSON.parse(`[{"id":9,"type":1,"name":"feflow-plugin-local-ci","repo":"http://git.code.oa.com/cli-market/local-ci.git","username":"blurooochen","update_time":1589896140,"create_time":1589896137,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":8,"type":1,"name":"feflow-plugin-epc-commit-check","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589895655,"create_time":1589895653,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":4,"type":1,"name":"feflow-plugin-git-hook","repo":"http://git.code.oa.com/cli-market/git-hook.git","username":"blurooochen","update_time":1589894652,"create_time":1589875560,"status":1,"reason":" 命名","data_version":5,"tnpm":null},{"id":6,"type":1,"name":"feflow-plugin-py-echo","repo":"git@git.code.oa.com:cli-market/py-echo.git","username":"blurooochen","update_time":1589894277,"create_time":1589894274,"status":1,"reason":null,"data_version":1,"tnpm":null},{"id":3,"type":1,"name":"feflow-plugin-checkstyle","repo":"http://git.code.oa.com/cli-market/checkstyle.git","username":"lewischeng","update_time":1589854912,"create_time":1589854894,"status":1,"reason":null,"data_version":2,"tnpm":null}]`).find((d: any) => d.name === packageName);
 }
 
 function getRepoName(repoUrl: string): string | undefined {
@@ -65,6 +65,22 @@ function getRepoName(repoUrl: string): string | undefined {
     return ret[1];
   }
 }
+
+function deleteDir(dirPath: string) {
+  let files: any = [];
+  if(fs.existsSync(dirPath)) {
+    files = fs.readdirSync(dirPath);
+    files.forEach((file: string) =>{
+      const curPath = dirPath + '/' + file;
+      if(fs.statSync(curPath).isDirectory()) {
+        deleteDir(curPath);
+      } else {
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(dirPath);
+  }
+};
 
 module.exports = (ctx: any) => {
 
@@ -76,16 +92,22 @@ module.exports = (ctx: any) => {
         return;
       }
       try {
-        await installAnyPlugin(ctx, installPluginStr, true);
+        await installPlugin(ctx, installPluginStr, true);
       } catch(e) {
         ctx.logger.error(`install error: ${e}`) ;
         process.exit(2);
       }
     });
 
-    ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', () => {
+    ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', async () => {
       const dependencies = ctx.args['_'];
       ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
+      
+      const installPluginStr = dependencies[0];
+      const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+      if (pkgInfo) {
+        return uninstallUniversalPlugin(ctx, pkgInfo);
+      }
 
       return install(
         ctx?.config?.packageManager,
@@ -133,12 +155,12 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   });
 }
 
-async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean) {
+export async function installPlugin(ctx: any, installPluginStr: string, global: boolean) {
     const { logger, universalPkg, bin, lib }
     : { logger: any, universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
     const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
-    installPlugin = installPlugin.trim();
-    const pkgInfo = await getPkgInfo(ctx, installPlugin);
+    installPluginStr = installPluginStr.trim();
+    const pkgInfo = await getPkgInfo(ctx, installPluginStr);
     if (!pkgInfo) {
       return installNpmPlugin(ctx, ctx?.args['_']);
     }
@@ -152,13 +174,17 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     if (!global && universalPkg.isDepdenedOnOther(pkgInfo.repoName, pkgInfo.checkoutTag)) {
       return;
     }
-    const linker = new Linker();
-    logger.debug('install version:', pkgInfo.checkoutTag);
     const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
+    logger.debug('install version:', pkgInfo.checkoutTag);
     if (!fs.existsSync(repoPath)) {
         logger.info(`Start download from ${ pkgInfo.repoUrl }`);
         await download(pkgInfo.repoUrl, repoPath);
     }
+    const linker = new Linker();
+    if (pkgInfo.checkoutTag === await getCurrentTag(repoPath)) {
+      return;
+    }
+
     logger.info(`switch to version ${pkgInfo.installVersion}`);
     await checkoutVersion(repoPath, pkgInfo.checkoutTag);
 
@@ -170,14 +196,17 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
     const pluginBin = path.join(repoPath, `.${FEFLOW_BIN}`);
     const pluginLib = path.join(repoPath, `.${FEFLOW_LIB}`);
 
+    const oldDependencies = universalPkg.getDependencies(pkgInfo.repoName, pkgInfo.checkoutTag);
+
     for (let depPlugin of plugin.dep.plugin) {
       try {
         let curPkgInfo = await getPkgInfo(ctx, depPlugin);
         if (!curPkgInfo) {
           throw `the dependent plugin ${depPlugin} does not belong to the universal packge`;
         } else {
-          await installAnyPlugin(ctx, depPlugin, false);
+          await installPlugin(ctx, depPlugin, false);
         }
+        oldDependencies?.delete(curPkgInfo.repoName);
         const commandName = toSimpleCommand(curPkgInfo.repoName);
         linker.register(pluginBin, pluginLib, `${commandName}@${curPkgInfo.checkoutTag}`, commandName);
         universalPkg.depend(pkgInfo.repoName, pkgInfo.installVersion, curPkgInfo.repoName, curPkgInfo.installVersion);
@@ -186,6 +215,12 @@ async function installAnyPlugin(ctx: any, installPlugin: string, global: boolean
         throw e;
       }
     }
+
+    // if (oldDependencies) {
+    //   for (const [depPkg, depVersion] of oldDependencies) {
+    //     universalPkg.removeDepend(pkgInfo.repoName, pkgInfo.installVersion, );
+    //   }
+    // }
 
     plugin.preInstall.run();
     linker.register(bin, lib, toSimpleCommand(pkgInfo.repoName));
@@ -205,6 +240,7 @@ function toSimpleCommand(command: string): string {
   return command.replace('feflow-plugin-', '');
 }
 
+// when you install a universal package, return PkgInfo, otherwise return undefined
 async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {
   let installVersion;
   let checkoutTag;
@@ -255,4 +291,36 @@ class PkgInfo {
     this.checkoutTag = checkoutTag;
   }
 
+}
+
+async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
+  const { logger, universalPkg, bin, lib }
+    : { logger: any, universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
+  const version = universalPkg.getInstalled().get(pkgInfo.repoName);
+  if (!version) {
+    logger.error('this plugin is not currently installed');
+    return;
+  }
+  if (pkgInfo.installVersion != LATEST_VERSION && pkgInfo.installVersion != version) {
+    logger.error(`this version of the plugin is not currently installed, 
+    the version you want to uninstall is ${pkgInfo.installVersion}, 
+    The installed version is ${version}`);
+    return;
+  }
+  try {
+    universalPkg.uninstall(pkgInfo.repoName, version);
+  } catch(e) {
+    logger.error(`uninstall failure, ${e}`);
+    return;
+  }
+  try {
+    const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkgInfo.repoName}@${version}`);
+    if (fs.existsSync(pluginPath)) {
+      deleteDir(pluginPath);
+      new Linker().remove(bin, lib, toSimpleCommand(pkgInfo.repoName));
+    }
+    logger.info('uninstall success');
+  } catch(e) {
+    logger.info(`uninstall succeeded, but failed to clean the data, ${e}`);
+  }
 }

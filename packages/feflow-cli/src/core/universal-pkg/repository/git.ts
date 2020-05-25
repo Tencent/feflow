@@ -33,6 +33,15 @@ export async function getTag(repoUrl: string, version?: string): Promise<string 
   return satisfiedMaxVersion;
 }
 
+export async function getCurrentTag(repoPath: string): Promise<string | undefined> {
+  const status = spawn.sync('git', ['-C', repoPath, 'status']);
+  const tagFlag = 'HEAD detached at ';
+  const head = status?.stdout?.toString().trim().split('\n')[0];
+  if (head.startsWith(tagFlag)) {
+    return head.substring(tagFlag.length);
+  }
+}
+
 export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
