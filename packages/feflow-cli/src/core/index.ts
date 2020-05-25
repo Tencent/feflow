@@ -259,54 +259,58 @@ export default class Feflow {
         const { root, config, logger } = this;
         const pluginConfigPath = path.join(root, UNIVERSAL_PKG_JSON);
         const table = new Table();
-        const updateQueens = []
+        const updateQueens = [];
+
         // list plugins which could update
-        if(fs.existsSync(pluginConfigPath)) {
-            try {
-                const json = fs.readFileSync(pluginConfigPath, 'utf8');
-                const content = JSON.parse(json);
-                const pluginMap = content.dependencies || {};
-                for(const plugin of Object.keys(pluginMap)) {
-                    const localVersion = pluginMap[plugin];
-                    if(localVersion === "latest") continue;
-                    const repoInfo = await getRepoInfo(config.serverUrl, plugin)
-                    const { repo } = repoInfo || {};
-                    if (!repo) continue;
-                    const latestVersion = await getLatestTag(repo)
-                    if(semver.gt(latestVersion, localVersion)) {
-                        pluginUpdateList.push({
-                            name: plugin,
-                            latestVersion,
-                            localVersion,
-                            repoUrl: repo
-                        })
-                    }
-                }
-            } catch (error) {
-                logger.debug("parse universal plugin config error", error)
+        if (fs.existsSync(pluginConfigPath)) {
+          try {
+            const json = fs.readFileSync(pluginConfigPath, 'utf8');
+            const content = JSON.parse(json);
+            const pluginMap = content.dependencies || {};
+            for (const plugin of Object.keys(pluginMap)) {
+              const localVersion = pluginMap[plugin];
+              if (localVersion === 'latest') continue;
+
+              const repoInfo = await getRepoInfo(config.serverUrl, plugin);
+              const { repo } = repoInfo || {};
+              if (!repo) continue;
+
+              const latestVersion = await getLatestTag(repo);
+              if (semver.gt(latestVersion, localVersion)) {
+                pluginUpdateList.push({
+                  name: plugin,
+                  latestVersion,
+                  localVersion,
+                  repoUrl: repo,
+                });
+              }
             }
+          } catch (error) {
+            logger.debug('parse universal plugin config error', error);
+          }
         } else {
-            logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in .fef`)
+          logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in .fef`);
         }
 
-        if(!pluginUpdateList.length) return Promise.resolve()
+        if (!pluginUpdateList.length) return Promise.resolve();
+
         // update
-        for(const pluginInfo of pluginUpdateList) {
-            const { name, repoUrl, latestVersion, localVersion } = pluginInfo;
-            table.cell('Name', name);
-            table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
-            table.cell('Tag', 'latest');
-            table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
-            table.newRow();
-            updateQueens.push(installUniversalPlugin(this, name, repoUrl, latestVersion))
+        for (const pluginInfo of pluginUpdateList) {
+          const { name, repoUrl, latestVersion, localVersion } = pluginInfo;
+          table.cell('Name', name);
+          table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
+          table.cell('Tag', 'latest');
+          table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
+          table.newRow();
+          updateQueens.push(installUniversalPlugin(this, name, repoUrl, latestVersion));
         }
         this.logger.info('It will update your local templates or plugins, this will take few minutes');
-        
+    
         console.log(table.toString());
         return Promise.all(updateQueens).then(() => {
-            this.logger.info('Plugin update success');
-        })
-    }
+          this.logger.info('Plugin update success');
+        });
+      }
 
     getInstalledPlugins() {
         const { root, rootPkg } = this;
