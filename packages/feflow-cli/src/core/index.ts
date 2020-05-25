@@ -265,7 +265,7 @@ export default class Feflow {
             try {
                 const json = fs.readFileSync(pluginConfigPath, 'utf8');
                 const content = JSON.parse(json);
-                const pluginMap = content.dependencies;
+                const pluginMap = content.dependencies || {};
                 for(const plugin of Object.keys(pluginMap)) {
                     const localVersion = pluginMap[plugin];
                     if(localVersion === "latest") continue;
@@ -283,7 +283,7 @@ export default class Feflow {
                     }
                 }
             } catch (error) {
-                console.log("parse universal plugin config error", error)
+                logger.debug("parse universal plugin config error", error)
             }
         } else {
             logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in .fef`)
