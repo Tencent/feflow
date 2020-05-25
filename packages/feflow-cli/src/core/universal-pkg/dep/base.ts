@@ -1,12 +1,12 @@
 import versionImpl from './version';
 
-export function toPkg(oPkg: any): Map<string, string> {
+export function toInstalled(oInstalled: any): Map<string, string> {
     let installed = new Map<string, string>();
-    if (!oPkg) {
+    if (!oInstalled) {
         return installed;
     }
-    for (const k in oPkg) {
-        const version = oPkg[k];
+    for (const k in oInstalled) {
+        const version = oInstalled[k];
         if (versionImpl.check(version)) {
             installed.set(k, version);
         }

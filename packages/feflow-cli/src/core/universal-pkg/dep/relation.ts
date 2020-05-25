@@ -1,14 +1,14 @@
-import { toPkg } from './base';
+import { toInstalled } from './base';
 
-export class Relation {
+export class PkgRelation {
 
-    required: Map<string, string>;
+    dependencies: Map<string, string>;
 
-    requiredBy: Map<string, string>;
+    dependedOn: Map<string, string>;
     
     constructor(oRelation: any) {
-        this.required = toPkg(oRelation?.required);
-        this.requiredBy = toPkg(oRelation?.requiredBy);
+        this.dependencies = toInstalled(oRelation?.dependencies);
+        this.dependedOn = toInstalled(oRelation?.dependedOn);
     }
 
 }

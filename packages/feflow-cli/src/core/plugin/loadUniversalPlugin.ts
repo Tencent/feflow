@@ -51,7 +51,7 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
     register(ctx, pkg, version, true);
   }
 
-  const relations = universalPkg.getRelations();
+  const relations = universalPkg.getAllDependencies();
   for (const [pkg, versionRelations] of relations) {
     for (const [version] of versionRelations) {
       register(ctx, pkg, version, false);
