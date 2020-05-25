@@ -1,6 +1,7 @@
 import spawn from 'cross-spawn';
 import childProcess from 'child_process';
 import { promisify } from 'util';
+import semver from 'semver';
 
 export function getRegistryUrl(packageManager: string) {
     return new Promise<any>((resolve, reject) => {
@@ -64,26 +65,56 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
   });
 }
 
-export async function getTag(repoUrl: string, version?: string) {
+async function listRepoTag(repoUrl: string): Promise<string[]> {
   const execFile = promisify(childProcess.execFile);
   const { stdout } = await execFile('git', ['ls-remote', '--tags', '--refs', repoUrl]);
-
   const tagStr = stdout?.trim();
+  let tagList: string[] = [];
+
   if (tagStr) {
-    const tagList = tagStr.split('\n');
-  
-    for (let i = tagList.length - 1; i >= 0; i--) {
-      const [, tagReference] = tagList[i].split('\t');
-      // v0.1.2
-      if (/^refs\/tags\/v\d+.\d+.\d+$/i.test(tagReference)) {
-        const tag = tagReference.substring('refs/tags/'.length);
-        if (!version || version === tag) {
-          return Promise.resolve(tag);
+    const tagVersionList = tagStr.split('\n');
+    if (tagVersionList.length) {
+      for (let i = tagVersionList.length - 1; i >= 0; i--) {
+        const [, tagReference] = tagVersionList[i].split('\t');
+        // v0.1.2
+        if (/^refs\/tags\/v\d+.\d+.\d+$/i.test(tagReference)) {
+          const tag = tagReference.substring('refs/tags/'.length);
+          tagList.push(tag);
         }
       }
     }
   }
+  return tagList;
+}
+
+
+export async function getTag(repoUrl: string, version?: string) {
+  const tagList = await listRepoTag(repoUrl);
+
+  if (tagList.length) {
+    for (const tag of tagList) {
+      if (!version || version === tag) {
+        return Promise.resolve(tag);
+      }
+    }
+  }
   return Promise.reject('no valid tag was found');
+}
+
+export async function getLatestTag(repoUrl: string) {
+  const tagList = await listRepoTag(repoUrl);
+  let lastVersion = '';
+
+  if (tagList.length) {
+    for (const tag of tagList) {
+      if (!lastVersion) {
+        lastVersion = tag;
+      } else if (semver.gt(tag, lastVersion)) {
+        lastVersion = tag;
+      }
+    }
+  }
+  return lastVersion || 'latest';
 }
 
 export function checkoutVersion(repoPath: string, version: string) {
