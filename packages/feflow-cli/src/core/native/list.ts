@@ -62,7 +62,7 @@ module.exports = (ctx: any) => {
         const universalPlugins = loadUniversalPlugin(ctx);
         let templateCnt  = 0;
         let pluginCnt = 0;
-				list.push(...universalPlugins);
+        list.push(...universalPlugins);
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');
