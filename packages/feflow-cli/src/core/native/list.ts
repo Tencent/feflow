@@ -62,7 +62,7 @@ module.exports = (ctx: any) => {
         const universalPlugins = loadUniversalPlugin(ctx);
         let templateCnt  = 0;
         let pluginCnt = 0;
-        let universalPluginCnt = 0;
+				list.push(...universalPlugins);
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');
@@ -91,15 +91,6 @@ module.exports = (ctx: any) => {
         });
         if (!pluginCnt) {
             console.log(chalk.magenta('No plugins have been installed'));
-        }
-
-        console.log('universal plugin');
-        for (const plugin of universalPlugins) {
-            universalPluginCnt += 1;
-            console.log(chalk.magenta(plugin));
-        }
-        if (!universalPluginCnt) {
-            console.log(chalk.magenta('No universal plugin have been installed'));
         }
     });
 };
