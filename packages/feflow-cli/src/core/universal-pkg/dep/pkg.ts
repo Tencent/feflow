@@ -93,6 +93,18 @@ export class UniversalPkg {
         this.dependedOn(dependPkg, dependPkgVersion, pkg, version);
     }
 
+    removeDepend(pkg: string, version: string, dependPkg: string, dependPkgVersion: string) {
+        const dependencies = this.getDependencies(pkg, version);
+        if (dependencies) {
+            dependencies.delete(dependPkg);
+        }
+        const depended = this.getDepended(dependPkg, dependPkgVersion);
+        if (depended) {
+            depended.delete(pkg);
+        }
+        return depended ? depended.size : 0;
+    }
+
     private dependedOn(pkg: string, version: string, dependedOnPkg: string, dependedOnPkgVersion: string) {
         let versionMap = this.dependencies.get(pkg);
         if (!versionMap) {
@@ -108,17 +120,17 @@ export class UniversalPkg {
     }
 
     uninstall(pkg: string, version: string, isDep?: boolean) {
-        const requiredBy = this.getDepended(pkg, version);
-        if (requiredBy && requiredBy.size > 0) {
+        const depended = this.getDepended(pkg, version);
+        if (depended && depended.size > 0) {
             if (isDep) {
                 return;
             }
             throw `refusing to uninstall ${pkg}@${version} because it is required by
-            ${requiredBy?.keys[0]}@${requiredBy?.values[0]} ...`;
+            ${depended?.keys[0]}@${depended?.values[0]} ...`;
         }
-        const required = this.getDependencies(pkg, version);
-        if (required) {
-            for (const [requiredPkg, requiredVersion] of required) {
+        const dependencies = this.getDependencies(pkg, version);
+        if (dependencies) {
+            for (const [requiredPkg, requiredVersion] of dependencies) {
                 this.uninstall(requiredPkg, requiredVersion, true);
                 this.removeDepended(requiredPkg, requiredVersion, pkg, version);
             }

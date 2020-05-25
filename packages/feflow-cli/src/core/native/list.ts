@@ -2,6 +2,7 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk'
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
 
 function loadModuleList(ctx: any) {
     const packagePath = ctx.rootPkg;
@@ -28,12 +29,31 @@ function loadModuleList(ctx: any) {
     }
 }
 
+const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
+
+function loadUniversalPlugin(ctx: any): any[] {
+  const { universalPkg }
+  : { universalPkg: UniversalPkg } = ctx;
+  let availablePluigns: any[] = [];
+
+  const pluginsInCommand = ctx.commander.store;
+  for (const [pkg] of universalPkg.getInstalled()) {
+    const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
+    if (pluginsInCommand[pluginCommand]) {
+      availablePluigns.push(pluginCommand);
+    }
+  }
+
+  return availablePluigns;
+}
 
 module.exports = (ctx: any) => {
     ctx.commander.register('list', 'Show all plugins installed.', () => {
         const list = loadModuleList(ctx);
+        const universalPlugins = loadUniversalPlugin(ctx);
         let templateCnt  = 0;
         let pluginCnt = 0;
+        list.push(...universalPlugins);
 
         console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
         console.log('===============================================');

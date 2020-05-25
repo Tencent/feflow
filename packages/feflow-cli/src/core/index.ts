@@ -20,6 +20,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
+// import { getRepoInfo, installPlugin } from './native/install';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -74,6 +75,7 @@ export default class Feflow {
             if (disableCheck) {
                 await this.checkCliUpdate();
                 await this.checkUpdate();
+                // await this.checkUniversalPluginAndUpdate();
             }
             await this.loadNative();
             await this.loadInternalPlugins();
@@ -256,6 +258,64 @@ export default class Feflow {
 
         fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
     }
+
+    // async checkUniversalPluginAndUpdate() {
+    //     const pluginUpdateList = [];
+    //     const { root, config, logger } = this;
+    //     const pluginConfigPath = path.join(root, UNIVERSAL_PKG_JSON);
+    //     const table = new Table();
+    //     const updateQueens = [];
+
+    //     // list plugins which could update
+    //     if (fs.existsSync(pluginConfigPath)) {
+    //       try {
+    //         const json = fs.readFileSync(pluginConfigPath, 'utf8');
+    //         const content = JSON.parse(json);
+    //         const pluginMap = content.dependencies || {};
+    //         for (const plugin of Object.keys(pluginMap)) {
+    //           const localVersion = pluginMap[plugin];
+    //           if (localVersion === 'latest') continue;
+
+    //           const repoInfo = await getRepoInfo(config.serverUrl, plugin);
+    //           const { repo } = repoInfo || {};
+    //           if (!repo) continue;
+
+    //           const latestVersion = await getLatestTag(repo);
+    //           if (semver.gt(latestVersion, localVersion)) {
+    //             pluginUpdateList.push({
+    //               name: plugin,
+    //               latestVersion,
+    //               localVersion,
+    //               repoUrl: repo,
+    //             });
+    //           }
+    //         }
+    //       } catch (error) {
+    //         logger.debug('parse universal plugin config error', error);
+    //       }
+    //     } else {
+    //       logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in .fef`);
+    //     }
+
+    //     if (!pluginUpdateList.length) return Promise.resolve();
+
+    //     // update
+    //     for (const pluginInfo of pluginUpdateList) {
+    //       const { name, repoUrl, latestVersion, localVersion } = pluginInfo;
+    //       table.cell('Name', name);
+    //       table.cell('Version', localVersion === latestVersion ? localVersion : localVersion + ' -> ' + latestVersion);
+    //       table.cell('Tag', 'latest');
+    //       table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
+    //       table.newRow();
+    //       updateQueens.push(installPlugin(this, name, false));
+    //     }
+    //     this.logger.info('It will update your local templates or plugins, this will take few minutes');
+    
+    //     console.log(table.toString());
+    //     return Promise.all(updateQueens).then(() => {
+    //       this.logger.info('Plugin update success');
+    //     });
+    //   }
 
     getInstalledPlugins() {
         const { root, rootPkg } = this;

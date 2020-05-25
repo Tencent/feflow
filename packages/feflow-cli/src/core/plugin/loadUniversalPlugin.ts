@@ -5,19 +5,26 @@ import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import { 
   UNIVERSAL_MODULES, 
   UNIVERSAL_PLUGIN_CONFIG,
-  FEFLOW_BIN
+  FEFLOW_BIN,
+  LATEST_VERSION,
+  FEF_ENV_PLUGIN_PATH
 } from '../../shared/constant';
 import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
+import { installPlugin } from '../native/install';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
+
+function loadPlugin(ctx: any, pluginPath: string, pluginConfigPath: string): Plugin {
+  const config = parseYaml(pluginConfigPath) || {};
+  return new Plugin(ctx, pluginPath, config);
+}
 
 function register(ctx: any, pkg: string, version: string, global = false) {
   const commander: Commander = ctx.commander;
   const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
-  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG)
-  const config = parseYaml(pluginConfigPath) || {};
-  const plugin = new Plugin(ctx, pluginPath, config);
+  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
+  let plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
   const pluginCommand = (toolRegex.exec(pkg) || [])[1];
   if (!pluginCommand) {
     ctx.logger.debug(`invalid universal plugin name: ${pluginCommand}`);
@@ -26,8 +33,21 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   if (global) {
     const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
     commander.register(pluginCommand, pluginDescriptions, () => {
+      // only the latest version is automatically updated
+      if (version === LATEST_VERSION && plugin.autoUpdate) {
+        ctx.logger.info('a new version of this plugin exists and will be updated automatically');
+        try {
+          installPlugin(ctx, pkg, true);
+          // reload plugin
+          plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
+        } catch(e) {
+          ctx.logger.error(`update failed, ${e}`);
+        }
+      }
       // make it find dependencies
       new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
+      // injection plugin path into the env
+      process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
       plugin.preRun.run();
       const args = process.argv.slice(3);
       plugin.command.run(...args);
@@ -51,8 +71,8 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
     register(ctx, pkg, version, true);
   }
 
-  const relations = universalPkg.getAllDependencies();
-  for (const [pkg, versionRelations] of relations) {
+  const dependencies = universalPkg.getAllDependencies();
+  for (const [pkg, versionRelations] of dependencies) {
     for (const [version] of versionRelations) {
       register(ctx, pkg, version, false);
     }

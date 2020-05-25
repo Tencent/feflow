@@ -18,12 +18,39 @@ export default class Linker {
         startCommand && (this.startCommand = startCommand);
     }
 
+    /**
+     * 
+     * @param binPath 
+     * @param libPath 
+     * @param command it could be checkstyle or checkstyle@v0.0.5
+     * @param name    always checkstyle, use command when it does not exist
+     */
     register(binPath: string, libPath: string, command: string, name?: string) {
         if (this.currentOs === 'win32') {
             this.linkToWin32(binPath, command, name);
         } else {
             this.linkToUnixLike(binPath, libPath, command, name);
         }
+    }
+
+    remove(binPath: string, libPath: string, name: string) {
+        if (this.currentOs === 'win32') {
+            this.removeOnWin32(binPath, name);
+        } else {
+            this.removeOnUnixLike(binPath, libPath, name);
+        }
+    }
+
+    private removeOnWin32(binPath: string, name: string) {
+        const cmdFile = this.cmdFile(binPath, name);
+        fs.unlinkSync(cmdFile);
+    }
+
+    private removeOnUnixLike(binPath: string, libPath: string, name: string) {
+        const commandLink = path.join(binPath, name);
+        fs.unlinkSync(commandLink);
+        const shellFile = this.shellFile(libPath, name);
+        fs.unlinkSync(shellFile);
     }
 
     private linkToWin32(binPath: string, command: string, name?: string) {
@@ -35,7 +62,7 @@ export default class Linker {
 
     private linkToUnixLike(binPath: string, libPath: string, command: string, name?: string) {
         this.enableDir(binPath, libPath);
-        const file = this.shellFile(libPath, command);
+        const file = this.shellFile(libPath, name || command);
         const template = this.shellTemplate(command);
         const commandLink = path.join(binPath, name || command);
         this.writeExecFile(file, template);
