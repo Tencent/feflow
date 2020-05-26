@@ -169,6 +169,9 @@ async function installPlugin(ctx: any, installPluginStr: string, global: boolean
     if (universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !global)) {
       return;
     }
+    
+    let updateFlag = false;
+
     const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
@@ -176,9 +179,15 @@ async function installPlugin(ctx: any, installPluginStr: string, global: boolean
           logger.info('the latest version of the plugin is already in use');
           return;
         } else {
-          logger.info(`update the plugin [${pkgInfo.repoName}] to version ${pkgInfo.checkoutTag}`);
+          updateFlag = true;
         }
       }
+    }
+    if (updateFlag) {
+      logger.info(`update the plugin [${pkgInfo.repoName}] to version ${pkgInfo.checkoutTag}`);
+      resolvePlugin(ctx, repoPath).preUpgrade.run();
+    } else {
+      logger.info(`install plugin ${installPluginStr}`);
     }
     logger.debug('install version:', pkgInfo.checkoutTag);
     if (!fs.existsSync(repoPath)) {
@@ -249,7 +258,12 @@ async function installPlugin(ctx: any, installPluginStr: string, global: boolean
     plugin.test.run();
     plugin.postInstall.run();
 
-    logger.info('install success');
+    if (updateFlag) {
+      plugin.postUpgrade.run();
+      logger.info('update success');
+    } else {
+      logger.info('install success');
+    }
 }
 
 function toSimpleCommand(command: string): string {
