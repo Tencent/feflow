@@ -4,6 +4,8 @@ export const FEFLOW_LIB = 'lib';
 
 export const LATEST_VERSION = 'latest';
 
+export const FEF_ENV_PLUGIN_PATH = 'FEF_PLUGIN_PATH';
+
 export const PROJECT_CONFIG = [
     '.feflowrc.js',
     '.feflowrc.yaml',

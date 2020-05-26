@@ -73,6 +73,7 @@
     "package-json": "^6.5.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "semver": "^7.3.2",
     "strip-json-comments": "^3.0.1",
     "yeoman-environment": "^2.4.0"
   },

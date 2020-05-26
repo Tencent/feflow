@@ -5,57 +5,25 @@ import path from 'path';
 import rp from 'request-promise';
 import packageJson from '../../shared/packageJson';
 import {
-    getTag,
-  checkoutVersion
-} from '../../shared/npm';
+  getTag,
+  checkoutVersion,
+  getCurrentTag
+} from '../universal-pkg/repository/git';
 import { parseYaml } from '../../shared/yaml';
 import {
-  UNIVERSAL_MODULES,
-  UNIVERSAL_PKG_JSON,
   UNIVERSAL_PLUGIN_CONFIG,
-  LATEST_VERSION
+  LATEST_VERSION,
+  FEFLOW_BIN, FEFLOW_LIB, 
 } from '../../shared/constant';
-import { Plugin } from '../schema/plugin';
-import Linker from '../linker';
+import { Plugin } from '../universal-pkg/schema/plugin';
+import Linker from '../universal-pkg/linker';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import versionImpl from '../universal-pkg/dep/version';
 
 async function download(url: string, filepath: string): Promise<any> {
   return spawn.sync('git', ['clone', url, filepath], {
     stdio: 'inherit'
   });
-}
-
-function writeDependencies(plugin: string, ltsTag: string, universalPkgJsonPath: string) {
-  if (!fs.existsSync(universalPkgJsonPath)) {
-    fs.writeFileSync(universalPkgJsonPath, JSON.stringify({
-        'name': 'universal-home',
-        'version': '0.0.0',
-        'dependencies': {}
-    }, null, 2));
-  }
-
-  const universalPkgJson = require(universalPkgJsonPath);
-  universalPkgJson.dependencies[plugin] = ltsTag;
-  fs.writeFileSync(universalPkgJsonPath, JSON.stringify(universalPkgJson, null, 4));
-}
-
-function removeDependencies(plugin: string, ltsTag: string, universalPkgJsonPath: string) {
-  if (!fs.existsSync(universalPkgJsonPath)) {
-    fs.writeFileSync(universalPkgJsonPath, JSON.stringify({
-        'name': 'universal-home',
-        'version': '0.0.0',
-        'dependencies': {}
-    }, null, 2));
-  }
-
-  const universalPkgJson = require(universalPkgJsonPath);
-  delete universalPkgJson.dependencies[plugin];
-  fs.writeFileSync(universalPkgJsonPath, JSON.stringify(universalPkgJson, null, 4));
-}
-
-function removeSyslink(binPath: string) {
-  if (fs.existsSync(binPath) && fs.statSync(binPath).isFile()) {
-      fs.unlinkSync(binPath);
-  }
 }
 
 function resolvePlugin(ctx: any, repoPath: string): Plugin {
@@ -73,29 +41,35 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
     return new Plugin(ctx, repoPath, config)
 }
 
-function getRepoInfo(serverUrl: string, packageName: string): any {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${serverUrl}apply/getlist?name=${ packageName }`,
-      method: 'GET'
-    };
+async function getRepoInfo(ctx: any, packageName: string) {
+  const serverUrl = ctx.config?.serverUrl
+  if (!serverUrl) {
+    throw 'the server url is not configured';
+  } 
+  const options = {
+    url: `${serverUrl}apply/getlist?name=${ packageName }`,
+    method: 'GET'
+  };
 
-    rp(options)
-      .then((response: any) => {
-        const data = JSON.parse(response);
-        resolve(data.data[0]);
-      })
-      .catch((err: object) => {
-        reject(err);
-      });
-  });
+  return rp(options)
+    .then((response: any) => {
+      const data = JSON.parse(response);
+      return data.data && data.data[0];
+    });
+}
+
+function getRepoName(repoUrl: string): string | undefined {
+  const ret = /^.*\/(.*).git$/.exec(repoUrl);
+  if (ret && ret.length === 2) {
+    return ret[1];
+  }
 }
 
 function deleteDir(dirPath: string) {
   let files: any = [];
   if(fs.existsSync(dirPath)) {
     files = fs.readdirSync(dirPath);
-    files.forEach((file: string, index: number) =>{
+    files.forEach((file: string) =>{
       const curPath = dirPath + '/' + file;
       if(fs.statSync(curPath).isDirectory()) {
         deleteDir(curPath);
@@ -108,150 +82,298 @@ function deleteDir(dirPath: string) {
 };
 
 module.exports = (ctx: any) => {
-    const packageManager = ctx.config && ctx.config.packageManager;
-    const serverUrl = ctx.config && ctx.config.serverUrl;
 
     ctx.commander.register('install', 'Install a devkit or plugin', async () => {
-      const registryUrl = await getRegistryUrl(packageManager);
       const dependencies = ctx.args['_'];
       const installPluginStr = dependencies[0];
       if (!installPluginStr) {
-        throw 'parameter error';
+        ctx.logger.error('parameter error') ;
+        return;
       }
-      const [installPkg, version] = installPluginStr.split('@');
-      if (version && !/^v\d+.\d+.\d+$/i.test(version)) {
-        throw `unrecognized version: ${version}`;
-      }
-      let repoInfo: any = {};
-      if (serverUrl) {
-        repoInfo = await getRepoInfo(serverUrl, installPkg);
-      } else {
-        throw 'the server url is not configured';
-      }
-      const repoUrl = repoInfo?.repo;
-      if (/(.git)/.test(repoUrl) && !(repoInfo?.tnpm)) {
-        try {
-          return installUniversalPlugin(ctx, repoInfo?.name, repoUrl, version);
-        } catch (ex) {
-          ctx.logger.error(ex);
-          return;
-        }
-      } else {
-        await Promise.all(
-          dependencies.map((dependency: string) => {
-            return packageJson(dependency, registryUrl)
-              .catch((err) => {
-                ctx.logger.error(`${ dependency } not found on ${ packageManager }`);
-                ctx.logger.error(`${ dependency } not found on ${ packageManager }`);
-                process.exit(2);
-              });
-          })
-        );
-
-        ctx.logger.info('Installing packages. This might take a couple of minutes.');
-
-        return install(
-          packageManager,
-          ctx.root,
-          packageManager === 'yarn' ? 'add' : 'install',
-          dependencies,
-          false,
-          true
-        ).then(() => {
-          ctx.logger.info('install success');
-        });
+      try {
+        await installPlugin(ctx, installPluginStr, true);
+      } catch(e) {
+        ctx.logger.error(`install error: ${e}`) ;
+        process.exit(2);
       }
     });
 
     ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', async () => {
       const dependencies = ctx.args['_'];
       ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
-
+      
       const installPluginStr = dependencies[0];
-      if (!installPluginStr) {
-        throw 'parameter error';
+      const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+      if (pkgInfo) {
+        return uninstallUniversalPlugin(ctx, pkgInfo);
       }
-      const [installPkg, version] = installPluginStr.split('@');
-      if (version && !/^v\d+.\d+.\d+$/i.test(version)) {
-        throw `unrecognized version: ${version}`;
-      }
-      let repoInfo: any = {};
-      if (serverUrl) {
-        repoInfo = await getRepoInfo(serverUrl, installPkg);
-      } else {
-        throw 'the server url is not configured';
-      }
-      const repoUrl = repoInfo?.repo;
 
-      if (/(.git)/.test(repoUrl) && !(repoInfo?.tnpm)) {
-        try {
-          return uninstallUniversalPlugin(ctx, repoInfo?.name, repoUrl);
-        } catch (ex) {
-          ctx.logger.error(ex);
-          return;
-        }
-      } else {
-        return install(
-          packageManager,
-          ctx.root,
-          packageManager === 'yarn' ? 'remove' : 'uninstall',
-          dependencies,
-          false,
-          true
-        ).then(() => {
-          ctx.logger.info('uninstall success');
-        });
-      }
+      return install(
+        ctx?.config?.packageManager,
+        ctx.root,
+        ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
+        dependencies,
+        false,
+        true
+      ).then(() => {
+        ctx.logger.info('uninstall success');
+      });
     });
 };
 
-async function installUniversalPlugin(ctx: any, repoName: string, repoUrl: string, version?: string) {
-    const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
-    const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
-    version && await getTag(repoUrl, version);
-    const installVersion = version || LATEST_VERSION;
-    const checkoutTag = version || await getTag(repoUrl);
-    ctx.logger.debug('install version:', checkoutTag);
-    const repoPath = path.join(universalModules, `${repoName}@${installVersion}`);
-    if (!fs.existsSync(repoPath)) {
-        ctx.logger.info(`Start download from ${ repoUrl }`);
-        await download(repoUrl, repoPath);
+function isGitRepo(url: string):boolean {
+  return /^git@.+:.+\/.+\.git$/.test(url) || /^http(s)?:\/\/.+\/.+\/.+\.git$/.test(url);
+}
+
+async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
+  const packageManager = ctx?.config?.packageManager;
+  const registryUrl = await getRegistryUrl(packageManager);
+  await Promise.all(
+    dependencies.map(async (dependency: string) => {
+      try {
+        return packageJson(dependency, registryUrl);
+      } catch (err) {
+        ctx.logger.error(`${dependency} not found on ${packageManager}`);
+        ctx.logger.error(`${dependency} not found on ${packageManager}`);
+        process.exit(2);
+      }
+    })
+  );
+
+  ctx.logger.info('Installing packages. This might take a couple of minutes.');
+
+  return install(
+    packageManager,
+    ctx.root,
+    packageManager === 'yarn' ? 'add' : 'install',
+    dependencies,
+    false,
+    true
+  ).then(() => {
+    ctx.logger.info('install success');
+  });
+}
+
+async function installPlugin(ctx: any, installPluginStr: string, global: boolean) {
+    const { logger, universalPkg, universalModules, bin, lib }
+    : { logger: any, universalPkg: UniversalPkg, universalModules: string, bin: string, lib: string } = ctx;
+    installPluginStr = installPluginStr.trim();
+    const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+    if (!pkgInfo) {
+      return installNpmPlugin(ctx, ctx?.args['_']);
     }
-    ctx.logger.info(`Switch to version ${ installVersion}`);
-    await checkoutVersion(repoPath, checkoutTag);
-    ctx.logger.debug('Write package to universal-package.json');
+    if (!pkgInfo.repoName) {
+      throw `plugin [${pkgInfo.repoName}] does not exist`;
+    }
+    // if the specified version is already installed, skip it
+    if (universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !global)) {
+      return;
+    }
+    
+    let updateFlag = false;
+
+    const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
+    if (pkgInfo.installVersion === LATEST_VERSION) {
+      if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
+        if (pkgInfo.checkoutTag === await getCurrentTag(repoPath)) {
+          logger.info('the latest version of the plugin is already in use');
+          return;
+        } else {
+          updateFlag = true;
+        }
+      }
+    }
+    if (updateFlag) {
+      logger.info(`update the plugin [${pkgInfo.repoName}] to version ${pkgInfo.checkoutTag}`);
+      resolvePlugin(ctx, repoPath).preUpgrade.run();
+    } else {
+      logger.info(`install plugin ${installPluginStr}`);
+    }
+    logger.debug('install version:', pkgInfo.checkoutTag);
+    if (!fs.existsSync(repoPath)) {
+        logger.info(`Start download from ${ pkgInfo.repoUrl }`);
+        await download(pkgInfo.repoUrl, repoPath);
+    }
+    const linker = new Linker();
+
+    logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
+    checkoutVersion(repoPath, pkgInfo.checkoutTag);
+
+
+    const oldVersion = universalPkg.getInstalled().get(pkgInfo.repoName);
+    let oldDependencies;
+    if (global && oldVersion) {
+      oldDependencies = universalPkg.getDependencies(pkgInfo.repoName, oldVersion);
+      if (oldDependencies) {
+        oldDependencies = new Map(oldDependencies);
+      }
+    }
 
     const plugin = resolvePlugin(ctx, repoPath);
     // check the validity of the plugin before installing it
     await plugin.check();
-    ctx.logger.debug('check plugin success');
+    logger.debug('check plugin success');
+
+    const pluginBin = path.join(repoPath, `.${FEFLOW_BIN}`);
+    const pluginLib = path.join(repoPath, `.${FEFLOW_LIB}`);
+
+    for (let depPlugin of plugin.dep.plugin) {
+      try {
+        let curPkgInfo = await getPkgInfo(ctx, depPlugin);
+        if (!curPkgInfo) {
+          throw `the dependent plugin ${depPlugin} does not belong to the universal packge`;
+        } 
+        await installPlugin(ctx, depPlugin, false);
+        const commandName = toSimpleCommand(curPkgInfo.repoName);
+        if (oldDependencies?.get(curPkgInfo.repoName) === curPkgInfo.installVersion) {
+          oldDependencies.delete(curPkgInfo.repoName);
+        }
+        universalPkg.depend(pkgInfo.repoName, pkgInfo.installVersion, curPkgInfo.repoName, curPkgInfo.installVersion);
+        linker.register(pluginBin, pluginLib, `${commandName}@${curPkgInfo.checkoutTag}`, commandName);
+      } catch(e) {
+        logger.error(`failed to install plugin dependency ${depPlugin}`);
+        throw e;
+      }
+    }
+
+    if (oldVersion && oldDependencies) {
+      for (const [oldPkg, oldPkgVersion] of oldDependencies) {
+        universalPkg.removeDepended(oldPkg, oldPkgVersion, pkgInfo.repoName, oldVersion);
+      }
+    }
 
     plugin.preInstall.run();
-    new Linker().register(ctx.bin, ctx.lib, repoName.replace('feflow-plugin-', ''));
+    linker.register(bin, lib, toSimpleCommand(pkgInfo.repoName));
+    // install when global or not exists
+    if (global || !universalPkg.isInstalled(pkgInfo.repoName)) {
+      universalPkg.install(pkgInfo.repoName, pkgInfo.installVersion);
+    } 
 
-    writeDependencies(repoName, installVersion, universalPkgJsonPath);
+
+    // the package management information is retained only when the installation is fully successful
+    if (global) {
+      removeInvalidPkg(ctx);
+    }
+
     plugin.test.run();
     plugin.postInstall.run();
 
-    ctx.logger.info('install success');
+    if (updateFlag) {
+      plugin.postUpgrade.run();
+      logger.info('update success');
+    } else {
+      logger.info('install success');
+    }
 }
 
-async function uninstallUniversalPlugin(ctx: any, repoName: string, repoUrl: string) {
-  const universalModules = path.join(ctx.root, UNIVERSAL_MODULES);
-  const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
-  const universalPkgJson = require(universalPkgJsonPath);
-  const version = universalPkgJson.dependencies[repoName];
-  const repoPath = path.join(universalModules, `${repoName}@${version}`);
-  if (fs.existsSync(repoPath)) {
-    deleteDir(repoPath);
-    removeDependencies(repoName, version, universalPkgJsonPath);
-    const binPath = path.join(ctx.bin, repoName.replace('feflow-plugin-', ''));
-    removeSyslink(binPath);
-    ctx.logger.info('uninstall success');
+function toSimpleCommand(command: string): string {
+  return command.replace('feflow-plugin-', '');
+}
+
+// when you install a universal package, return PkgInfo, otherwise return undefined
+async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {
+  let installVersion;
+  let checkoutTag;
+  let repoUrl;
+  let repoName;
+  // install from git repo
+  if (isGitRepo(installPlugin)) {
+    repoUrl = installPlugin;
+    installVersion = LATEST_VERSION;
+    checkoutTag = await getTag(repoUrl);
+    repoName = getRepoName(repoUrl);
   } else {
-    ctx.logger.info('You have not installed this package');
+    let [pluginName, pluginVersion] = installPlugin.split('@');
+    const repoInfo = await getRepoInfo(ctx, pluginName);
+    repoUrl = repoInfo?.repo;
+    repoName = repoInfo?.name;
+    if (isGitRepo(repoUrl) && !(repoInfo?.tnpm)) {
+      if (pluginVersion) {
+        pluginVersion = versionImpl.toFull(pluginVersion);
+        if (!versionImpl.check(pluginVersion)) {
+          throw `invalid version: ${pluginVersion}`;
+        }
+      } 
+      installVersion = pluginVersion || LATEST_VERSION;
+      checkoutTag = await getTag(repoUrl, installVersion === LATEST_VERSION ? undefined : installVersion);
+    } else {
+      return;
+    }
+  }
+  if (!repoName) {
+    throw `plugin [${repoName}] does not exist`;
+  }        
+  if (!checkoutTag) {
+    throw `the version [${installVersion}] was not found`;
+  }
+  return new PkgInfo(repoName, repoUrl, installVersion, checkoutTag);
+}
+
+class PkgInfo {
+
+  repoName: string;
+  repoUrl: string;
+  installVersion: string;
+  checkoutTag: string;
+
+  constructor(repoName: string, repoUrl: string, installVersion: string, checkoutTag: string) {
+    this.repoName = repoName;
+    this.repoUrl = repoUrl;
+    this.installVersion = installVersion;
+    this.checkoutTag = checkoutTag;
+  }
+
+}
+
+async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
+  const { logger, universalPkg }
+    : { logger: any, universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
+  const version = universalPkg.getInstalled().get(pkgInfo.repoName);
+  if (!version) {
+    logger.error('this plugin is not currently installed');
+    return;
+  }
+  if (pkgInfo.installVersion != LATEST_VERSION && pkgInfo.installVersion != version) {
+    logger.error(`this version of the plugin is not currently installed, the version you want to uninstall is ${pkgInfo.installVersion}, The installed version is ${version}`);
+    return;
+  }
+  try {
+    universalPkg.uninstall(pkgInfo.repoName, version);
+  } catch(e) {
+    logger.error(`uninstall failure, ${e}`);
+    return;
+  }
+  try {
+    removeInvalidPkg(ctx);
+    logger.info('uninstall success');
+  } catch(e) {
+    logger.info(`uninstall succeeded, but failed to clean the data, ${e}`);
   }
 }
 
-module.exports.installUniversalPlugin = installUniversalPlugin;
+function removePkg(ctx: any, pkg: string, version: string) {
+  const { bin, lib, universalPkg }
+    : { universalPkg: UniversalPkg, bin: string, lib: string } = ctx;
+  const pluginPath = path.join(ctx.universalModules, `${pkg}@${version}`);
+  if (fs.existsSync(pluginPath)) {
+    deleteDir(pluginPath);
+    if (!universalPkg.isInstalled(pkg)) {
+      try {
+        new Linker().remove(bin, lib, toSimpleCommand(pkg));
+      } catch(e) {
+        ctx.logger.debug(`remove link failure, ${e}`);
+      }
+    }
+  }
+}
+
+function removeInvalidPkg(ctx: any) {
+  const { universalPkg } : { universalPkg: UniversalPkg } = ctx;
+  const invalidDep = universalPkg.removeInvalidDependencies();
+  for (const [invalidPkg, invalidVersion] of invalidDep) {
+    removePkg(ctx, invalidPkg, invalidVersion);
+  }
+}
+
+module.exports.installPlugin = installPlugin;
 module.exports.getRepoInfo = getRepoInfo;
