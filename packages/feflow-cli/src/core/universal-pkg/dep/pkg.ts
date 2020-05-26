@@ -55,10 +55,17 @@ export class UniversalPkg {
         return this.installed;
     }
 
-    isInstalled(pkg: string, version?: string): boolean {
-        const v = this.installed.get(pkg);
-        if (v) {
-            return version ? v === version : true;
+    isInstalled(pkg: string, version?: string, includeDep?: boolean): boolean {
+        if (!version && !includeDep) {
+            return this.installed.has(pkg);
+        }
+        if (version && includeDep) {
+            return this.getPkgRelation(pkg, version) !== undefined;
+        } else {
+            const v = this.installed.get(pkg);
+            if (v && version === v) {
+                return true;
+            }
         }
         return false;
     }
@@ -93,6 +100,44 @@ export class UniversalPkg {
         this.dependedOn(dependPkg, dependPkgVersion, pkg, version);
     }
 
+    removeInvalidDependencies(): [string, string][] {
+        const invalidDep: [string, string][] = [];
+        for (const [pkg, versionRelation] of this.dependencies) {
+            for (const [version] of versionRelation) {
+                if (!this.isValid(pkg, version)) {
+                    invalidDep.push([pkg, version]);
+                }
+            }
+        }
+        for (const [pkg, version] of invalidDep) {
+            const versionRelation = this.dependencies.get(pkg);
+            if (versionRelation) {
+                versionRelation.delete(version);
+                if (versionRelation.size === 0) {
+                    this.dependencies.delete(pkg);
+                }
+            }
+        }
+        this.saveChange();
+        return invalidDep;
+    }
+
+    private isValid(pkg: string, version: string): boolean {
+        if (this.isInstalled(pkg, version)) {
+            return true;
+        }
+        const depended = this.getDepended(pkg, version);
+        if (!depended || depended.size === 0) {
+            return false;
+        }
+        for (const [dependedPkg, dependedVersion] of depended) {
+            if (this.isValid(dependedPkg, dependedVersion)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     removeDepend(pkg: string, version: string, dependPkg: string, dependPkgVersion: string) {
         const dependencies = this.getDependencies(pkg, version);
         if (dependencies) {
@@ -125,32 +170,24 @@ export class UniversalPkg {
             if (isDep) {
                 return;
             }
-            throw `refusing to uninstall ${pkg}@${version} because it is required by
-            ${depended?.keys[0]}@${depended?.values[0]} ...`;
+            for (const [dependedPkg, dependedVersion] of depended) {
+                throw `refusing to uninstall ${pkg}@${version} because it is required by ${dependedPkg}@${dependedVersion} ...`;
+            }
         }
         const dependencies = this.getDependencies(pkg, version);
         if (dependencies) {
             for (const [requiredPkg, requiredVersion] of dependencies) {
-                this.uninstall(requiredPkg, requiredVersion, true);
                 this.removeDepended(requiredPkg, requiredVersion, pkg, version);
             }
         }
-        if (!isDep && this.installed.get(pkg) === version) {
-            this.installed.delete(pkg);
+        if (isDep && this.isInstalled(pkg, version)) {
+            return;
         }
-        const versionRelation = this.dependencies.get(pkg);
-        if (versionRelation) {
-            const r = versionRelation.get(version);
-            if (r) {
-                versionRelation.delete(version);
-            }
-        }
-        if (!isDep) {
-            this.saveChange();
-        }
+        this.installed.delete(pkg);
+        this.saveChange();
     }
 
-    private removeDepended(pkg: string, version: string, dependedPkg: string, dependedVersion: string) {
+    removeDepended(pkg: string, version: string, dependedPkg: string, dependedVersion: string) {
         const dependedOn = this.getDepended(pkg, version);
         if (!dependedOn) {
             return;

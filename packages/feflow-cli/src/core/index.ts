@@ -12,7 +12,7 @@ import loadPlugins from './plugin/loadPlugins';
 import loadUniversalPlugin from './plugin/loadUniversalPlugin';
 import loadDevkits from './devkit/loadDevkits';
 import getCommandLine from './devkit/commandOptions';
-import { FEFLOW_ROOT, FEFLOW_BIN, FEFLOW_LIB, UNIVERSAL_PKG_JSON } from '../shared/constant';
+import { FEFLOW_ROOT, FEFLOW_BIN, FEFLOW_LIB, UNIVERSAL_PKG_JSON, UNIVERSAL_MODULES } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
 import { getRegistryUrl, install } from '../shared/npm';
@@ -34,6 +34,7 @@ export default class Feflow {
     public root: any;
     public rootPkg: any;
     public universalPkgPath: string;
+    public universalModules: string;
     public config: any;
     public configPath: any;
     public bin: string;
@@ -51,6 +52,7 @@ export default class Feflow {
         this.lib = lib;
         this.rootPkg = path.join(root, 'package.json');
         this.universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
+        this.universalModules = path.join(root, UNIVERSAL_MODULES);
         this.args = args;
         this.version = pkg.version;
         this.config = parseYaml(configPath);

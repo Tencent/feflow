@@ -43,25 +43,13 @@ export async function getCurrentTag(repoPath: string): Promise<string | undefine
 }
 
 export function checkoutVersion(repoPath: string, version: string) {
-  return new Promise((resolve, reject) => {
-    const command = 'git';
-    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
-    const checkArgs = [
-        '-C',
-        repoPath,
-        'checkout',
-        version
-    ];
-    const child = spawn(command, checkArgs, { stdio: 'ignore'});
-    child.on('close', code => {
-      if (code !== 0) {
-        reject({
-          command: `${command} ${checkArgs.join(' ')}`,
-          code
-        });
-        return;
-      }
-      resolve();
-    });
-  });
+  const command = 'git';
+  spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
+  const checkArgs = [
+      '-C',
+      repoPath,
+      'checkout',
+      version
+  ];
+  return spawn.sync(command, checkArgs, { stdio: 'ignore'});
 }
