@@ -1,4 +1,8 @@
-const getCommandLine = (optionsDescription: any, description: any, cmd: any): Object[] => {
+const getCommandLine = (
+  optionsDescription: any,
+  description: any,
+  cmd: any
+): Object[] => {
   if (Array.isArray(optionsDescription)) return optionsDescription;
 
   const options: Object[] = [];
@@ -6,7 +10,7 @@ const getCommandLine = (optionsDescription: any, description: any, cmd: any): Ob
   const optionDescritions = Object.keys(optionsDescription);
   if (!optionDescritions.length) return options;
 
-  optionDescritions.forEach(option => {
+  optionDescritions.forEach((option) => {
     let optionItemConfig = optionsDescription[option];
     const optionDescritionItem = getOptionItem(optionItemConfig, option);
     options.push(optionDescritionItem);
@@ -15,16 +19,16 @@ const getCommandLine = (optionsDescription: any, description: any, cmd: any): Ob
   return [
     {
       header: `fef ${cmd}`,
-      content: description,
+      content: description
     },
     {
       header: 'Usage',
-      content: `$ fef ${cmd} [options]`,
+      content: `$ fef ${cmd} [options]`
     },
     {
       header: 'Options',
-      optionList: options,
-    },
+      optionList: options
+    }
   ];
 };
 
@@ -33,7 +37,7 @@ const getOptionItem = (optionItemConfig: any, option: any): object => {
   if (typeof optionItemConfig == 'string') {
     optionDescritionItem = {
       name: option,
-      description: optionItemConfig,
+      description: optionItemConfig
     };
   } else {
     if (!optionItemConfig.name) {
@@ -41,7 +45,10 @@ const getOptionItem = (optionItemConfig: any, option: any): object => {
     }
 
     optionDescritionItem = optionItemConfig;
-    optionDescritionItem.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
+    optionDescritionItem.type =
+      typeof optionItemConfig.type === 'function'
+        ? optionItemConfig.type
+        : String;
   }
   return optionDescritionItem;
 };

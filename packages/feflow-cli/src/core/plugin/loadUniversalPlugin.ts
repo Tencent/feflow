@@ -2,8 +2,8 @@ import path from 'path';
 import { parseYaml } from '../../shared/yaml';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
-import { 
-  UNIVERSAL_MODULES, 
+import {
+  UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
   FEFLOW_BIN,
   LATEST_VERSION,
@@ -15,14 +15,22 @@ const { installPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
-function loadPlugin(ctx: any, pluginPath: string, pluginConfigPath: string): Plugin {
+function loadPlugin(
+  ctx: any,
+  pluginPath: string,
+  pluginConfigPath: string
+): Plugin {
   const config = parseYaml(pluginConfigPath) || {};
   return new Plugin(ctx, pluginPath, config);
 }
 
 function register(ctx: any, pkg: string, version: string, global = false) {
   const commander: Commander = ctx.commander;
-  const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
+  const pluginPath = path.join(
+    ctx.root,
+    UNIVERSAL_MODULES,
+    `${pkg}@${version}`
+  );
   const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
   let plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
   const pluginCommand = (toolRegex.exec(pkg) || [])[1];
@@ -31,7 +39,8 @@ function register(ctx: any, pkg: string, version: string, global = false) {
     return;
   }
   if (global) {
-    const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
+    const pluginDescriptions =
+      plugin.desc || `${pkg} universal plugin description`;
     commander.register(pluginCommand, pluginDescriptions, () => {
       execPlugin(ctx, pkg, version, plugin);
     });
@@ -42,8 +51,17 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   }
 }
 
-async function execPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
-  const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
+async function execPlugin(
+  ctx: any,
+  pkg: string,
+  version: string,
+  plugin: Plugin
+) {
+  const pluginPath = path.join(
+    ctx.root,
+    UNIVERSAL_MODULES,
+    `${pkg}@${version}`
+  );
   const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
   // only the latest version is automatically updated
   if (version === LATEST_VERSION && plugin.autoUpdate) {
@@ -51,7 +69,7 @@ async function execPlugin(ctx: any, pkg: string, version: string, plugin: Plugin
       await installPlugin(ctx, pkg, true);
       // reload plugin
       plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
-    } catch(e) {
+    } catch (e) {
       ctx.logger.error(`update failed, ${e}`);
     }
   }
@@ -79,5 +97,4 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
       register(ctx, pkg, version, false);
     }
   }
-
 }

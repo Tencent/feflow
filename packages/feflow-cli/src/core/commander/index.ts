@@ -1,7 +1,6 @@
 import abbrev from 'abbrev';
 
 export default class Commander {
-
   private store: any;
   private invisibleStore: any;
   private alias: any;
@@ -40,5 +39,4 @@ export default class Commander {
     this.invisibleStore[name.toLowerCase()] = fn;
     this.invisibleStore[name.toLowerCase()].options = options;
   }
-
-};
+}

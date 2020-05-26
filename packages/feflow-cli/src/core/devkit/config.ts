@@ -3,13 +3,9 @@ import path from 'path';
 import importFresh from 'import-fresh';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
-import {
-  PROJECT_CONFIG,
-  DEVKIT_CONFIG
-} from '../../shared/constant';
+import { PROJECT_CONFIG, DEVKIT_CONFIG } from '../../shared/constant';
 
 export default class Config {
-
   public ctx: any;
   constructor(ctx: any) {
     this.ctx = ctx;
@@ -25,13 +21,13 @@ export default class Config {
         }
       }
       return false;
-    }
+    };
 
     while (!isConfigExits()) {
-        currDir = path.join(currDir, '../');
-        if (currDir === '/' || /^[a-zA-Z]:\\$/.test(currDir)) {
-            return '';
-        }
+      currDir = path.join(currDir, '../');
+      if (currDir === '/' || /^[a-zA-Z]:\\$/.test(currDir)) {
+        return '';
+      }
     }
 
     return currDir;
@@ -55,7 +51,7 @@ export default class Config {
         try {
           configData = this.loadConfigFile(filePath);
         } catch (error) {
-          if (!error || error.code !== "FEFLOW_CONFIG_FIELD_NOT_FOUND") {
+          if (!error || error.code !== 'FEFLOW_CONFIG_FIELD_NOT_FOUND') {
             throw error;
           }
         }
@@ -75,17 +71,17 @@ export default class Config {
 
   loadConfigFile(filePath: string) {
     switch (path.extname(filePath)) {
-      case ".js":
+      case '.js':
         return this.loadJSConfigFile(filePath);
 
-      case ".json":
-        if (path.basename(filePath) === "package.json") {
+      case '.json':
+        if (path.basename(filePath) === 'package.json') {
           return this.loadPackageJSONConfigFile(filePath);
         }
         return this.loadJSONConfigFile(filePath);
 
-      case ".yaml":
-      case ".yml":
+      case '.yaml':
+      case '.yml':
         return this.loadYAMLConfigFile(filePath);
 
       default:
@@ -120,10 +116,10 @@ export default class Config {
     try {
       const packageData = this.loadJSONConfigFile(filePath);
 
-      if (!Object.hasOwnProperty.call(packageData, "feflowConfig")) {
+      if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
         throw Object.assign(
           new Error("package.json file doesn't have 'feflowConfig' field."),
-          { code: "FEFLOW_CONFIG_FIELD_NOT_FOUND" }
+          { code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND' }
         );
       }
 
@@ -143,7 +139,7 @@ export default class Config {
     } catch (e) {
       this.ctx.logger.debug(`Error reading JSON file: ${filePath}`);
       e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
-      e.messageTemplate = "failed-to-read-json";
+      e.messageTemplate = 'failed-to-read-json';
       e.messageData = {
         path: filePath,
         message: e.message
@@ -157,13 +153,13 @@ export default class Config {
     try {
       return yaml.safeLoad(stripComments(this.readFile(filePath))) || {};
     } catch (e) {
-      this.ctx.logger.debug("Error reading YAML file: %s\n%o", filePath, e);
+      this.ctx.logger.debug('Error reading YAML file: %s\n%o', filePath, e);
       e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
       throw e;
     }
   }
 
   readFile(filePath: string) {
-    return fs.readFileSync(filePath, "utf8").replace(/^\ufeff/u, "");
+    return fs.readFileSync(filePath, 'utf8').replace(/^\ufeff/u, '');
   }
 }
