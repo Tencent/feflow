@@ -40,7 +40,7 @@ function loadUniversalPlugin(ctx: any): any[] {
   for (const [pkg] of universalPkg.getInstalled()) {
     const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
     if (pluginsInCommand[pluginCommand]) {
-      availablePluigns.push(pluginCommand);
+      availablePluigns.push(pkg);
     }
   }
 

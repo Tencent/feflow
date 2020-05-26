@@ -33,34 +33,37 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   if (global) {
     const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
     commander.register(pluginCommand, pluginDescriptions, () => {
-      // only the latest version is automatically updated
-      if (version === LATEST_VERSION && plugin.autoUpdate) {
-        ctx.logger.info('a new version of this plugin exists and will be updated automatically');
-        try {
-          installPlugin(ctx, pkg, true);
-          // reload plugin
-          plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
-        } catch(e) {
-          ctx.logger.error(`update failed, ${e}`);
-        }
-      }
-      // make it find dependencies
-      new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
-      // injection plugin path into the env
-      process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
-      plugin.preRun.run();
-      const args = process.argv.slice(3);
-      plugin.command.run(...args);
-      plugin.postRun.run();
+      execPlugin(ctx, pkg, version, plugin);
     });
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, () => {
-      plugin.preRun.run();
-      const args = process.argv.slice(3);
-      plugin.command.run(...args);
-      plugin.postRun.run();
+      execPlugin(ctx, pkg, version, plugin);
     });
   }
+}
+
+function execPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+  const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
+  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
+  // only the latest version is automatically updated
+  if (version === LATEST_VERSION && plugin.autoUpdate) {
+    ctx.logger.info('a new version of this plugin exists and will be updated automatically');
+    try {
+      installPlugin(ctx, pkg, true);
+      // reload plugin
+      plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
+    } catch(e) {
+      ctx.logger.error(`update failed, ${e}`);
+    }
+  }
+  // make it find dependencies
+  new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
+  // injection plugin path into the env
+  process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
+  plugin.preRun.run();
+  const args = process.argv.slice(3);
+  plugin.command.run(...args);
+  plugin.postRun.run();
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {

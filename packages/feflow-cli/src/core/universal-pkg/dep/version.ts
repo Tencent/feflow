@@ -27,6 +27,16 @@ class SemverVersion implements Version {
         }
         return version;
     }
+
+    toFull(version: string): string {
+        if (!this.check(version)) {
+            const fullVersion = `v${version}`;
+            if (this.check(fullVersion)) {
+                return fullVersion;
+            } 
+        }
+        return version;
+    }
     
     satisfies(version: string, range: string): boolean {
         return semver.satisfies(this.valid(version), this.valid(range));
