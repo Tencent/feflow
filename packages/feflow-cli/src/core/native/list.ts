@@ -2,7 +2,7 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk'
-import { UNIVERSAL_PKG_JSON } from "../../shared/constant"
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
 
 function loadModuleList(ctx: any) {
     const packagePath = ctx.rootPkg;
@@ -32,25 +32,16 @@ function loadModuleList(ctx: any) {
 const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
 
 function loadUniversalPlugin(ctx: any): any[] {
-  const universalPkgJsonPath = path.join(ctx.root, UNIVERSAL_PKG_JSON);
+  const { universalPkg }
+  : { universalPkg: UniversalPkg } = ctx;
   let availablePluigns: any[] = [];
 
-  if (fs.existsSync(universalPkgJsonPath)) {
-    try {
-      const content = fs.readFileSync(universalPkgJsonPath, 'utf8');
-      const json = JSON.parse(content);
-      const pluginsInConfig = Object.keys(json.dependencies || {});
-      const pluginsInCommand = ctx.commander.store;
-      // make sure universal plugin is available which listed
-      availablePluigns = pluginsInConfig.filter(plugin => {
-        const pluginCommand = (universalPluginRegex.exec(plugin) || [])[1];
-        return pluginsInCommand[pluginCommand];
-      });
-    } catch (error) {
-      ctx.logger.error('universal plugin config parse error. ', error);
+  const pluginsInCommand = ctx.commander.store;
+  for (const [pkg] of universalPkg.getInstalled()) {
+    const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
+    if (pluginsInCommand[pluginCommand]) {
+      availablePluigns.push(pkg);
     }
-  } else {
-    ctx.logger.debug(`there is no ${UNIVERSAL_PKG_JSON} in ~/.fef`);
   }
 
   return availablePluigns;
