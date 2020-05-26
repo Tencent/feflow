@@ -11,7 +11,7 @@ import {
 } from '../../shared/constant';
 import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
-import { installPlugin } from '../native/install';
+const { installPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
@@ -42,14 +42,13 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   }
 }
 
-function execPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+async function execPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
   const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
   const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
   // only the latest version is automatically updated
   if (version === LATEST_VERSION && plugin.autoUpdate) {
-    ctx.logger.info('a new version of this plugin exists and will be updated automatically');
     try {
-      installPlugin(ctx, pkg, true);
+      await installPlugin(ctx, pkg, true);
       // reload plugin
       plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
     } catch(e) {
