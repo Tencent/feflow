@@ -4,59 +4,58 @@ import { promisify } from 'util';
 import semver from 'semver';
 
 export function getRegistryUrl(packageManager: string) {
-    return new Promise<any>((resolve, reject) => {
-        const command = packageManager;
-        const args = [
-            'config',
-            'get',
-            'registry'
-        ];
+  return new Promise<any>((resolve, reject) => {
+    const command = packageManager;
+    const args = ['config', 'get', 'registry'];
 
-        const child = spawn(command, args);
+    const child = spawn(command, args);
 
-        let output = '';
+    let output = '';
 
-        child.stdout!.on('data', (data) => {
-            output += data;
-        });
-
-        child.stderr!.on('data', (data) => {
-            output += data;
-        });
-
-        child.on('close', code => {
-            if (code !== 0) {
-                reject({
-                    command: `${command} ${args.join(' ')}`,
-                });
-                return;
-            }
-            output = output.replace(/\n/, '').replace(/\/$/, '');
-            resolve(output);
-        });
+    child.stdout!.on('data', (data) => {
+      output += data;
     });
+
+    child.stderr!.on('data', (data) => {
+      output += data;
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject({
+          command: `${command} ${args.join(' ')}`
+        });
+        return;
+      }
+      output = output.replace(/\n/, '').replace(/\/$/, '');
+      resolve(output);
+    });
+  });
 }
 
-export function install(packageManager: string, root: any, cmd: any, dependencies: any, verbose: boolean, isOnline: boolean) {
+export function install(
+  packageManager: string,
+  root: any,
+  cmd: any,
+  dependencies: any,
+  verbose: boolean,
+  isOnline: boolean
+) {
   return new Promise((resolve, reject) => {
     const command = packageManager;
-    const args = [
-        cmd,
-        '--save',
-        '--save-exact',
-        '--loglevel',
-        'error',
-    ].concat(dependencies);
+    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(
+      dependencies
+    );
 
     if (verbose) {
       args.push('--verbose');
     }
 
     const child = spawn(command, args, { stdio: 'inherit', cwd: root });
-    child.on('close', code => {
+    child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${args.join(' ')}`
         });
         return;
       }
@@ -67,7 +66,12 @@ export function install(packageManager: string, root: any, cmd: any, dependencie
 
 async function listRepoTag(repoUrl: string): Promise<string[]> {
   const execFile = promisify(childProcess.execFile);
-  const { stdout } = await execFile('git', ['ls-remote', '--tags', '--refs', repoUrl]);
+  const { stdout } = await execFile('git', [
+    'ls-remote',
+    '--tags',
+    '--refs',
+    repoUrl
+  ]);
   const tagStr = stdout?.trim();
   let tagList: string[] = [];
 
@@ -86,7 +90,6 @@ async function listRepoTag(repoUrl: string): Promise<string[]> {
   }
   return tagList;
 }
-
 
 export async function getTag(repoUrl: string, version?: string) {
   const tagList = await listRepoTag(repoUrl);
@@ -120,15 +123,10 @@ export async function getLatestTag(repoUrl: string) {
 export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
-    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore'});
-    const checkArgs = [
-        '-C',
-        repoPath,
-        'checkout',
-        version
-    ];
-    const child = spawn(command, checkArgs, { stdio: 'ignore'});
-    child.on('close', code => {
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore' });
+    const checkArgs = ['-C', repoPath, 'checkout', version];
+    const child = spawn(command, checkArgs, { stdio: 'ignore' });
+    child.on('close', (code) => {
       if (code !== 0) {
         reject({
           command: `${command} ${checkArgs.join(' ')}`,

@@ -7,21 +7,21 @@ export const LATEST_VERSION = 'latest';
 export const FEF_ENV_PLUGIN_PATH = 'FEF_PLUGIN_PATH';
 
 export const PROJECT_CONFIG = [
-    '.feflowrc.js',
-    '.feflowrc.yaml',
-    '.feflowrc.yml',
-    '.feflowrc.json',
-    '.feflowrc',
-    'package.json'
+  '.feflowrc.js',
+  '.feflowrc.yaml',
+  '.feflowrc.yml',
+  '.feflowrc.json',
+  '.feflowrc',
+  'package.json'
 ];
 
 export const DEVKIT_CONFIG = [
-    'devkit.js',
-    'devkit.yaml',
-    'devkit.yml',
-    'devkit.json',
-    'devkitrc',
-    'package.json'
+  'devkit.js',
+  'devkit.yaml',
+  'devkit.yml',
+  'devkit.json',
+  'devkitrc',
+  'package.json'
 ];
 
 /**
@@ -43,7 +43,6 @@ export const EVENT_COMMAND_BEGIN = 'command begin';
  * Emitted when totally finished
  */
 export const EVENT_DONE = 'done';
-
 
 export const UNIVERSAL_MODULES = 'universal_modules';
 
