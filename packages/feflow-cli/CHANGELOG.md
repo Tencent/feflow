@@ -1,3 +1,19 @@
+# [0.20.0-alpha.5](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.4...v0.20.0-alpha.5) (2020-05-27)
+
+
+### Bug Fixes
+
+* command run error ([9617c5d](https://github.com/Tencent/feflow/commit/9617c5ddc5590d7bcfdf8fc0e8eb68f4eed098b1))
+* when there are no dependent plugins, no dependencies can be established ([a971a42](https://github.com/Tencent/feflow/commit/a971a42df3757c1ce3210c247d8fab66c7ac40e5))
+
+
+### Features
+
+* optimize the logger ([b988ad2](https://github.com/Tencent/feflow/commit/b988ad2af7ded2f84aa331816baa45749f0b1204))
+* support ssh check before clone repo ([8f97fa8](https://github.com/Tencent/feflow/commit/8f97fa87e035391ba505f17b67abf956b746f90d))
+
+
+
 # [0.20.0-alpha.4](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.1...v0.20.0-alpha.4) (2020-05-27)
 
 
