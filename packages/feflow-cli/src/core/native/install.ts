@@ -176,7 +176,7 @@ async function installPlugin(ctx: any, installPluginStr: string, global: boolean
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
         if (pkgInfo.checkoutTag === await getCurrentTag(repoPath)) {
-          logger.info('the latest version of the plugin is already in use');
+          logger.info(`[${pkgInfo.repoName}] the latest version of the plugin is already in use`);
           return;
         } else {
           updateFlag = true;
@@ -184,10 +184,10 @@ async function installPlugin(ctx: any, installPluginStr: string, global: boolean
       }
     }
     if (updateFlag) {
-      logger.info(`update the plugin [${pkgInfo.repoName}] to version ${pkgInfo.checkoutTag}`);
+      logger.info(`[${pkgInfo.repoName}] update the plugin to version ${pkgInfo.checkoutTag}`);
       resolvePlugin(ctx, repoPath).preUpgrade.run();
     } else {
-      logger.info(`install plugin ${installPluginStr}`);
+      logger.info(`[${pkgInfo.repoName}] installing plugin`);
     }
     logger.debug('install version:', pkgInfo.checkoutTag);
     if (!fs.existsSync(repoPath)) {
