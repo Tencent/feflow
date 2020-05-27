@@ -9,6 +9,9 @@ interface ReportContext {
   pkgConfig: {
     name: string;
   };
+  commander: {
+    store: {};
+  };
   hook: {
     on(eventName: string, listener: any): void;
   };
@@ -29,8 +32,9 @@ class Report {
   cmd: string;
   args: object;
   isRecallActivating: boolean;
+  cmdSource: string;
 
-  constructor(feflowContext: any, cmd?: string, args?: any) {
+  constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
     this.cmd = cmd;
     this.args = args;
@@ -47,7 +51,8 @@ class Report {
   // register before/after hook event
   private registerHook() {
     const { cmd, args } = this;
-    this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
+    this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {      
+      this.cmdSource = this.ctx.commander?.store[cmd].pluginName || "";
       this.ctx.log.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);
@@ -91,6 +96,7 @@ class Report {
     return objectFactory
       .create()
       .load('command', cmd)
+      .load('cmd_source', this.cmdSource)
       .load('user_name', this.userName)
       .load('params', args)
       .load('system_info', this.systemInfo)

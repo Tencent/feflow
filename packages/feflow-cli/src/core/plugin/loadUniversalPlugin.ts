@@ -67,7 +67,7 @@ export default function loadUniversalPlugin(ctx: any): Promise<any> {
             const args = process.argv.slice(3);
             plugin.command.run(...args);
             plugin.postRun.run();
-          });
+          }, [], pluginName);
         }
       }
 
