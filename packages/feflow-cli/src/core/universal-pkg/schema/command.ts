@@ -12,7 +12,10 @@ type globalVal = {
 };
 
 export class Command {
+
   private val: globalVal = {} as globalVal;
+
+  private ctx: any;
 
   private default: string[];
 
@@ -22,12 +25,13 @@ export class Command {
 
   private windows: string[];
 
-  constructor(_: any, pluginPath: string, command: any) {
+  constructor(ctx: any, pluginPath: string, command: any) {
     this.val.pd = pluginPath;
     this.default = toArray(command?.default, 'default');
     this.macos = toArray(command?.macos, 'macos', this.default);
     this.linux = toArray(command?.linux, 'linux', this.default);
     this.windows = toArray(command?.windows, 'windows', this.default);
+    this.ctx = ctx;
   }
 
   getCommands(): string[] {
@@ -54,7 +58,8 @@ export class Command {
           stdio: 'inherit'
         });
       } catch(e) {
-        console.log(`[command interrupt] ${e}`);
+        this.ctx.logger.debug(e);
+        this.ctx.logger.error(`[command interrupt] ${e}`);
         return;
       }
     }
