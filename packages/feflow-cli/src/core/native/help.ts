@@ -2,18 +2,17 @@ import commandLineUsage from 'command-line-usage';
 
 const getCommands = (store: any) => {
   const arr = [];
-  for (const name in store ) {
+  for (const name in store) {
     const desc = store[name].desc;
     arr.push({
       colA: name,
       colB: desc
-    })
+    });
   }
   return arr;
 };
 
 const showHelp = (commands: Array<Object>) => {
-
   const sections = [
     {
       header: 'Usage',
@@ -21,7 +20,7 @@ const showHelp = (commands: Array<Object>) => {
     },
     {
       header: 'Commands',
-        content: {
+      content: {
         data: commands,
         options: {
           maxWidth: 60
@@ -53,12 +52,12 @@ const showHelp = (commands: Array<Object>) => {
   const usage = commandLineUsage(sections);
 
   return usage;
-}
+};
 
 module.exports = (ctx: any) => {
-    ctx.commander.register('help', 'Help messages', () => {
-      const commands = getCommands(ctx.commander.store);
-      const usage = showHelp(commands);
-      console.log(usage);
-    });
+  ctx.commander.register('help', 'Help messages', () => {
+    const commands = getCommands(ctx.commander.store);
+    const usage = showHelp(commands);
+    console.log(usage);
+  });
 };
