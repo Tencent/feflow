@@ -53,9 +53,9 @@ export default function entry() {
 
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
-  const report = new Report(feflow);
-
   let cmd: any = args._.shift();
+
+  const report = new Report(feflow, cmd, args);
 
   if (!cmd && (args.v || args.version)) {
     report.report('version', args);
@@ -80,8 +80,6 @@ export default function entry() {
     } else if (isInvalidCmd) {
       cmd = 'help';
     }
-
-    report.report(cmd, args);
 
     feflow.hook.emit(HOOK_TYPE_BEFORE);
 
