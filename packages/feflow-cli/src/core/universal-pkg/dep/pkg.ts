@@ -71,6 +71,20 @@ export class UniversalPkg {
     return false;
   }
 
+  install(pkg: string, version: string) {
+    this.installed.set(pkg, version);
+    let versionMap = this.dependencies.get(pkg);
+    if (!versionMap) {
+        versionMap = new Map<string, PkgRelation>();
+    }
+    let r = versionMap.get(version);
+    if (!r) {
+        r = new PkgRelation(null);
+    }
+    versionMap.set(version, r);
+    this.dependencies.set(pkg, versionMap);
+  }
+
   isDepdenedOnOther(pkg: string, version: string): boolean {
     const vRelation = this.dependencies.get(pkg);
     if (vRelation) {
@@ -80,10 +94,6 @@ export class UniversalPkg {
       }
     }
     return false;
-  }
-
-  install(pkg: string, version: string) {
-    this.installed.set(pkg, version);
   }
 
   depend(
