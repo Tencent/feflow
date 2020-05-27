@@ -16,13 +16,20 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB
 } from '../../shared/constant';
+import {
+  transformUrl
+} from '../../shared/git';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 
+
 async function download(url: string, filepath: string): Promise<any> {
-  return spawn.sync('git', ['clone', url, filepath], {
+  const cloneUrl = await transformUrl(url);
+
+  console.log('cloneUrl', cloneUrl);
+  return spawn.sync('git', ['clone', cloneUrl, filepath], {
     stdio: 'inherit'
   });
 }

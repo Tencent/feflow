@@ -2,17 +2,21 @@ import spawn from 'cross-spawn';
 import childProcess from 'child_process';
 import { promisify } from 'util';
 import versionImpl from '../dep/version';
+import {
+  transformUrl
+} from '../../../shared/git';
 
 export async function getTag(
   repoUrl: string,
   version?: string
 ): Promise<string | undefined> {
   const execFile = promisify(childProcess.execFile);
+  const url = await transformUrl(repoUrl);
   const { stdout } = await execFile('git', [
     'ls-remote',
     '--tags',
     '--refs',
-    repoUrl
+    url
   ]);
 
   const tagListStr = stdout?.trim();
