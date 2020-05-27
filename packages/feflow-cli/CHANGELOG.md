@@ -1,14 +1,25 @@
-# [0.20.0-alpha.3](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.1...v0.20.0-alpha.3) (2020-05-19)
+# [0.20.0-alpha.4](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.1...v0.20.0-alpha.4) (2020-05-27)
 
 
 ### Bug Fixes
 
+* dep install ([8d818bb](https://github.com/Tencent/feflow/commit/8d818bb74a9d4b9b1e24cba8e06e8703a34abbc4))
 * get tag miss ([c0a8eb2](https://github.com/Tencent/feflow/commit/c0a8eb29a569c3f50de3bc616830ad700a25a86c))
 
 
 ### Features
 
+* dep install/uninstall/list ([6201b88](https://github.com/Tencent/feflow/commit/6201b88965defbe9d9288ecfb166ca38dcbce699))
+* dep run ([7262d79](https://github.com/Tencent/feflow/commit/7262d7916a34f499aec7c05474744a5318abaa5b))
+* dep run ([bd00334](https://github.com/Tencent/feflow/commit/bd00334a488aa5537cdb1754fa073d24b5102fb9))
+* dep version ([a7d7cb5](https://github.com/Tencent/feflow/commit/a7d7cb534756ed2e919ba2093ecea434a1a13bab))
+* move universal plugin into plugin type ([7e26964](https://github.com/Tencent/feflow/commit/7e26964479f7a330c7a813de02b228927b534549))
 * run commands inherit stdio ([eb7caee](https://github.com/Tencent/feflow/commit/eb7caee77987eb4f96e09286e5d549c20f4407f9))
+* **list:** list universal plugin ([ce2f681](https://github.com/Tencent/feflow/commit/ce2f6818decb70c44d1106b9a181dbff0833e72e))
+* stash dep ([4deecc2](https://github.com/Tencent/feflow/commit/4deecc2b1ae28b3ff3e81406b0a4cc40e8bfb9bb))
+* **plugin:** check universal plugin version and update ([04f4486](https://github.com/Tencent/feflow/commit/04f4486f9683e49ad27997cd4624ef7bb79d0a4b))
+* uninstall package ([40bf2dc](https://github.com/Tencent/feflow/commit/40bf2dc5ab23e471cac2dfc0b9826af4918922d7))
+* upgrade hook ([987d4d7](https://github.com/Tencent/feflow/commit/987d4d7adde3da5f0b7431a40447ac71aef4d8e7))
 
 
 
