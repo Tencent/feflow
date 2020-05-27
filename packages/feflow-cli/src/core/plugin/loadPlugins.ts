@@ -3,7 +3,6 @@ import path from 'path';
 import applyPlugins from './applyPlugins';
 
 export default function loadPlugins(ctx: any): Promise<void> {
-
   const { root, rootPkg } = ctx;
 
   return new Promise<any>((resolve, reject) => {
