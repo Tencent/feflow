@@ -82,14 +82,22 @@ export default class Binp {
     } else {
       toPath = `export PATH=$PATH:${binPath}`;
     }
-    switch (shell) {
-      case '/bin/zsh':
+    if (!shell) {
+      return [undefined, undefined];
+    }
+    const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
+    let shellType: string = '';
+    if (Array.isArray(shellMatch) && shellMatch.length > 0) {
+      shellType = shellMatch[0];
+    }
+    switch (shellType) {
+      case 'zsh':
         return [this.detectZshProfile(home), toPath];
-      case '/bin/bash':
-      case '/bin/sh':
+      case 'bash':
+      case 'sh':
         return [this.detectBashProfile(home), toPath];
-      case '/bin/zcsh':
-      case '/bin/csh':
+      case 'zcsh':
+      case 'csh':
         if (prior) {
           toPath = `set path = (${binPath} $path)`;
         } else {

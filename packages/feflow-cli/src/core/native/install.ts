@@ -21,9 +21,9 @@ import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 
-async function download(url: string, filepath: string): Promise<any> {
+async function download(url: string, filepath: string, silent?: boolean): Promise<any> {
   return spawn.sync('git', ['clone', url, filepath], {
-    stdio: 'inherit'
+    stdio: silent ? 'ignore' : 'inherit'
   });
 }
 
@@ -188,6 +188,7 @@ async function installPlugin(
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoName}] does not exist`;
   }
+
   // if the specified version is already installed, skip it
   if (
     universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !global)
@@ -216,7 +217,7 @@ async function installPlugin(
   }
   logger.debug('install version:', pkgInfo.checkoutTag);
   if (!fs.existsSync(repoPath)) {
-      logger.info(`Start download from ${ pkgInfo.repoUrl }`);
+    logger.info(`Start download from ${ pkgInfo.repoUrl }`);
       await download(pkgInfo.repoUrl, repoPath);
   }
   const linker = new Linker();
@@ -442,5 +443,36 @@ function removeInvalidPkg(ctx: any) {
   }
 }
 
+
+// update only the plugins installed globally
+async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+  const universalPkg = ctx.universalPkg as UniversalPkg;
+  const dependedOn = universalPkg.getDepended(pkg, version);
+  // update parent
+  if (dependedOn) {
+    for (const [dependedOnPkg, dependedOnVersion] of dependedOn) {
+      if (dependedOnVersion !== LATEST_VERSION) {
+        continue;
+      }
+      await updatePlugin(ctx, dependedOnPkg, dependedOnVersion);
+    }
+  }
+  const newVersion = universalPkg.getInstalled().get(pkg);
+  if (newVersion === version && version === LATEST_VERSION && plugin.autoUpdate) {
+    await updatePlugin(ctx, pkg, version);
+  }
+}
+
+async function updatePlugin(ctx: any, pkg: string, version: string) {
+  const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
+  const isGlobal = universalPkg.isInstalled(pkg, version);
+  try {
+    await installPlugin(ctx, `${pkg}@${version}`, isGlobal);
+  } catch(e) {
+    ctx.logger.error(`[${pkg}] update failure, ${e}`);
+  }
+}
+
 module.exports.installPlugin = installPlugin;
+module.exports.updateUniversalPlugin = updateUniversalPlugin;
 module.exports.getRepoInfo = getRepoInfo;
