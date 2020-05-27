@@ -2,6 +2,9 @@ import spawn from 'cross-spawn';
 import childProcess from 'child_process';
 import { promisify } from 'util';
 import semver from 'semver';
+import {
+  transformUrl
+} from './git';
 
 export function getRegistryUrl(packageManager: string) {
   return new Promise<any>((resolve, reject) => {
@@ -66,11 +69,12 @@ export function install(
 
 async function listRepoTag(repoUrl: string): Promise<string[]> {
   const execFile = promisify(childProcess.execFile);
+  const url = await transformUrl(repoUrl);
   const { stdout } = await execFile('git', [
     'ls-remote',
     '--tags',
     '--refs',
-    repoUrl
+    url
   ]);
   const tagStr = stdout?.trim();
   let tagList: string[] = [];
