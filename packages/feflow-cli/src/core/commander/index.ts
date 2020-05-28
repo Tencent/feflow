@@ -28,10 +28,11 @@ export default class Commander {
     return this.store;
   }
 
-  register(name: string, desc: string, fn: Function, options?: Array<object>) {
+  register(name: string, desc: string, fn: Function, options?: Array<object>, pluginName?: string) {
     this.store[name.toLowerCase()] = fn;
     this.store[name.toLowerCase()].desc = desc;
     this.store[name.toLowerCase()].options = options;
+    this.store[name.toLowerCase()].pluginName = pluginName;
     this.alias = abbrev(Object.keys(this.store));
   }
 
