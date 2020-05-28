@@ -372,6 +372,7 @@ export default class Feflow {
       const cmd = this.commander.get(name);
       if (cmd) {
         cmd.call(this, ctx);
+        resolve();
       } else {
         reject(
           new Error('Command `' + name + '` has not been registered yet!')
