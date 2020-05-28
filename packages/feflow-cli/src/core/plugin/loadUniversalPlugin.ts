@@ -43,7 +43,7 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       plugin.desc || `${pkg} universal plugin description`;
     commander.register(pluginCommand, pluginDescriptions, () => {
       execPlugin(ctx, pkg, version, plugin);
-    });
+    },[], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, () => {
       execPlugin(ctx, pkg, version, plugin);

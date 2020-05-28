@@ -1,40 +1,56 @@
 import rp from 'request-promise';
-import URI from './config';
+import { REPORT_URL, REPORT_PROXY } from '../constants';
 
-export default {
-  retryCount: 0,
-  log: {},
-  report(param, log, needProxy = true) {
-    this.log = log || {};
+export default class ApiController {
+  private retryCount: number;
+  private needProxy: boolean;
+  private rpOption: any;
+  public log: any;
 
-    const rpOption: any = {
+  constructor(param, log, needProxy = true) {
+    this.retryCount = 0;
+    this.log = log;
+    this.needProxy = needProxy;
+    this.rpOption = {
       method: 'POST',
-      uri: URI.REPORT_URL,
+      uri: REPORT_URL,
       body: param,
       json: true,
       timeout: 600,
     };
 
-    if (needProxy) {
-      this.log.debug('report with proxy');
-      rpOption.proxy = URI.REPORT_PROXY;
-    }
+    this.loadProxy();
+  }
 
-    rp(rpOption)
-      .then(res => {
-        this.log.debug('got report response', res);
+  private loadProxy() {
+    if (this.needProxy) {
+      this.log.debug('report with proxy');
+      this.rpOption.proxy = REPORT_PROXY;
+    } else {
+      delete this.rpOption.proxy;
+    }
+  }
+
+  private retryReport(cb) {
+    this.retryCount++;
+    this.log.debug('feflow report timeout, and retry. ', this.retryCount);
+    this.needProxy = !this.needProxy;
+    this.loadProxy();
+    this.doReport(cb);
+  }
+
+  public doReport(cb = res => {}) {
+    rp(this.rpOption)
+      .then(response => {
+        cb(response || {});
       })
       .catch(e => {
-        this.log.debug('feflow report fail', e.message);
-        if (/ETIMEDOUT/.test(e.message || '')) {
-          if (this.retryCount > 2) return;
-          // timeout retry
-          this.log.debug('feflow report 超时重试', this.retryCount);
-          // 3nd rp request, remove rp proxy
-          const needProxy = this.retryCount != 2;
-          this.retryCount++;
-          this.report(Object.assign({}, param), this.log, needProxy);
+        this.log.debug('feflow report fail. ', e.message);
+        // timeout retry
+        if (/ETIMEDOUT|ECONNREFUSED|ESOCKETTIMEDOUT/.test(e.message || '')) {
+          if (this.retryCount >= 3) return;
+          this.retryReport(cb);
         }
       });
-  },
-};
+  }
+}
