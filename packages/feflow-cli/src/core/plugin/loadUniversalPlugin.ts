@@ -46,9 +46,8 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       if (!newVersion) {
         ctx.logger.error(`invalid universal plugin name: ${pluginCommand}`);
         return;
-      } else if (newVersion !== version) {
-        plugin = loadPlugin(ctx, pkg, newVersion);
-      }
+      } 
+      plugin = loadPlugin(ctx, pkg, newVersion);
       execPlugin(ctx, pkg, newVersion, plugin);
     });
   } else {
