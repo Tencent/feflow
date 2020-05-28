@@ -30,6 +30,7 @@ const pkg = require('../../package.json');
 
 export default class Feflow {
   public args: any;
+  public cmd: any;
   public projectConfig: any;
   public projectPath: any;
   public version: string;
@@ -371,6 +372,7 @@ export default class Feflow {
       const cmd = this.commander.get(name);
       if (cmd) {
         cmd.call(this, ctx);
+        resolve();
       } else {
         reject(
           new Error('Command `' + name + '` has not been registered yet!')
