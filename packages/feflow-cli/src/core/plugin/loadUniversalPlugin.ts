@@ -1,77 +1,100 @@
-import fs from 'fs';
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
-import { Plugin } from '../schema/plugin';
-import { 
-  UNIVERSAL_MODULES, 
-  UNIVERSAL_PKG_JSON, 
-  UNIVERSAL_PLUGIN_CONFIG
+import { Plugin } from '../universal-pkg/schema/plugin';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import {
+  UNIVERSAL_MODULES,
+  UNIVERSAL_PLUGIN_CONFIG,
+  FEFLOW_BIN,
+  LATEST_VERSION,
+  FEF_ENV_PLUGIN_PATH
 } from '../../shared/constant';
-
-
-type PluginPkgConfig = {
-  dependencies: object;
-  version: string;
-  name: string;
-};
+import Binp from '../universal-pkg/binp';
+import Commander from '../commander';
+const { installPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
+function loadPlugin(
+  ctx: any,
+  pluginPath: string,
+  pluginConfigPath: string
+): Plugin {
+  const config = parseYaml(pluginConfigPath) || {};
+  return new Plugin(ctx, pluginPath, config);
+}
 
-export default function loadUniversalPlugin(ctx: any): Promise<any> {
-  const { root, logger } = ctx;
-  const pluginPkg = path.resolve(root, UNIVERSAL_PKG_JSON);
+function register(ctx: any, pkg: string, version: string, global = false) {
+  const commander: Commander = ctx.commander;
+  const pluginPath = path.join(
+    ctx.root,
+    UNIVERSAL_MODULES,
+    `${pkg}@${version}`
+  );
+  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
+  let plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
+  const pluginCommand = (toolRegex.exec(pkg) || [])[1];
+  if (!pluginCommand) {
+    ctx.logger.debug(`invalid universal plugin name: ${pluginCommand}`);
+    return;
+  }
+  if (global) {
+    const pluginDescriptions =
+      plugin.desc || `${pkg} universal plugin description`;
+    commander.register(pluginCommand, pluginDescriptions, () => {
+      execPlugin(ctx, pkg, version, plugin);
+    },[], pkg);
+  } else {
+    commander.registerInvisible(`${pluginCommand}@${version}`, () => {
+      execPlugin(ctx, pkg, version, plugin);
+    });
+  }
+}
 
-  if (!fs.existsSync(pluginPkg)) {
-    logger.debug(`${pluginPkg} is not found`);
-    return Promise.resolve();
+async function execPlugin(
+  ctx: any,
+  pkg: string,
+  version: string,
+  plugin: Plugin
+) {
+  const pluginPath = path.join(
+    ctx.root,
+    UNIVERSAL_MODULES,
+    `${pkg}@${version}`
+  );
+  const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
+  // only the latest version is automatically updated
+  if (version === LATEST_VERSION && plugin.autoUpdate) {
+    try {
+      await installPlugin(ctx, pkg, true);
+      // reload plugin
+      plugin = loadPlugin(ctx, pluginPath, pluginConfigPath);
+    } catch (e) {
+      ctx.logger.error(`update failed, ${e}`);
+    }
+  }
+  // make it find dependencies
+  new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
+  // injection plugin path into the env
+  process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
+  plugin.preRun.run();
+  const args = process.argv.slice(3);
+  plugin.command.run(...args);
+  plugin.postRun.run();
+}
+
+export default async function loadUniversalPlugin(ctx: any): Promise<any> {
+  const universalPkg: UniversalPkg = ctx.universalPkg;
+
+  const installed = universalPkg.getInstalled();
+  for (const [pkg, version] of installed) {
+    register(ctx, pkg, version, true);
   }
 
-  return new Promise(resolve => {
-    fs.readFile(pluginPkg, 'utf8', async (err, data) => {
-      if (err) {
-        logger.debug(err);
-        resolve();
-      }
-
-      let pluginPkgConfig = {} as PluginPkgConfig;
-      try {
-        pluginPkgConfig = JSON.parse(data);
-      } catch (error) {
-        logger.debug(`can not parse plugin package: ${pluginPkg}`);
-        resolve();
-      }
-
-      // traverse universal plugins and register command
-      const { dependencies = {} } = pluginPkgConfig;
-      for (const pluginName of Object.keys(dependencies)) {
-        const pluginPath = path.resolve(root, UNIVERSAL_MODULES, `${pluginName}@${dependencies[pluginName]}`);
-        const pluginConfigPath = path.resolve(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
-
-        // get universal plugin command, like fef [universal-plugin-command]
-        const pluginCommand = (toolRegex.exec(pluginName) || [])[1];
-        if (!pluginCommand) {
-          logger.debug(`invalid universal plugin name: ${pluginCommand}`);
-          return;
-        }
-
-        if (fs.existsSync(pluginConfigPath)) {
-          const config = parseYaml(pluginConfigPath) || {};
-          const plugin = new Plugin(ctx, pluginPath, config);
-          await plugin.check()
-
-          const pluginDescriptions = plugin.desc || `${pluginCommand} universal plugin description`;
-
-          ctx.commander.register(pluginCommand, pluginDescriptions, () => {
-            plugin.preRun.run();
-            const args = process.argv.slice(3);
-            plugin.command.run(...args);
-            plugin.postRun.run();
-          });
-        }
-      }
-
-      resolve();
-    });
-  });
+  const dependencies = universalPkg.getAllDependencies();
+  for (const [pkg, versionRelations] of dependencies) {
+    for (const [version] of versionRelations) {
+      register(ctx, pkg, version, false);
+    }
+  }
 }
