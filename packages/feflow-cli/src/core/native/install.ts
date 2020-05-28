@@ -51,9 +51,6 @@ function resolvePlugin(ctx: any, repoPath: string): Plugin {
 
 async function getRepoInfo(ctx: any, packageName: string) {
   const serverUrl = ctx.config?.serverUrl;
-  if (!serverUrl) {
-    throw 'the server url is not configured';
-  }
   const options = {
     url: `${serverUrl}apply/getlist?name=${packageName}`,
     method: 'GET'
@@ -112,7 +109,19 @@ module.exports = (ctx: any) => {
       ctx.logger.info(
         'Uninstalling packages. This might take a couple of minutes.'
       );
-
+      const serverUrl = ctx.config?.serverUrl;
+      if (!serverUrl) {
+        return install(
+          ctx?.config?.packageManager,
+          ctx.root,
+          ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
+          dependencies,
+          false,
+          true
+        ).then(() => {
+          ctx.logger.info('uninstall success');
+        });
+      }
       const installPluginStr = dependencies[0];
       const pkgInfo = await getPkgInfo(ctx, installPluginStr);
       if (pkgInfo) {
@@ -187,7 +196,12 @@ async function installPlugin(
     bin: string;
     lib: string;
   } = ctx;
+  const serverUrl = ctx.config?.serverUrl;
+
   installPluginStr = installPluginStr.trim();
+  if (!serverUrl) {
+    return installNpmPlugin(ctx, ctx?.args['_']);
+  }
   const pkgInfo = await getPkgInfo(ctx, installPluginStr);
   if (!pkgInfo) {
     return installNpmPlugin(ctx, ctx?.args['_']);

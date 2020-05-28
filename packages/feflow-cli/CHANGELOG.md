@@ -1,3 +1,29 @@
+# [0.20.0](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.5...v0.20.0) (2020-05-28)
+
+
+### Bug Fixes
+
+* HOOK_TYPE_AFTER will never called ([37bdd78](https://github.com/Tencent/feflow/commit/37bdd789b50bad6012033363a45421eb7d5a7e83))
+* **report:** plugin name ([03a9d09](https://github.com/Tencent/feflow/commit/03a9d094e1056e7b1a155ef8fffb545bc9cc74bb))
+* HOOK_TYPE_BEFORE ([d66140a](https://github.com/Tencent/feflow/commit/d66140a905931b42f7919b6237f245149127c570))
+* invalid command ([5ebd329](https://github.com/Tencent/feflow/commit/5ebd329bbf078ca9035b3458a13f04ba88166d02))
+* log ([4357600](https://github.com/Tencent/feflow/commit/4357600397a6bb8a3e1c654fe2e7aca94ceb0586))
+* reload the configuration after the update ([34f1856](https://github.com/Tencent/feflow/commit/34f1856e69e75bcdc216a99a0569a6027c0e519d))
+
+
+### Features
+
+* **report:** double report ([cd69d72](https://github.com/Tencent/feflow/commit/cd69d721266df6bab18d212fad448932f9c7eca3))
+* **report:** got plugin name from commander ([8bd57b8](https://github.com/Tencent/feflow/commit/8bd57b80871eeb8f7c32efb8dd1a394a6c0a01b0))
+* **report:** update cli report ([2529397](https://github.com/Tencent/feflow/commit/2529397d603d1c77325ee314d8d63a4fd9c7092c))
+*  feflow对象增加参数cmd，值为当前执行的feflow命令 ([8191364](https://github.com/Tencent/feflow/commit/8191364ac579f0410c0c71dbc027ca255b90dc00))
+* register with pkg ([824dd4c](https://github.com/Tencent/feflow/commit/824dd4cdc140d66f70f7e62696544c5f0d33d47b))
+* report hook ([5a7d77c](https://github.com/Tencent/feflow/commit/5a7d77c173b46b25288a330ae9e84a782de426fd))
+* the child plugin will trigger the automatic update capability of the parent plugin ([d1b978c](https://github.com/Tencent/feflow/commit/d1b978c4c070f1b599089a68327ab0fb58f2ad74))
+* update version ([12c79c9](https://github.com/Tencent/feflow/commit/12c79c9e129b0562d3be663bc196b226d41d6e47))
+
+
+
 # [0.20.0-alpha.5](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.4...v0.20.0-alpha.5) (2020-05-27)
 
 
