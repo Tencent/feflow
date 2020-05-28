@@ -52,7 +52,7 @@ class Report {
   private registerHook() {
     const { cmd, args } = this;
     this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {      
-      this.cmdSource = this.ctx.commander?.store[cmd].pluginName || "";
+      this.cmdSource = this.ctx.commander?.store[cmd]?.pluginName || '';
       this.ctx.log.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);
