@@ -30,6 +30,7 @@ const pkg = require('../../package.json');
 
 export default class Feflow {
   public args: any;
+  public cmd: any;
   public projectConfig: any;
   public projectPath: any;
   public version: string;
