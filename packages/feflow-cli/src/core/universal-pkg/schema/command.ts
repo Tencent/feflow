@@ -37,6 +37,9 @@ export class Command {
   getCommands(): string[] {
     const commands = this[platformType] as string[];
     return commands.map((c) => {
+      if (!c || typeof c !== 'string') {
+        throw `invalid command: [${c}]`;
+      }
       return c.replace(valRegexp, (match) => {
         const v = getVal(match);
         if (this.val[v] !== undefined) {
