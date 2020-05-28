@@ -21,9 +21,9 @@ import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 
-async function download(url: string, filepath: string, silent?: boolean): Promise<any> {
+async function download(url: string, filepath: string): Promise<any> {
   return spawn.sync('git', ['clone', url, filepath], {
-    stdio: silent ? 'ignore' : 'inherit'
+    stdio: 'inherit'
   });
 }
 
