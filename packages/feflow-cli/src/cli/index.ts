@@ -104,6 +104,8 @@ export default function entry() {
       cmd = 'help';
     }
 
+    feflow.cmd = cmd;
+
     feflow.hook.emit(HOOK_TYPE_BEFORE);
 
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
