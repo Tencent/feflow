@@ -1,3 +1,12 @@
+## [0.20.1](https://github.com/Tencent/feflow/compare/v0.20.0...v0.20.1) (2020-05-29)
+
+
+### Features
+
+* add cmd command to feflow context ([a7ddf59](https://github.com/Tencent/feflow/commit/a7ddf597dcc79331c673b4c68c802832a52d3273))
+
+
+
 # [0.20.0](https://github.com/Tencent/feflow/compare/v0.20.0-alpha.5...v0.20.0) (2020-05-28)
 
 
