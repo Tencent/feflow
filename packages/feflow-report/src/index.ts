@@ -15,6 +15,7 @@ interface ReportContext {
   hook: {
     on(eventName: string, listener: any): void;
   };
+  version: string
 }
 
 interface ReportBody {
@@ -96,6 +97,7 @@ class Report {
     return objectFactory
       .create()
       .load('command', cmd)
+      .load('feflow_version', this.ctx.version)
       .load('command_source', this.commandSource)
       .load('user_name', this.userName)
       .load('params', args)
