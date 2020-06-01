@@ -38,7 +38,7 @@ const levelColors: IObject = {
   10: 'gray',
   20: 'gray',
   30: 'green',
-  40: 'yellow',
+  40: 'orange',
   50: 'red',
   60: 'red'
 };
