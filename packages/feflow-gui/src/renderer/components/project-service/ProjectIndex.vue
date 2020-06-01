@@ -35,6 +35,7 @@ import SideBar from '../SideBar'
 import ProjectCommand from './ProjectCommand'
 import ProjectWhistle from './ProjectWhistle'
 import ProjectProfile from './ProjectProfile'
+import ProjectMonitor from './ProjectMonitor/monitor'
 
 export default {
     name: 'project-index',
@@ -57,6 +58,11 @@ export default {
                     name: '代理',
                     icon: 'static/img/project-service/service-whistle.png',
                     component: 'ProjectWhistle'
+                },
+                {
+                  name: '监控',
+                  icon: 'static/img/project-service/service-monitor.png',
+                  component: 'ProjectMonitor'
                 }
             ]
         }
@@ -65,7 +71,8 @@ export default {
         ProjectCommand,
         ProjectWhistle,
         ProjectProfile,
-        SideBar
+        SideBar,
+        ProjectMonitor
     },
     methods: {
         // 打开项目所在文件夹
@@ -139,5 +146,14 @@ export default {
         overflow-y: scroll;
         overflow-x: hidden;
     }
+  &__title.bottom__transparent {
+    border-bottom: none;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
 }
 </style>
