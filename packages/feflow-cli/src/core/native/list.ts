@@ -26,6 +26,11 @@ function loadModuleList(ctx: any) {
         return false;
       const pluginPath = path.join(pluginDir, name);
       return fs.existsSync(pluginPath);
+    }).map(key => {
+      return {
+        name: key,
+        version: deps[key] || 'unknown'
+      };
     });
     return list;
   } else {
@@ -61,7 +66,6 @@ module.exports = (ctx: any) => {
     console.log(
       'You can search more templates or plugins through https://feflowjs.com/encology/'
     );
-    console.log('===============================================');
     if (!list.length) {
       console.log(
         chalk.magenta('No templates and plugins have been installed')
@@ -70,9 +74,9 @@ module.exports = (ctx: any) => {
     }
 
     console.log('templates');
-    list.map(function (name) {
-      if (/generator-|^@[^/]+\/generator-/.test(name)) {
-        console.log(chalk.magenta(name));
+    list.map(function (item) {
+      if (/generator-|^@[^/]+\/generator-/.test(item.name)) {
+        console.log(chalk.magenta(`${item.name}(${item.version})`));
         templateCnt = 1;
       }
     });
@@ -81,9 +85,9 @@ module.exports = (ctx: any) => {
     }
 
     console.log('plugins');
-    list.map(function (name) {
-      if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
-        console.log(chalk.magenta(name));
+    list.map(function (item) {
+      if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(item.name)) {
+        console.log(chalk.magenta(`${item.name}(${item.version})`));
         pluginCnt = 1;
       }
     });
