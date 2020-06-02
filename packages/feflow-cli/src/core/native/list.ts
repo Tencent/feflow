@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
-
 function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
@@ -29,12 +28,23 @@ function loadModuleList(ctx: any) {
     }).map(key => {
       return {
         name: key,
-        version: deps[key] || 'unknown'
+        version: getModuleVersion(pluginDir, key)
       };
     });
     return list;
   } else {
     return [];
+  }
+}
+
+function getModuleVersion(dir: string, name: string): string {
+  const packagePath = path.resolve(dir, name, 'package.json');
+  if (fs.existsSync(packagePath)) {
+    let content = fs.readFileSync(packagePath, 'utf8');
+    const json = JSON.parse(content);
+    return json && json.version || 'unknown';
+  } else {
+    return 'unknown';
   }
 }
 
