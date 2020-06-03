@@ -222,8 +222,8 @@ async function installPlugin(
   const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
   if (pkgInfo.installVersion === LATEST_VERSION) {
     if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
-      if (pkgInfo.checkoutTag === await getCurrentTag(repoPath)) {
-        logger.info(`[${pkgInfo.repoName}] the latest version of the plugin is already in use`);
+      const currentVersion = await getCurrentTag(repoPath);
+      if (!currentVersion || pkgInfo.checkoutTag === currentVersion) {
         return;
       } else {
         updateFlag = true;
