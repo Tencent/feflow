@@ -49,10 +49,13 @@ export async function getCurrentTag(
   repoPath: string
 ): Promise<string | undefined> {
   const status = spawn.sync('git', ['-C', repoPath, 'status']);
-  const tagFlag = 'HEAD detached at ';
   const head = status?.stdout?.toString().trim().split('\n')[0];
-  if (head.startsWith(tagFlag)) {
-    return head.substring(tagFlag.length);
+  const fields = head.split(' ');
+  if (fields.length > 0) {
+    const v = fields[fields.length - 1];
+    if (versionImpl.check(v)) {
+      return v;
+    }
   }
 }
 
