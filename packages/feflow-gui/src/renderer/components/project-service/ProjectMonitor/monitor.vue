@@ -139,13 +139,16 @@
 </div>
 </template>
 <script>
+import { getUrlParam } from '@/common/utils'
 import Chart from './chart';
 import { getCredential, getPvByDate, getUvByDate, getJsError } from './index.js';
+import {loadFeflowConfigFile, loadProjectFeflowConfigFile} from '../../../bridge'
 export default {
     name: 'projec-monitor',
     data() {
         return {
             credential: {},
+            projectName: '',
             jsErrorStartDate: '',
             jsErrorAegisId: '',
             jsErrorOptions: [],
@@ -169,8 +172,9 @@ export default {
         Chart
     },
     async mounted() {
-        this.jsErrorOptions = [...this.initOptions];
-        this.pvOptions = [...this.initOptions];
+        this.projectName = getUrlParam('name')
+        this.jsErrorOptions = this.getProjectAegiesList() || [...this.initOptions];
+        this.pvOptions = this.getProjectAegiesList() || [...this.initOptions];
         this.credential = await getCredential();
         this.startDate = this.time2string(this.getYesterdayDate(), '-');
         this.endDate = this.time2string(new Date(), '-');
@@ -185,8 +189,27 @@ export default {
                 // this.jsErrorData = result.data[0].content;
             }
         },
+        getProjectAegiesList() {
+            let projectPath = ''
+            let doc = loadFeflowConfigFile();
+            if (this.projectName && doc.projects && doc.projects[this.projectName]) {
+               projectPath = doc.projects[this.projectName]['path'];
+            }
+            const feflowrcJSON = loadProjectFeflowConfigFile(projectPath)
+            const { pageMap = {} } = feflowrcJSON['aegis-plugin']
+            let options = [];
+            for (let key in pageMap) {
+                if (pageMap[key]) {
+                   options.push({
+                       label: key,
+                       value: pageMap[key].id
+                   })
+               }
+           }
+           return options;
+        },
         async searchPvUvData() {
-            this.pvAegisId = this.pvAegisId || this.pvOptions[0].value || '528';
+            this.pvAegisId = this.pvAegisId || (this.pvOptions[0] && this.pvOptions[0].value) || '528';
             /* 相关接口文档http://aegis.oa.com/open-api/#pv */
             const pvData = await getPvByDate(this.pvAegisId, this.time2string(this.startDate), this.time2string(this.endDate));
             const uvData = await getUvByDate(this.pvAegisId, this.time2string(this.startDate), this.time2string(this.endDate));

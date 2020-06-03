@@ -16,14 +16,16 @@ const creditialData = { isFresh: 0, loginName, apiKey: encrypt(apiKey, loginName
 export async function getCredential() {
     let res = await http.post(`${url}/api/interface/getApiToken`, qs.stringify(creditialData), {
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'rtx': 'feflow_vitual'
         }
     });
     const { api_time, api_token } = res.data;
     return {
         'auth': getPwdCode(apiKey, api_token, +api_time), // 生成授权码
         'apiToken': api_token,
-        'apiTime': api_time
+        'apiTime': api_time,
+        'rtx': global.username
     };
 }
 export async function getPvByDate(aegisId, startDate, endDate, credential) {
