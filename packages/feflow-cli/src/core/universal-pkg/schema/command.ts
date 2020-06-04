@@ -56,6 +56,16 @@ export class Command {
       if (args && args.length > 0) {
         command = `${command} ${args.join(' ')}`;
       }
+      execSync(command, {
+        stdio: 'inherit'
+      });
+    }
+  }
+
+  // exception not thrown
+  runLess() {
+    const commands = this.getCommands();
+    for (let command of commands) {
       try {
         execSync(command, {
           stdio: 'inherit'
