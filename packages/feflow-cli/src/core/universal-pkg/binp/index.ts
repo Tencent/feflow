@@ -8,14 +8,8 @@ import osenv from 'osenv';
  * register the directory to the environment variable path
  */
 export default class Binp {
-  private currentOs: NodeJS.Platform;
 
-  private alternativeProfiles = [
-    '.profile',
-    '.bashrc',
-    '.bash_profile',
-    '.zshrc'
-  ];
+  private currentOs: NodeJS.Platform;
 
   constructor() {
     this.currentOs = os.platform();
@@ -63,65 +57,34 @@ export default class Binp {
   }
 
   private registerToUnixLike(binPath: string, prior: boolean) {
-    const [profile, setStatement] = this.detectProfile(binPath, prior);
-    if (!profile) {
-      throw 'not profile';
-    }
-    fs.appendFileSync(profile, `\n${setStatement}\n`);
-  }
-
-  private detectProfile(
-    binPath: string,
-    prior: boolean
-  ): [string | undefined, string | undefined] {
-    const home = osenv.home();
-    const shell = process.env['SHELL'];
     let toPath: string;
     if (prior) {
       toPath = `export PATH=${binPath}:$PATH`;
     } else {
       toPath = `export PATH=$PATH:${binPath}`;
     }
-    if (!shell) {
-      return [undefined, undefined];
+    const home = osenv.home();
+    const zshProfile = this.detectZshProfile(home);
+    fs.appendFileSync(zshProfile, `\n${toPath}\n`);
+    const bashProfile = this.detectBashProfile(home);
+    fs.appendFileSync(bashProfile, `\n${toPath}\n`);
+    if (prior) {
+      toPath = `set path = (${binPath} $path)`;
+    } else {
+      toPath = `set path = ($path ${binPath})`;
     }
-    const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    let shellType: string = '';
-    if (Array.isArray(shellMatch) && shellMatch.length > 0) {
-      shellType = shellMatch[0];
-    }
-    switch (shellType) {
-      case 'zsh':
-        return [this.detectZshProfile(home), toPath];
-      case 'bash':
-      case 'sh':
-        return [this.detectBashProfile(home), toPath];
-      case 'zcsh':
-      case 'csh':
-        if (prior) {
-          toPath = `set path = (${binPath} $path)`;
-        } else {
-          toPath = `set path = ($path ${binPath})`;
-        }
-        return [this.detectCshProfile(home), toPath];
-    }
-    const profile = this.detectAlternativeProfiles(home);
-    if (profile) {
-      return [profile, toPath];
-    }
-    return [undefined, undefined];
+    const cshProfile = this.detectCshProfile(home);
+    fs.appendFileSync(cshProfile, `\n${toPath}\n`);
   }
 
-  private detectBashProfile(home: string): string | undefined {
+  private detectBashProfile(home: string): string {
     if (this.currentOs === 'darwin') {
       return path.join(home, '.bash_profile');
     }
-    if (this.currentOs === 'linux') {
-      return path.join(home, '.bashrc');
-    }
+    return path.join(home, '.bashrc');
   }
 
-  private detectCshProfile(home: string): string | undefined {
+  private detectCshProfile(home: string): string {
     return path.join(home, '.tcshrc');
   }
 
@@ -129,11 +92,4 @@ export default class Binp {
     return path.join(home, '.zshrc');
   }
 
-  private detectAlternativeProfiles(home: string): string | undefined {
-    const findFunc = (p: string) => {
-      const absProfile = path.join(home, p);
-      return fs.existsSync(absProfile);
-    };
-    return this.alternativeProfiles.find(findFunc);
-  }
 }
