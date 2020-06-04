@@ -293,7 +293,7 @@ async function installPlugin(
       linker.register(
         pluginBin,
         pluginLib,
-        `${commandName}@${curPkgInfo.checkoutTag}`,
+        `${commandName}@${curPkgInfo.installVersion}`,
         commandName
       );
     } catch (e) {
@@ -325,6 +325,7 @@ async function installPlugin(
     removeInvalidPkg(ctx);
   }
 
+  universalPkg.saveChange();
   plugin.test.runLess();
   plugin.postInstall.runLess();
 
