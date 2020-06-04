@@ -48,11 +48,11 @@ function register(ctx: any, pkg: string, version: string, global = false) {
         return;
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
-      execPlugin(ctx, pkg, newVersion, plugin);
+      await execPlugin(ctx, pkg, newVersion, plugin);
     });
   } else {
-    commander.registerInvisible(`${pluginCommand}@${version}`, () => {
-      execPlugin(ctx, pkg, version, plugin);
+    commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
+      await execPlugin(ctx, pkg, version, plugin);
     });
   }
 }
@@ -75,7 +75,7 @@ async function execPlugin(
   plugin.preRun.run();
   const args = process.argv.slice(3);
   plugin.command.run(...args);
-  plugin.postRun.run();
+  plugin.postRun.runLess();
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {

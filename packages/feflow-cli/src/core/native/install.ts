@@ -23,7 +23,9 @@ import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
+import UpgradeUniq from '../universal-pkg/upgrade/uniq';
 
+const upgradeUniq = new UpgradeUniq();
 
 async function download(url: string, filepath: string): Promise<any> {
   const cloneUrl = await transformUrl(url);
@@ -231,8 +233,11 @@ async function installPlugin(
     }
   }
   if (updateFlag) {
+    if (!upgradeUniq.upgradeable(pkgInfo.repoName, pkgInfo.installVersion)) {
+      return;
+    }
     logger.info(`[${pkgInfo.repoName}] update the plugin to version ${pkgInfo.checkoutTag}`);
-    resolvePlugin(ctx, repoPath).preUpgrade.run();
+    resolvePlugin(ctx, repoPath).preUpgrade.runLess();
   } else {
     logger.info(`[${pkgInfo.repoName}] installing plugin`);
   }
@@ -320,11 +325,11 @@ async function installPlugin(
     removeInvalidPkg(ctx);
   }
 
-  plugin.test.run();
-  plugin.postInstall.run();
+  plugin.test.runLess();
+  plugin.postInstall.runLess();
 
   if (updateFlag) {
-    plugin.postUpgrade.run();
+    plugin.postUpgrade.runLess();
     logger.info('update success');
   } else {
     logger.info('install success');
