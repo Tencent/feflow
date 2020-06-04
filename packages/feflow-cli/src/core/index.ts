@@ -70,6 +70,7 @@ export default class Feflow {
       silent: Boolean(args.silent)
     });
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
+    this.initBinPath();
   }
 
   async init(cmd: string) {
@@ -120,7 +121,6 @@ export default class Feflow {
           )
         );
       }
-      this.initBinPath();
       resolve();
     });
   }
