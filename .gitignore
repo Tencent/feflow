@@ -7,3 +7,7 @@ coverage/
 packages/*/lib
 .vscode
 **/.nyc_output
+tmp
+dist
+packages/feflow-cli/bin/run
+tnpm
