@@ -74,7 +74,11 @@ async function execPlugin(
   process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
   plugin.preRun.run();
   const args = process.argv.slice(3);
-  plugin.command.run(...args);
+  try {
+    plugin.command.run(...args);
+  } catch(e) {
+    process.exit(e?.status || 2)
+  }
   plugin.postRun.runLess();
 }
 
