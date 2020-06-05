@@ -1,3 +1,17 @@
+## [0.20.3](https://github.com/Tencent/feflow/compare/v0.20.2...v0.20.3) (2020-06-05)
+
+
+### Bug Fixes
+
+* exit when error ([1b75ccf](https://github.com/Tencent/feflow/commit/1b75ccf150411de23e9652acc5acdb0c14e489d0))
+
+
+### Features
+
+* register bin path to all terminal ([bef62e3](https://github.com/Tencent/feflow/commit/bef62e387192bfc9e0ff826310a22913cd5249ed))
+
+
+
 ## [0.20.2](https://github.com/Tencent/feflow/compare/v0.20.1...v0.20.2) (2020-06-04)
 
 
