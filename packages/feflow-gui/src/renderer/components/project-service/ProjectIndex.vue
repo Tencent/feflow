@@ -28,7 +28,7 @@
         <!-- 编辑器配置弹窗 -->
         <el-dialog
             custom-class="project-index__dialog"
-            title="编辑器配置"
+            title="首次使用编辑器配置"
             :visible="showEditorDialog"
             :show-close="false"
         >
@@ -91,6 +91,7 @@ const EDITOR_ENV = {
     }
 }
 
+// 配置提示
 const EDITOR_PATH_EXAMPLE = {
     subl: {
         Windows: 'C:\\Program Files\\Sublime Text 3',
