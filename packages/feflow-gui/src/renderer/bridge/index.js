@@ -419,3 +419,23 @@ export const getProjectNpmConfig = projectPath => {
   const filePath = path.resolve(projectPath, FEFLOW_PROJECT_NPM_CONFIG_NAME)
   return parseYaml(filePath)
 }
+
+/**
+ * 【项目模块适用】获取编辑器安装路径
+ * @description editor 字段记录编辑器打开命令
+ */
+export const getEditorCommand = () => {
+  const conf = loadFeflowConfigFile()
+  const command = conf.editor
+  return command
+}
+
+/**
+ * 【项目模块适用】设置编辑器安装路径
+ * @param {String} command 编辑器 CLI 命令
+ */
+export const updateEditorCommand = (command) => {
+  const conf = loadFeflowConfigFile()
+  conf['editor'] = command
+  safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
+}
