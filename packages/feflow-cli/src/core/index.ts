@@ -70,6 +70,7 @@ export default class Feflow {
       silent: Boolean(args.silent)
     });
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
+    this.initBinPath();
   }
 
   async init(cmd: string) {
@@ -120,7 +121,6 @@ export default class Feflow {
           )
         );
       }
-      this.initBinPath();
       resolve();
     });
   }
@@ -363,21 +363,17 @@ export default class Feflow {
     });
   }
 
-  call(name: any, ctx: any) {
+  async call(name: any, ctx: any) {
     const args = ctx.args;
     if (args.h || args.help) {
       return this.showCommandOptionDescription(name, ctx);
     }
-    return new Promise<any>((resolve, reject) => {
-      const cmd = this.commander.get(name);
-      if (cmd) {
-        cmd.call(this, ctx);
-      } else {
-        reject(
-          new Error('Command `' + name + '` has not been registered yet!')
-        );
-      }
-    });
+    const cmd = this.commander.get(name);
+    if (cmd) {
+      await cmd.call(this, ctx);
+    } else {
+      throw new Error('Command `' + name + '` has not been registered yet!');
+    }
   }
 
   async updateCli(packageManager: string) {

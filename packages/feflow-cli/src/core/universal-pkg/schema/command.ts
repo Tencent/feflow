@@ -37,6 +37,9 @@ export class Command {
   getCommands(): string[] {
     const commands = this[platformType] as string[];
     return commands.map((c) => {
+      if (!c || typeof c !== 'string') {
+        throw `invalid command: [${c}]`;
+      }
       return c.replace(valRegexp, (match) => {
         const v = getVal(match);
         if (this.val[v] !== undefined) {
@@ -53,6 +56,16 @@ export class Command {
       if (args && args.length > 0) {
         command = `${command} ${args.join(' ')}`;
       }
+      execSync(command, {
+        stdio: 'inherit'
+      });
+    }
+  }
+
+  // exception not thrown
+  runLess() {
+    const commands = this.getCommands();
+    for (let command of commands) {
       try {
         execSync(command, {
           stdio: 'inherit'

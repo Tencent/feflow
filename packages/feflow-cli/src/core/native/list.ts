@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
-
 function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
@@ -26,10 +25,26 @@ function loadModuleList(ctx: any) {
         return false;
       const pluginPath = path.join(pluginDir, name);
       return fs.existsSync(pluginPath);
+    }).map(key => {
+      return {
+        name: key,
+        version: getModuleVersion(pluginDir, key)
+      };
     });
     return list;
   } else {
     return [];
+  }
+}
+
+function getModuleVersion(dir: string, name: string): string {
+  const packagePath = path.resolve(dir, name, 'package.json');
+  if (fs.existsSync(packagePath)) {
+    let content = fs.readFileSync(packagePath, 'utf8');
+    const json = JSON.parse(content);
+    return json && json.version || 'unknown';
+  } else {
+    return 'unknown';
   }
 }
 
@@ -40,10 +55,13 @@ function loadUniversalPlugin(ctx: any): any[] {
   let availablePluigns: any[] = [];
 
   const pluginsInCommand = ctx.commander.store;
-  for (const [pkg] of universalPkg.getInstalled()) {
+  for (const [pkg, version] of universalPkg.getInstalled()) {
     const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
     if (pluginsInCommand[pluginCommand]) {
-      availablePluigns.push(pkg);
+      availablePluigns.push({
+        name: pkg,
+        version: version
+      });
     }
   }
 
@@ -61,7 +79,6 @@ module.exports = (ctx: any) => {
     console.log(
       'You can search more templates or plugins through https://feflowjs.com/encology/'
     );
-    console.log('===============================================');
     if (!list.length) {
       console.log(
         chalk.magenta('No templates and plugins have been installed')
@@ -70,9 +87,9 @@ module.exports = (ctx: any) => {
     }
 
     console.log('templates');
-    list.map(function (name) {
-      if (/generator-|^@[^/]+\/generator-/.test(name)) {
-        console.log(chalk.magenta(name));
+    list.map(function (item) {
+      if (/generator-|^@[^/]+\/generator-/.test(item.name)) {
+        console.log(chalk.magenta(`${item.name}(${item.version})`));
         templateCnt = 1;
       }
     });
@@ -81,9 +98,9 @@ module.exports = (ctx: any) => {
     }
 
     console.log('plugins');
-    list.map(function (name) {
-      if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
-        console.log(chalk.magenta(name));
+    list.map(function (item) {
+      if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(item.name)) {
+        console.log(chalk.magenta(`${item.name}(${item.version})`));
         pluginCnt = 1;
       }
     });
