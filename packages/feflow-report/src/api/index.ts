@@ -24,9 +24,10 @@ export default class ApiController {
 
   private loadProxy() {
     if (this.needProxy) {
-      this.log.debug('report with proxy');
+      this.log.debug('feflow report with proxy.');
       this.rpOption.proxy = REPORT_PROXY;
     } else {
+      this.log.debug('feflow report without proxy.');
       delete this.rpOption.proxy;
     }
   }
@@ -40,8 +41,10 @@ export default class ApiController {
   }
 
   public doReport(cb = res => {}) {
+    this.log.debug('feflow report start.');
     rp(this.rpOption)
       .then(response => {
+        this.log.debug('feflow report success.');
         cb(response || {});
       })
       .catch(e => {
