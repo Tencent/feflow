@@ -1,29 +1,32 @@
 import rp from 'request-promise';
-import { REPORT_URL, REPORT_PROXY } from '../constants';
+import { REPORT_URL, REPORT_PROXY, TIMEOUT } from '../constants';
+
+// sniff user network and save
+let isNeedProxyLocal = true;
 
 export default class ApiController {
   private retryCount: number;
-  private needProxy: boolean;
+  private isNeedProxy: boolean;
   private rpOption: any;
   public log: any;
 
-  constructor(param, log, needProxy = true) {
+  constructor(param, log) {
     this.retryCount = 0;
     this.log = log;
-    this.needProxy = needProxy;
+    this.isNeedProxy = isNeedProxyLocal;
     this.rpOption = {
       method: 'POST',
       uri: REPORT_URL,
       body: param,
       json: true,
-      timeout: 600,
+      timeout: TIMEOUT,
     };
 
     this.loadProxy();
   }
 
   private loadProxy() {
-    if (this.needProxy) {
+    if (this.isNeedProxy) {
       this.log.debug('feflow report with proxy.');
       this.rpOption.proxy = REPORT_PROXY;
     } else {
@@ -35,7 +38,7 @@ export default class ApiController {
   private retryReport(cb) {
     this.retryCount++;
     this.log.debug('feflow report timeout, and retry. ', this.retryCount);
-    this.needProxy = !this.needProxy;
+    this.isNeedProxy = !this.isNeedProxy;
     this.loadProxy();
     this.doReport(cb);
   }
@@ -44,6 +47,7 @@ export default class ApiController {
     this.log.debug('feflow report start.');
     rp(this.rpOption)
       .then(response => {
+        isNeedProxyLocal = this.isNeedProxy;
         this.log.debug('feflow report success.');
         cb(response || {});
       })
