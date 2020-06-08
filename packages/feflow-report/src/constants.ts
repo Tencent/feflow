@@ -14,7 +14,7 @@ export const REPORT_URL = `${BASIC_URL}/api/v1/report/command`;
 
 export const REPORT_PROXY = 'http://127.0.0.1:12639';
 
-export const TIMEOUT = 600;
+export const TIMEOUT = 1000;
 
 export const REPORT_STATUS = {
   START: 0,
