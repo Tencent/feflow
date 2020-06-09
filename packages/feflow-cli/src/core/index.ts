@@ -366,7 +366,10 @@ export default class Feflow {
   async call(name: any, ctx: any) {
     const args = ctx.args;
     if (args.h || args.help) {
-      return this.showCommandOptionDescription(name, ctx);
+      const hasHelp = await this.showCommandOptionDescription(name, ctx);
+      if (hasHelp) {
+        return;
+      }
     }
     const cmd = this.commander.get(name);
     if (cmd) {
@@ -486,8 +489,7 @@ export default class Feflow {
       return registriedCommand.call(this, ctx);
     }
     if (commandLine.length == 0) {
-      ctx.logger.warn(`Current command dosen't have help message`);
-      return;
+      return false;
     }
 
     let sections = [];
@@ -496,5 +498,6 @@ export default class Feflow {
     const usage = commandLineUsage(sections);
 
     console.log(usage);
+    return true;
   }
 }
