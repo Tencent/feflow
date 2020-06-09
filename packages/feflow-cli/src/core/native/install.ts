@@ -57,7 +57,6 @@ async function getRepoInfo(ctx: any, packageName: string) {
     url: `${serverUrl}apply/getlist?name=${packageName}`,
     method: 'GET'
   };
-
   return rp(options).then((response: any) => {
     const data = JSON.parse(response);
     return data.data && data.data[0];
@@ -290,10 +289,11 @@ async function installPlugin(
         curPkgInfo.repoName,
         curPkgInfo.installVersion
       );
+      // call {pkg}@{version} and disable-check
       linker.register(
         pluginBin,
         pluginLib,
-        `${commandName}@${curPkgInfo.installVersion}`,
+        `${commandName}@${curPkgInfo.installVersion} --disable-check`,
         commandName
       );
     } catch (e) {
