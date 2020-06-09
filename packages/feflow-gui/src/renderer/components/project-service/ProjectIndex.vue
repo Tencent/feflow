@@ -45,7 +45,7 @@
                 </el-form-item>
                 <el-form-item label="安装路径" prop="editorPath">
                     <el-input v-model="editorSettingForm.editorPath" placeholder="请输入编辑器安装路径"></el-input>
-                    <div  class="project-index__dialog-tips" v-if="editorSettingForm.editorType">例如：{{editorPathExample[editorSettingForm.editorType][osType]}}</div>
+                    <div  class="project-index__dialog-tips" v-if="editorSettingForm.editorType">例如：{{editorPathDefault[editorSettingForm.editorType][osType]}}</div>
                 </el-form-item>
             </el-form>
 
@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import fs from 'fs'
 import os from 'os'
 import { exec as ProcessExec, spawn as ProcessSpawn } from 'child_process'
 
@@ -75,48 +76,69 @@ import ProjectProfile from './ProjectProfile'
 const EDITOR_ENV = {
     subl: {
         Windows: `setx PATH "%PATH%;%APP_PATH%"`,
-        MacOS: `# Add Sublime Text (subl)\nexport PATH="\$PATH:%APP_PATH%/Contents/SharedSupport/bin"`
+        MacOS: `# Add Sublime Text (subl)\nexport PATH="\$PATH:%APP_PATH%/Contents/SharedSupport/bin"`,
+        Linux: `sudo ln -s %APP_PATH%/sublime_text /usr/local/bin/subl`
     },
     code: {
         Windows: `setx PATH "%PATH%;%APP_PATH%"`,
-        MacOS: `# Add Visual Studio Code (code)\nexport PATH="\$PATH:%APP_PATH%/Contents/Resources/app/bin"`
+        MacOS: `# Add Visual Studio Code (code)\nexport PATH="\$PATH:%APP_PATH%/Contents/Resources/app/bin"`,
+        Linux: `sudo ln -s %APP_PATH%/code /usr/local/bin/code`
     },
     atom: {
         Windows: `setx PATH "%PATH%;%APP_PATH%"`,
-        MacOS: `# Add Atom (atom)\nexport PATH="\\\$PATH:%APP_PATH%/Contents/MacOS"`
+        MacOS: `# Add Atom (atom)\nexport PATH="\\\$PATH:%APP_PATH%/Contents/MacOS"`,
+        Linux: `sudo ln -s %APP_PATH%/atom /usr/local/bin/atom`
     },
     webstorm: {
         Windows: `setx PATH "%PATH%;%APP_PATH%"`,
-        MacOS: `# Add WebStom (webstorm)\nexport PATH="\\\$PATH:%APP_PATH%/Contents/MacOS"`
+        MacOS: `# Add WebStom (webstorm)\nexport PATH="\\\$PATH:%APP_PATH%/Contents/MacOS"`,
+        Linux: `sudo ln -s %APP_PATH%/bin/webstorm.sh /usr/local/bin/webstorm`
     }
 }
 
 // 配置提示
-const EDITOR_PATH_EXAMPLE = {
+const EDITOR_PATH_DEFAULT = {
     subl: {
         Windows: 'C:\\Program Files\\Sublime Text 3',
-        MacOS: '/Applications/Sublime Text.app'
+        MacOS: '/Applications/Sublime Text.app',
+        Linux: '/path/to/sublime_text_3'
     },
     atom: {
         Windows: 'C:\\Users\\{username}\\AppData\\Local\\atom',
-        MacOS: '/Applications/Atom.app'
+        MacOS: '/Applications/Atom.app',
+        Linux: '/path/to/atom'
     },
     code: {
         Windows: 'C:\\users\\{username}\\AppData\\Local\\Programs\\Microsoft VS Code',
-        MacOS: '/Applications/Visual Studio Code.app'
+        MacOS: '/Applications/Visual Studio Code.app',
+        Linux: '/path/to/VSCode'
     },
     webstorm: {
         Windows: 'C:\\Program Files\\JetBrains\\WebStorm',
-        MacOS: '/Applications/WebStorm.app'
+        MacOS: '/Applications/WebStorm.app',
+        Linux: '/path/to/webstorm'
     }
 }
+// 检查目录是否存在
+const checkIfExist = (path) => {
+    return fs.existsSync(path)
+}
+
 export default {
     name: 'project-index',
     data() {
+        const validateIfExist = (rule, value, callback) => {
+            if (checkIfExist(value)) {
+                callback()
+            } else {
+                callback(new Error('该目录不存在，请重新输入'))
+            }
+        }
+
         return {
             osType: getOSType(),
             projectPath: getUrlParam('path'),
-            editorPathExample: EDITOR_PATH_EXAMPLE,
+            editorPathDefault: EDITOR_PATH_DEFAULT,
             activeTabId: 0,
             showEditorDialog: false,
             editorTypeOptions: [
@@ -152,7 +174,9 @@ export default {
                     { required: true, message: '请选择编辑器类型', trigger: 'change' }
                 ],
                 editorPath: [
-                    { required: true, message: '安装路径不能为空', trigger: 'blur' }
+                    { required: true, message: '安装路径不能为空', trigger: 'change' },
+                    { required: true, message: '安装路径不能为空', trigger: 'blur' },
+                    { validator: validateIfExist, trigger: 'blur' }
                 ]
             },
             projectSides: [
@@ -180,6 +204,20 @@ export default {
         ProjectProfile,
         SideBar
     },
+    watch: {
+        'editorSettingForm.editorType': {
+            handler(nVal, oVal) {
+                if (nVal && (nVal !== oVal)) {
+                    const installPath = this.editorPathDefault[nVal][this.osType]
+                    if (checkIfExist(installPath)) {
+                        this.editorSettingForm.editorPath = installPath
+                    } else {
+                        this.editorSettingForm.editorPath = ''
+                    }
+                }
+            }
+        }
+    },
     methods: {
         // 打开项目所在文件夹
         openInFinder() {
@@ -205,7 +243,6 @@ export default {
 
             // 错误处理
             childProcess.on('error', (data) => {
-                console.log(data)
                 if (data) {
                     this.$message({
                         type: 'error',
@@ -221,10 +258,17 @@ export default {
             const installPath = this.editorSettingForm.editorPath
             const homedir = os.homedir()
 
+            // 检查安装路径是否存在
+            if (!checkIfExist(installPath)) {
+                return
+            }
+
             try {
                 let shell = ''
                 let shellConf = ''
                 const envContent = EDITOR_ENV[command][this.osType]
+
+                // 执行命令
                 if (this.osType === 'MacOS') {
                     shellConf = `${homedir}/.bash_profile`
                     shell = `cat << EOF >> ~/.bash_profile\n\n${envContent.replace('%APP_PATH%', installPath)}\nEOF`
@@ -237,7 +281,7 @@ export default {
                         console.error(err)
                         this.$message({
                             type: 'error',
-                            text: `对不起，编辑器打开失败：${err}`
+                            message: `对不起，编辑器打开失败：${err}`
                         })
                         return
                     }
@@ -248,7 +292,7 @@ export default {
                             console.error(err)
                             this.$message({
                                 type: 'error',
-                                text: `对不起，编辑器打开失败：${err}`
+                                message: `对不起，编辑器打开失败：${err}`
                             })
                             return
                         }
@@ -259,7 +303,7 @@ export default {
                         // 用户提示
                         this.$message({
                             type: 'success',
-                            text: '编辑器配置完成'
+                            message: '编辑器配置完成'
                         })
 
                         // 编辑器打开
@@ -270,7 +314,7 @@ export default {
             } catch (err) {
                 this.$message({
                     type: 'error',
-                    text: `对不起，编辑器打开失败：${err}`
+                    message: `对不起，编辑器打开失败：${err}`
                 })
                 console.error(err)
             }
