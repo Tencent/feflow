@@ -1,3 +1,13 @@
+## [0.20.5](https://github.com/Tencent/feflow/compare/v0.20.3...v0.20.5) (2020-06-09)
+
+
+### Features
+
+* add git ssh check timeout ([ed5d176](https://github.com/Tencent/feflow/commit/ed5d17669ffab3b39382268c3f10efcfb9ff31bc))
+* add postinstall script to initialize bin path ([4993355](https://github.com/Tencent/feflow/commit/499335552364a4b88a8a35c67b54e892e256c094))
+
+
+
 ## [0.20.3](https://github.com/Tencent/feflow/compare/v0.20.2...v0.20.3) (2020-06-05)
 
 
