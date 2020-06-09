@@ -6,7 +6,6 @@
 
 <script>
 // 按需加载echarts 参考：https://github.com/apache/incubator-echarts/blob/master/index.js
-// 使用require方式命名更方便一些
 // 引入基本模板
 let echarts = require('echarts/lib/echarts');
 // 引入柱状图组件
@@ -25,20 +24,7 @@ export default {
     props: {
         echartData: { // 折线名
             type: Array,
-            default: () => [
-                // {
-                //     text: 'pv',
-                //     color: '#456ef4', // 折线图颜色
-                //     dataLsit: [120, 132, 101, 134, 90, 230, 210, 123], // 折线图数值
-                //     getXAxis: ['周一', '周二', '周三', '周四', '周五', '周六', '周日', '周八'] // 目前只支持一条横坐标
-                // },
-                // {
-                //     text: 'uv',
-                //     color: '#3fe0c2',
-                //     dataLsit: [1210, 1132, 1101, 1134, 910, 2310, 2110, 1123],
-                //     getXAxis: ['周一', '周二', '周三', '周四', '周五', '周六', '周日', '周八']
-                // }
-            ]
+            default: () => []
         }
     },
     data() {
