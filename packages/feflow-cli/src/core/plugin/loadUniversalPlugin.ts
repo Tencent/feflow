@@ -14,6 +14,8 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
+const excludeAgrs = ['--disable-check']
+
 function loadPlugin(
   ctx: any,
   pkg: string,
@@ -75,7 +77,12 @@ async function execPlugin(
   // injection plugin path into the env
   process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
   plugin.preRun.run();
-  const args = process.argv.slice(3);
+  const args = process.argv.slice(3).filter(arg => {
+    if (excludeAgrs.includes(arg)) {
+      return false;
+    }
+    return true;
+  });
   try {
     plugin.command.run(...args);
   } catch(e) {

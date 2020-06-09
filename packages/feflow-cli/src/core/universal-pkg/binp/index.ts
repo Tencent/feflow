@@ -11,6 +11,13 @@ export default class Binp {
 
   private currentOs: NodeJS.Platform;
 
+  private alternativeProfiles = [
+    '.profile',
+    '.bashrc',
+    '.bash_profile',
+    '.zshrc'
+  ];
+
   constructor() {
     this.currentOs = os.platform();
   }
@@ -32,7 +39,11 @@ export default class Binp {
     if (this.currentOs === 'win32') {
       this.registerToWin32(binPath, prior);
     } else {
+      const profile = this.checkTerminal(binPath, prior);
       this.registerToUnixLike(binPath, prior);
+      if (profile) {
+        this.handleUnsupportedTerminal(profile);
+      }
     }
   }
 
@@ -65,16 +76,88 @@ export default class Binp {
     }
     const home = osenv.home();
     const zshProfile = this.detectZshProfile(home);
-    fs.appendFileSync(zshProfile, `\n${toPath}\n`);
+    this.addToPath(zshProfile, toPath);
     const bashProfile = this.detectBashProfile(home);
-    fs.appendFileSync(bashProfile, `\n${toPath}\n`);
+    this.addToPath(bashProfile, toPath);
     if (prior) {
       toPath = `set path = (${binPath} $path)`;
     } else {
       toPath = `set path = ($path ${binPath})`;
     }
     const cshProfile = this.detectCshProfile(home);
-    fs.appendFileSync(cshProfile, `\n${toPath}\n`);
+    this.addToPath(cshProfile, toPath);
+  }
+
+  private checkTerminal(
+    binPath: string,
+    prior: boolean
+  ) {
+    const [profile, setStatement] = this.detectProfile(binPath, prior);
+    if (!profile || !setStatement) {
+      return;
+    }
+    const content = fs.readFileSync(profile)?.toString();
+    if (content?.indexOf(setStatement) === -1) {
+      return profile;
+    }
+    this.handleUnsupportedTerminal(profile);
+  }
+
+  private handleUnsupportedTerminal(profile: string) {
+    console.error('feflow is ready, but the current terminal cannot use feflow normally, please open a new terminal or execute the following statement:');
+    console.error(`source ${profile}`);
+    process.exit(1);
+  }
+
+  private detectProfile(
+    binPath: string,
+    prior: boolean
+  ): [string | undefined, string | undefined] {
+    const home = osenv.home();
+    const shell = process.env['SHELL'];
+    let toPath: string;
+    if (prior) {
+      toPath = `export PATH=${binPath}:$PATH`;
+    } else {
+      toPath = `export PATH=$PATH:${binPath}`;
+    }
+    if (!shell) {
+      return [undefined, undefined];
+    }
+    const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
+    let shellType: string = '';
+    if (Array.isArray(shellMatch) && shellMatch.length > 0) {
+      shellType = shellMatch[0];
+    }
+    switch (shellType) {
+      case 'zsh':
+        return [this.detectZshProfile(home), toPath];
+      case 'bash':
+      case 'sh':
+        return [this.detectBashProfile(home), toPath];
+      case 'zcsh':
+      case 'csh':
+        if (prior) {
+          toPath = `set path = (${binPath} $path)`;
+        } else {
+          toPath = `set path = ($path ${binPath})`;
+        }
+        return [this.detectCshProfile(home), toPath];
+    }
+    const profile = this.detectAlternativeProfiles(home);
+    if (profile) {
+      return [profile, toPath];
+    }
+    return [undefined, undefined];
+  }
+
+  
+  private detectAlternativeProfiles(home: string): string | undefined {
+    const findFunc = (p: string) => {
+      const absProfile = path.join(home, p);
+      return fs.existsSync(absProfile);
+    };
+    return this.alternativeProfiles.find(findFunc);
   }
 
   private detectBashProfile(home: string): string {
@@ -90,6 +173,10 @@ export default class Binp {
 
   private detectZshProfile(home: string): string {
     return path.join(home, '.zshrc');
+  }
+
+  addToPath(file: string, content: string) {
+    fs.appendFileSync(file, `\n${content}\n`);
   }
 
 }

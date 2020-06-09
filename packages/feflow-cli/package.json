@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
@@ -22,7 +22,6 @@
     "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "postinstall": "fef",
     "prepublish": "npm run build"
   },
   "devDependencies": {
