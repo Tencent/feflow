@@ -1,14 +1,25 @@
 import spawn from 'cross-spawn';
 
 async function isSupportSSH(url: string): Promise<any> {
-  const ret = spawn.sync('ssh', ['-vT', url]);
-  const stderr = ret?.stderr?.toString();
+  const res: any = Promise.race([
+    spawn.sync('ssh', ['-vT', url]),
+    new Promise((resolve: any, reject: any) => {
+      setTimeout(() => {
+        reject(new Error('SSH check timeout'));
+      }, 1000);
+    })
+  ]);
 
-  if (/Authentication succeeded/.test(stderr)) {
-    return true;
-  }
-
-  return false;
+  res.then((ret: any) => {
+    const stderr = ret?.stderr?.toString();
+    if (/Authentication succeeded/.test(stderr)) {
+      return true;
+    }
+    return false;
+  }).catch((err: any) => {
+    console.log('Git ssh check timeout, use https');
+    return false;
+  });
 }
 
 function getHostname(url: string): string {

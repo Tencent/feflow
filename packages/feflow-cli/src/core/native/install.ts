@@ -60,7 +60,9 @@ async function getRepoInfo(ctx: any, packageName: string) {
   return rp(options).then((response: any) => {
     const data = JSON.parse(response);
     return data.data && data.data[0];
-  });
+  }).catch((err: any) => {
+    ctx.logger.debug('Get repo info error', err);
+  });;
 }
 
 function getRepoName(repoUrl: string): string | undefined {
