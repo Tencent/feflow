@@ -7,7 +7,6 @@ const { encrypt, getPwdCode } = require('@tencent/aegis-des');
 // 在管理后台获取到的密钥
 const apiKey = 'cH60tFcKKEJP3dG1IH4OGw==ada102c7';
 
-// 自己的rtx(企业微信名)
 const loginName = 'feflow_virtual';
 
 const url = 'https://aegis.ivweb.io';
@@ -30,7 +29,8 @@ export async function getCredential() {
 }
 export async function getPvByDate(aegisId, startDate, endDate, credential) {
     // 获取凭据 并添加到header中
-    credential = credential || await getCredential()
+    credential = credential || await getCredential();
+    // console.log(credential);
     // 获取自己的项目列表
     const result = await http.get(
         `${url}/api/interface/pv/countByDay?proId=${aegisId}&startDate=${startDate}&endDate=${endDate}`,
