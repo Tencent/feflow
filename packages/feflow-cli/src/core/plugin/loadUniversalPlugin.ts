@@ -51,13 +51,11 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
       await execPlugin(ctx, pkg, newVersion, plugin);
-    });
+    }, [], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
-      console.log('run invisible plugin', `${pluginCommand}@${version}`);
-
       await execPlugin(ctx, pkg, version, plugin);
-    });
+    }, [], `${pkg}@${version}`);
   }
 }
 
