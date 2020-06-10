@@ -4,3 +4,4 @@
  */
 export { default as curry } from './curry'
 export { default as getUrlParam } from './getUrlParam'
+export { default as getOSType } from './getOSType'
