@@ -1,3 +1,12 @@
+## [0.20.6](https://github.com/Tencent/feflow/compare/v0.20.5...v0.20.6) (2020-06-10)
+
+
+### Bug Fixes
+
+* fetch tags fail ([c44b20f](https://github.com/Tencent/feflow/commit/c44b20fb557ebdb447ccebcd2f442e01facd7272))
+
+
+
 ## [0.20.5](https://github.com/Tencent/feflow/compare/v0.20.3...v0.20.5) (2020-06-09)
 
 
