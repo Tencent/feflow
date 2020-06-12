@@ -11,11 +11,12 @@ interface ReportContext {
   };
   commander: {
     store: {};
+    invisibleStore: {};
   };
   hook: {
     on(eventName: string, listener: any): void;
   };
-  version: string
+  version: string;
 }
 
 interface ReportBody {
@@ -53,7 +54,8 @@ class Report {
   private registerHook() {
     const { cmd, args } = this;
     this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
-      this.commandSource = this.ctx.commander?.store[cmd]?.pluginName || '';
+      const commander = this.ctx.commander;
+      this.commandSource = commander?.store[cmd]?.pluginName || commander?.invisibleStore[cmd]?.pluginName || '';
       this.ctx.log.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);

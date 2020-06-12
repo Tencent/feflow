@@ -26,6 +26,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
+import CommandPicker from './commandPicker';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -74,25 +75,33 @@ export default class Feflow {
   }
 
   async init(cmd: string) {
+    await this.initClient();
+    await this.initPackageManager();
+
+    const picker = new CommandPicker(this);
+    if (picker.isAvailable) {
+      return picker.pickCommand(cmd);
+    }
+
     if (cmd === 'config') {
-      await this.initClient();
-      await this.loadNative();
+      await this.loadNative(); // TODO
     } else {
-      await this.initClient();
-      await this.initPackageManager();
       const disableCheck =
         !this.args['disable-check'] && !(this.config.disableCheck === 'true');
       if (disableCheck) {
-        await this.checkCliUpdate();
-        await this.checkUpdate();
+        await this.checkCliUpdate(); // TODO
+        await this.checkUpdate(); // TODO
         // await this.checkUniversalPluginAndUpdate();
       }
-      await this.loadNative();
+      await this.loadNative(); // TODO
       await this.loadInternalPlugins();
-      await loadPlugins(this);
-      await loadUniversalPlugin(this);
-      await loadDevkits(this);
+      await loadPlugins(this); // TODO
+      await loadUniversalPlugin(this); // TODO
+      await loadDevkits(this); // TODO
     }
+
+    // TODO 第一次运行config时，只能写入原生的命令
+    await picker.checkValidAndUpdate();
   }
 
   initClient() {
