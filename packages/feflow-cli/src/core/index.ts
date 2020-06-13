@@ -83,17 +83,17 @@ export default class Feflow {
       return picker.pickCommand();
     }
 
-    // const disableCheck =
-    //   !this.args['disable-check'] && !(this.config.disableCheck === 'true');
-    // if (disableCheck) {
-    //   await this.checkCliUpdate();
-    //   await this.checkUpdate();
-    //   // await this.checkUniversalPluginAndUpdate();
-    // }
+    const disableCheck =
+      !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+    if (disableCheck) {
+      await this.checkCliUpdate();
+      await this.checkUpdate();
+      // await this.checkUniversalPluginAndUpdate();
+    }
     if (!picker.isUniverslPlugin()) {
-      console.time('load plugin')
+      console.time('load plugin');
       await loadPlugins(this);
-      console.timeEnd('load plugin')
+      console.timeEnd('load plugin');
     }
     await loadUniversalPlugin(this);
     await loadDevkits(this);
@@ -217,7 +217,7 @@ export default class Feflow {
 
   checkUpdate() {
     const { root, rootPkg, config, logger } = this;
-    if (!config) {
+    if (!config || !this.isTimeToCheckUpdate()) {
       return;
     }
 
@@ -286,6 +286,7 @@ export default class Feflow {
           false,
           true
         ).then(() => {
+          this.updateCheckVersionTsp();
           this.logger.info('Plugin update success');
         });
       }
@@ -412,19 +413,40 @@ export default class Feflow {
     });
   }
 
-  async checkCliUpdate() {
-    const { args, version, config, configPath } = this;
+  isTimeToCheckUpdate() {
+    const { config } = this;
+    let shouldCheckUpdate = true;
+    const TIME_TO_CHECK_VERSION = 1000 * 3600 * 10;
     if (!config) {
+      return shouldCheckUpdate;
+    }
+    if (
+      config.lastUpdateCheck &&
+      +new Date() - parseInt(config.lastUpdateCheck, 10) <=
+        TIME_TO_CHECK_VERSION
+    ) {
+      shouldCheckUpdate = false;
+    }
+    return shouldCheckUpdate;
+  }
+  updateCheckVersionTsp() {
+    const { config, configPath } = this;
+    safeDump(
+      {
+        ...config,
+        lastUpdateCheck: +new Date()
+      },
+      configPath
+    );
+  }
+
+  async checkCliUpdate() {
+    const { args, version, config } = this;
+    if (!config || !this.isTimeToCheckUpdate()) {
       return;
     }
     const packageManager = config.packageManager;
     const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
-    if (
-      config.lastUpdateCheck &&
-      +new Date() - parseInt(config.lastUpdateCheck, 10) <= 1000 * 3600 * 24
-    ) {
-      return;
-    }
     const registryUrl = await getRegistryUrl(packageManager);
     const latestVersion: any = await packageJson(
       '@feflow/cli',
@@ -464,13 +486,7 @@ export default class Feflow {
       if (answer.ifUpdate) {
         await this.updateCli(packageManager);
       } else {
-        safeDump(
-          {
-            ...config,
-            lastUpdateCheck: +new Date()
-          },
-          configPath
-        );
+        this.updateCheckVersionTsp();
       }
     } else {
       this.logger.debug(`Current version is already latest.`);
