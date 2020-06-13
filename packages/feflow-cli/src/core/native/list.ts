@@ -48,23 +48,16 @@ function getModuleVersion(dir: string, name: string): string {
   }
 }
 
-const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
 
-// TODO
-// remove command store limite
 function loadUniversalPlugin(ctx: any): any[] {
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   let availablePluigns: any[] = [];
 
-  const pluginsInCommand = ctx.commander.store;
   for (const [pkg, version] of universalPkg.getInstalled()) {
-    const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
-    if (pluginsInCommand[pluginCommand]) {
       availablePluigns.push({
         name: pkg,
         version: version
       });
-    }
   }
 
   return availablePluigns;

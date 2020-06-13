@@ -131,7 +131,7 @@ export default class CommandPicker {
   // 从配置文件中获取到当前命令的插件路径，然后注册进入commander
   pickCommand() {
     this.ctx.logger.debug('pickCommand');
-    const { path, type } = this.getCommandConfig();
+    const { path, type } = this.getCommandConfig() || {};
     switch (type) {
       case NATIVE_TYPE:
       case PLUGIN_TYPE: {
