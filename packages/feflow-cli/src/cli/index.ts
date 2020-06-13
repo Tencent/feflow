@@ -73,7 +73,7 @@ export default function entry() {
 
   const requiredVersion = pkg.engines.node;
   checkNodeVersion(requiredVersion, '@feflow/cli');
-
+  console.time('point 1')
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
   let cmd: any = args._.shift();
@@ -107,11 +107,13 @@ export default function entry() {
     feflow.cmd = cmd;
 
     feflow.hook.emit(HOOK_TYPE_BEFORE);
-
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
+      console.time('point run command')
       return feflow
         .call(cmd, feflow)
         .then(() => {
+          console.timeEnd('point run command')
+          console.timeEnd('point 1')
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
         })

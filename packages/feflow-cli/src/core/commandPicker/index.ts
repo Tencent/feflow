@@ -5,45 +5,132 @@
 
 // .feflowCache 存命令和对应插件路径的映射关系
 // 下指配置文件
+import path from 'path';
+import fs from 'fs';
+import { parseYaml, safeDump } from '../../shared/yaml';
+import { CACHE_FILE } from '../../shared/constant';
+import chalk from 'chalk';
+
+const internalPlugins = {
+  devtool: '@feflow/feflow-plugin-devtool'
+};
 
 export default class CommandPicker {
-  commandMap: any;
+  cache: any;
   root: string;
-  // 当前picker是否可用, 第一次使用时是不可用的
-  isAvailable: boolean;
+  cmd: string;
+  ctx: any;
+  cacheFilePath: string;
+  isHelp: boolean;
 
-  constructor(ctx: any) {
-    this.commandMap = {};
+  constructor(ctx: any, cmd: string) {
+    this.cache = {};
     this.root = ctx.root;
-    this.isAvailable = false;
+    this.ctx = ctx;
+    this.cmd = cmd;
+    this.cacheFilePath = path.join(this.root, CACHE_FILE);
+    this.isHelp = ctx.args.h || ctx.args.help;
 
     this.init();
-  }
 
-  // 第一次执行时，需要将commander中的store的信息写入配置文件
-  init() {
-    this.getCommandMap()
-    if(this.commandMap.commandPickerMap) {
-        
+    if (this.isHelp) {
+      this.cmd = 'help';
+      this.pickCommand();
     }
   }
 
-  // 检查配置文件并更新
-  async checkValidAndUpdate() {}
+  isAvailable() {
+    return this.isHelp ? false : !!this.getCommandConfig();
+  }
 
+  async init() {
+    this.checkAndUpdate();
+  }
+
+  checkAndUpdate() {
+    const { cacheFilePath } = this;
+    if (!fs.existsSync(cacheFilePath)) {
+      this.initCacheFile(cacheFilePath);
+    } else {
+      this.cache = parseYaml(cacheFilePath);
+    }
+
+    const { token: versionFromCache } = this.cache;
+    if (!this.checkCacheToken(versionFromCache)) {
+      this.initCacheFile(cacheFilePath);
+    }
+  }
+
+  checkCacheToken(tokenFromCache: string) {
+    return tokenFromCache === this.ctx.version;
+  }
+
+  getCacheToken() {
+    return this.ctx.version;
+  }
+
+  initCacheFile(filePath: string) {
+    const cacheObj: any = {};
+    cacheObj.commandPickerMap = this.initCommandPickerMap();
+    cacheObj.token = this.getCacheToken();
+    safeDump(cacheObj, filePath);
+    this.cache = cacheObj;
+  }
+
+  getCommandConfig() {
+    return this.cache?.commandPickerMap?.[this.cmd];
+  }
+
+  initCommandPickerMap() {
+    const commandPickerMap = {};
+    const nativePath = path.join(__dirname, '../native');
+
+    // load native command
+    fs.readdirSync(nativePath)
+      .filter((file) => {
+        return file.endsWith('.js');
+      })
+      .forEach((file) => {
+        const command = file.split('.')[0];
+        commandPickerMap[command] = {
+          path: path.join(__dirname, '../native', file),
+          type: 'native'
+        };
+      });
+
+    // load internal plugins
+    for (const command of Object.keys(internalPlugins)) {
+      commandPickerMap[command] = {
+        path: internalPlugins[command],
+        type: 'plugin'
+      };
+    }
+
+    return commandPickerMap;
+  }
   // 从配置文件中获取到当前命令的插件路径，然后注册进入commander
-  pickCommand(cmd: string) {}
-
-  // 获取配置文件
-  getCommandMap() {
-
-  }
-}
-
-const config = {
-    commandPickerMap: {
-        help: "./source",
-        version: "./source",
-        list: "./source",
+  pickCommand() {
+    console.log('pickCommand');
+    const { path, type } = this.getCommandConfig();
+    switch (type) {
+      case 'native':
+      case 'plugin': {
+        try {
+          require(path)(this.ctx);
+        } catch (error) {
+          this.ctx.logger.error(
+            { err: error },
+            'command load failed: %s',
+            chalk.magenta(name)
+          );
+        }
+        break;
+      }
+      case 'universal_plugin': {
+        break;
+      }
+      default: {
+      }
     }
+  }
 }

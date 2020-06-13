@@ -78,30 +78,25 @@ export default class Feflow {
     await this.initClient();
     await this.initPackageManager();
 
-    const picker = new CommandPicker(this);
-    if (picker.isAvailable) {
-      return picker.pickCommand(cmd);
+    const picker = new CommandPicker(this, cmd);
+    if (picker.isAvailable()) {
+      return picker.pickCommand();
     }
 
-    if (cmd === 'config') {
-      await this.loadNative(); // TODO
-    } else {
-      const disableCheck =
-        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
-      if (disableCheck) {
-        await this.checkCliUpdate(); // TODO
-        await this.checkUpdate(); // TODO
-        // await this.checkUniversalPluginAndUpdate();
-      }
-      await this.loadNative(); // TODO
-      await this.loadInternalPlugins();
-      await loadPlugins(this); // TODO
-      await loadUniversalPlugin(this); // TODO
-      await loadDevkits(this); // TODO
-    }
-
-    // TODO 第一次运行config时，只能写入原生的命令
-    await picker.checkValidAndUpdate();
+    // const disableCheck =
+    //   !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+    // if (disableCheck) {
+    //   await this.checkCliUpdate();
+    //   await this.checkUpdate();
+    //   // await this.checkUniversalPluginAndUpdate();
+    // }
+    console.time('load plugin');
+    await loadPlugins(this);
+    console.timeEnd('load plugin');
+    console.time('loadUniversalPlugin');
+    await loadUniversalPlugin(this);
+    console.timeEnd('loadUniversalPlugin');
+    await loadDevkits(this);
   }
 
   initClient() {
