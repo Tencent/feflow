@@ -90,12 +90,12 @@ export default class Feflow {
     //   await this.checkUpdate();
     //   // await this.checkUniversalPluginAndUpdate();
     // }
-    console.time('load plugin');
-    await loadPlugins(this);
-    console.timeEnd('load plugin');
-    console.time('loadUniversalPlugin');
+    if (!picker.isUniverslPlugin()) {
+      console.time('load plugin')
+      await loadPlugins(this);
+      console.timeEnd('load plugin')
+    }
     await loadUniversalPlugin(this);
-    console.timeEnd('loadUniversalPlugin');
     await loadDevkits(this);
   }
 

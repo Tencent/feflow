@@ -1,19 +1,19 @@
-// NOTE
-// CommandPicker是一个中间层，接收到当前用户执行的命令后，注册对应的执行器，并执行。
-
-// 维护一套命令和插件路径的映射文件.feflowCache，命令被激活后才注册，然后调用。
-
-// .feflowCache 存命令和对应插件路径的映射关系
-// 下指配置文件
-import path from 'path';
 import fs from 'fs';
-import { parseYaml, safeDump } from '../../shared/yaml';
-import { CACHE_FILE } from '../../shared/constant';
+import path from 'path';
+import osenv from 'osenv';
 import chalk from 'chalk';
+import { parseYaml, safeDump } from '../../shared/yaml';
+import { CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
+import { getPluginsList } from '../plugin/loadPlugins';
 
 const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool'
 };
+
+const NATIVE_TYPE = 'native';
+const PLUGIN_TYPE = 'plugin';
+
+const pluginRegex = new RegExp('feflow-plugin-(.*)', 'i');
 
 export default class CommandPicker {
   cache: any;
@@ -84,6 +84,7 @@ export default class CommandPicker {
   initCommandPickerMap() {
     const commandPickerMap = {};
     const nativePath = path.join(__dirname, '../native');
+    const logger = this.ctx.logger;
 
     // load native command
     fs.readdirSync(nativePath)
@@ -94,7 +95,7 @@ export default class CommandPicker {
         const command = file.split('.')[0];
         commandPickerMap[command] = {
           path: path.join(__dirname, '../native', file),
-          type: 'native'
+          type: NATIVE_TYPE
         };
       });
 
@@ -102,19 +103,38 @@ export default class CommandPicker {
     for (const command of Object.keys(internalPlugins)) {
       commandPickerMap[command] = {
         path: internalPlugins[command],
-        type: 'plugin'
+        type: PLUGIN_TYPE
       };
+    }
+
+    // load plugins
+    const [err, plugins] = getPluginsList(this.ctx);
+    const home = path.join(osenv.home(), FEFLOW_ROOT);
+
+    if (!err) {
+      for (const plugin of plugins) {
+        const pluginPath = path.join(home, 'node_modules', plugin);
+        // TODO
+        // read plugin command from the key which from its package.json
+        const command = (pluginRegex.exec(plugin) || [])[1];
+        commandPickerMap[command] = {
+          path: pluginPath,
+          type: PLUGIN_TYPE
+        };
+      }
+    } else {
+      logger.debug('picker load plugin failed', err);
     }
 
     return commandPickerMap;
   }
   // 从配置文件中获取到当前命令的插件路径，然后注册进入commander
   pickCommand() {
-    console.log('pickCommand');
+    this.ctx.logger.debug('pickCommand');
     const { path, type } = this.getCommandConfig();
     switch (type) {
-      case 'native':
-      case 'plugin': {
+      case NATIVE_TYPE:
+      case PLUGIN_TYPE: {
         try {
           require(path)(this.ctx);
         } catch (error) {
@@ -126,11 +146,28 @@ export default class CommandPicker {
         }
         break;
       }
-      case 'universal_plugin': {
-        break;
-      }
       default: {
+        this.ctx.logger.error(
+          `this kind of command is not supported in command picker, ${type}`
+        );
       }
     }
+  }
+
+  isUniverslPlugin() {
+    const universalpluginList = this.ctx.universalPkg.getInstalled();
+    const commandList = [];
+    let isHited = false;
+
+    for (const universal of universalpluginList) {
+      const command = (pluginRegex.exec(universal[0]) || [])[1];
+      commandList.push(command);
+    }
+
+    isHited = commandList.includes(this.cmd);
+    this.ctx.logger.debug(
+      `picker: this command ${isHited ? 'is' : 'is not'} universal plugin`
+    );
+    return isHited;
   }
 }
