@@ -15,6 +15,11 @@ const PLUGIN_TYPE = 'plugin';
 
 const pluginRegex = new RegExp('feflow-plugin-(.*)', 'i');
 
+export const LOAD_PLUGIN = 1 << 0;
+export const LOAD_DEVKIT = 1 << 1;
+export const LOAD_UNIVERSAL_PLUGIN = 1 << 2;
+export const LOAD_ALL = LOAD_PLUGIN | LOAD_DEVKIT | LOAD_UNIVERSAL_PLUGIN;
+
 export default class CommandPicker {
   cache: any;
   root: string;
@@ -171,5 +176,13 @@ export default class CommandPicker {
       `picker: this command ${isHited ? 'is' : 'is not'} universal plugin`
     );
     return isHited;
+  }
+
+  getLoadOrder() {
+    if (this.isUniverslPlugin()) {
+      return LOAD_UNIVERSAL_PLUGIN;
+    } else {
+      return LOAD_DEVKIT | LOAD_PLUGIN;
+    }
   }
 }

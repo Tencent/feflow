@@ -26,7 +26,12 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
-import CommandPicker from './commandPicker';
+import CommandPicker, {
+  LOAD_UNIVERSAL_PLUGIN,
+  LOAD_PLUGIN,
+  LOAD_DEVKIT,
+  LOAD_ALL
+} from './commandPicker';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -75,6 +80,9 @@ export default class Feflow {
   }
 
   async init(cmd: string) {
+    const disableCheck =
+      !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+
     await this.initClient();
     await this.initPackageManager();
 
@@ -83,20 +91,12 @@ export default class Feflow {
       return picker.pickCommand();
     }
 
-    const disableCheck =
-      !this.args['disable-check'] && !(this.config.disableCheck === 'true');
     if (disableCheck) {
       await this.checkCliUpdate();
       await this.checkUpdate();
-      // await this.checkUniversalPluginAndUpdate();
     }
-    if (!picker.isUniverslPlugin()) {
-      console.time('load plugin');
-      await loadPlugins(this);
-      console.timeEnd('load plugin');
-    }
-    await loadUniversalPlugin(this);
-    await loadDevkits(this);
+
+    await this.loadCommands(picker.getLoadOrder());
   }
 
   initClient() {
@@ -338,18 +338,23 @@ export default class Feflow {
     });
   }
 
-  loadNative() {
-    return new Promise<any>((resolve, reject) => {
-      const nativePath = path.join(__dirname, './native');
-      fs.readdirSync(nativePath)
-        .filter((file) => {
-          return file.endsWith('.js');
-        })
-        .map((file) => {
-          require(path.join(__dirname, './native', file))(this);
-        });
-      resolve();
-    });
+  async loadCommands(order: number) {
+    this.logger.debug('load order: ', order);
+    if ((order & LOAD_ALL) === LOAD_ALL) {
+      await loadPlugins(this);
+      await loadDevkits(this);
+      await loadUniversalPlugin(this);
+      return;
+    }
+    if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
+      await loadPlugins(this);
+    }
+    if ((order & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
+      await loadUniversalPlugin(this);
+    }
+    if ((order & LOAD_DEVKIT) === LOAD_DEVKIT) {
+      await loadDevkits(this);
+    }
   }
 
   loadInternalPlugins() {
@@ -377,6 +382,7 @@ export default class Feflow {
     }
 
     if (name === 'help') {
+      await this.loadCommands(LOAD_ALL);
       new CommandPicker(ctx, '-h').loadHelp();
     }
 
