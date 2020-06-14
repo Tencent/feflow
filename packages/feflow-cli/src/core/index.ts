@@ -286,7 +286,6 @@ export default class Feflow {
           false,
           true
         ).then(() => {
-          this.updateCheckVersionTsp();
           this.logger.info('Plugin update success');
         });
       }
@@ -376,6 +375,11 @@ export default class Feflow {
         return;
       }
     }
+
+    if (name === 'help') {
+      new CommandPicker(ctx, '-h').loadHelp();
+    }
+
     const cmd = this.commander.get(name);
     if (cmd) {
       await cmd.call(this, ctx);
@@ -426,6 +430,10 @@ export default class Feflow {
         TIME_TO_CHECK_VERSION
     ) {
       shouldCheckUpdate = false;
+    }
+
+    if (shouldCheckUpdate) {
+      this.updateCheckVersionTsp();
     }
     return shouldCheckUpdate;
   }
@@ -485,8 +493,6 @@ export default class Feflow {
       const answer = await inquirer.prompt(askIfUpdateCli);
       if (answer.ifUpdate) {
         await this.updateCli(packageManager);
-      } else {
-        this.updateCheckVersionTsp();
       }
     } else {
       this.logger.debug(`Current version is already latest.`);

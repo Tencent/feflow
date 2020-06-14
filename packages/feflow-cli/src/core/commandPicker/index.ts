@@ -23,22 +23,24 @@ export default class CommandPicker {
   cacheFilePath: string;
   isHelp: boolean;
 
-  constructor(ctx: any, cmd: string) {
+  constructor(ctx: any, cmd: string = 'help') {
     this.cache = {};
     this.root = ctx.root;
     this.ctx = ctx;
     this.cmd = cmd;
     this.cacheFilePath = path.join(this.root, CACHE_FILE);
-    this.isHelp = ctx.args.h || ctx.args.help;
+    this.isHelp = cmd === 'help' || ctx.args.h || ctx.args.help;
 
     this.init();
 
     if (this.isHelp) {
-      this.cmd = 'help';
-      this.pickCommand();
+      this.loadHelp();
     }
   }
-
+  loadHelp() {
+    this.cmd = 'help';
+    this.pickCommand();
+  }
   isAvailable() {
     return this.isHelp ? false : !!this.getCommandConfig();
   }
