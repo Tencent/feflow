@@ -31,7 +31,7 @@ import CommandPicker, {
   LOAD_PLUGIN,
   LOAD_DEVKIT,
   LOAD_ALL
-} from './commandPicker';
+} from './command-picker';
 const pkg = require('../../package.json');
 
 export default class Feflow {
