@@ -36,8 +36,9 @@ export default class Commander {
     this.alias = abbrev(Object.keys(this.store));
   }
 
-  registerInvisible(name: string, fn: Function, options?: Array<object>) {
+  registerInvisible(name: string, fn: Function, options?: Array<object>, pluginName?: string) {
     this.invisibleStore[name.toLowerCase()] = fn;
     this.invisibleStore[name.toLowerCase()].options = options;
+    this.invisibleStore[name.toLowerCase()].pluginName = pluginName;
   }
 }
