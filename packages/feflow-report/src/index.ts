@@ -1,7 +1,7 @@
 import ApiController from './api';
 import { getUserNameFromGit, getSystemInfoByOS, getProjectByPackage } from './common/utils';
 import objectFactory from './common/objectFactory';
-import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER } from './constants';
+import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS } from './constants';
 
 interface ReportContext {
   log: any;
@@ -15,6 +15,7 @@ interface ReportContext {
   hook: {
     on(eventName: string, listener: any): void;
   };
+  version: string
 }
 
 interface ReportBody {
@@ -32,7 +33,7 @@ class Report {
   cmd: string;
   args: object;
   isRecallActivating: boolean;
-  cmdSource: string;
+  commandSource: string;
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
@@ -51,8 +52,8 @@ class Report {
   // register before/after hook event
   private registerHook() {
     const { cmd, args } = this;
-    this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {      
-      this.cmdSource = this.ctx.commander?.store[cmd]?.pluginName || '';
+    this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
+      this.commandSource = this.ctx.commander?.store[cmd]?.pluginName || '';
       this.ctx.log.debug('HOOK_TYPE_BEFORE');
       this.startTime = Date.now();
       this.report(cmd, args);
@@ -96,11 +97,13 @@ class Report {
     return objectFactory
       .create()
       .load('command', cmd)
-      .load('cmd_source', this.cmdSource)
+      .load('feflow_version', this.ctx.version)
+      .load('command_source', this.commandSource)
       .load('user_name', this.userName)
       .load('params', args)
       .load('system_info', this.systemInfo)
       .load('project', this.project)
+      .load('status', REPORT_STATUS.START)
       .done();
   }
 
@@ -111,6 +114,7 @@ class Report {
       .load('recall_id', this.reCallId)
       .load('cost_time', this.costTime)
       .load('is_fail', false)
+      .load('status', REPORT_STATUS.COMPLETED)
       .done();
   }
 
@@ -123,7 +127,7 @@ class Report {
     if (!this.checkBeforeReport(cmd, args)) return;
     try {
       const reportBody: ReportBody = this.getReportBody(cmd, args);
-      this.ctx.log.debug('reportBody', reportBody);
+      this.ctx.log.debug('reportBody', JSON.stringify(reportBody));
       const report = new ApiController(reportBody, this.ctx.log);
       report.doReport(({ result }) => {
         const { id } = result || {};
@@ -143,7 +147,7 @@ class Report {
     if (!this.reCallId) return;
     try {
       const reCallBody: ReportBody = this.getRecallBody();
-      this.ctx.log.debug('reCallBody', reCallBody);
+      this.ctx.log.debug('reCallBody', JSON.stringify(reCallBody));
       const report = new ApiController(reCallBody, this.ctx.log);
       report.doReport();
     } catch (error) {

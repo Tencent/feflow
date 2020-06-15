@@ -51,11 +51,11 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
       await execPlugin(ctx, pkg, newVersion, plugin);
-    });
+    }, [], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
       await execPlugin(ctx, pkg, version, plugin);
-    });
+    }, [], `${pkg}@${version}`);
   }
 }
 
