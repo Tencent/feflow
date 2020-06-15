@@ -1,6 +1,6 @@
 import spawn from 'cross-spawn';
 
-let isSSH;
+let isSSH: any;
 async function isSupportSSH(url: string): Promise<any> {
   if (isSSH) {
     return isSSH;

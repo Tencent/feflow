@@ -31,7 +31,7 @@ let account: any;
 async function download(url: string, filepath: string): Promise<any> {
   const cloneUrl = await transformUrl(url, account);
 
-  console.log('cloneUrl', cloneUrl);
+  console.log('cloneUrl', url);
   return spawn.sync('git', ['clone', cloneUrl, filepath], {
     stdio: 'inherit'
   });

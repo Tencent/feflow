@@ -1,9 +1,16 @@
-## [0.20.6](https://github.com/Tencent/feflow/compare/v0.20.5...v0.20.6) (2020-06-10)
+## [0.20.7](https://github.com/Tencent/feflow/compare/v0.20.5...v0.20.7) (2020-06-15)
 
 
 ### Bug Fixes
 
 * fetch tags fail ([c44b20f](https://github.com/Tencent/feflow/commit/c44b20fb557ebdb447ccebcd2f442e01facd7272))
+* unknown terminal prompts ([#274](https://github.com/Tencent/feflow/issues/274)) ([f1f5349](https://github.com/Tencent/feflow/commit/f1f5349aca1d92c2697e015372c9e874c14072bd))
+
+
+### Features
+
+* **install:** use public account when git http ([532dc92](https://github.com/Tencent/feflow/commit/532dc9239dbda51914adf4c22c01d29ab9ffd56b))
+* report invisible ([#272](https://github.com/Tencent/feflow/issues/272)) ([d5f2cfb](https://github.com/Tencent/feflow/commit/d5f2cfb28505651e4354a5bfd11563c4610c5d74))
 
 
 
