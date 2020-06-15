@@ -42,15 +42,17 @@ export default class CommandPicker {
       this.loadHelp();
     }
   }
+
   loadHelp() {
     this.cmd = 'help';
     this.pickCommand();
   }
+
   isAvailable() {
     return this.isHelp ? false : !!this.getCommandConfig();
   }
 
-  async init() {
+  init() {
     this.checkAndUpdate();
   }
 
@@ -135,7 +137,7 @@ export default class CommandPicker {
 
     return commandPickerMap;
   }
-  // 从配置文件中获取到当前命令的插件路径，然后注册进入commander
+
   pickCommand() {
     this.ctx.logger.debug('pickCommand');
     const { path, type } = this.getCommandConfig() || {};

@@ -86,14 +86,14 @@ export default class Feflow {
     await this.initClient();
     await this.initPackageManager();
 
-    const picker = new CommandPicker(this, cmd);
-    if (picker.isAvailable()) {
-      return picker.pickCommand();
-    }
-
     if (disableCheck) {
       await this.checkCliUpdate();
       await this.checkUpdate();
+    }
+
+    const picker = new CommandPicker(this, cmd);
+    if (picker.isAvailable()) {
+      return picker.pickCommand();
     }
 
     await this.loadCommands(picker.getLoadOrder());
