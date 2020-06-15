@@ -1,49 +1,188 @@
-// NOTE
-// CommandPicker是一个中间层，接收到当前用户执行的命令后，注册对应的执行器，并执行。
+import fs from 'fs';
+import path from 'path';
+import osenv from 'osenv';
+import chalk from 'chalk';
+import { parseYaml, safeDump } from '../../shared/yaml';
+import { CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
+import { getPluginsList } from '../plugin/loadPlugins';
 
-// 维护一套命令和插件路径的映射文件.feflowCache，命令被激活后才注册，然后调用。
+const internalPlugins = {
+  devtool: '@feflow/feflow-plugin-devtool'
+};
 
-// .feflowCache 存命令和对应插件路径的映射关系
-// 下指配置文件
+const NATIVE_TYPE = 'native';
+const PLUGIN_TYPE = 'plugin';
+
+const pluginRegex = new RegExp('feflow-plugin-(.*)', 'i');
+
+export const LOAD_PLUGIN = 1 << 0;
+export const LOAD_DEVKIT = 1 << 1;
+export const LOAD_UNIVERSAL_PLUGIN = 1 << 2;
+export const LOAD_ALL = LOAD_PLUGIN | LOAD_DEVKIT | LOAD_UNIVERSAL_PLUGIN;
 
 export default class CommandPicker {
-  commandMap: any;
+  cache: any;
   root: string;
-  // 当前picker是否可用, 第一次使用时是不可用的
-  isAvailable: boolean;
+  cmd: string;
+  ctx: any;
+  cacheFilePath: string;
+  isHelp: boolean;
 
-  constructor(ctx: any) {
-    this.commandMap = {};
+  constructor(ctx: any, cmd: string = 'help') {
+    this.cache = {};
     this.root = ctx.root;
-    this.isAvailable = false;
+    this.ctx = ctx;
+    this.cmd = cmd;
+    this.cacheFilePath = path.join(this.root, CACHE_FILE);
+    this.isHelp = cmd === 'help' || ctx.args.h || ctx.args.help;
 
     this.init();
+
+    if (this.isHelp) {
+      this.loadHelp();
+    }
+  }
+  loadHelp() {
+    this.cmd = 'help';
+    this.pickCommand();
+  }
+  isAvailable() {
+    return this.isHelp ? false : !!this.getCommandConfig();
   }
 
-  // 第一次执行时，需要将commander中的store的信息写入配置文件
-  init() {
-    this.getCommandMap()
-    if(this.commandMap.commandPickerMap) {
-        
+  async init() {
+    this.checkAndUpdate();
+  }
+
+  checkAndUpdate() {
+    const { cacheFilePath } = this;
+    if (!fs.existsSync(cacheFilePath)) {
+      this.initCacheFile(cacheFilePath);
+    } else {
+      this.cache = parseYaml(cacheFilePath);
+    }
+
+    const { token: versionFromCache } = this.cache;
+    if (!this.checkCacheToken(versionFromCache)) {
+      this.initCacheFile(cacheFilePath);
     }
   }
 
-  // 检查配置文件并更新
-  async checkValidAndUpdate() {}
+  checkCacheToken(tokenFromCache: string) {
+    return tokenFromCache === this.ctx.version;
+  }
 
+  getCacheToken() {
+    return this.ctx.version;
+  }
+
+  initCacheFile(filePath: string) {
+    const cacheObj: any = {};
+    cacheObj.commandPickerMap = this.initCommandPickerMap();
+    cacheObj.token = this.getCacheToken();
+    safeDump(cacheObj, filePath);
+    this.cache = cacheObj;
+  }
+
+  getCommandConfig() {
+    return this.cache?.commandPickerMap?.[this.cmd];
+  }
+
+  initCommandPickerMap() {
+    const commandPickerMap = {};
+    const nativePath = path.join(__dirname, '../native');
+    const logger = this.ctx.logger;
+
+    // load native command
+    fs.readdirSync(nativePath)
+      .filter((file) => {
+        return file.endsWith('.js');
+      })
+      .forEach((file) => {
+        const command = file.split('.')[0];
+        commandPickerMap[command] = {
+          path: path.join(__dirname, '../native', file),
+          type: NATIVE_TYPE
+        };
+      });
+
+    // load internal plugins
+    for (const command of Object.keys(internalPlugins)) {
+      commandPickerMap[command] = {
+        path: internalPlugins[command],
+        type: PLUGIN_TYPE
+      };
+    }
+
+    // load plugins
+    const [err, plugins] = getPluginsList(this.ctx);
+    const home = path.join(osenv.home(), FEFLOW_ROOT);
+
+    if (!err) {
+      for (const plugin of plugins) {
+        const pluginPath = path.join(home, 'node_modules', plugin);
+        // TODO
+        // read plugin command from the key which from its package.json
+        const command = (pluginRegex.exec(plugin) || [])[1];
+        commandPickerMap[command] = {
+          path: pluginPath,
+          type: PLUGIN_TYPE
+        };
+      }
+    } else {
+      logger.debug('picker load plugin failed', err);
+    }
+
+    return commandPickerMap;
+  }
   // 从配置文件中获取到当前命令的插件路径，然后注册进入commander
-  pickCommand(cmd: string) {}
-
-  // 获取配置文件
-  getCommandMap() {
-
-  }
-}
-
-const config = {
-    commandPickerMap: {
-        help: "./source",
-        version: "./source",
-        list: "./source",
+  pickCommand() {
+    this.ctx.logger.debug('pickCommand');
+    const { path, type } = this.getCommandConfig() || {};
+    switch (type) {
+      case NATIVE_TYPE:
+      case PLUGIN_TYPE: {
+        try {
+          require(path)(this.ctx);
+        } catch (error) {
+          this.ctx.logger.error(
+            { err: error },
+            'command load failed: %s',
+            chalk.magenta(name)
+          );
+        }
+        break;
+      }
+      default: {
+        this.ctx.logger.error(
+          `this kind of command is not supported in command picker, ${type}`
+        );
+      }
     }
+  }
+
+  isUniverslPlugin() {
+    const universalpluginList = this.ctx.universalPkg.getInstalled();
+    const commandList = [];
+    let isHited = false;
+
+    for (const universal of universalpluginList) {
+      const command = (pluginRegex.exec(universal[0]) || [])[1];
+      commandList.push(command);
+    }
+
+    isHited = commandList.includes(this.cmd);
+    this.ctx.logger.debug(
+      `picker: this command ${isHited ? 'is' : 'is not'} universal plugin`
+    );
+    return isHited;
+  }
+
+  getLoadOrder() {
+    if (this.isUniverslPlugin()) {
+      return LOAD_UNIVERSAL_PLUGIN;
+    } else {
+      return LOAD_DEVKIT | LOAD_PLUGIN;
+    }
+  }
 }

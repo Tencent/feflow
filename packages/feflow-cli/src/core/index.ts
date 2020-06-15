@@ -26,7 +26,12 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
-import CommandPicker from './commandPicker';
+import CommandPicker, {
+  LOAD_UNIVERSAL_PLUGIN,
+  LOAD_PLUGIN,
+  LOAD_DEVKIT,
+  LOAD_ALL
+} from './commandPicker';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -75,33 +80,23 @@ export default class Feflow {
   }
 
   async init(cmd: string) {
+    const disableCheck =
+      !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+
     await this.initClient();
     await this.initPackageManager();
 
-    const picker = new CommandPicker(this);
-    if (picker.isAvailable) {
-      return picker.pickCommand(cmd);
+    const picker = new CommandPicker(this, cmd);
+    if (picker.isAvailable()) {
+      return picker.pickCommand();
     }
 
-    if (cmd === 'config') {
-      await this.loadNative(); // TODO
-    } else {
-      const disableCheck =
-        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
-      if (disableCheck) {
-        await this.checkCliUpdate(); // TODO
-        await this.checkUpdate(); // TODO
-        // await this.checkUniversalPluginAndUpdate();
-      }
-      await this.loadNative(); // TODO
-      await this.loadInternalPlugins();
-      await loadPlugins(this); // TODO
-      await loadUniversalPlugin(this); // TODO
-      await loadDevkits(this); // TODO
+    if (disableCheck) {
+      await this.checkCliUpdate();
+      await this.checkUpdate();
     }
 
-    // TODO 第一次运行config时，只能写入原生的命令
-    await picker.checkValidAndUpdate();
+    await this.loadCommands(picker.getLoadOrder());
   }
 
   initClient() {
@@ -222,7 +217,7 @@ export default class Feflow {
 
   checkUpdate() {
     const { root, rootPkg, config, logger } = this;
-    if (!config) {
+    if (!config || !this.isTimeToCheckUpdate()) {
       return;
     }
 
@@ -343,18 +338,23 @@ export default class Feflow {
     });
   }
 
-  loadNative() {
-    return new Promise<any>((resolve, reject) => {
-      const nativePath = path.join(__dirname, './native');
-      fs.readdirSync(nativePath)
-        .filter((file) => {
-          return file.endsWith('.js');
-        })
-        .map((file) => {
-          require(path.join(__dirname, './native', file))(this);
-        });
-      resolve();
-    });
+  async loadCommands(order: number) {
+    this.logger.debug('load order: ', order);
+    if ((order & LOAD_ALL) === LOAD_ALL) {
+      await loadPlugins(this);
+      await loadDevkits(this);
+      await loadUniversalPlugin(this);
+      return;
+    }
+    if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
+      await loadPlugins(this);
+    }
+    if ((order & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
+      await loadUniversalPlugin(this);
+    }
+    if ((order & LOAD_DEVKIT) === LOAD_DEVKIT) {
+      await loadDevkits(this);
+    }
   }
 
   loadInternalPlugins() {
@@ -380,6 +380,12 @@ export default class Feflow {
         return;
       }
     }
+
+    if (name === 'help') {
+      await this.loadCommands(LOAD_ALL);
+      new CommandPicker(ctx, '-h').loadHelp();
+    }
+
     const cmd = this.commander.get(name);
     if (cmd) {
       await cmd.call(this, ctx);
@@ -417,19 +423,44 @@ export default class Feflow {
     });
   }
 
-  async checkCliUpdate() {
-    const { args, version, config, configPath } = this;
+  isTimeToCheckUpdate() {
+    const { config } = this;
+    let shouldCheckUpdate = true;
+    const TIME_TO_CHECK_VERSION = 1000 * 3600 * 10;
     if (!config) {
+      return shouldCheckUpdate;
+    }
+    if (
+      config.lastUpdateCheck &&
+      +new Date() - parseInt(config.lastUpdateCheck, 10) <=
+        TIME_TO_CHECK_VERSION
+    ) {
+      shouldCheckUpdate = false;
+    }
+
+    if (shouldCheckUpdate) {
+      this.updateCheckVersionTsp();
+    }
+    return shouldCheckUpdate;
+  }
+  updateCheckVersionTsp() {
+    const { config, configPath } = this;
+    safeDump(
+      {
+        ...config,
+        lastUpdateCheck: +new Date()
+      },
+      configPath
+    );
+  }
+
+  async checkCliUpdate() {
+    const { args, version, config } = this;
+    if (!config || !this.isTimeToCheckUpdate()) {
       return;
     }
     const packageManager = config.packageManager;
     const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
-    if (
-      config.lastUpdateCheck &&
-      +new Date() - parseInt(config.lastUpdateCheck, 10) <= 1000 * 3600 * 24
-    ) {
-      return;
-    }
     const registryUrl = await getRegistryUrl(packageManager);
     const latestVersion: any = await packageJson(
       '@feflow/cli',
@@ -468,14 +499,6 @@ export default class Feflow {
       const answer = await inquirer.prompt(askIfUpdateCli);
       if (answer.ifUpdate) {
         await this.updateCli(packageManager);
-      } else {
-        safeDump(
-          {
-            ...config,
-            lastUpdateCheck: +new Date()
-          },
-          configPath
-        );
       }
     } else {
       this.logger.debug(`Current version is already latest.`);
