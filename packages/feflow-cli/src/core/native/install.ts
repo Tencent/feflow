@@ -26,9 +26,10 @@ import versionImpl from '../universal-pkg/dep/version';
 import UpgradeUniq from '../universal-pkg/upgrade/uniq';
 
 const upgradeUniq = new UpgradeUniq();
+let account: any;
 
 async function download(url: string, filepath: string): Promise<any> {
-  const cloneUrl = await transformUrl(url);
+  const cloneUrl = await transformUrl(url, account);
 
   console.log('cloneUrl', cloneUrl);
   return spawn.sync('git', ['clone', cloneUrl, filepath], {
@@ -59,6 +60,9 @@ async function getRepoInfo(ctx: any, packageName: string) {
   };
   return rp(options).then((response: any) => {
     const data = JSON.parse(response);
+    if (data.account) {
+      account = data.account;
+    }
     return data.data && data.data[0];
   }).catch((err: any) => {
     ctx.logger.debug('Get repo info error', err);
@@ -245,7 +249,7 @@ async function installPlugin(
   logger.debug('install version:', pkgInfo.checkoutTag);
   if (!fs.existsSync(repoPath)) {
     logger.info(`Start download from ${ pkgInfo.repoUrl }`);
-      await download(pkgInfo.repoUrl, repoPath);
+    await download(pkgInfo.repoUrl, repoPath);
   }
   const linker = new Linker();
 
