@@ -61,7 +61,7 @@ export async function getCurrentTag(
 
 export function checkoutVersion(repoPath: string, version: string) {
   const command = 'git';
-  spawn.sync(command, ['-C', repoPath, 'fetch', '--tags'], { stdio: 'ignore' });
-  const checkArgs = ['-C', repoPath, 'checkout', version];
+  spawn.sync(command, ['-C', repoPath, 'fetch', '--tags', '-f'], { stdio: 'ignore' });
+  const checkArgs = ['-C', repoPath, 'checkout', '-f', version];
   return spawn.sync(command, checkArgs, { stdio: 'ignore' });
 }
