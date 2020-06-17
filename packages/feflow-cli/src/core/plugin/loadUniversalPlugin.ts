@@ -14,6 +14,8 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
+const excludeAgrs = ['--disable-check']
+
 function loadPlugin(
   ctx: any,
   pkg: string,
@@ -49,11 +51,11 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
       await execPlugin(ctx, pkg, newVersion, plugin);
-    });
+    }, [], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
       await execPlugin(ctx, pkg, version, plugin);
-    });
+    }, [], `${pkg}@${version}`);
   }
 }
 
@@ -73,7 +75,12 @@ async function execPlugin(
   // injection plugin path into the env
   process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
   plugin.preRun.run();
-  const args = process.argv.slice(3);
+  const args = process.argv.slice(3).filter(arg => {
+    if (excludeAgrs.includes(arg)) {
+      return false;
+    }
+    return true;
+  });
   try {
     plugin.command.run(...args);
   } catch(e) {
