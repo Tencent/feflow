@@ -6,6 +6,7 @@ import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS } from './constants';
 interface ReportContext {
   log: any;
   logger: any;
+  args: any;
   pkgConfig: {
     name: string;
   };
@@ -15,7 +16,7 @@ interface ReportContext {
   hook: {
     on(eventName: string, listener: any): void;
   };
-  version: string
+  version: string;
 }
 
 interface ReportBody {
@@ -43,11 +44,6 @@ class Report {
     this.systemInfo = this.getSystemInfo();
     this.project = this.getProject();
     this.loadContextLogger();
-
-    // hook is not supported in feflow 0.16.x
-    if (this.ctx.hook) {
-      this.registerHook();
-    }
   }
   // register before/after hook event
   private registerHook() {
@@ -121,7 +117,14 @@ class Report {
   private checkBeforeReport(cmd, args) {
     return !!cmd;
   }
-
+  init(cmd: string) {
+    this.cmd = cmd;
+    this.args = this.ctx.args;
+    // hook is not supported in feflow 0.16.x
+    if (this.ctx.hook) {
+      this.registerHook();
+    }
+  }
   report(cmd, args?) {
     // args check
     if (!this.checkBeforeReport(cmd, args)) return;

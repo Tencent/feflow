@@ -100,6 +100,7 @@ module.exports = (ctx: any) => {
               }
             });
 
+            ctx.reporter.report('init', name)
             name && run(ctx, name);
           });
       } else {
