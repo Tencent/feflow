@@ -26,6 +26,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
+import Report from '@feflow/report';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -46,6 +47,7 @@ export default class Feflow {
   public bin: string;
   public lib: string;
   public universalPkg: UniversalPkg;
+  public reporter: any;
 
   constructor(args: any) {
     args = args || {};
@@ -69,11 +71,13 @@ export default class Feflow {
       debug: Boolean(args.debug),
       silent: Boolean(args.silent)
     });
+    this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
     this.initBinPath();
   }
 
   async init(cmd: string) {
+    this.reporter.init(cmd);
     if (cmd === 'config') {
       await this.initClient();
       await this.loadNative();
