@@ -1,5 +1,6 @@
 import chai from 'chai';
 const Report = require('../src/index');
+const { getUserName } = require('../src/common/utils');
 
 const expect = chai.expect;
 
@@ -18,7 +19,7 @@ describe('@feflow/report - report', () => {
   });
 
   it('getUserName() - username is not empty', () => {
-    const username = report.getUserName();
+    const username = getUserName();
 
     expect(username).to.not.empty;
   });
