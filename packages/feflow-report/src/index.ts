@@ -1,5 +1,5 @@
 import ApiController from './api';
-import { getUserName, getSystemInfoByOS, getProjectByPackage } from './common/utils';
+import { getUserName, getSystemInfoByOS, getProjectByPackage, getProjectByGit } from './common/utils';
 import objectFactory from './common/objectFactory';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS } from './constants';
 
@@ -67,15 +67,15 @@ class Report {
     this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
   }
   private getProject() {
-    const { pkgConfig } = this.ctx;
+    const pkgConfig: any = this.ctx.pkgConfig || {};
     let project = '';
 
     if (pkgConfig) {
       // feflow context
       project = pkgConfig.name;
     } else {
-      // if not, read project name from project's package.json
-      project = getProjectByPackage();
+      // if not, read project name from project's package.json or git
+      project = getProjectByPackage() || getProjectByGit();
     }
 
     return project;

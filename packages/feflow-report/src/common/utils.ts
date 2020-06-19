@@ -72,3 +72,17 @@ export const getProjectByPackage = () => {
   }
   return project;
 };
+
+export const getProjectByGit = () => {
+  let project = '';
+  const gitRemoteUrl = exec('git remote get-url origin');
+  const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
+  const sshRegex = /\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+
+  if (/^https?\:/.test(gitRemoteUrl)) {
+    project = (httpRegex.exec(gitRemoteUrl) || [])[2];
+  } else {
+    project = (sshRegex.exec(gitRemoteUrl) || [])[2];
+  }
+  return project;
+};
