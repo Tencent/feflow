@@ -80,6 +80,8 @@ async function execPlugin(
       return false;
     }
     return true;
+  }).map(arg => {
+    return `'${arg}'`;
   });
   try {
     plugin.command.run(...args);
