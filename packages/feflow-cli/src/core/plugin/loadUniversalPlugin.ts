@@ -81,7 +81,10 @@ async function execPlugin(
     }
     return true;
   }).map(arg => {
-    return `'${arg}'`;
+    if (!/^'.*'$/.test(arg)) {
+      return `'${arg}'`;
+    }
+    return arg;
   });
   try {
     plugin.command.run(...args);
