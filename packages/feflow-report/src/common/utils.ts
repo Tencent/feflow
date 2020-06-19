@@ -11,7 +11,9 @@ const isMac = platform === 'darwin';
 const exec = (command: string) => {
   let result = '';
   try {
-    result = execSync(command).toString();
+    result = execSync(command)
+      .toString()
+      .replace(/\n/, '');
   } catch (err) {
     console.log('feflow report get username err: ', err);
   }
@@ -30,7 +32,7 @@ const getUserNameFromLinux = () => {
     return '';
   }
 
-  return nameFromLinux.replace(/\n/, '');
+  return nameFromLinux;
 };
 
 const getUserNameFromGit = () => {
