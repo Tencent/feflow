@@ -70,7 +70,7 @@ class Report {
     const pkgConfig: any = this.ctx.pkgConfig || {};
     let project = '';
 
-    if (pkgConfig) {
+    if (pkgConfig.name) {
       // feflow context
       project = pkgConfig.name;
     } else {

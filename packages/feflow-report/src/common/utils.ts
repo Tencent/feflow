@@ -8,6 +8,9 @@ const platform = os.platform();
 const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
 
+export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
+export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+
 const exec = (command: string) => {
   let result = '';
   try {
@@ -15,7 +18,7 @@ const exec = (command: string) => {
       .toString()
       .replace(/\n/, '');
   } catch (err) {
-    console.log('feflow report get username err: ', err);
+    console.log('feflow report execSync err: ', err);
   }
   return result;
 };
@@ -73,16 +76,20 @@ export const getProjectByPackage = () => {
   return project;
 };
 
-export const getProjectByGit = () => {
+export const getProjectByGit = (url?: string) => {
   let project = '';
-  const gitRemoteUrl = exec('git remote get-url origin');
-  const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
-  const sshRegex = /\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+  const gitRemoteUrl = url || exec('git remote get-url origin');
+  let urlRegex: RegExp;
 
-  if (/^https?\:/.test(gitRemoteUrl)) {
-    project = (httpRegex.exec(gitRemoteUrl) || [])[2];
-  } else {
-    project = (sshRegex.exec(gitRemoteUrl) || [])[2];
+  if (httpRegex.test(gitRemoteUrl)) {
+    urlRegex = httpRegex;
+  } else if (sshRegex.test(gitRemoteUrl)) {
+    urlRegex = sshRegex;
   }
+  if (!urlRegex) return '';
+
+  const [_, group, path] = urlRegex.exec(gitRemoteUrl) || [];
+  project = group ? `${group}/${path}` : '';
+
   return project;
 };
