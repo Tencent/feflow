@@ -7,9 +7,16 @@ import { execSync } from 'child_process';
 const platform = os.platform();
 const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
+const cwd = process.cwd();
 
 export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
 export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+
+const isGitAvailable = (): boolean => {
+  const hasGitCommand = exec('which git');
+  const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
+  return hasGitCommand && hasGitDir;
+};
 
 const exec = (command: string) => {
   let result = '';
@@ -17,9 +24,7 @@ const exec = (command: string) => {
     result = execSync(command)
       .toString()
       .replace(/\n/, '');
-  } catch (err) {
-    console.log('feflow report execSync err: ', err);
-  }
+  } catch (err) {}
   return result;
 };
 
@@ -39,8 +44,7 @@ const getUserNameFromLinux = () => {
 };
 
 const getUserNameFromGit = () => {
-  const isGitAvailable = exec('which git');
-  if (!isGitAvailable) {
+  if (!isGitAvailable()) {
     return '';
   }
   const nameFromLinux = exec('git config user.name');
@@ -51,7 +55,7 @@ const getUserNameFromGit = () => {
 export const getUserName = () => {
   // mac/window
   if (isMac || isWin) {
-    return getUserNameFromHostName();
+    return getUserNameFromHostName() || getUserNameFromGit();
   }
   return getUserNameFromLinux() || getUserNameFromGit() || getUserNameFromHostName();
 };
@@ -77,6 +81,10 @@ export const getProjectByPackage = () => {
 };
 
 export const getProjectByGit = (url?: string) => {
+  if (!isGitAvailable()) {
+    return '';
+  }
+
   let project = '';
   const gitRemoteUrl = url || exec('git remote get-url origin');
   let urlRegex: RegExp;

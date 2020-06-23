@@ -69,13 +69,14 @@ class Report {
   private getProject() {
     const pkgConfig: any = this.ctx.pkgConfig || {};
     let project = '';
-
     if (pkgConfig.name) {
       // feflow context
       project = pkgConfig.name;
     } else {
-      // if not, read project name from project's package.json or git
-      project = getProjectByPackage() || getProjectByGit();
+      try {
+        // if not, read project name from project's package.json or git
+        project = getProjectByPackage() || getProjectByGit();
+      } catch (error) {}
     }
 
     return project;
