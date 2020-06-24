@@ -2,6 +2,19 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
+const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
+
+function getModuleVersion(dir: string, name: string): string {
+  const packagePath = path.resolve(dir, name, 'package.json');
+  if (fs.existsSync(packagePath)) {
+    let content = fs.readFileSync(packagePath, 'utf8');
+    const json = JSON.parse(content);
+    return json && json.version || 'unknown';
+  } else {
+    return 'unknown';
+  }
+}
+
 function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
@@ -18,9 +31,7 @@ function loadModuleList(ctx: any) {
     let keys = Object.keys(deps);
     let list = keys.filter(function (name) {
       if (
-        !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(
-          name
-        )
+        !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)
       )
         return false;
       const pluginPath = path.join(pluginDir, name);
@@ -37,23 +48,9 @@ function loadModuleList(ctx: any) {
   }
 }
 
-function getModuleVersion(dir: string, name: string): string {
-  const packagePath = path.resolve(dir, name, 'package.json');
-  if (fs.existsSync(packagePath)) {
-    let content = fs.readFileSync(packagePath, 'utf8');
-    const json = JSON.parse(content);
-    return json && json.version || 'unknown';
-  } else {
-    return 'unknown';
-  }
-}
-
-const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
-
 function loadUniversalPlugin(ctx: any): any[] {
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   let availablePluigns: any[] = [];
-
   const pluginsInCommand = ctx.commander.store;
   for (const [pkg, version] of universalPkg.getInstalled()) {
     const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
@@ -64,7 +61,6 @@ function loadUniversalPlugin(ctx: any): any[] {
       });
     }
   }
-
   return availablePluigns;
 }
 
