@@ -14,6 +14,8 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
+const excludeAgrs = ['--disable-check']
+
 function loadPlugin(
   ctx: any,
   pkg: string,
@@ -48,12 +50,12 @@ function register(ctx: any, pkg: string, version: string, global = false) {
         return;
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
-      execPlugin(ctx, pkg, newVersion, plugin);
-    });
+      await execPlugin(ctx, pkg, newVersion, plugin);
+    }, [], pkg);
   } else {
-    commander.registerInvisible(`${pluginCommand}@${version}`, () => {
-      execPlugin(ctx, pkg, version, plugin);
-    });
+    commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
+      await execPlugin(ctx, pkg, version, plugin);
+    }, [], `${pkg}@${version}`);
   }
 }
 
@@ -73,9 +75,23 @@ async function execPlugin(
   // injection plugin path into the env
   process.env[FEF_ENV_PLUGIN_PATH] = pluginPath;
   plugin.preRun.run();
-  const args = process.argv.slice(3);
-  plugin.command.run(...args);
-  plugin.postRun.run();
+  const args = process.argv.slice(3).filter(arg => {
+    if (excludeAgrs.includes(arg)) {
+      return false;
+    }
+    return true;
+  }).map(arg => {
+    if (!/^'.*'$/.test(arg)) {
+      return `'${arg}'`;
+    }
+    return arg;
+  });
+  try {
+    plugin.command.run(...args);
+  } catch(e) {
+    process.exit(e?.status || 2)
+  }
+  plugin.postRun.runLess();
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {

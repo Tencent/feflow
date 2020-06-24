@@ -1,3 +1,78 @@
+## [0.20.8](https://github.com/Tencent/feflow/compare/v0.20.7...v0.20.8) (2020-06-17)
+
+
+### Bug Fixes
+
+* use -f when fetch tags and check tag ([ce014ee](https://github.com/Tencent/feflow/commit/ce014eea6808d2f93f1dbcbb7ed691a9b81f92fa))
+
+
+### Features
+
+* report version usage ([bc2c0d6](https://github.com/Tencent/feflow/commit/bc2c0d6092b23213ac05bb76c7d3ae05e05e5a08))
+
+
+
+## [0.20.7](https://github.com/Tencent/feflow/compare/v0.20.5...v0.20.7) (2020-06-15)
+
+
+### Bug Fixes
+
+* fetch tags fail ([c44b20f](https://github.com/Tencent/feflow/commit/c44b20fb557ebdb447ccebcd2f442e01facd7272))
+* unknown terminal prompts ([#274](https://github.com/Tencent/feflow/issues/274)) ([f1f5349](https://github.com/Tencent/feflow/commit/f1f5349aca1d92c2697e015372c9e874c14072bd))
+
+
+### Features
+
+* **install:** use public account when git http ([532dc92](https://github.com/Tencent/feflow/commit/532dc9239dbda51914adf4c22c01d29ab9ffd56b))
+* report invisible ([#272](https://github.com/Tencent/feflow/issues/272)) ([d5f2cfb](https://github.com/Tencent/feflow/commit/d5f2cfb28505651e4354a5bfd11563c4610c5d74))
+* update changelog ([15a0c24](https://github.com/Tencent/feflow/commit/15a0c2473e3575679f148ae43e3360ea5eb107ae))
+
+
+
+## [0.20.5](https://github.com/Tencent/feflow/compare/v0.20.3...v0.20.5) (2020-06-09)
+
+
+### Features
+
+* add git ssh check timeout ([ed5d176](https://github.com/Tencent/feflow/commit/ed5d17669ffab3b39382268c3f10efcfb9ff31bc))
+* add postinstall script to initialize bin path ([4993355](https://github.com/Tencent/feflow/commit/499335552364a4b88a8a35c67b54e892e256c094))
+
+
+
+## [0.20.3](https://github.com/Tencent/feflow/compare/v0.20.2...v0.20.3) (2020-06-05)
+
+
+### Bug Fixes
+
+* exit when error ([1b75ccf](https://github.com/Tencent/feflow/commit/1b75ccf150411de23e9652acc5acdb0c14e489d0))
+
+
+### Features
+
+* register bin path to all terminal ([bef62e3](https://github.com/Tencent/feflow/commit/bef62e387192bfc9e0ff826310a22913cd5249ed))
+
+
+
+## [0.20.2](https://github.com/Tencent/feflow/compare/v0.20.1...v0.20.2) (2020-06-04)
+
+
+### Bug Fixes
+
+* checkout tag fail ([450725e](https://github.com/Tencent/feflow/commit/450725e93cc53d97c10117c80128290437d09f8a))
+* exception could not be caught ([662b565](https://github.com/Tencent/feflow/commit/662b565d1caf035ef2efcb3c05bbc9a0f3f8d4c5))
+* fix feflow warn color too light in item2 light mode issue[#263](https://github.com/Tencent/feflow/issues/263) ([c620571](https://github.com/Tencent/feflow/commit/c6205717c992f9ed33836d55c8ed8459c626a84b))
+* upgrade circularly ([ba80367](https://github.com/Tencent/feflow/commit/ba80367ef5641b32476d506dd2661bbdeebc737b))
+* upgrade circularly ([#266](https://github.com/Tencent/feflow/issues/266)) ([8acea94](https://github.com/Tencent/feflow/commit/8acea94d307060624ddb117d154b2a74b408d2c2))
+* **universal-plugin:** fix circual dependencies ([4c3938f](https://github.com/Tencent/feflow/commit/4c3938f09e495eb0813d0892f5c6c40a6bbae66e))
+
+
+### Features
+
+* fef list will show pkg name and version ([#265](https://github.com/Tencent/feflow/issues/265)) ([00b936c](https://github.com/Tencent/feflow/commit/00b936cc33cffe7d37d2d6a1454baf4abbc94718))
+* show universion plugin version on fef list command ([2e74beb](https://github.com/Tencent/feflow/commit/2e74beb4ecb43b83c51b97e959e1333e87b261b4))
+
+
+
 ## [0.20.1](https://github.com/Tencent/feflow/compare/v0.20.0...v0.20.1) (2020-05-29)
 
 

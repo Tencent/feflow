@@ -55,10 +55,13 @@ function loadUniversalPlugin(ctx: any): any[] {
   let availablePluigns: any[] = [];
 
   const pluginsInCommand = ctx.commander.store;
-  for (const [pkg] of universalPkg.getInstalled()) {
+  for (const [pkg, version] of universalPkg.getInstalled()) {
     const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
     if (pluginsInCommand[pluginCommand]) {
-      availablePluigns.push(pkg);
+      availablePluigns.push({
+        name: pkg,
+        version: version
+      });
     }
   }
 

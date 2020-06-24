@@ -26,6 +26,7 @@ import chalk from 'chalk';
 import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
+import Report from '@feflow/report';
 const pkg = require('../../package.json');
 import checkCliUpdate from '../shared/checkCliUpdate';
 
@@ -47,6 +48,7 @@ export default class Feflow {
   public bin: string;
   public lib: string;
   public universalPkg: UniversalPkg;
+  public reporter: any;
 
   constructor(args: any) {
     args = args || {};
@@ -70,10 +72,13 @@ export default class Feflow {
       debug: Boolean(args.debug),
       silent: Boolean(args.silent)
     });
+    this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
+    this.initBinPath();
   }
 
   async init(cmd: string) {
+    this.reporter.init(cmd);
     if (cmd === 'config') {
       await this.initClient();
       await this.loadNative();
@@ -121,7 +126,6 @@ export default class Feflow {
           )
         );
       }
-      this.initBinPath();
       resolve();
     });
   }
@@ -364,22 +368,20 @@ export default class Feflow {
     });
   }
 
-  call(name: any, ctx: any) {
+  async call(name: any, ctx: any) {
     const args = ctx.args;
     if (args.h || args.help) {
-      return this.showCommandOptionDescription(name, ctx);
-    }
-    return new Promise<any>((resolve, reject) => {
-      const cmd = this.commander.get(name);
-      if (cmd) {
-        cmd.call(this, ctx);
-        resolve();
-      } else {
-        reject(
-          new Error('Command `' + name + '` has not been registered yet!')
-        );
+      const hasHelp = await this.showCommandOptionDescription(name, ctx);
+      if (hasHelp) {
+        return;
       }
-    });
+    }
+    const cmd = this.commander.get(name);
+    if (cmd) {
+      await cmd.call(this, ctx);
+    } else {
+      throw new Error('Command `' + name + '` has not been registered yet!');
+    }
   }
 
   async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
@@ -398,8 +400,7 @@ export default class Feflow {
       return registriedCommand.call(this, ctx);
     }
     if (commandLine.length == 0) {
-      ctx.logger.warn(`Current command dosen't have help message`);
-      return;
+      return false;
     }
 
     let sections = [];
@@ -408,5 +409,6 @@ export default class Feflow {
     const usage = commandLineUsage(sections);
 
     console.log(usage);
+    return true;
   }
 }

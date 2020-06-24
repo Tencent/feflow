@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.20.1",
+  "version": "0.20.8",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
@@ -24,7 +24,14 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "prepublish": "npm run build"
   },
+  "oclif": {
+    "bin": "fef",
+    "macos": {
+      "identifier": "com.feflow.cli"
+    }
+  },
   "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
     "@types/abbrev": "^1.1.0",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.0",
@@ -53,7 +60,7 @@
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "0.0.1",
-    "@feflow/report": "^0.1.8",
+    "@feflow/report": "^0.2.0",
     "@types/execa": "^2.0.0",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
