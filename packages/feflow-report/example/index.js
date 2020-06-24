@@ -32,10 +32,10 @@ const args = {};
 // const report = new Report(fakeCtx);
 const report = new Report(fakeCtx, cmd, args);
 
-event.emit(HOOK_TYPE_BEFORE)
+// event.emit(HOOK_TYPE_BEFORE)
 
-event.emit(HOOK_TYPE_AFTER)
+// event.emit(HOOK_TYPE_AFTER)
 
-// report.report(cmd, args)
+report.report(cmd, args)
 
 
