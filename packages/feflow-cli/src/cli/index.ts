@@ -3,7 +3,6 @@ import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
-import Report from '@feflow/report';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
@@ -78,10 +77,8 @@ export default function entry() {
   const { commander, logger } = feflow;
   let cmd: any = args._.shift();
 
-  const report = new Report(feflow, cmd, args);
-
   if (!cmd && (args.v || args.version)) {
-    report.report('version', args);
+    feflow.reporter.report('version', args);
     console.log(chalk.green(pkg.version));
     return;
   }

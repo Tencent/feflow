@@ -37,7 +37,8 @@ const registerDevkitCommand = (
             await require(action)(ctx);
           }
         },
-        options
+        options,
+        packageName
       );
     } else {
       const action = path.join(pkgPath, implementation);
@@ -47,7 +48,8 @@ const registerDevkitCommand = (
         () => {
           require(action)(ctx);
         },
-        options
+        options,
+        packageName
       );
     }
   } catch (e) {
