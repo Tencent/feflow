@@ -27,6 +27,7 @@ import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
 const pkg = require('../../package.json');
+import checkCliUpdate from '../shared/checkCliUpdate';
 
 export default class Feflow {
   public args: any;
@@ -82,7 +83,7 @@ export default class Feflow {
       const disableCheck =
         !this.args['disable-check'] && !(this.config.disableCheck === 'true');
       if (disableCheck) {
-        await this.checkCliUpdate();
+        await checkCliUpdate(this, true);
         await this.checkUpdate();
         // await this.checkUniversalPluginAndUpdate();
       }
@@ -379,100 +380,6 @@ export default class Feflow {
         );
       }
     });
-  }
-
-  async updateCli(packageManager: string) {
-    return new Promise((resolve, reject) => {
-      const args =
-        packageManager === 'yarn'
-          ? ['global', 'add', '@feflow/cli@latest', '--extract']
-          : [
-              'install',
-              '@feflow/cli@latest',
-              '--color=always',
-              '--save',
-              '--save-exact',
-              '--loglevel',
-              'error',
-              '-g'
-            ];
-
-      const child = spawn(packageManager, args, { stdio: 'inherit' });
-      child.on('close', (code) => {
-        if (code !== 0) {
-          reject({
-            command: `${packageManager} ${args.join(' ')}`
-          });
-          return;
-        }
-        resolve();
-      });
-    });
-  }
-
-  async checkCliUpdate() {
-    const { args, version, config, configPath } = this;
-    if (!config) {
-      return;
-    }
-    const packageManager = config.packageManager;
-    const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
-    if (
-      config.lastUpdateCheck &&
-      +new Date() - parseInt(config.lastUpdateCheck, 10) <= 1000 * 3600 * 24
-    ) {
-      return;
-    }
-    const registryUrl = await getRegistryUrl(packageManager);
-    const latestVersion: any = await packageJson(
-      '@feflow/cli',
-      registryUrl
-    ).catch(() => {
-      this.logger.warn(
-        `Network error, can't reach ${registryUrl}, CLI give up verison check.`
-      );
-    });
-
-    this.logger.debug(`Auto update: ${autoUpdate}`);
-    if (latestVersion && semver.gt(latestVersion, version)) {
-      this.logger.debug(
-        `Find new version, current version: ${version}, latest version: ${autoUpdate}`
-      );
-      if (autoUpdate) {
-        this.logger.debug(
-          `Auto update version from ${version} to ${latestVersion}`
-        );
-        return await this.updateCli(packageManager);
-      }
-      const askIfUpdateCli = [
-        {
-          type: 'confirm',
-          name: 'ifUpdate',
-          message: `${chalk.yellow(
-            `@feflow/cli's latest version is ${chalk.green(
-              `${latestVersion}`
-            )}, but your version is ${chalk.red(
-              `${version}`
-            )}, Do you want to update it?`
-          )}`,
-          default: true
-        }
-      ];
-      const answer = await inquirer.prompt(askIfUpdateCli);
-      if (answer.ifUpdate) {
-        await this.updateCli(packageManager);
-      } else {
-        safeDump(
-          {
-            ...config,
-            lastUpdateCheck: +new Date()
-          },
-          configPath
-        );
-      }
-    } else {
-      this.logger.debug(`Current version is already latest.`);
-    }
   }
 
   async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
