@@ -34,6 +34,8 @@ export const HOOK_TYPE_BEFORE = 'before';
  */
 export const HOOK_TYPE_AFTER = 'after';
 
+export const HOOK_TYPE_ON_COMMAND_REGISTERED = 'on_command_registered';
+
 /**
  * Emitted when command execution begins
  */

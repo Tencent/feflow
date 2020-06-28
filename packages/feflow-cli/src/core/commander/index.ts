@@ -4,11 +4,13 @@ export default class Commander {
   private store: any;
   private invisibleStore: any;
   private alias: any;
+  private onRegistered?: Function;
 
-  constructor() {
+  constructor(onRegistered?: Function) {
     this.store = {};
     this.invisibleStore = {};
     this.alias = {};
+    if (typeof onRegistered === 'function') this.onRegistered = onRegistered;
   }
 
   get(name: any) {
@@ -29,11 +31,15 @@ export default class Commander {
   }
 
   register(name: string, desc: string, fn: Function, options?: Array<object>, pluginName?: string) {
-    this.store[name.toLowerCase()] = fn;
+    const storeKey = name.toLowerCase();
+    this.store[storeKey] = fn;
     this.store[name.toLowerCase()].desc = desc;
     this.store[name.toLowerCase()].options = options;
     this.store[name.toLowerCase()].pluginName = pluginName;
     this.alias = abbrev(Object.keys(this.store));
+    if (this.onRegistered) {
+      this.onRegistered(storeKey);
+    }
   }
 
   registerInvisible(name: string, fn: Function, options?: Array<object>, pluginName?: string) {
