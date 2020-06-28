@@ -27,9 +27,7 @@ export default class Hook {
     }
   }
 
-  emit(type: any) {
-    const args = Array.prototype.slice.call(arguments);
-    args.shift();
+  emit(type: any, ...args: []) {
     switch (type) {
       case HOOK_TYPE_BEFORE:
         this.hook(HOOK_TYPE_BEFORE, () => {
