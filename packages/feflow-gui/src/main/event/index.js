@@ -41,7 +41,6 @@ function createProjectService() {
  * 打开项目webview窗口
  */
 function createProjectWebview () {
-  debugger
   ipcMain.on('create-project-webview', (event, { routeName, link }) => {
     if (!routeName || !link) {
       return
