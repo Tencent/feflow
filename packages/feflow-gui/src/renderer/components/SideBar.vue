@@ -8,7 +8,7 @@
                     </div>
                     <div class="nickname">{{ username }}</div>
                 </div>
-                <div class="logout" />
+                <div class="logout" @click="logout"/>
             </div>
             <ul class="nav" v-if="!isProjectPage">
                 <router-link to="/">
@@ -48,6 +48,7 @@
 </template>
 <script>
 import SettingPanel from './setting'
+import Cookie from '../common/utils/cookie'
 export default {
     model: {
         prop: 'activeTabId', // 绑定的值，通过父组件传递
@@ -84,12 +85,15 @@ export default {
             this.isSettingVisble = !this.isSettingVisble;
         },
         closeSettingPanel() {
-            debugger
             this.isSettingVisble = false;
         },
         activeTab(index) {
             // 子组件与父组件通讯，告知父组件更新
             this.$emit('updateTabId', index)
+        },
+        logout() {
+            Cookie.clearCookies();
+            location.reload();
         }
     }
 }

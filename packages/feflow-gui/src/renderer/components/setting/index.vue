@@ -39,7 +39,6 @@ export default {
     }
   },
   mounted() {
-    debugger
     window.addEventListener('click', (e) => {
       this.queryHide(e);
     });
