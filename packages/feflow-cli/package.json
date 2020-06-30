@@ -63,6 +63,7 @@
     "@feflow/report": "^0.2.0",
     "@types/execa": "^2.0.0",
     "abbrev": "^1.1.1",
+    "axios": "^0.19.2",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
     "command-line-usage": "^6.1.0",
