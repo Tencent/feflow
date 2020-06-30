@@ -99,11 +99,43 @@
 ---
 ## 常见问题 FAQ
 
+
+- Feflow 支持哪些操作系统？
+
+  Feflow 是一款跨平台的软件，支持 windows/OSX/Linux 等操作系统的使用.
+
+
+
+- Feflow 的技术架构是什么样的？
+
+  Feflow由三层模块组成，分别由最外层的开发套件和插件，内层的包含 CLI 和 Core 两个部分，以及和用户进行交互命令交互层，详细架构介绍可以参考这篇文章http://km.oa.com/group/33258/articles/show/392141
+
+
+
+- Feflow在接入过程需要注意什么？
+
+  首先Feflow在下载插件或者套件时需要一个正确的registry以及proxy，使用时需要注意走的是内部tnpm源，即http://r.tnpm.oa.com和http://r.tnpm.oa.com:80，配置错误会导致下载插件或套件时失败的问题。
+
+  其次如果项目自动安装builder失败时可以尝试切换至Teflow根目录下~/.feflow手动安装。
+
+
+- Feflow目前已经支持了哪些类型的项目？
+
+  理论上说Teflow可以支持所有类型的前端项目，现阶段可以直接使用的是React以及微信小程序的项目，如果有其他诉求可以尝试编写Teflow插件来支持。
+
+
+
+- Teflow增量更新是怎么回事？可以取消吗？
+
+  为了保证用户可以享受到最新的特性（包括Teflow以及Teflow的插件），Teflow采用了强制更新的机制，在每次运行相关模块时都会检测更新。最新的Feflow架构采用了套件的设计方案，在其中取消了增量更新，迁移文档查看这篇文章http://km.oa.com/group/33258/articles/show/393159
+
+
 - 如何使用feflow
 
    可以查看feflow官网 以及[使用文档](https://github.com/Tencent/feflow/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)
 
 - 如何开发feflow
+
   可以查看[开发者文档](https://github.com/Tencent/feflow/wiki/%E5%BC%80%E5%8F%91%E8%80%85%E6%96%87%E6%A1%A3)   
 
 - 如何反馈
@@ -111,6 +143,7 @@
   - 提出issue, 戳[这里](https://git.code.oa.com/teflow/feflow/issues)
   - 联系主要负责人
 
+- 更多FAQ点击[这里](https://iwiki.oa.tencent.com/pages/viewpage.action?pageId=218878747)
 ---
 
 ## 发布日志
