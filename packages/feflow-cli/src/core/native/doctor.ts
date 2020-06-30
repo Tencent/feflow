@@ -1,7 +1,7 @@
 import commandLineUsage from 'command-line-usage';
 import {  execSync } from 'child_process';
 import { getRegistryUrl } from '../../shared/npm';
-const got = require('got');
+import axios from 'axios';
 
 module.exports = (ctx: any) => {
     
@@ -105,9 +105,9 @@ module.exports = (ctx: any) => {
         tnpmRegistry = tnpmRegistry[tnpmRegistry.length-1];
 
         try {
-            const response = await got(tnpmRegistry);
+            const response = await axios.get(tnpmRegistry);
 
-            if(response.statusCode === 200) {
+            if(response.status === 200) {
                 return 'access tnpm registry is ok!';
             } else {
                 return 'access tnpm registry has error, http code: ${response.statusCode}';
