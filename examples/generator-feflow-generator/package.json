@@ -1,0 +1,58 @@
+{
+  "name": "@tencent/generator-feflow-generator",
+  "version": "0.0.1",
+  "description": "生成 Feflow 脚手架模版的脚手架（Generator for creating generator-feflow-*）",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint --fix .",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "commitmsg": "validate-commit-msg",
+    "commit": "git-cz "
+  },
+  "keywords": [
+    "feflow",
+    "generator"
+  ],
+  "author": "Feflow",
+  "contributors": [
+    "tentenli <tentenli@tencent.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "command-exists": "^1.2.9",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.15",
+    "mkdirp": "^0.5.1",
+    "yeoman-generator": "^4.10.1"
+  },
+  "devDependencies": {
+    "@tencent/eslint-config-tencent": "^0.7.0",
+    "eslint": "^7.3.1",
+    "commitizen": "^2.3.0",
+    "validate-commit-msg": "^2.11.1",
+    "conventional-changelog-cli": "^1.2.0",
+    "husky": "^0.13.1",
+    "lint-staged": "^8.2.1",
+    "jest": "^24.8.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "templates"
+    ],
+    "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
+}
