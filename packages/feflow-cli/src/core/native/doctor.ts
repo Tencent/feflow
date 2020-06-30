@@ -1,10 +1,11 @@
 import commandLineUsage from 'command-line-usage';
-// import spawn from 'cross-spawn';
 import {  execSync } from 'child_process';
+import { getRegistryUrl } from '../../shared/npm';
+const got = require('got');
 
 module.exports = (ctx: any) => {
     
-    function showToolVersion(): string {
+    async function showToolVersion() {
 
         const sections = [
             {
@@ -71,6 +72,16 @@ module.exports = (ctx: any) => {
                     }
                 ]
             },
+            {
+                header: 'Network access info',
+                optionList: [
+                    {
+                        name: 'curl npm_config_registry ',
+                        typeLabel: '{underline info:}',
+                        description: await accessTnpmRegistry()
+                    }
+                ]
+            },
           ];
         const result = commandLineUsage(sections);
         return result;
@@ -88,7 +99,30 @@ module.exports = (ctx: any) => {
         return result;
     };
 
+    async function accessTnpmRegistry() {
+        let tnpmRegistry = await getRegistryUrl('tnpm');
+        tnpmRegistry = tnpmRegistry.trim().split('\n');
+        tnpmRegistry = tnpmRegistry[tnpmRegistry.length-1];
+
+        try {
+            const response = await got(tnpmRegistry);
+
+            if(response.statusCode === 200) {
+                return 'access tnpm registry is ok!';
+            } else {
+                return 'access tnpm registry has error, http code: ${response.statusCode}';
+            }
+        } catch (error) {
+            return 'access tnpm registry has error: ${error}';
+        }
+        
+    }
+
     ctx.commander.register('doctor', 'environment information', () => {
-        console.log(showToolVersion());
+        showToolVersion().then(result => {
+            console.log(result);
+        }).catch(error => {
+            console.log('error:', error);
+        });
     });
 };
