@@ -8,22 +8,21 @@ export function parseYaml(path: any) {
     try {
       config = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
     } catch (e) {
-        throw new Error(e);
+      throw new Error(e);
     }
   }
 
   return config;
 }
 
-
 export function safeDump(obj: object, path: any) {
   let doc;
   try {
     doc = yaml.safeDump(obj, {
-      'styles': {
+      styles: {
         '!!null': 'canonical'
       },
-      'sortKeys': true
+      sortKeys: true
     });
   } catch (e) {
     throw new Error(e);

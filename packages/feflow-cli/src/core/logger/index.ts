@@ -7,7 +7,7 @@ interface IObject {
 }
 
 interface Args {
-  debug: Boolean
+  debug: Boolean;
 }
 
 type LogLevelString = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
@@ -38,13 +38,12 @@ const levelColors: IObject = {
   10: 'gray',
   20: 'gray',
   30: 'green',
-  40: 'yellow',
+  40: 'orange',
   50: 'red',
   60: 'red'
 };
 
 class ConsoleStream extends Writable {
-
   private debug: Boolean;
 
   constructor(args: Args) {
@@ -63,7 +62,9 @@ class ConsoleStream extends Writable {
       msg += chalk.gray(data.time) + ' ';
     }
 
-    msg += chalk.keyword(levelColors[level])('Feflow' + ' ' + levelNames[level]) + ' ';
+    msg +=
+      chalk.keyword(levelColors[level])('Feflow' + ' ' + levelNames[level]) +
+      ' ';
     msg += data.msg + '\n';
 
     if (data.err) {

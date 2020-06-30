@@ -1,36 +1,66 @@
 import path from 'path';
 import Config from './config';
+import getCommandLine from './commandOptions';
+import { FEFLOW_ROOT } from '../../shared/constant';
 
-const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
+const registerDevkitCommand = (
+  command: any,
+  commandConfig: any,
+  directoryPath: any,
+  ctx: any
+) => {
   const builder = commandConfig.builder;
-  const [ packageName ] = builder.split(':', 2);
+  const [packageName] = builder.split(':', 2);
+  const config = new Config(ctx);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
-  let kitJson;
   try {
-    kitJson = require(path.join(pkgPath, 'devkit.json'));
-    const { implementation, description } = kitJson.builders[command];
+    const devkitConfig = config.loadDevkitConfig(pkgPath);
+    const {
+      implementation,
+      description,
+      optionsDescription,
+      usage = {}
+    } = devkitConfig.builders[command];
+
+    const options = getCommandLine(
+      optionsDescription || usage,
+      description,
+      command
+    );
     if (Array.isArray(implementation)) {
-      ctx.commander.register(command, description, async () => {
-        for (let i = 0; i < implementation.length; i ++) {
-          const action = path.join(pkgPath, implementation[i]);
-          await require(action)(ctx);
-        }
-      });
+      ctx.commander.register(
+        command,
+        description,
+        async () => {
+          for (let i = 0; i < implementation.length; i++) {
+            const action = path.join(pkgPath, implementation[i]);
+            await require(action)(ctx);
+          }
+        },
+        options,
+        packageName
+      );
     } else {
       const action = path.join(pkgPath, implementation);
-      ctx.commander.register(command, description, () => {
-        require(action)(ctx);
-      });
+      ctx.commander.register(
+        command,
+        description,
+        () => {
+          require(action)(ctx);
+        },
+        options,
+        packageName
+      );
     }
   } catch (e) {
-    ctx.logger.debug(`${ pkgPath } not found!`);
+    ctx.logger.debug(`${pkgPath} not found!`);
   }
 };
 
 export default function loadDevkits(ctx: any): Promise<void> {
   const config = new Config(ctx);
-  const configData = config.loadConfig();
-  const directoryPath = config.getConfigDirectory();
+  const configData = config.loadProjectConfig();
+  const directoryPath = config.getProjectDirectory();
 
   return new Promise<any>((resolve, reject) => {
     if (configData) {
@@ -43,7 +73,13 @@ export default function loadDevkits(ctx: any): Promise<void> {
           registerDevkitCommand(command, commandConfig, directoryPath, ctx);
         }
       } else {
-        ctx.logger.error('Your project config is not correct.');
+        if (path.basename(directoryPath) === FEFLOW_ROOT) {
+          ctx.logger.debug('Run commands in .fef root will not work.');
+        } else {
+          ctx.logger.error(
+            `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`
+          );
+        }
       }
     } else {
       ctx.logger.debug('Run commands not in a feflow project.');

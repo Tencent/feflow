@@ -3,7 +3,6 @@ import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
-import Report from '@feflow/report';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
@@ -13,37 +12,60 @@ const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
-    console.log(chalk.red(
-      'You are using Node ' + process.version + ', but this version of ' + id +
-      ' requires Node ' + wanted + '.\nPlease upgrade your Node version.'
-    ));
+    console.log(
+      chalk.red(
+        'You are using Node ' +
+          process.version +
+          ', but this version of ' +
+          id +
+          ' requires Node ' +
+          wanted +
+          '.\nPlease upgrade your Node version.'
+      )
+    );
     process.exit(1);
   }
-}
+};
 
 const handleError = (err: any) => {
   if (err) {
     console.log(chalk.red(err));
   }
   process.exit(2);
-}
+};
 
 const printBanner = () => {
-  figlet.text('feflow', {
-    font: '3D-ASCII',
-    horizontalLayout: 'default',
-    verticalLayout: 'default'
-  }, function (err, data: any) {
-    if (err) {
-      handleError(err);
-    }
+  figlet.text(
+    'feflow',
+    {
+      font: '3D-ASCII',
+      horizontalLayout: 'default',
+      verticalLayout: 'default'
+    },
+    function (err, data: any) {
+      if (err) {
+        handleError(err);
+      }
 
-    console.log(chalk.green(data));
-    console.log(chalk.green(` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `));
-    console.log(chalk.green(' (c) powered by Tencent, aims to improve front end workflow.                                       '));
-    console.log(chalk.green(' Run fef --help to see usage.                                                                      '));
-  });
-}
+      console.log(chalk.green(data));
+      console.log(
+        chalk.green(
+          ` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `
+        )
+      );
+      console.log(
+        chalk.green(
+          ' (c) powered by Tencent, aims to improve front end workflow.                                       '
+        )
+      );
+      console.log(
+        chalk.green(
+          ' Run fef --help to see usage.                                                                      '
+        )
+      );
+    }
+  );
+};
 
 export default function entry() {
   const args = minimist(process.argv.slice(2));
@@ -53,19 +75,17 @@ export default function entry() {
 
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
-  const report = new Report(feflow);
-
   let cmd: any = args._.shift();
 
   if (!cmd && (args.v || args.version)) {
-    report.report('version', args);
+    feflow.reporter.report('version', args);
     console.log(chalk.green(pkg.version));
     return;
   }
 
   if (!cmd && !args.h && !args.help) {
-      printBanner();
-      return;
+    printBanner();
+    return;
   }
 
   return feflow.init(cmd).then(() => {
@@ -81,17 +101,20 @@ export default function entry() {
       cmd = 'help';
     }
 
-    report.report(cmd, args);
+    feflow.cmd = cmd;
 
     feflow.hook.emit(HOOK_TYPE_BEFORE);
 
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
-      return feflow.call(cmd, feflow).then(() => {
-        feflow.hook.emit(HOOK_TYPE_AFTER);
-        logger.debug(`call ${cmd} success`);
-      }).catch((err) => {
-        handleError(err);
-      });
+      return feflow
+        .call(cmd, feflow)
+        .then(() => {
+          feflow.hook.emit(HOOK_TYPE_AFTER);
+          logger.debug(`call ${cmd} success`);
+        })
+        .catch((err) => {
+          handleError(err);
+        });
     });
   });
 }
