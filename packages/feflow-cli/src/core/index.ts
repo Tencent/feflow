@@ -80,7 +80,7 @@ export default class Feflow {
   }
 
   async init(cmd: string) {
-    this.reporter.init(cmd);
+    this.reporter.init && this.reporter.init(cmd);
     if (cmd === 'config') {
       await this.initClient();
       await this.loadNative();
