@@ -20,21 +20,46 @@
 
 ---
 
-## 介绍
+## 项目介绍
+ 
+ Feflow 是腾讯开源的一款大前端领域的工程化方案，致力于提升开发效率和规范。致力于解决下面三个场景的问题。
+ 
+ - 前端工作流（脚手架 + 开发套件）
+ 
+   首先，前端类型的项目技术栈发展迅速，更替频繁。常见的前端团队业务包含：APP内的H5业务、商业化运营活动、RN/Hippy业务、小程序、组件类和 Serverless Faas 函数等等。
+   
+   Feflow 提供脚手架、开发套件的能力，让前端类型的项目从创建、本地开发、测试到发布上线可以通过一行命令触发执行。
+  
+- 面向终端组件平台 Raft 支撑
 
-Feflow 是腾讯开源的一款大前端领域的工程化方案，致力于提升开发效率和规范。
+  对于终端开发而言，Feflow 提供底层工具能力，支持腾讯轻舟组件平台的打造。
+
+- 工具链打造
+  
+  Feflow 提供 JS 版本的插件机制和多语言插件机制，可以轻松基于 Feflow 的插件能力来定制团队的开发工具链体系打造。Feflow 提供安装、卸载、数据采集、日志上报、链式安装、增量更新等底层能力  
+  
 
 ---
 
-## 开始使用
+## 快速上手
 
-先通过 npm 安装 feflow 开始.
+1. 使用环境
+    - Feflow 从 v0.16.0 版本开始，不再支持 Node 8 以下的版本。
+  
+    - 安装 CLI
+  $ npm install @feflow/cli -g
+    ```
+    npm install @feflow/cli -g
+    ```
+  
+    - 命令行推荐
+  Mac OSX 用户推荐使用 item2，windows 用户推荐使用 cmder
+  
+      安装完成后，可以输入 $ fef 看看是否安装成功。
+      
+ 2. 开始使用     
 
-```
-npm install @feflow/cli -g
-```
-
-在 Feflow 里面有3类命令，分别是原生命令、开发套件命令和插件命令
+    在 Feflow 里面有3类命令，分别是原生命令、开发套件命令和插件命令
 
 - 原生命令
   - `fef config`
@@ -44,11 +69,47 @@ npm install @feflow/cli -g
   - `fef uninstall`
   - `fef list`
 
-你可以通过编写开发套件或者插件去扩展 Feflow 的命令
+ - 安装模板或者插件
+ 
+   在 Feflow 中，使用 install 命令去安装一个一个模板（基于 Yeoman）或者插件。比如：
+   ```js
+    fef install @feflow/generator-example
+   ```  
+   输入这行命令，Feflow即会开始安装，示例脚手架源码：@feflow/generator-example，安装的模板和插件会由 Feflow 统一管理，并且放在 ~/.fef 文件夹下（windows 在用户目录下的 .fef 文件夹）。
 
-更多详细信息可前往:
-- [Github Wiki](https://github.com/Tencent/feflow/wiki)
-- [官网](https://feflowjs.com/)
+ - 创建项目
+ 
+   安装完模板后，再次运行 fef init 命令，这个时候 Feflow 会把所有通过 Feflow 安装的模板显示出来供用户选择。
+   ```js
+    fef init
+   ``` 
+   
+  - 开发调试
+  
+    项目创建完成后，可以进入到 my-project项目中进行正常开发。 通过查看配置文件可以获取这个项目可以使用的套件命令。
+    
+  - 体验发布
+  
+    通过套件命令进行打包发布
+    
+    更多使用详细信息可前往下面查看:
+    - [Github Wiki](https://github.com/Tencent/feflow/wiki)
+    - [官网](https://feflowjs.com/)
+
+---
+## 常见问题
+
+- 如何使用feflow
+
+   可以查看feflow官网 以及[使用文档](https://github.com/Tencent/feflow/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)
+
+- 如何开发feflow
+  可以查看[开发者文档](https://github.com/Tencent/feflow/wiki/%E5%BC%80%E5%8F%91%E8%80%85%E6%96%87%E6%A1%A3)   
+
+- 如何反馈
+  
+  - 提出issue, 戳[这里](https://git.code.oa.com/teflow/feflow/issues)
+  - 联系主要负责人
 
 ---
 
