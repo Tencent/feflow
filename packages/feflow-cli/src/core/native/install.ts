@@ -15,7 +15,8 @@ import {
   UNIVERSAL_PLUGIN_CONFIG,
   LATEST_VERSION,
   FEFLOW_BIN,
-  FEFLOW_LIB
+  FEFLOW_LIB,
+  NPM_PLUGIN_INFO_JSON
 } from '../../shared/constant';
 import {
   transformUrl
@@ -169,7 +170,43 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   });
 }
 
-async function installJsPlugin(ctx: any) {
+function updateNpmPluginInfo(ctx: any, pluginName: string, options: any) {
+  const {
+    root,
+  }:{
+    root: string;
+  } = ctx;
+  const configPath = path.join(root, NPM_PLUGIN_INFO_JSON);
+  const npmPluginInfoJson = fs.existsSync(configPath) ? require(configPath) : {};
+  if (options === false) {
+    delete npmPluginInfoJson[pluginName];
+  } else {
+    if (options.globalCmd) {
+      const pluginInfo = npmPluginInfoJson[pluginName] || {};
+      const globalCmd = pluginInfo.globalCmd || [];
+      pluginInfo.globalCmd = globalCmd
+        ? Array.from(new Set<string>([...globalCmd, ...options.globalCmd]))
+        : (options.globalCmd || []);
+      npmPluginInfoJson[pluginName] = pluginInfo;
+      delete options.globalCmd;
+    }
+    npmPluginInfoJson[pluginName] = Object.assign( 
+      {},
+      npmPluginInfoJson[pluginName] || {},
+      options || {}
+    );
+  }
+  fs.writeFileSync(
+    configPath,
+    JSON.stringify(
+      npmPluginInfoJson,
+      null,
+      4
+    )
+  );
+}
+
+async function installJsPlugin(ctx: any, installPlugin: string) {
   const {
     bin,
     lib,
@@ -179,23 +216,30 @@ async function installJsPlugin(ctx: any) {
     lib: string;
     logger: any;
   } = ctx;
-  const pluginName = ctx?.args['_'];
   const isGlobal = ctx?.args['g'];
   // install js npm plugin
-  await installNpmPlugin(ctx, pluginName);
+  await installNpmPlugin(ctx, installPlugin);
 
   // if install with option -g, register as global command
-  if (isGlobal) {
+  if (
+    isGlobal &&
+    /^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(installPlugin)
+  ) {
     ctx.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
       if (cmdName) {
-        logger.debug(`link ${cmdName} to global`);
+        logger.debug(
+          `linking cmd [${cmdName}] registered by plugin ${installPlugin} to global`
+        );
         // create symbol link to plugin, support global plugin cmd
         const linker = new Linker();
-        ctx.commander.get('cmdName').pluginName = pluginName;
         linker.register(bin, lib, cmdName);
+        updateNpmPluginInfo(ctx, installPlugin, {globalCmd: [cmdName]});
+        logger.info(
+          `can just type > "${cmdName} options" in terminal, equal to "fef ${cmdName} options"`
+        );
       }
     });
-    return await applyPlugins(pluginName)(ctx);
+    return await applyPlugins([installPlugin])(ctx);
   }
 }
 
@@ -221,11 +265,11 @@ async function installPlugin(
 
   installPluginStr = installPluginStr.trim();
   if (!serverUrl) {
-    return installJsPlugin(ctx);
+    return installJsPlugin(ctx, installPluginStr);
   }
   const pkgInfo = await getPkgInfo(ctx, installPluginStr);
   if (!pkgInfo) {
-    return installJsPlugin(ctx);
+    return installJsPlugin(ctx, installPluginStr);
   }
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoName}] does not exist`;
@@ -465,19 +509,29 @@ async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
 
 async function uninstallNpmPlugin(ctx: any, dependencies: []) {
   const {
+    logger,
+    root,
     bin,
-    lib
+    lib,
   }: {
+    logger: any;
+    root: string;
     bin: string;
     lib: string;
   } = ctx;
   dependencies.forEach((pkg: string) => {
+    const npmPluginInfoPath = path.join(root, NPM_PLUGIN_INFO_JSON);
     try {
-      // TODO find plugin relative cmd and unlink
-      // ctx.commander.list();
-      new Linker().remove(bin, lib, pkg);
+      if (fs.existsSync(npmPluginInfoPath)) {
+        const npmPluginInfo = require(npmPluginInfoPath);
+        const pluginGlobalCmd = npmPluginInfo?.[pkg]?.globalCmd || [];
+        pluginGlobalCmd.forEach((cmd: string) => {
+          new Linker().remove(bin, lib, cmd);
+        })
+        updateNpmPluginInfo(ctx, pkg, false);
+      }       
     } catch (e) {
-      ctx.logger.debug(`remove link failure, ${e}`);
+      logger.debug(`remove plugin registered cmd link failure, ${e}`);
     }
   });
   return install(
