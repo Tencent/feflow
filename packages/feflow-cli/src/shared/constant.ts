@@ -53,3 +53,5 @@ export const UNIVERSAL_PKG_JSON = 'universal-package.json';
 export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';
 
 export const NPM_PLUGIN_INFO_JSON = 'npm-plugin-info.json';
+
+export const UNIVERSAL_README_CONFIG = 'README.md';
