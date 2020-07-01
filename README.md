@@ -30,6 +30,13 @@ Let's start by installing Feflow with npm.
 npm install @feflow/cli -g
 ```
 
+## FAQ
+
+## Code Of Conduct
+
+## How To Join
+
+## Members
 There are three kinds of commands in Feflow
 
 - Native Commands
