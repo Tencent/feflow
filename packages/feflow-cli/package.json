@@ -38,7 +38,6 @@
     "@types/command-line-usage": "^5.0.1",
     "@types/cross-spawn": "^6.0.0",
     "@types/easy-table": "0.0.32",
-    "@types/execa": "^2.0.0",
     "@types/figlet": "^1.2.0",
     "@types/inquirer": "^6.0.3",
     "@types/js-yaml": "^3.12.1",
@@ -61,7 +60,6 @@
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "0.0.1",
     "@feflow/report": "^0.2.0",
-    "@types/execa": "^2.0.0",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
@@ -69,7 +67,6 @@
     "commander": "^2.20.0",
     "cross-spawn": "^6.0.5",
     "easy-table": "^1.1.1",
-    "execa": "^4.0.1",
     "figlet": "^1.2.3",
     "import-fresh": "^3.1.0",
     "inquire": "^0.4.8",
