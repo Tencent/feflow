@@ -49,3 +49,5 @@ export const UNIVERSAL_MODULES = 'universal_modules';
 export const UNIVERSAL_PKG_JSON = 'universal-package.json';
 
 export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';
+
+export const UNIVERSAL_README_CONFIG = 'README.md';
