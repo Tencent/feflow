@@ -143,7 +143,7 @@
   - 提出issue, 戳[这里](https://git.code.oa.com/teflow/feflow/issues)
   - 联系主要负责人
 
- - 更多FAQ点击[这里](https://iwiki.oa.tencent.com/pages/viewpage.action?pageId=218878747)
+   更多FAQ点击[这里](https://iwiki.oa.tencent.com/pages/viewpage.action?pageId=218878747)
 ---
 
 
@@ -270,7 +270,7 @@ Teflow Oteam 中我们秉持着开放共建，开源协作的思想，欢迎个�
 |Web 版本开发| （待认领）| @homkerliu(IEG-游戏直播业务部)|
 |[CLI 版本开发](https://git.code.oa.com/teflow/feflow/tree/master/packages/feflow-cli)| @ruikunai(PCG-新闻产品技术部)<br>@yanzhanghu(PCG-移动商业产品部)<br>@karltao(TEG-研发管理部)<br>@bethonxyfu(PCG-腾讯看点)<br> @dntzhang(WXG-微信支付研发部)@lewischeng(PCG-腾讯看点)<br> | @lewischeng(PCG-腾讯看点)|
 |[桌面版本开发](https://git.code.oa.com/teflow/feflow/tree/master/packages/feflow-gui)|@salomezhang(PCG-移动应用平台部)<br>@littledu(WXG-微信增值)<br>@sarahjhuang(IEG-游戏直播业务部)<br>@tentenli(IEG-游戏直播业务部)|@lewischeng(PCG-腾讯看点)|
-|[唐刀平台建设](https://git.code.oa.com/teflow/tangdao)|@dntzhang(WXG-研发部)|
+|[唐刀平台建设](https://git.code.oa.com/teflow/tangdao)|@dntzhang(WXG-研发部)|@dntzhang(WXG-研发部)|
 
 目前，CLI 版本与 Web 版本已经略有成果，并稳步推进中。另外，工具中台、Web 版本也在前期筹备与招募阶段。为了能够继续有效推进协同快速进展，诚邀有意向的各团队及个人参与共建。
 
