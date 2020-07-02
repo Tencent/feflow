@@ -14,11 +14,17 @@ const objectFactory: ObjectFactory = {
     return this;
   },
   load(key, value): ObjectFactory {
+    let objValue = '';
     if (typeof value == 'function') {
-      this.obj[key] = value();
+      objValue = value();
     } else {
-      this.obj[key] = value === undefined ? cache[key] : value;
+      objValue = value === undefined ? cache[key] : value;
     }
+    if (!objValue) {
+      return this;
+    }
+
+    this.obj[key] = objValue;
     if (cache[key] === undefined) {
       cache[key] = this.obj[key];
     }

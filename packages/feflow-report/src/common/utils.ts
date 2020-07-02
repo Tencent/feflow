@@ -12,12 +12,6 @@ const cwd = process.cwd();
 export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
 export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
 
-const isGitAvailable = (): boolean => {
-  const hasGitCommand = exec('which git');
-  const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
-  return hasGitCommand && hasGitDir;
-};
-
 const exec = (command: string) => {
   let result = '';
   try {
@@ -27,6 +21,14 @@ const exec = (command: string) => {
   } catch (err) {}
   return result;
 };
+
+export const getGitStatus = (): boolean => {
+  const hasGitCommand = exec('which git');
+  const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
+  return hasGitCommand && hasGitDir;
+};
+
+const isGitAvailable = getGitStatus();
 
 const getUserNameFromHostName = () => {
   const hostname = os.hostname();
@@ -44,7 +46,7 @@ const getUserNameFromLinux = () => {
 };
 
 const getUserNameFromGit = () => {
-  if (!isGitAvailable()) {
+  if (!isGitAvailable) {
     return '';
   }
   const nameFromLinux = exec('git config user.name');
@@ -60,17 +62,6 @@ export const getUserName = () => {
   return getUserNameFromLinux() || getUserNameFromGit() || getUserNameFromHostName();
 };
 
-export const getSystemInfoByOS = () => {
-  return objectFactory
-    .create()
-    .load('hostname', os.hostname())
-    .load('type', os.type())
-    .load('platform', os.platform())
-    .load('arch', os.arch())
-    .load('release', os.release())
-    .done();
-};
-
 export const getProjectByPackage = () => {
   let project = '';
   const pkgPath = path.resolve(process.cwd(), './package.json');
@@ -81,10 +72,6 @@ export const getProjectByPackage = () => {
 };
 
 export const getProjectByGit = (url?: string) => {
-  if (!isGitAvailable()) {
-    return '';
-  }
-
   let project = '';
   const gitRemoteUrl = url || exec('git remote get-url origin');
   let urlRegex: RegExp;
@@ -98,6 +85,37 @@ export const getProjectByGit = (url?: string) => {
 
   const [_, group, path] = urlRegex.exec(gitRemoteUrl) || [];
   project = group ? `${group}/${path}` : '';
+
+  return project;
+};
+
+export const getSystemInfo = () => {
+  const systemDetailInfo = objectFactory
+    .create()
+    .load('hostname', os.hostname())
+    .load('type', os.type())
+    .load('platform', os.platform())
+    .load('arch', os.arch())
+    .load('release', os.release())
+    .done();
+  return JSON.stringify(systemDetailInfo);
+};
+
+export const getProject = (ctx, local?: boolean): string => {
+  const pkgConfig: any = ctx.pkgConfig || {};
+  let project = '';
+  if (pkgConfig.name && !local) {
+    // feflow context
+    project = pkgConfig.name;
+  } else {
+    try {
+      // if not, read project name from project's package.json or git
+      project = getProjectByPackage();
+      if (!project && isGitAvailable) {
+        project = getProjectByGit();
+      }
+    } catch (error) {}
+  }
 
   return project;
 };
