@@ -42,6 +42,13 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   if (global) {
     const universalPkg: UniversalPkg = ctx.universalPkg;
     const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
+    const usage = plugin.usage ? {
+      type: "usage",
+      content: plugin.usage
+    } : {
+      type: "path",
+      content: plugin.path
+    };
     commander.register(pluginCommand, pluginDescriptions, async () => {
       await updateUniversalPlugin(ctx, pkg, version, plugin);
       const newVersion = universalPkg.getInstalled().get(pkg);
@@ -51,7 +58,7 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
       await execPlugin(ctx, pkg, newVersion, plugin);
-    }, [], pkg);
+    }, [usage], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
       await execPlugin(ctx, pkg, version, plugin);
