@@ -18,7 +18,6 @@
 [![Issue resolution][issue-resolution]][issue-resolution-url]
 [![PR's welcome][pr-welcome]][pr-welcome-url]
 
----
 
 ## 项目介绍
  
@@ -38,8 +37,6 @@
   
   Feflow 提供 JS 版本的插件机制和多语言插件机制，可以轻松基于 Feflow 的插件能力来定制团队的开发工具链体系打造。Feflow 提供安装、卸载、数据采集、日志上报、链式安装、增量更新等底层能力  
   
-
----
 
 ## 快速上手
 
@@ -96,7 +93,7 @@
     - [Github Wiki](https://github.com/Tencent/feflow/wiki)
     - [官网](https://feflowjs.com/)
 
----
+
 ## 常见问题
 
 
@@ -144,7 +141,6 @@
   - 联系主要负责人
 
    更多FAQ点击[这里](https://iwiki.oa.tencent.com/pages/viewpage.action?pageId=218878747)
----
 
 
 ## 行为准则
@@ -189,7 +185,6 @@
   - 例会时间
   每月1～10号之间，15～25号
 
----
 
 ## 如何加入
 
@@ -257,7 +252,6 @@ Teflow Oteam 中我们秉持着开放共建，开源协作的思想，欢迎个�
 
   * 明确协同计划和目标，承担协同共建，落地实施和运营推广的主要工作。
 
----
 
 ## 团队介绍
 
@@ -275,9 +269,6 @@ Teflow Oteam 中我们秉持着开放共建，开源协作的思想，欢迎个�
 目前，CLI 版本与 Web 版本已经略有成果，并稳步推进中。另外，工具中台、Web 版本也在前期筹备与招募阶段。为了能够继续有效推进协同快速进展，诚邀有意向的各团队及个人参与共建。
 
 
-## 许可证
-
-[MIT](LICENSE.txt)
 
 
 [build-status]: https://travis-ci.org/Tencent/feflow.svg
