@@ -36,9 +36,8 @@ async function updateCli(packageManager: string) {
 }
 
 async function checkCliUpdate(ctx: any) {
-  const { args, version, config, configPath } = ctx;
+  const { version, config, configPath } = ctx;
   const packageManager = config.packageManager;
-  const autoUpdate = args['auto-update'] || config.autoUpdate === 'true';
   const registryUrl = await getRegistryUrl(packageManager);
   const latestVersion: any = await packageJson(
     '@feflow/cli',
