@@ -43,7 +43,6 @@ function register(ctx: any, pkg: string, version: string, global = false) {
     const universalPkg: UniversalPkg = ctx.universalPkg;
     const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
     commander.register(pluginCommand, pluginDescriptions, async () => {
-      await updateUniversalPlugin(ctx, pkg, version, plugin);
       const newVersion = universalPkg.getInstalled().get(pkg);
       if (!newVersion) {
         ctx.logger.error(`invalid universal plugin name: ${pluginCommand}`);
@@ -51,6 +50,11 @@ function register(ctx: any, pkg: string, version: string, global = false) {
       } 
       plugin = loadPlugin(ctx, pkg, newVersion);
       await execPlugin(ctx, pkg, newVersion, plugin);
+      try {
+        await updateUniversalPlugin(ctx, pkg, version, plugin);
+      } catch (e) {
+        ctx.logger.debug(`[${pkg}] update fail`);
+      }
     }, [], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
@@ -80,11 +84,6 @@ async function execPlugin(
       return false;
     }
     return true;
-  }).map(arg => {
-    if (!/^'.*'$/.test(arg)) {
-      return `'${arg}'`;
-    }
-    return arg;
   });
   try {
     plugin.command.run(...args);

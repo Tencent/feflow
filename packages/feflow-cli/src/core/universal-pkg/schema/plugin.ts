@@ -3,6 +3,7 @@ import { Dependencies } from './dependencies';
 import { platform } from './base';
 
 export class Plugin {
+
   private ctx: any;
 
   private path: string;
@@ -29,6 +30,10 @@ export class Plugin {
 
   postUpgrade: Command;
 
+  preUninstall: Command;
+
+  postUninstall: Command;
+
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
       throw `current operating system [${platform}] is not supported`;
@@ -54,6 +59,8 @@ export class Plugin {
       this.path,
       config?.['post-upgrade']
     );
+    this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
+    this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
   }
 
   async check() {

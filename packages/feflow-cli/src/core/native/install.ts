@@ -436,7 +436,11 @@ async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
     return;
   }
   try {
+    const repoPath = path.join(ctx.universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
+    const plugin = resolvePlugin(ctx, repoPath);
+    plugin.preUninstall.run();
     universalPkg.uninstall(pkgInfo.repoName, version);
+    plugin.postUninstall.runLess();
   } catch (e) {
     logger.error(`uninstall failure, ${e}`);
     return;
