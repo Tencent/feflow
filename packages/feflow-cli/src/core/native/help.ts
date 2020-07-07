@@ -6,7 +6,7 @@ const getCommands = (store: any) => {
     const desc = store[name].desc;
     arr.push({
       colA: name,
-      colB: desc
+      colB: desc instanceof Function ? desc() : desc
     });
   }
   return arr;

@@ -490,7 +490,8 @@ export default class Feflow {
     }
 
     if (cmd === 'help') {
-      return registriedCommand.call(this, ctx);
+      registriedCommand.call(this, ctx);
+      return true;
     }
     if (commandLine.length == 0) {
       return false;

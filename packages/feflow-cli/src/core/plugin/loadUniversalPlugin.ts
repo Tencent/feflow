@@ -33,20 +33,22 @@ function loadPlugin(
 
 function register(ctx: any, pkg: string, version: string, global = false) {
   const commander: Commander = ctx.commander;
-  let plugin = loadPlugin(ctx, pkg, version);
   const pluginCommand = (toolRegex.exec(pkg) || [])[1] || pkg;
   if (!pluginCommand) {
     ctx.logger.debug(`invalid universal plugin name: ${pluginCommand}`);
     return;
   }
   if (global) {
-    const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
-    commander.register(pluginCommand, pluginDescriptions, async () => {
-      await execPlugin(ctx, pkg, version, plugin);
+    // load plugin.yml delay
+    commander.register(pluginCommand, () => {
+      let plugin = loadPlugin(ctx, pkg, version);
+      return plugin.desc || `${pkg} universal plugin description`;
+    }, async () => {
+      await execPlugin(ctx, pkg, version);
     }, [], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
-      await execPlugin(ctx, pkg, version, plugin);
+      await execPlugin(ctx, pkg, version);
     }, [], `${pkg}@${version}`);
   }
 }
@@ -54,14 +56,14 @@ function register(ctx: any, pkg: string, version: string, global = false) {
 async function execPlugin(
   ctx: any,
   pkg: string,
-  version: string,
-  plugin: Plugin
+  version: string
 ) {
   const pluginPath = path.join(
     ctx.root,
     UNIVERSAL_MODULES,
     `${pkg}@${version}`
   );
+  let plugin = loadPlugin(ctx, pkg, version);
   // make it find dependencies
   new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
   // injection plugin path into the env
@@ -73,16 +75,12 @@ async function execPlugin(
     }
     return true;
   });
-  try {
-    plugin.command.run(...args);
-  } catch(e) {
-    process.exit(e?.status || 2)
-  }
+  plugin.command.run(...args);
   plugin.postRun.runLess();
   try {
     await updateUniversalPlugin(ctx, pkg, version, plugin);
   } catch (e) {
-    ctx.logger.debug(`[${pkg}] update fail`);
+    ctx.logger.debug(`[${pkg}] update fail, ${e}`);
   }
 }
 

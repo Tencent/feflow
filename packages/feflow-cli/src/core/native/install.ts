@@ -25,10 +25,10 @@ import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
-import UpgradeUniq from '../universal-pkg/upgrade/uniq';
 import InstallPersistence, { InstallAttribute } from '../universal-pkg/persistence/install';
 
-const upgradeUniq = new UpgradeUniq();
+let installP: InstallPersistence;
+
 let account: any;
 
 async function download(url: string, filepath: string): Promise<any> {
@@ -241,9 +241,6 @@ async function installPlugin(
     }
   }
   if (updateFlag) {
-    if (!upgradeUniq.upgradeable(pkgInfo.repoName, pkgInfo.installVersion)) {
-      return;
-    }
     logger.info(`[${pkgInfo.repoName}] update the plugin to version ${pkgInfo.checkoutTag}`);
     resolvePlugin(ctx, repoPath).preUpgrade.runLess();
   } else {
@@ -336,12 +333,12 @@ async function installPlugin(
 
   universalPkg.saveChange();
   plugin.test.runLess();
-  plugin.postInstall.runLess();
 
   if (updateFlag) {
     plugin.postUpgrade.runLess();
     logger.info('update success');
   } else {
+    plugin.postInstall.runLess();
     logger.info('install success');
   }
 }
@@ -486,8 +483,10 @@ function removeInvalidPkg(ctx: any) {
 
 // update only the plugins installed globally
 async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
-  const dbFile = path.join(ctx.root, UNIVERSAL_PLUGIN_INSTALL_COLLECTION);
-  const installP = new InstallPersistence(dbFile);
+  if (!installP) {
+    const dbFile = path.join(ctx.root, UNIVERSAL_PLUGIN_INSTALL_COLLECTION);
+    installP = new InstallPersistence(dbFile);
+  }
   const i = await installP.find(pkg, version);
   if (!canUpgrade(i?.attributes.upgradeTime)) {
     return;
@@ -507,12 +506,13 @@ async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plu
   if (newVersion === version && version === LATEST_VERSION && plugin.autoUpdate) {
     await updatePlugin(ctx, pkg, version);
   }
-  const installAttribute = new InstallAttribute(i?.attributes);
-  installAttribute.upgradeTime = Date.now();
-  installP.save(pkg, version, '', installAttribute);
 }
 
 async function updatePlugin(ctx: any, pkg: string, version: string) {
+  const i = await installP.find(pkg, version);
+  if (!canUpgrade(i?.attributes.upgradeTime)) {
+    return;
+  }
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   const isGlobal = universalPkg.isInstalled(pkg, version);
   try {
@@ -520,6 +520,9 @@ async function updatePlugin(ctx: any, pkg: string, version: string) {
   } catch(e) {
     ctx.logger.error(`[${pkg}] update failure, ${e}`);
   }
+  const installAttribute = new InstallAttribute(i?.attributes);
+  installAttribute.upgradeTime = Date.now();
+  installP.save(pkg, version, '', installAttribute);
 }
 
 function canUpgrade(lastUpgradeTime: number | undefined): boolean {
