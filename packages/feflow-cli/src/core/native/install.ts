@@ -14,7 +14,9 @@ import {
   UNIVERSAL_PLUGIN_CONFIG,
   LATEST_VERSION,
   FEFLOW_BIN,
-  FEFLOW_LIB
+  FEFLOW_LIB,
+  UNIVERSAL_PLUGIN_INSTALL_COLLECTION,
+  UPGRADE_INTERVAL
 } from '../../shared/constant';
 import {
   transformUrl
@@ -24,6 +26,7 @@ import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 import UpgradeUniq from '../universal-pkg/upgrade/uniq';
+import InstallPersistence, { InstallAttribute } from '../universal-pkg/persistence/install';
 
 const upgradeUniq = new UpgradeUniq();
 let account: any;
@@ -66,7 +69,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
     return data.data && data.data[0];
   }).catch((err: any) => {
     ctx.logger.debug('Get repo info error', err);
-  });;
+  });
 }
 
 function getRepoName(repoUrl: string): string | undefined {
@@ -365,8 +368,11 @@ async function getPkgInfo(
   } else {
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
-    repoUrl = repoInfo?.repo;
-    repoName = repoInfo?.name;
+    if (!repoInfo) {
+      throw `plugin [${pluginName}] does not exist`;
+    }
+    repoUrl = repoInfo.repo;
+    repoName = repoInfo.name;
     if (isGitRepo(repoUrl) && !repoInfo?.tnpm) {
       if (pluginVersion) {
         pluginVersion = versionImpl.toFull(pluginVersion);
@@ -382,9 +388,6 @@ async function getPkgInfo(
     } else {
       return;
     }
-  }
-  if (!repoName) {
-    throw `plugin [${repoName}] does not exist`;
   }
   if (!checkoutTag) {
     throw `the version [${installVersion}] was not found`;
@@ -483,6 +486,12 @@ function removeInvalidPkg(ctx: any) {
 
 // update only the plugins installed globally
 async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+  const dbFile = path.join(ctx.root, UNIVERSAL_PLUGIN_INSTALL_COLLECTION);
+  const installP = new InstallPersistence(dbFile);
+  const i = await installP.find(pkg, version);
+  if (!canUpgrade(i?.attributes.upgradeTime)) {
+    return;
+  }
   const universalPkg = ctx.universalPkg as UniversalPkg;
   const dependedOn = universalPkg.getDepended(pkg, version);
   // update parent
@@ -498,6 +507,9 @@ async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plu
   if (newVersion === version && version === LATEST_VERSION && plugin.autoUpdate) {
     await updatePlugin(ctx, pkg, version);
   }
+  const installAttribute = new InstallAttribute(i?.attributes);
+  installAttribute.upgradeTime = Date.now();
+  installP.save(pkg, version, '', installAttribute);
 }
 
 async function updatePlugin(ctx: any, pkg: string, version: string) {
@@ -508,6 +520,13 @@ async function updatePlugin(ctx: any, pkg: string, version: string) {
   } catch(e) {
     ctx.logger.error(`[${pkg}] update failure, ${e}`);
   }
+}
+
+function canUpgrade(lastUpgradeTime: number | undefined): boolean {
+  if (lastUpgradeTime && Date.now() - lastUpgradeTime < UPGRADE_INTERVAL) {
+    return false;
+  }
+  return true;
 }
 
 module.exports.installPlugin = installPlugin;

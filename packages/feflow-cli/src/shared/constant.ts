@@ -49,3 +49,7 @@ export const UNIVERSAL_MODULES = 'universal_modules';
 export const UNIVERSAL_PKG_JSON = 'universal-package.json';
 
 export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';
+
+export const UNIVERSAL_PLUGIN_INSTALL_COLLECTION = 'install.db';
+
+export const UPGRADE_INTERVAL = 1000 * 60 * 60;
