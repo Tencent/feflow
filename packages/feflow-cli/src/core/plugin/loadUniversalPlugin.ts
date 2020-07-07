@@ -2,6 +2,7 @@ import path from 'path';
 import { parseYaml } from '../../shared/yaml';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import os from 'os';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
@@ -14,7 +15,9 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
-const excludeAgrs = ['--disable-check']
+const excludeAgrs = ['--disable-check'];
+
+const isWindows = os.platform() === 'win32';
 
 function loadPlugin(
   ctx: any,
@@ -81,7 +84,8 @@ async function execPlugin(
     }
     return true;
   }).map(arg => {
-    if (!/^'.*'$/.test(arg)) {
+    // only handle under non-windows
+    if (!isWindows && !/^'.*'$/.test(arg)) {
       return `'${arg}'`;
     }
     return arg;
