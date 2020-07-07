@@ -11,10 +11,12 @@ import {
 } from '../universal-pkg/repository/git';
 import { parseYaml } from '../../shared/yaml';
 import {
+  HOOK_TYPE_ON_COMMAND_REGISTERED,
   UNIVERSAL_PLUGIN_CONFIG,
   LATEST_VERSION,
   FEFLOW_BIN,
-  FEFLOW_LIB
+  FEFLOW_LIB,
+  NPM_PLUGIN_INFO_JSON
 } from '../../shared/constant';
 import {
   transformUrl
@@ -24,6 +26,7 @@ import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 import UpgradeUniq from '../universal-pkg/upgrade/uniq';
+import applyPlugins from '../plugin/applyPlugins';
 
 const upgradeUniq = new UpgradeUniq();
 let account: any;
@@ -118,16 +121,7 @@ module.exports = (ctx: any) => {
       );
       const serverUrl = ctx.config?.serverUrl;
       if (!serverUrl) {
-        return install(
-          ctx?.config?.packageManager,
-          ctx.root,
-          ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
-          dependencies,
-          false,
-          true
-        ).then(() => {
-          ctx.logger.info('uninstall success');
-        });
+        return uninstallNpmPlugin(ctx, dependencies);
       }
       const installPluginStr = dependencies[0];
       const pkgInfo = await getPkgInfo(ctx, installPluginStr);
@@ -135,16 +129,7 @@ module.exports = (ctx: any) => {
         return uninstallUniversalPlugin(ctx, pkgInfo);
       }
 
-      return install(
-        ctx?.config?.packageManager,
-        ctx.root,
-        ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
-        dependencies,
-        false,
-        true
-      ).then(() => {
-        ctx.logger.info('uninstall success');
-      });
+      return uninstallNpmPlugin(ctx, dependencies);
     }
   );
 };
@@ -185,6 +170,79 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   });
 }
 
+function updateNpmPluginInfo(ctx: any, pluginName: string, options: any) {
+  const {
+    root,
+  }:{
+    root: string;
+  } = ctx;
+  const configPath = path.join(root, NPM_PLUGIN_INFO_JSON);
+  const npmPluginInfoJson = fs.existsSync(configPath) ? require(configPath) : {};
+  if (options === false) {
+    delete npmPluginInfoJson[pluginName];
+  } else {
+    if (options.globalCmd) {
+      const pluginInfo = npmPluginInfoJson[pluginName] || {};
+      const globalCmd = pluginInfo.globalCmd || [];
+      pluginInfo.globalCmd = globalCmd
+        ? Array.from(new Set<string>([...globalCmd, ...options.globalCmd]))
+        : (options.globalCmd || []);
+      npmPluginInfoJson[pluginName] = pluginInfo;
+      delete options.globalCmd;
+    }
+    npmPluginInfoJson[pluginName] = Object.assign( 
+      {},
+      npmPluginInfoJson[pluginName] || {},
+      options || {}
+    );
+  }
+  fs.writeFileSync(
+    configPath,
+    JSON.stringify(
+      npmPluginInfoJson,
+      null,
+      4
+    )
+  );
+}
+
+async function installJsPlugin(ctx: any, installPlugin: string) {
+  const {
+    bin,
+    lib,
+    logger
+  }: {
+    bin: string;
+    lib: string;
+    logger: any;
+  } = ctx;
+  const isGlobal = ctx?.args['g'];
+  // install js npm plugin
+  await installNpmPlugin(ctx, installPlugin);
+
+  // if install with option -g, register as global command
+  if (
+    isGlobal &&
+    /^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(installPlugin)
+  ) {
+    ctx.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
+      if (cmdName) {
+        logger.debug(
+          `linking cmd [${cmdName}] registered by plugin ${installPlugin} to global`
+        );
+        // create symbol link to plugin, support global plugin cmd
+        const linker = new Linker();
+        linker.register(bin, lib, cmdName);
+        updateNpmPluginInfo(ctx, installPlugin, {globalCmd: [cmdName]});
+        logger.info(
+          `can just type > "${cmdName} options" in terminal, equal to "fef ${cmdName} options"`
+        );
+      }
+    });
+    return await applyPlugins([installPlugin])(ctx);
+  }
+}
+
 async function installPlugin(
   ctx: any,
   installPluginStr: string,
@@ -207,11 +265,11 @@ async function installPlugin(
 
   installPluginStr = installPluginStr.trim();
   if (!serverUrl) {
-    return installNpmPlugin(ctx, ctx?.args['_']);
+    return installJsPlugin(ctx, installPluginStr);
   }
   const pkgInfo = await getPkgInfo(ctx, installPluginStr);
   if (!pkgInfo) {
-    return installNpmPlugin(ctx, ctx?.args['_']);
+    return installJsPlugin(ctx, installPluginStr);
   }
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoName}] does not exist`;
@@ -447,6 +505,45 @@ async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
   } catch (e) {
     logger.info(`uninstall succeeded, but failed to clean the data, ${e}`);
   }
+}
+
+async function uninstallNpmPlugin(ctx: any, dependencies: []) {
+  const {
+    logger,
+    root,
+    bin,
+    lib,
+  }: {
+    logger: any;
+    root: string;
+    bin: string;
+    lib: string;
+  } = ctx;
+  dependencies.forEach((pkg: string) => {
+    const npmPluginInfoPath = path.join(root, NPM_PLUGIN_INFO_JSON);
+    try {
+      if (fs.existsSync(npmPluginInfoPath)) {
+        const npmPluginInfo = require(npmPluginInfoPath);
+        const pluginGlobalCmd = npmPluginInfo?.[pkg]?.globalCmd || [];
+        pluginGlobalCmd.forEach((cmd: string) => {
+          new Linker().remove(bin, lib, cmd);
+        })
+        updateNpmPluginInfo(ctx, pkg, false);
+      }       
+    } catch (e) {
+      logger.debug(`remove plugin registered cmd link failure, ${e}`);
+    }
+  });
+  return install(
+    ctx?.config?.packageManager,
+    ctx.root,
+    ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
+    dependencies,
+    false,
+    true
+  ).then(() => {
+    ctx.logger.info('uninstall success');
+  });
 }
 
 function removePkg(ctx: any, pkg: string, version: string) {
