@@ -14,7 +14,7 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
-const excludeAgrs = ['--disable-check']
+const excludeAgrs = ['--disable-check'];
 
 function loadPlugin(
   ctx: any,
@@ -41,11 +41,19 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   if (global) {
     // load plugin.yml delay
     commander.register(pluginCommand, () => {
-      let plugin = loadPlugin(ctx, pkg, version);
-      return plugin.desc || `${pkg} universal plugin description`;
+      return loadPlugin(ctx, pkg, version).desc || `${pkg} universal plugin description`;
     }, async () => {
       await execPlugin(ctx, pkg, version);
-    }, [], pkg);
+    }, [() => {
+      let plugin = loadPlugin(ctx, pkg, version);
+      return plugin.usage ? {
+        type: "usage",
+        content: plugin.usage
+      } : {
+        type: "path",
+        content: plugin.path
+      }
+    }], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
       await execPlugin(ctx, pkg, version);

@@ -6,7 +6,7 @@ export class Plugin {
 
   private ctx: any;
 
-  private path: string;
+  path: string;
 
   desc: string;
 
@@ -33,6 +33,8 @@ export class Plugin {
   preUninstall: Command;
 
   postUninstall: Command;
+
+  usage: any;
 
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
@@ -61,6 +63,7 @@ export class Plugin {
     );
     this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
     this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
+    this.usage = config?.['usage'];
   }
 
   async check() {
