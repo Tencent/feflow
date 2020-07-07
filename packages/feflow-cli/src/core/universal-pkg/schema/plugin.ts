@@ -5,7 +5,7 @@ import { platform } from './base';
 export class Plugin {
   private ctx: any;
 
-  private path: string;
+  path: string;
 
   desc: string;
 
@@ -28,6 +28,8 @@ export class Plugin {
   preUpgrade: Command;
 
   postUpgrade: Command;
+
+  usage: any;
 
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
@@ -54,6 +56,7 @@ export class Plugin {
       this.path,
       config?.['post-upgrade']
     );
+    this.usage = config?.['usage'];
   }
 
   async check() {
