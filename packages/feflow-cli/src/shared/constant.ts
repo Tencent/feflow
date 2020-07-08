@@ -52,6 +52,9 @@ export const UNIVERSAL_PKG_JSON = 'universal-package.json';
 
 export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';
 
+export const UNIVERSAL_PLUGIN_INSTALL_COLLECTION = 'install.db';
+
+export const UPGRADE_INTERVAL = 1000 * 60 * 60;
 export const NPM_PLUGIN_INFO_JSON = 'npm-plugin-info.json';
 
 export const UNIVERSAL_README_CONFIG = 'README.md';

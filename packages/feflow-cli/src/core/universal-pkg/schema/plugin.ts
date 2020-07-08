@@ -3,6 +3,7 @@ import { Dependencies } from './dependencies';
 import { platform } from './base';
 
 export class Plugin {
+
   private ctx: any;
 
   path: string;
@@ -28,6 +29,10 @@ export class Plugin {
   preUpgrade: Command;
 
   postUpgrade: Command;
+
+  preUninstall: Command;
+
+  postUninstall: Command;
 
   usage: any;
 
@@ -56,6 +61,8 @@ export class Plugin {
       this.path,
       config?.['post-upgrade']
     );
+    this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
+    this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
     this.usage = config?.['usage'];
   }
 

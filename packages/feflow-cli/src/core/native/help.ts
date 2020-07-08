@@ -11,7 +11,7 @@ const getCommands = (store: any) => {
     const desc = store[name].desc;
     arr.push({
       colA: name,
-      colB: desc
+      colB: desc instanceof Function ? desc() : desc
     });
   }
   return arr;
@@ -84,7 +84,9 @@ module.exports = (ctx: any) => {
 
         // 优先展示组件注册信息
         if (commandInfo.options && commandInfo.options.length) {
-          const { type, content } = commandInfo.options[0];
+          const universalUsage = commandInfo.options[0];
+          const { type, content } = universalUsage instanceof Function ? 
+              universalUsage() : universalUsage;
 
           // case 1: 多语言情况下 yml 有 usage 属性时，执行对应的内容
           if (type === 'usage') {

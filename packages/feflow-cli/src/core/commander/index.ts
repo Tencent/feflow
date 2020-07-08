@@ -30,7 +30,7 @@ export default class Commander {
     return this.store;
   }
 
-  register(name: string, desc: string, fn: Function, options?: Array<object>, pluginName?: string) {
+  register(name: string, desc: string | Function, fn: Function, options?: Array<object>, pluginName?: string) {
     const storeKey = name.toLowerCase();
     this.store[storeKey] = fn;
     this.store[name.toLowerCase()].desc = desc;

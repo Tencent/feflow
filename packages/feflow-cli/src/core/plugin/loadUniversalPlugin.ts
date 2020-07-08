@@ -2,7 +2,6 @@ import path from 'path';
 import { parseYaml } from '../../shared/yaml';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
-import os from 'os';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
@@ -16,8 +15,6 @@ const { updateUniversalPlugin } = require('../native/install');
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
 const excludeAgrs = ['--disable-check'];
-
-const isWindows = os.platform() === 'win32';
 
 function loadPlugin(
   ctx: any,
@@ -36,35 +33,30 @@ function loadPlugin(
 
 function register(ctx: any, pkg: string, version: string, global = false) {
   const commander: Commander = ctx.commander;
-  let plugin = loadPlugin(ctx, pkg, version);
-  const pluginCommand = (toolRegex.exec(pkg) || [])[1];
+  const pluginCommand = (toolRegex.exec(pkg) || [])[1] || pkg;
   if (!pluginCommand) {
     ctx.logger.debug(`invalid universal plugin name: ${pluginCommand}`);
     return;
   }
   if (global) {
-    const universalPkg: UniversalPkg = ctx.universalPkg;
-    const pluginDescriptions = plugin.desc || `${pkg} universal plugin description`;
-    const usage = plugin.usage ? {
-      type: "usage",
-      content: plugin.usage
-    } : {
-      type: "path",
-      content: plugin.path
-    };
-    commander.register(pluginCommand, pluginDescriptions, async () => {
-      await updateUniversalPlugin(ctx, pkg, version, plugin);
-      const newVersion = universalPkg.getInstalled().get(pkg);
-      if (!newVersion) {
-        ctx.logger.error(`invalid universal plugin name: ${pluginCommand}`);
-        return;
-      } 
-      plugin = loadPlugin(ctx, pkg, newVersion);
-      await execPlugin(ctx, pkg, newVersion, plugin);
-    }, [usage], pkg);
+    // load plugin.yml delay
+    commander.register(pluginCommand, () => {
+      return loadPlugin(ctx, pkg, version).desc || `${pkg} universal plugin description`;
+    }, async () => {
+      await execPlugin(ctx, pkg, version);
+    }, [() => {
+      let plugin = loadPlugin(ctx, pkg, version);
+      return plugin.usage ? {
+        type: "usage",
+        content: plugin.usage
+      } : {
+        type: "path",
+        content: plugin.path
+      }
+    }], pkg);
   } else {
     commander.registerInvisible(`${pluginCommand}@${version}`, async () => {
-      await execPlugin(ctx, pkg, version, plugin);
+      await execPlugin(ctx, pkg, version);
     }, [], `${pkg}@${version}`);
   }
 }
@@ -72,14 +64,14 @@ function register(ctx: any, pkg: string, version: string, global = false) {
 async function execPlugin(
   ctx: any,
   pkg: string,
-  version: string,
-  plugin: Plugin
+  version: string
 ) {
   const pluginPath = path.join(
     ctx.root,
     UNIVERSAL_MODULES,
     `${pkg}@${version}`
   );
+  let plugin = loadPlugin(ctx, pkg, version);
   // make it find dependencies
   new Binp().register(path.join(pluginPath, `.${FEFLOW_BIN}`), true, true);
   // injection plugin path into the env
@@ -90,19 +82,14 @@ async function execPlugin(
       return false;
     }
     return true;
-  }).map(arg => {
-    // only handle under non-windows
-    if (!isWindows && !/^'.*'$/.test(arg)) {
-      return `'${arg}'`;
-    }
-    return arg;
   });
-  try {
-    plugin.command.run(...args);
-  } catch(e) {
-    process.exit(e?.status || 2)
-  }
+  plugin.command.run(...args);
   plugin.postRun.runLess();
+  try {
+    await updateUniversalPlugin(ctx, pkg, version, plugin);
+  } catch (e) {
+    ctx.logger.debug(`[${pkg}] update fail, ${e}`);
+  }
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {
