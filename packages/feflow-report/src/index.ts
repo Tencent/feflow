@@ -60,7 +60,11 @@ class Report {
 
   private reportOnHookBefore = () => {
     const { cmd, args } = this;
-    this.commandSource = this.ctx.commander?.store[cmd]?.pluginName || '';
+    const store = this.ctx.commander?.store[cmd] || {};
+    this.commandSource = store?.pluginName || '';
+    if (!this.commandSource && typeof store.options === 'string') {
+      this.commandSource = store.options;
+    }
     this.ctx.log.debug('HOOK_TYPE_BEFORE');
     this.startTime = Date.now();
     this.report(cmd, args);
