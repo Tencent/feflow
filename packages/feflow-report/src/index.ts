@@ -1,5 +1,5 @@
 import ApiController from './api';
-import { getUserName, getSystemInfoByOS, getProjectByPackage, getProjectByGit } from './common/utils';
+import { getUserName, getSystemInfo, getProject } from './common/utils';
 import objectFactory from './common/objectFactory';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS } from './constants';
 
@@ -35,56 +35,46 @@ class Report {
   args: object;
   isRecallActivating: boolean;
   commandSource: string;
+  generatorProject: string;
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
     this.cmd = cmd;
     this.args = args;
     this.userName = getUserName();
-    this.systemInfo = this.getSystemInfo();
-    this.project = this.getProject();
+    this.systemInfo = getSystemInfo();
+    this.project = getProject(this.ctx);
     this.loadContextLogger();
   }
   // register before/after hook event
   private registerHook() {
-    const { cmd, args } = this;
-    this.ctx.hook.on(HOOK_TYPE_BEFORE, () => {
-      this.commandSource = this.ctx.commander?.store[cmd]?.pluginName || '';
-      this.ctx.log.debug('HOOK_TYPE_BEFORE');
-      this.startTime = Date.now();
-      this.report(cmd, args);
-    });
-
+    this.ctx.hook.on(HOOK_TYPE_BEFORE, this.reportOnHookBefore);
     // report some performance data after command executed
-    this.ctx.hook.on(HOOK_TYPE_AFTER, () => {
-      this.ctx.log.debug('HOOK_TYPE_AFTER');
-      this.costTime = Date.now() - this.startTime;
-      this.recallReport();
-    });
+    this.ctx.hook.on(HOOK_TYPE_AFTER, this.reportOnHookAfter);
   }
+
   private loadContextLogger() {
     this.ctx.log = this.ctx.log || this.ctx.logger;
     this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
   }
-  private getProject() {
-    const pkgConfig: any = this.ctx.pkgConfig || {};
-    let project = '';
 
-    if (pkgConfig.name) {
-      // feflow context
-      project = pkgConfig.name;
-    } else {
-      // if not, read project name from project's package.json or git
-      project = getProjectByPackage() || getProjectByGit();
+  private reportOnHookBefore = () => {
+    const { cmd, args } = this;
+    const store = this.ctx.commander?.store[cmd] || {};
+    this.commandSource = store?.pluginName || '';
+    if (!this.commandSource && typeof store.options === 'string') {
+      this.commandSource = store.options;
     }
+    this.ctx.log.debug('HOOK_TYPE_BEFORE');
+    this.startTime = Date.now();
+    this.report(cmd, args);
+  };
 
-    return project;
-  }
-
-  getSystemInfo(): string {
-    const systemDetailInfo = getSystemInfoByOS();
-    return JSON.stringify(systemDetailInfo);
-  }
+  private reportOnHookAfter = () => {
+    this.ctx.log.debug('HOOK_TYPE_AFTER');
+    this.costTime = Date.now() - this.startTime;
+    this.recallReport();
+  };
 
   private getReportBody(cmd, args): ReportBody {
     return objectFactory
@@ -104,6 +94,7 @@ class Report {
     return objectFactory
       .create()
       .load('command')
+      .load('generator_project', this.generatorProject)
       .load('recall_id', this.reCallId)
       .load('cost_time', this.costTime)
       .load('is_fail', false)
@@ -111,7 +102,7 @@ class Report {
       .done();
   }
 
-  private checkBeforeReport(cmd, args) {
+  private checkBeforeReport(cmd) {
     return !!cmd;
   }
   init(cmd: string) {
@@ -124,7 +115,7 @@ class Report {
   }
   report(cmd, args?) {
     // args check
-    if (!this.checkBeforeReport(cmd, args)) return;
+    if (!this.checkBeforeReport(cmd)) return;
     try {
       const reportBody: ReportBody = this.getReportBody(cmd, args);
       this.ctx.log.debug('reportBody', JSON.stringify(reportBody));
@@ -153,6 +144,16 @@ class Report {
     } catch (error) {
       this.ctx.log.debug('feflow recallReport got error，please contact administractor to resolve ', error);
     }
+  }
+
+  reportInitResult() {
+    const { cmd } = this;
+    if (cmd !== 'init') {
+      return;
+    }
+    this.costTime = Date.now() - this.startTime;
+    this.generatorProject = getProject(this.ctx, true);
+    this.recallReport();
   }
 }
 

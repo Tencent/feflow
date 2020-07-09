@@ -7,6 +7,7 @@ import { execSync } from 'child_process';
 const platform = os.platform();
 const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
+const cwd = process.cwd();
 
 export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
 export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
@@ -17,11 +18,17 @@ const exec = (command: string) => {
     result = execSync(command)
       .toString()
       .replace(/\n/, '');
-  } catch (err) {
-    console.log('feflow report execSync err: ', err);
-  }
+  } catch (err) {}
   return result;
 };
+
+export const getGitStatus = (): boolean => {
+  const hasGitCommand = exec('which git');
+  const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
+  return hasGitCommand && hasGitDir;
+};
+
+const isGitAvailable = getGitStatus();
 
 const getUserNameFromHostName = () => {
   const hostname = os.hostname();
@@ -39,7 +46,6 @@ const getUserNameFromLinux = () => {
 };
 
 const getUserNameFromGit = () => {
-  const isGitAvailable = exec('which git');
   if (!isGitAvailable) {
     return '';
   }
@@ -51,20 +57,9 @@ const getUserNameFromGit = () => {
 export const getUserName = () => {
   // mac/window
   if (isMac || isWin) {
-    return getUserNameFromHostName();
+    return getUserNameFromHostName() || getUserNameFromGit();
   }
   return getUserNameFromLinux() || getUserNameFromGit() || getUserNameFromHostName();
-};
-
-export const getSystemInfoByOS = () => {
-  return objectFactory
-    .create()
-    .load('hostname', os.hostname())
-    .load('type', os.type())
-    .load('platform', os.platform())
-    .load('arch', os.arch())
-    .load('release', os.release())
-    .done();
 };
 
 export const getProjectByPackage = () => {
@@ -90,6 +85,37 @@ export const getProjectByGit = (url?: string) => {
 
   const [_, group, path] = urlRegex.exec(gitRemoteUrl) || [];
   project = group ? `${group}/${path}` : '';
+
+  return project;
+};
+
+export const getSystemInfo = () => {
+  const systemDetailInfo = objectFactory
+    .create()
+    .load('hostname', os.hostname())
+    .load('type', os.type())
+    .load('platform', os.platform())
+    .load('arch', os.arch())
+    .load('release', os.release())
+    .done();
+  return JSON.stringify(systemDetailInfo);
+};
+
+export const getProject = (ctx, local?: boolean): string => {
+  const pkgConfig: any = ctx.pkgConfig || {};
+  let project = '';
+  if (pkgConfig.name && !local) {
+    // feflow context
+    project = pkgConfig.name;
+  } else {
+    try {
+      // if not, read project name from project's package.json or git
+      project = getProjectByPackage();
+      if (!project && isGitAvailable) {
+        project = getProjectByGit();
+      }
+    } catch (error) {}
+  }
 
   return project;
 };
