@@ -3,9 +3,10 @@ import { Dependencies } from './dependencies';
 import { platform } from './base';
 
 export class Plugin {
+
   private ctx: any;
 
-  private path: string;
+  path: string;
 
   desc: string;
 
@@ -28,6 +29,12 @@ export class Plugin {
   preUpgrade: Command;
 
   postUpgrade: Command;
+
+  preUninstall: Command;
+
+  postUninstall: Command;
+
+  usage: any;
 
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
@@ -54,6 +61,9 @@ export class Plugin {
       this.path,
       config?.['post-upgrade']
     );
+    this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
+    this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
+    this.usage = config?.['usage'];
   }
 
   async check() {

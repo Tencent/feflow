@@ -28,10 +28,7 @@ const checkNodeVersion = (wanted: any, id: string) => {
 };
 
 const handleError = (err: any) => {
-  if (err) {
-    console.log(chalk.red(err));
-  }
-  process.exit(2);
+  process.exit(err?.status || 2);
 };
 
 const printBanner = () => {

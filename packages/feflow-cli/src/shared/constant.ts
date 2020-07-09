@@ -34,6 +34,8 @@ export const HOOK_TYPE_BEFORE = 'before';
  */
 export const HOOK_TYPE_AFTER = 'after';
 
+export const HOOK_TYPE_ON_COMMAND_REGISTERED = 'on_command_registered';
+
 /**
  * Emitted when command execution begins
  */
@@ -49,3 +51,10 @@ export const UNIVERSAL_MODULES = 'universal_modules';
 export const UNIVERSAL_PKG_JSON = 'universal-package.json';
 
 export const UNIVERSAL_PLUGIN_CONFIG = 'plugin.yml';
+
+export const UNIVERSAL_PLUGIN_INSTALL_COLLECTION = 'install.db';
+
+export const UPGRADE_INTERVAL = 1000 * 60 * 60;
+export const NPM_PLUGIN_INFO_JSON = 'npm-plugin-info.json';
+
+export const UNIVERSAL_README_CONFIG = 'README.md';

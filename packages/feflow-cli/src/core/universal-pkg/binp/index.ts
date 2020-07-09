@@ -157,7 +157,12 @@ export default class Binp {
   }
 
   addToPath(file: string, content: string) {
-    fs.appendFileSync(file, `\n${content}\n`);
+    try {
+      fs.appendFileSync(file, `\n${content}\n`);
+    } catch(e) {
+      console.error(e);
+      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+    }
   }
 
 }

@@ -17,7 +17,8 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
-  UNIVERSAL_MODULES
+  UNIVERSAL_MODULES,
+  HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
@@ -65,8 +66,10 @@ export default class Feflow {
     this.version = pkg.version;
     this.config = parseYaml(configPath);
     this.configPath = configPath;
-    this.commander = new Commander();
     this.hook = new Hook();
+    this.commander = new Commander((cmdName: string) => {
+      this.hook.emit(HOOK_TYPE_ON_COMMAND_REGISTERED, cmdName);
+    });
     this.logger = logger({
       debug: Boolean(args.debug),
       silent: Boolean(args.silent)
@@ -77,7 +80,7 @@ export default class Feflow {
   }
 
   async init(cmd: string) {
-    this.reporter.init(cmd);
+    this.reporter.init && this.reporter.init(cmd);
     if (cmd === 'config') {
       await this.initClient();
       await this.loadNative();
@@ -490,7 +493,8 @@ export default class Feflow {
     }
 
     if (cmd === 'help') {
-      return registriedCommand.call(this, ctx);
+      registriedCommand.call(this, ctx);
+      return true;
     }
     if (commandLine.length == 0) {
       return false;
