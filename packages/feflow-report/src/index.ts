@@ -1,7 +1,7 @@
 import ApiController from './api';
 import { getUserName, getSystemInfo, getProject } from './common/utils';
 import objectFactory from './common/objectFactory';
-import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS } from './constants';
+import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS, REPORT_COMMAND_ERR } from './constants';
 
 interface ReportContext {
   log: any;
@@ -36,6 +36,9 @@ class Report {
   isRecallActivating: boolean;
   commandSource: string;
   generatorProject: string;
+  hasRecalled: boolean;
+  errMsg: string;
+  lastCommand: string;
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
@@ -80,10 +83,12 @@ class Report {
     return objectFactory
       .create()
       .load('command', cmd)
+      .load('last_command', this.lastCommand)
       .load('feflow_version', this.ctx.version)
       .load('command_source', this.commandSource)
       .load('user_name', this.userName)
       .load('params', args)
+      .load('err_message', this.errMsg)
       .load('system_info', this.systemInfo)
       .load('project', this.project)
       .load('status', REPORT_STATUS.START)
@@ -97,12 +102,17 @@ class Report {
       .load('generator_project', this.generatorProject)
       .load('recall_id', this.reCallId)
       .load('cost_time', this.costTime)
+      .load('err_message', this.errMsg)
       .load('is_fail', false)
       .load('status', REPORT_STATUS.COMPLETED)
       .done();
   }
 
   private checkBeforeReport(cmd) {
+    if (this.cmd && this.cmd !== cmd) {
+      this.lastCommand = this.cmd;
+    }
+    this.cmd = cmd;
     return !!cmd;
   }
   init(cmd: string) {
@@ -121,6 +131,7 @@ class Report {
       this.ctx.log.debug('reportBody', JSON.stringify(reportBody));
       const report = new ApiController(reportBody, this.ctx.log);
       report.doReport(({ result }) => {
+        if (this.errMsg) return;
         const { id } = result || {};
         this.reCallId = id;
         // hack async
@@ -141,6 +152,7 @@ class Report {
       this.ctx.log.debug('reCallBody', JSON.stringify(reCallBody));
       const report = new ApiController(reCallBody, this.ctx.log);
       report.doReport();
+      this.hasRecalled = true;
     } catch (error) {
       this.ctx.log.debug('feflow recallReport got error，please contact administractor to resolve ', error);
     }
@@ -154,6 +166,18 @@ class Report {
     this.costTime = Date.now() - this.startTime;
     this.generatorProject = getProject(this.ctx, true);
     this.recallReport();
+  }
+
+  reportCommandError(err: Error) {
+    if (!err) {
+      return;
+    }
+    this.errMsg = err.message;
+    if (this.reCallId && !this.hasRecalled) {
+      this.recallReport();
+    } else {
+      this.report(REPORT_COMMAND_ERR);
+    }
   }
 }
 

@@ -16,6 +16,8 @@ export const REPORT_PROXY = 'http://127.0.0.1:12639';
 
 export const TIMEOUT = 1000;
 
+export const REPORT_COMMAND_ERR = '__report_cmd_err'
+
 export const REPORT_STATUS = {
   START: 0,
   COMPLETED: 1,

@@ -110,6 +110,7 @@ export default function entry() {
           logger.debug(`call ${cmd} success`);
         })
         .catch((err) => {
+          feflow?.reporter?.reportCommandError(err);
           handleError(err);
         });
     });
