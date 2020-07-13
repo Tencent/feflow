@@ -13,7 +13,7 @@ module.exports = (ctx) => {
     console.log(stats.toString({
       chunks: false,
       colors: true,
-      children: false
+      children: false,
     }));
   });
 };

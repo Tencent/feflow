@@ -2,15 +2,15 @@ export default {
   props: {
     definition: {
       type: Object,
-      required: true
+      required: true,
     },
     path: {
       type: Array,
-      required: true
+      required: true,
     },
     schema: {
       type: Object,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }

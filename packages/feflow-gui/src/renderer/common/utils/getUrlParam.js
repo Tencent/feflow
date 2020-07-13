@@ -10,8 +10,8 @@ export default function(key) {
   const paramsList = {}
   const args = search.split('&')
 
-  args.forEach(function (item) {
-    const [ key, value ] = item.split('=')
+  args.forEach((item) => {
+    const [key, value] = item.split('=')
     if (key) {
       paramsList[key] = decodeURIComponent(value)
     }

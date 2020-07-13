@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server')
+const WebpackDevServer = require('webpack-dev-server');
 const getWebpackConfig = require('../lib/webpack');
 const ProjectHelper = require('../lib/utils/projectHelper');
 
@@ -15,14 +15,14 @@ module.exports = (ctx) => {
     console.log(stats.toString({
       chunks: false,
       colors: true,
-      children: false
+      children: false,
     }));
   });
 
-  const server = new WebpackDevServer(compiler, webapckConfig.devServer)
-  const host = webapckConfig.devServer.host
-  const port = webapckConfig.devServer.port
+  const server = new WebpackDevServer(compiler, webapckConfig.devServer);
+  const { host } = webapckConfig.devServer;
+  const { port } = webapckConfig.devServer;
   server.listen(port, host, () => {
-    info(`Listen to ${host}:${port}`)
-  })
+    info(`Listen to ${host}:${port}`);
+  });
 };

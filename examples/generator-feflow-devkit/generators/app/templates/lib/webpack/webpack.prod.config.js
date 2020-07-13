@@ -1,5 +1,3 @@
-module.exports = (helper) => {
-  return {
-    mode: 'production',
-  }
-}
+module.exports = helper => ({
+  mode: 'production',
+});

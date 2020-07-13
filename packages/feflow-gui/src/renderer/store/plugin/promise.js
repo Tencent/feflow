@@ -4,17 +4,14 @@ const DISPATCH = 'promise-action-dispatch'
 
 export default (options = {}) => store => {
   function renderer() {
-    store.dispatchPromise = (type, payload) =>
-      promiseIpc.send(DISPATCH, {
+    store.dispatchPromise = (type, payload) => promiseIpc.send(DISPATCH, {
         type,
-        payload
+        payload,
       })
   }
 
   function main(store) {
-    promiseIpc.on(DISPATCH, ({ type, payload }) => {
-      return store.dispatch(type, payload)
-    })
+    promiseIpc.on(DISPATCH, ({ type, payload }) => store.dispatch(type, payload))
   }
 
   return process.type === 'renderer' ? renderer() : main(store)

@@ -1,7 +1,7 @@
 // cookie.js
 
 // 通过remote模块取的原本在主进程中才能使用的session模块
-const session = require('electron').remote.session;
+const { session } = require('electron').remote;
 /**
  * 获得
  */
@@ -9,14 +9,14 @@ const Cookie = {}
 const Session = session
 Cookie.getCookies = (data) => {
     const param = data || {}
-    return new Promise(function (resolve, reject) {
-        Session.defaultSession.cookies.get(param, function (error, cookies) {
+    return new Promise(((resolve, reject) => {
+        Session.defaultSession.cookies.get(param, (error, cookies) => {
             if (error) {
                 reject(error);
             }
             resolve(cookies);
         })
-    })
+    }))
 };
 
 /**
@@ -25,8 +25,8 @@ Cookie.getCookies = (data) => {
 Cookie.clearCookies = (url) => {
     Session.defaultSession.clearStorageData({
         origin: url,
-        storages: ['cookies']
-    }, function (error) {
+        storages: ['cookies'],
+    }, (error) => {
         if (error) console.error(error);
     })
 };
@@ -37,14 +37,14 @@ Cookie.clearCookies = (url) => {
  * @param value cookie值
  */
 Cookie.setCookie = (url, name, value) => {
-    let Days = 30;
-    let exp = new Date();
-    let date = Math.round(exp.getTime() / 1000) + Days * 24 * 60 * 60;
+    const Days = 30;
+    const exp = new Date();
+    const date = Math.round(exp.getTime() / 1000) + (Days * 24 * 60 * 60);
     const cookie = {
         url: url || '',
-        name: name,
-        value: value,
-        expirationDate: date
+        name,
+        value,
+        expirationDate: date,
     };
     Session.defaultSession.cookies.set(cookie, (error) => {
         if (error) console.error(error);

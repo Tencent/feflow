@@ -4,7 +4,7 @@
 import devConfig from '@/config/dev';
 import prodConfig from '@/config/prod';
 
-let config = process.env.NODE_ENV !== 'production' ? devConfig : prodConfig;
+const config = process.env.NODE_ENV !== 'production' ? devConfig : prodConfig;
 
 Object.assign(config, {
     project: 'weadmin',
@@ -14,8 +14,8 @@ Object.assign(config, {
     // mock    : {}
 
     pagination: {
-        pageSize: 10
-    }
+        pageSize: 10,
+    },
 });
 
 export default config

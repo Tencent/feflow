@@ -8,12 +8,12 @@ function createServer(callback) {
 
     url = `${__dirname}${url}`;
 
-    let data = fs.readFileSync(url);
+    const data = fs.readFileSync(url);
 
     res.write(data);
     res.end();
 
-    callback && callback();
+    callback?.();
   }).listen(app.guiPort);
 }
 

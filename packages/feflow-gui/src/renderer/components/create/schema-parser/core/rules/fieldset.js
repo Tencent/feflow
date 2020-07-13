@@ -1,8 +1,8 @@
 import _ from 'lodash'
 
 export default function(def, schema, options) {
-  const type = schema.type
-  const parentType = options.parentType
+  const { type } = schema
+  const { parentType } = options
   delete options.parentType
   delete options.col
 
@@ -34,9 +34,9 @@ export default function(def, schema, options) {
 
       this._parse(key, val, def.items, {
         ...options,
-        path: path,
-        required: required,
-        lookup: options.lookup
+        path,
+        required,
+        lookup: options.lookup,
       })
     })
   }

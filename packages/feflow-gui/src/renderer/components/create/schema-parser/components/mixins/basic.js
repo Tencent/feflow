@@ -12,16 +12,16 @@ export default {
   props: {
     definition: {
       type: Object,
-      required: true
+      required: true,
     },
     path: {
       type: Array,
-      required: true
+      required: true,
     },
     schema: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   // created () {
   //   var value = _.get(this.model, this.path)
@@ -35,10 +35,10 @@ export default {
   // },
   computed: {
     ...mapState({
-      model: state => state.model
+      model: state => state.model,
     }),
     ...mapStoreState({
-      isWorking: state => state.Generator.isWorking
+      isWorking: state => state.Generator.isWorking,
     }),
     value: {
       get() {
@@ -51,7 +51,7 @@ export default {
         } else {
           this.setValue({ path: this.path, value: val })
         }
-      }
+      },
     },
     name() {
       return this.path.join('.')
@@ -64,9 +64,9 @@ export default {
     },
     showType() {
       return this.$store.state.Schema.schema.showType
-    }
+    },
   },
   methods: {
-    ...mapActions(['setValue', 'removeValue'])
-  }
+    ...mapActions(['setValue', 'removeValue']),
+  },
 }

@@ -3,7 +3,7 @@ import {
   buildGeneratorConfig,
   checkBeforeRunGenerator,
   openDialogToGetDirectory,
-  loadFeflowConfigFile
+  loadFeflowConfigFile,
 } from '../../bridge'
 import { CREATE_CODE, DEFAULT_WORKSPACE } from '../../bridge/constants'
 // Vuex 被放置在主进程中
@@ -18,7 +18,7 @@ const state = {
   importWorkSpace: '',
   initCode: CREATE_CODE.INITIAL,
   projectListFromConfig: [],
-  isWorking: true
+  isWorking: true,
 }
 
 const mutations = {
@@ -47,7 +47,7 @@ const mutations = {
   },
   SET_LIST(state, list) {
     state.list = list
-  }
+  },
 }
 
 const actions = {
@@ -94,11 +94,11 @@ const actions = {
   },
   resetGenerateList({ commit }) {
     commit('SET_GENERATOR_LIST', { list: [], configMap: {} })
-  }
+  },
 }
 
 export default {
   state,
   mutations,
-  actions
+  actions,
 }

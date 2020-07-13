@@ -15,9 +15,9 @@ export default {
       path: electron,
       args: ['dist/electron/main.js'],
       startTimeout: 10000,
-      waitTimeout: 10000
+      waitTimeout: 10000,
     })
 
     return this.app.start()
-  }
+  },
 }

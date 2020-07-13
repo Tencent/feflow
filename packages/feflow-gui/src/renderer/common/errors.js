@@ -8,20 +8,20 @@ const status = {
     401: '登录态失效',
     403: '无提交权限，如有问题请联系微信游戏助手',
     500: '服务器错误，请稍后再来',
-    503: '服务器繁忙，请稍后再来'
+    503: '服务器繁忙，请稍后再来',
 };
 
 const code = {
-    ECMCGI_CHKLOGIN: 6100
+    ECMCGI_CHKLOGIN: 6100,
 };
 
 // optional, user friendly tips
 const message = {
-    ECMCGI_CHKLOGIN: '您长时间未操作，请刷新页面重新登录'
+    ECMCGI_CHKLOGIN: '您长时间未操作，请刷新页面重新登录',
 };
 
-let nameMapping = {};
-let init = () => {
+const nameMapping = {};
+const init = () => {
     Object.keys(code).forEach(name => {
         nameMapping[code[name]] = name;
     });
@@ -34,7 +34,7 @@ export default {
     message,
 
     getMessage(code) {
-        let message = [],
+        const message = [],
             codeName = nameMapping[code];
 
         // 默认展示：前端提示语 （返回码名）
@@ -48,5 +48,5 @@ export default {
         }
 
         return message.join(' ');
-    }
+    },
 };

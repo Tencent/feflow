@@ -1,5 +1,5 @@
 export default function (def, schema, options) {
-  const type = schema.type
+  const { type } = schema
 
   delete options.parentType
   delete options.col
@@ -14,9 +14,9 @@ export default function (def, schema, options) {
     if (schema.items) {
       def.items = []
       this._parse('', schema.items, def.items, {
-        path: path,
+        path,
         lookup: options.lookup,
-        parentType: 'array'
+        parentType: 'array',
       })
     }
   }

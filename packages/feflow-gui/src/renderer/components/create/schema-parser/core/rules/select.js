@@ -1,10 +1,10 @@
 import { enumToOptions } from '../../util/util'
 
 export default function (def, schema) {
-  const type = schema.type
+  const { type } = schema
 
-  if (type === 'string' && schema['enum']) {
+  if (type === 'string' && schema.enum) {
     def.type = 'v-select'
-    def.options = enumToOptions(schema['enum'])
+    def.options = enumToOptions(schema.enum)
   }
 }

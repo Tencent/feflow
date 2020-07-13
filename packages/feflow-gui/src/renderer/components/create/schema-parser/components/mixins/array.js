@@ -8,49 +8,49 @@ const { mapState, mapActions } = createNamespacedHelpers('Schema')
 export default {
   data() {
     return {
-      len: 0
+      len: 0,
     }
   },
   props: {
     definition: {
       type: Object,
-      required: true
+      required: true,
     },
     path: {
       type: Array,
-      required: true
+      required: true,
     },
     schema: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     ...mapState({
-      model: state => state.model
+      model: state => state.model,
     }),
     list: {
       get() {
         return _.get(this.model, this.path) || []
       },
       set(value) {
-        this.setValue({ path: this.path, value: value })
-      }
+        this.setValue({ path: this.path, value })
+      },
     },
     minItems() {
       return this.schema.minItems || 0
     },
     maxItems() {
       return this.schema.maxItems || 100
-    }
+    },
   },
   watch: {
     list(newValue) {
       this.len = newValue.length
-    }
+    },
   },
   created() {
-    var model = _.get(this.model, this.path)
+    const model = _.get(this.model, this.path)
 
     this.len = model ? model.length : 0
   },
@@ -81,9 +81,9 @@ export default {
     },
     downItem(idx) {
       this.exchanceItem({ path: this.path, newIndex: idx, oldIndex: idx + 1 })
-    }
+    },
   },
   components: {
-    draggable
-  }
+    draggable,
+  },
 }

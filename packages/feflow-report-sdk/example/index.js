@@ -20,10 +20,10 @@ const fakeCtx = {
     warn: console.log,
   },
   hook: {
-    on(type, cb){
-        event.addListener(type, cb)
-    }
-  }
+    on(type, cb) {
+      event.addListener(type, cb);
+    },
+  },
 };
 
 const cmd = 'version';
@@ -36,6 +36,6 @@ const report = new Report(fakeCtx, cmd, args);
 
 // event.emit(HOOK_TYPE_AFTER)
 
-report.report(cmd, args)
+report.report(cmd, args);
 
 

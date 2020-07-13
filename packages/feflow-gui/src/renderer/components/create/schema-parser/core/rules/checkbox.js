@@ -1,5 +1,5 @@
 export default function(def, schema) {
-  const type = schema.type
+  const { type } = schema
 
   if (type === 'boolean') {
     schema.default = schema.default !== undefined ? schema.default : false

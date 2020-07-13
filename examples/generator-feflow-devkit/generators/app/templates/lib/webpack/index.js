@@ -9,5 +9,5 @@ module.exports = (helper, mode) => {
   }
 
   const prodConfig = require('./webpack.prod.config')(helper);
-  return merge(baseConfig, prodConfig)
-}
+  return merge(baseConfig, prodConfig);
+};

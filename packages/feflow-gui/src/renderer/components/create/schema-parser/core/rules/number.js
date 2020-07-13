@@ -1,5 +1,5 @@
 export default function (def, schema) {
-  const type = schema.type
+  const { type } = schema
 
   if (type === 'number' || type === 'integer') {
     def.type = 'number'

@@ -8,5 +8,5 @@ export default {
     site: {},
 
     // 重定向域名
-    hostDomain: 'gui.oa.com'
+    hostDomain: 'gui.oa.com',
 };

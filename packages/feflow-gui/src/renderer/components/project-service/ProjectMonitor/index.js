@@ -13,18 +13,18 @@ const url = 'https://aegis.ivweb.io';
 const creditialData = { isFresh: 0, loginName, apiKey: encrypt(apiKey, loginName) };
 
 export async function getCredential() {
-    let res = await http.post(`${url}/api/interface/getApiToken`, qs.stringify(creditialData), {
+    const res = await http.post(`${url}/api/interface/getApiToken`, qs.stringify(creditialData), {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'rtx': 'feflow_vitual'
-        }
+            rtx: 'feflow_vitual',
+        },
     });
     const { api_time, api_token } = res.data;
     return {
-        'auth': getPwdCode(apiKey, api_token, +api_time), // 生成授权码
-        'apiToken': api_token,
-        'apiTime': api_time,
-        'rtx': global.username
+        auth: getPwdCode(apiKey, api_token, +api_time), // 生成授权码
+        apiToken: api_token,
+        apiTime: api_time,
+        rtx: global.username,
     };
 }
 export async function getPvByDate(aegisId, startDate, endDate, credential) {
@@ -37,9 +37,9 @@ export async function getPvByDate(aegisId, startDate, endDate, credential) {
         {},
         {
             headers: {
-                ...credential
-            }
-        }
+                ...credential,
+            },
+        },
     )
     return result
 }
@@ -53,9 +53,9 @@ export async function getUvByDate(aegisId, startDate, endDate, credential) {
         {},
         {
             headers: {
-                ...credential
-            }
-        }
+                ...credential,
+            },
+        },
     )
     return result
 }
@@ -69,9 +69,9 @@ export async function getJsError(aegisId, startDate, credential) {
         {},
         {
             headers: {
-                ...credential
-            }
-        }
+                ...credential,
+            },
+        },
     )
     return result
 }
@@ -79,10 +79,10 @@ export async function getJsError(aegisId, startDate, credential) {
 export async function addUser(postData, credential) {
     // 获取凭据 并添加到header中
     credential = credential || await getCredential()
-    let result = await http.post(`${url}/api/api/interface/pro/addUser`, postData, {
+    const result = await http.post(`${url}/api/api/interface/pro/addUser`, postData, {
         headers: {
-            ...credential
-        }
+            ...credential,
+        },
     });
     return result;
 }

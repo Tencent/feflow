@@ -2,17 +2,23 @@
   "name": "root",
   "private": true,
   "devDependencies": {
+    "@tencent/eslint-config-tencent": "^0.7.0",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-html": "^6.0.2",
+    "eslint-plugin-prettier": "^3.1.1",
     "lerna": "^3.13.1",
+    "prettier": "^1.19.1",
     "typescript": "^3.7.2"
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "0.0.1",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
-    "electron-promise-ipc": "^2.0.1",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.19.1"
+    "electron-promise-ipc": "^2.0.1"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   }
 }

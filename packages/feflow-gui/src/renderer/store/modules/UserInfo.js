@@ -5,7 +5,7 @@ const state = {
   isAdmin: false,
   scaffold: '',
   plugins: '',
-  hasConfig: false
+  hasConfig: false,
 };
 
 const mutations = {
@@ -20,19 +20,19 @@ const mutations = {
     state.scaffold = payload.scaffold;
     state.plugins = payload.plugins;
     state.hasConfig = payload.hasConfig;
-  }
+  },
 }
 
 // getters
 const getters = {
   groupName: (state, getters) => {
-    let department = state.department;
+    let { department } = state;
     department = department.split('/');
     department.pop();
     return department.join('/');
   },
   scaffold: (state) => {
-    let scaffold = state.scaffold;
+    let { scaffold } = state;
 
     try {
       scaffold = JSON.parse(scaffold);
@@ -42,7 +42,7 @@ const getters = {
     } catch (e) { }
   },
   plugins: (state) => {
-    let plugins = state.plugins;
+    let { plugins } = state;
 
     try {
       plugins = JSON.parse(plugins);
@@ -50,7 +50,7 @@ const getters = {
         return plugins.join(';');
       }
     } catch (e) { }
-  }
+  },
 }
 
 const actions = {
@@ -59,7 +59,7 @@ const actions = {
   },
   SET_ROLE_INFO_ACTION({ commit }, payload) {
     commit('SET_ROLE_INFO', payload);
-  }
+  },
 }
 
 export default {
@@ -67,5 +67,5 @@ export default {
   state,
   getters,
   mutations,
-  actions
+  actions,
 }

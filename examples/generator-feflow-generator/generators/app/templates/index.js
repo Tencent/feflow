@@ -1,5 +1,5 @@
-'use strict'
+'use strict';
 
 module.exports = {
-  app: require.resolve('./app')
-}
+  app: require.resolve('./app'),
+};
