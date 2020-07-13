@@ -11,8 +11,7 @@
     "types": ["node", "mocha"],
     "paths": {
       "*": [
-        "node_modules/*",
-        "src/types/*"
+        "node_modules/*"
       ]
     },
     "emitDecoratorMetadata": true,
@@ -20,7 +19,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "types"
   ],
   "experimentalDecorators": true
 }

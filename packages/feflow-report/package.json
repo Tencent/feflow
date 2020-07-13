@@ -23,7 +23,8 @@
     "typescript": "^3.6.4"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
   "dependencies": {
     "request": "^2.88.0",

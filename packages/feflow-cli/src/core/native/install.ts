@@ -356,7 +356,7 @@ async function installPlugin(
       linker.register(
         pluginBin,
         pluginLib,
-        `${commandName}@${curPkgInfo.installVersion} --disable-check`,
+        `${commandName}@${curPkgInfo.installVersion} --disable-check --slient`,
         commandName
       );
     } catch (e) {
@@ -423,11 +423,11 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      throw `plugin [${pluginName}] does not exist`;
+      return;
     }
     repoUrl = repoInfo.repo;
     repoName = repoInfo.name;
-    if (isGitRepo(repoUrl) && !repoInfo?.tnpm) {
+    if (isGitRepo(repoUrl) && !repoInfo.tnpm) {
       if (pluginVersion) {
         pluginVersion = versionImpl.toFull(pluginVersion);
         if (!versionImpl.check(pluginVersion)) {
