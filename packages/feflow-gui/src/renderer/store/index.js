@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import { createPersistedState, createSharedMutations } from 'vuex-electron'
-import createPromiseAction from './plugin/promise'
+import { createPersistedState, createSharedMutations } from 'vuex-electron';
+import createPromiseAction from './plugin/promise';
 
-import modules from './modules'
+import modules from './modules';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules,
@@ -19,4 +19,4 @@ export default new Vuex.Store({
   ],
   // plugins: [createSharedMutations(), createPromiseAction()],
   strict: process.env.NODE_ENV !== 'production',
-})
+});

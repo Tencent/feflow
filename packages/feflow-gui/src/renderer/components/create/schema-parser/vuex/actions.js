@@ -1,19 +1,19 @@
-import _ from 'lodash'
-import extend from 'extend'
-import { parseErrors } from '../util/util'
-import Ajv from '../validate'
-import localize from '../validate/localize'
-import Generator from '../core/schema'
+import _ from 'lodash';
+import extend from 'extend';
+import { parseErrors } from '../util/util';
+import Ajv from '../validate';
+import localize from '../validate/localize';
+import Generator from '../core/schema';
 
-const ARRAY_ROOT_KEY = 'silentList'
-const generator = new Generator()
+const ARRAY_ROOT_KEY = 'silentList';
+const generator = new Generator();
 
-const ajv = new Ajv()
-let validator = null
+const ajv = new Ajv();
+let validator = null;
 
 export const init = ({ commit, state }, { schema, definition, model = {} }) => {
-  const _state = {}
-  const isSchemaValid = ajv.validateSchema(schema)
+  const _state = {};
+  const isSchemaValid = ajv.validateSchema(schema);
   // 根节点是array，要嵌套一层
   if (schema.type === 'array') {
     const newSchema = {
@@ -21,16 +21,16 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
       type: 'object',
       properties: {},
       required: [ARRAY_ROOT_KEY],
-    }
+    };
 
-    newSchema.properties[ARRAY_ROOT_KEY] = Object.assign({}, schema)
-    schema = newSchema
+    newSchema.properties[ARRAY_ROOT_KEY] = Object.assign({}, schema);
+    schema = newSchema;
 
     if (!_.isEmpty(model)) {
-      const newModel = {}
+      const newModel = {};
 
-      newModel[ARRAY_ROOT_KEY] = model
-      model = extend(true, {}, newModel)
+      newModel[ARRAY_ROOT_KEY] = model;
+      model = extend(true, {}, newModel);
     }
 
     if (!_.isEmpty(definition)) {
@@ -41,37 +41,37 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
           key: ARRAY_ROOT_KEY,
           items: [],
         },
-      ]
+      ];
 
-      newForm[0].items = addRootArray(definition)
-      definition = newForm
+      newForm[0].items = addRootArray(definition);
+      definition = newForm;
     }
 
-    _state.isRootArray = true
+    _state.isRootArray = true;
   }
 
   if (Array.isArray(schema.propsOrder)) {
-    const propsInOrder = {}
+    const propsInOrder = {};
     schema.propsOrder.forEach((key) => {
-      propsInOrder[key] = schema.properties[key]
-    })
-    schema.properties = propsInOrder
+      propsInOrder[key] = schema.properties[key];
+    });
+    schema.properties = propsInOrder;
   }
 
-  _state.definition = generator.parse(schema, definition)
-  _state.switchProperties = generator.parseSwitchProperties(schema)
-  _state.schema = schema
-  _state.validator = null
+  _state.definition = generator.parse(schema, definition);
+  _state.switchProperties = generator.parseSwitchProperties(schema);
+  _state.schema = schema;
+  _state.validator = null;
 
-  const data = generator.getDefaultModal(schema)
+  const data = generator.getDefaultModal(schema);
 
-  _state.model = extend(true, {}, data, model)
-  _state.messages = {}
-  _state.valid = true
-  _state.isSchemaValid = isSchemaValid
+  _state.model = extend(true, {}, data, model);
+  _state.messages = {};
+  _state.valid = true;
+  _state.isSchemaValid = isSchemaValid;
 
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 /**
  * 设置表单元素校验结果
@@ -80,66 +80,66 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
  * @param {String} msg    校验结果message
  */
 export const setMessages = ({ commit, state }, messages) => {
-  const map = {}
+  const map = {};
 
-  Object.keys(messages).forEach(path => {
-    const msg = messages[path]
+  Object.keys(messages).forEach((path) => {
+    const msg = messages[path];
     map[path] = msg.message
       ? {
-          status: 2,
-          message: messages[path].message,
-        }
+        status: 2,
+        message: messages[path].message,
+      }
       : {
-          status: 1,
-        }
-  })
+        status: 1,
+      };
+  });
 
-  const errMsg = Object.assign({}, state.messages, map)
+  const errMsg = Object.assign({}, state.messages, map);
 
-  commit('SET_SCHEMA_MESSAGE', errMsg)
-}
+  commit('SET_SCHEMA_MESSAGE', errMsg);
+};
 
 // 校验整个表单
 export const validate = ({ commit, state }, path) => {
-  const _state = {}
+  const _state = {};
   // 延迟compile，保证自定义format、keyword添加
   if (!validator) {
-    validator = ajv.compile(state.schema)
+    validator = ajv.compile(state.schema);
   }
 
-  const valid = validator(state.model)
-  let errors
-  path = path ? path.join('.') : null
+  const valid = validator(state.model);
+  let errors;
+  path = path ? path.join('.') : null;
 
   if (!valid) {
-    localize(validator.errors, state.schema)
-    const allErrors = parseErrors(validator.errors)
+    localize(validator.errors, state.schema);
+    const allErrors = parseErrors(validator.errors);
 
     if (path) {
       if (allErrors[path]) {
-        errors = {}
-        errors[path] = allErrors[path]
+        errors = {};
+        errors[path] = allErrors[path];
       }
     } else {
-      errors = allErrors
+      errors = allErrors;
     }
 
     if (errors) {
-      setMessages({ commit, state }, errors)
+      setMessages({ commit, state }, errors);
     }
   }
 
   if (!errors && path) {
-    errors = {}
-    errors[path] = true
-    setMessages({ commit, state }, errors)
+    errors = {};
+    errors[path] = true;
+    setMessages({ commit, state }, errors);
   }
 
-  _state.model = Object.assign({}, state.model)
-  _state.valid = valid
+  _state.model = Object.assign({}, state.model);
+  _state.valid = valid;
 
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 /**
  * 设置指定属性值，表单元素值修改时触发
@@ -147,116 +147,116 @@ export const validate = ({ commit, state }, path) => {
  * @param {ALL} value 值
  */
 export const setValue = ({ commit, state }, { path, value }) => {
-  const _state = {}
+  const _state = {};
   if (!path || typeof value === 'undefined') {
-    throw new Error('path and value is required!')
+    throw new Error('path and value is required!');
   }
 
-  const last = path[path.length - 1]
+  const last = path[path.length - 1];
 
   // 数组修改
   if (typeof last === 'number') {
-    path.pop()
+    path.pop();
 
-    const model = _.get(state.model, path)
-    last >= model.length ? model.push(value) : model.splice(last, 1, value)
+    const model = _.get(state.model, path);
+    last >= model.length ? model.push(value) : model.splice(last, 1, value);
   } else {
-    const model = _.cloneDeep(state.model)
-    _.set(model, path, value)
-    _state.model = Object.assign({}, model)
+    const model = _.cloneDeep(state.model);
+    _.set(model, path, value);
+    _state.model = Object.assign({}, model);
   }
 
   // 只有在严格模式下
   // 并且条件属性发生了变化才会更新definition
   if (state.schema.showType === 'strict' && state.switchProperties.includes(path[0])) {
-    _state.definition = generator.parse(state.schema, [], _state.model)
+    _state.definition = generator.parse(state.schema, [], _state.model);
   }
 
-  validate({ commit, state: _.cloneDeep(Object.assign({}, state, _state)) }, path)
+  validate({ commit, state: _.cloneDeep(Object.assign({}, state, _state)) }, path);
 
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 export const setModel = ({ commit }, model) => {
-  const _state = {}
+  const _state = {};
 
-  _state.model = _.cloneDeep(model)
+  _state.model = _.cloneDeep(model);
   // validate(state)
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 // 删除指定属性，表单元素值为空或数组删除时触发
 export const removeValue = ({ commit, state }, path) => {
-  const _state = {}
+  const _state = {};
 
-  const last = path[path.length - 1]
+  const last = path[path.length - 1];
 
   if (typeof last === 'number') {
-    path.pop()
+    path.pop();
 
-    const model = _.get(state.model, path)
+    const model = _.get(state.model, path);
 
     if (model?.length) {
-      model.splice(last, 1)
+      model.splice(last, 1);
     }
   } else {
-    const model = Object.assign({}, state.model)
+    const model = Object.assign({}, state.model);
 
-    _.unset(model, path)
-    _state.model = Object.assign({}, model)
+    _.unset(model, path);
+    _state.model = Object.assign({}, model);
   }
 
   // validate({ commit, state: _.cloneDeep(state) }, path)
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 export const exchanceItem = ({ commit, state }, { path, newIndex, oldIndex }) => {
-  const _state = {}
+  const _state = {};
 
   if (newIndex > oldIndex) {
-    const temp = newIndex
-    newIndex = oldIndex
-    oldIndex = temp
+    const temp = newIndex;
+    newIndex = oldIndex;
+    oldIndex = temp;
   }
 
-  const model = [].concat(_.get(state.model, path))
-  const oldItem = model.splice(oldIndex, 1)
-  model.splice(newIndex, 0, oldItem[0])
-  _state.model = model
+  const model = [].concat(_.get(state.model, path));
+  const oldItem = model.splice(oldIndex, 1);
+  model.splice(newIndex, 0, oldItem[0]);
+  _state.model = model;
 
-  commit('SET_STATE', _state)
-}
+  commit('SET_STATE', _state);
+};
 
 export const setOptions = ({ commit, state }, { key, options }) => {
-  const _state = {}
+  const _state = {};
 
-  const definition = _.cloneDeep(state.definition)
+  const definition = _.cloneDeep(state.definition);
   // TODO
-  const def = getDefinitionByPath(definition, key)
+  const def = getDefinitionByPath(definition, key);
 
   if (def) {
-    def.options = options
-    _state.definition = definition
-    commit('SET_STATE', _state)
+    def.options = options;
+    _state.definition = definition;
+    commit('SET_STATE', _state);
   }
-}
+};
 
 function getDefinitionByPath(definition, path) {
-  let def
-  path = path.replace(/(\[\s?\])/g, '.$index')
+  let def;
+  path = path.replace(/(\[\s?\])/g, '.$index');
 
   for (let i = 0, len = definition.length; i < len; i++) {
-    def = definition[i]
+    def = definition[i];
 
     if (def.key && def.key.join('.') === path) {
-      return def
+      return def;
     }
 
     if (def.items) {
-      def = getDefinitionByPath(def.items, path)
+      def = getDefinitionByPath(def.items, path);
 
       if (def) {
-        return def
+        return def;
       }
     }
   }
@@ -264,10 +264,10 @@ function getDefinitionByPath(definition, path) {
 
 function addRootArray(form) {
   _.forEach(form, (item, idx) => {
-    item.key = ARRAY_ROOT_KEY + item.key
+    item.key = ARRAY_ROOT_KEY + item.key;
 
     if (item.items) {
-      addRootArray(item.items)
+      addRootArray(item.items);
     }
-  })
+  });
 }

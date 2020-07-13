@@ -5,4 +5,4 @@ export default {
   number: ['number'],
   integer: ['number'],
   string: ['date', 'image', 'select', 'text'],
-}
+};

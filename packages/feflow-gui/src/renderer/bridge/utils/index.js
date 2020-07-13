@@ -1,112 +1,112 @@
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
+import fs from 'fs';
+import path from 'path';
+import yaml from 'js-yaml';
 
-import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH, FEFLOW_GENERATOR_CONFIG_HOME } from '../constants'
+import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH, FEFLOW_GENERATOR_CONFIG_HOME } from '../constants';
 
 // basic functions
-export const isExit = path => fs.existsSync(path)
+export const isExit = path => fs.existsSync(path);
 
-export const dirExists = filepath => {
-  const stat = fs.statSync(filepath)
-  return stat.isDirectory()
-}
+export const dirExists = (filepath) => {
+  const stat = fs.statSync(filepath);
+  return stat.isDirectory();
+};
 
-export const getFile = path => {
+export const getFile = (path) => {
   if (isExit(path)) {
-    const file = fs.readFileSync(path, 'utf-8')
-    return file
+    const file = fs.readFileSync(path, 'utf-8');
+    return file;
   }
-}
+};
 
-export const getFileByJSON = path => {
-  let fileContent = null
+export const getFileByJSON = (path) => {
+  let fileContent = null;
   if (isExit(path)) {
-    const file = fs.readFileSync(path, 'utf-8')
+    const file = fs.readFileSync(path, 'utf-8');
     try {
-      fileContent = JSON.parse(file)
+      fileContent = JSON.parse(file);
     } catch (error) {
-      console.log('read file err', error)
+      console.log('read file err', error);
     }
   }
-  return fileContent
-}
+  return fileContent;
+};
 
 // application
 
 /**
  * 检查feflow根目录是否存在
  */
-export const checkFeflowEnv = () => isExit(FEFLOW_HOME_PATH)
+export const checkFeflowEnv = () => isExit(FEFLOW_HOME_PATH);
 
 /**
  * 获取feflow更目录下的依赖
  */
 export const getFeflowRootPackage = () => {
   if (isExit(FEFLOW_HOME_PACKAGE_PATH)) {
-    return getFileByJSON(FEFLOW_HOME_PACKAGE_PATH)
+    return getFileByJSON(FEFLOW_HOME_PACKAGE_PATH);
   }
-}
+};
 
 /**
  * 获取feflow根目录下的依赖的配置文件
  */
 export const getFeflowDependenceConfig = (dependence, configFile = 'package.json') => {
-  const dependencePath = path.resolve(FEFLOW_HOME_PATH, './node_modules', dependence)
-  const dependenceConfigPath = path.resolve(dependencePath, './', configFile)
+  const dependencePath = path.resolve(FEFLOW_HOME_PATH, './node_modules', dependence);
+  const dependenceConfigPath = path.resolve(dependencePath, './', configFile);
 
   if (isExit(dependenceConfigPath)) {
     switch (path.extname(configFile)) {
       case '.json': {
-        console.log('load json config', dependenceConfigPath)
-        return getFileByJSON(dependenceConfigPath)
+        console.log('load json config', dependenceConfigPath);
+        return getFileByJSON(dependenceConfigPath);
       }
       case '.js': {
-        let data = null
+        let data = null;
         try {
-          data = require(dependenceConfigPath)
-          console.log('load js config', dependenceConfigPath)
+          data = require(dependenceConfigPath);
+          console.log('load js config', dependenceConfigPath);
         } catch (error) {
-          console.log('load js file err', error)
+          console.log('load js file err', error);
         }
-        return data
+        return data;
       }
       default:
-        return null
+        return null;
     }
   } else {
-    console.log('file path is not exit ', dependenceConfigPath)
+    console.log('file path is not exit ', dependenceConfigPath);
   }
-}
+};
 
 export function safeDump(obj, path) {
-  let doc
+  let doc;
   try {
     doc = yaml.safeDump(obj, {
       styles: {
         '!!null': 'canonical',
       },
       sortKeys: true,
-    })
+    });
   } catch (e) {
-    throw new Error(e)
+    throw new Error(e);
   }
 
-  return fs.writeFileSync(path, doc, 'utf-8')
+  return fs.writeFileSync(path, doc, 'utf-8');
 }
 
 export function parseYaml(path) {
-  let config
+  let config;
 
   if (fs.existsSync(path)) {
     try {
-      config = yaml.safeLoad(fs.readFileSync(path, 'utf8'))
+      config = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
     } catch (e) {
-      throw new Error(e)
+      throw new Error(e);
     }
   }
 
-  return config
+  return config;
 }
 
 /**
@@ -119,20 +119,20 @@ export function parseYaml(path) {
  *
  */
 export const generatorConfigFile = (fileName, config, schema) => {
-  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, `${fileName}.js`)
+  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, `${fileName}.js`);
 
   if (!isExit(filepath)) {
-    const content = []
+    const content = [];
 
     content.push(`
       const config = ${JSON.stringify(config)}
-    `)
+    `);
 
     content.push(`
       module.exports = config
-    `)
+    `);
 
-    fs.writeFileSync(filepath, content.join('\n'))
+    fs.writeFileSync(filepath, content.join('\n'));
   }
-  return filepath
-}
+  return filepath;
+};

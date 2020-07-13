@@ -5,17 +5,17 @@
  * @param {String} key 参数 key
  * @returns 返回参数 key 的值
  */
-export default function(key) {
-  const search = location.href.split('?')[1] || ''
-  const paramsList = {}
-  const args = search.split('&')
+export default function (key) {
+  const search = location.href.split('?')[1] || '';
+  const paramsList = {};
+  const args = search.split('&');
 
   args.forEach((item) => {
-    const [key, value] = item.split('=')
+    const [key, value] = item.split('=');
     if (key) {
-      paramsList[key] = decodeURIComponent(value)
+      paramsList[key] = decodeURIComponent(value);
     }
-  })
+  });
 
-  return paramsList[key] || ''
+  return paramsList[key] || '';
 }

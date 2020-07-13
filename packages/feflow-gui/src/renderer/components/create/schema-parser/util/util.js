@@ -1,58 +1,58 @@
-import _ from 'lodash'
+import _ from 'lodash';
 // import ojectpath from 'objectpath'
 
 const enumToOptions = function (enm) {
-  const options = []
+  const options = [];
 
-  _.each(enm, item => {
+  _.each(enm, (item) => {
     options.push({
       label: item,
       value: item,
-    })
-  })
+    });
+  });
 
-  return options
-}
+  return options;
+};
 
 const getSchemaByPath = function (schema, path) {
   if (!schema) {
-    throw new Error('schema is required!')
+    throw new Error('schema is required!');
   }
 
   if (!path) {
-    return schema
+    return schema;
   }
 
-  const schemaPath = []
-  const len = path.length
+  const schemaPath = [];
+  const len = path.length;
   path.forEach((p, idx) => {
     if (p === '$index') {
-      schemaPath.push('items')
+      schemaPath.push('items');
     } else {
-      schemaPath.push(p)
+      schemaPath.push(p);
     }
 
     if (idx !== len - 1 && path[idx + 1] !== '$index') {
-      schemaPath.push('properties')
+      schemaPath.push('properties');
     }
-  })
+  });
 
-  schemaPath.splice(0, 0, 'properties')
-  return _.get(schema, schemaPath)
-}
+  schemaPath.splice(0, 0, 'properties');
+  return _.get(schema, schemaPath);
+};
 
 const parseErrors = function (errors) {
-  const map = {}
+  const map = {};
 
-  errors.forEach(err => {
-    map[err.path] = err
-  })
+  errors.forEach((err) => {
+    map[err.path] = err;
+  });
 
-  return map
-}
+  return map;
+};
 
 export {
   enumToOptions,
   getSchemaByPath,
   parseErrors,
-}
+};

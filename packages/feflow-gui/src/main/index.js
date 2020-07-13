@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-import path from 'path'
-import { app, BrowserWindow } from 'electron'
-import { getUrl } from './common/utils'
-import registerEvent from './event'
-import createServer from './common/utils/server'
+import path from 'path';
+import { app, BrowserWindow } from 'electron';
+import { getUrl } from './common/utils';
+import registerEvent from './event';
+import createServer from './common/utils/server';
 import portfinder from 'portfinder';
 
 /**
@@ -17,7 +17,7 @@ import portfinder from 'portfinder';
  * from https://github.com/vue-electron/vuex-electron#installation
  */
 
-import '../renderer/store'
+import '../renderer/store';
 
 /**
  * Set `__static` path to static files in production
@@ -26,15 +26,15 @@ import '../renderer/store'
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path')
     .join(__dirname, '/static')
-    .replace(/\\/g, '\\\\')
+    .replace(/\\/g, '\\\\');
 }
 
-let mainWindow
-let winURL = getUrl()
+let mainWindow;
+let winURL = getUrl();
 const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow() {
-  const dockIcon = path.join(__dirname, '../../build/icons/256X256.png')
+  const dockIcon = path.join(__dirname, '../../build/icons/256X256.png');
   /**
    * Initial window options
    */
@@ -45,30 +45,30 @@ function createWindow() {
     webPreferences: { webSecurity: false },
     titleBarStyle: 'hidden',
     icon: dockIcon,
-  })
+  });
 
   if (process.platform === 'darwin') {
-    app.dock.setIcon(dockIcon)
+    app.dock.setIcon(dockIcon);
   }
 
-  mainWindow.loadURL(winURL)
+  mainWindow.loadURL(winURL);
 
   mainWindow.on('closed', () => {
-    mainWindow = null
-  })
+    mainWindow = null;
+  });
 
   // 进程通信中心
-  registerEvent()
+  registerEvent();
   global.isUsingWhistle = {
     value: false,
-  }
+  };
 }
 
 app.on('ready', () => {
   if (isDev) {
-    createWindow()
+    createWindow();
   } else {
-    portfinder.getPortPromise().then(port => {
+    portfinder.getPortPromise().then((port) => {
       app.guiPort = port;
       winURL = getUrl();
 
@@ -77,26 +77,26 @@ app.on('ready', () => {
         createWindow();
       }, 200);
     })
-.catch(err => {
-      throw new Error(err);
-    });
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
-})
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
-})
+});
 
 app.on('activate', () => {
   if (mainWindow === null) {
-    createWindow()
+    createWindow();
   }
-})
+});
 app.on('ready', () => {
-  require('./menu.js')
-})
+  require('./menu.js');
+});
 
 /**
  * Auto Updater

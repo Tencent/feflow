@@ -1,15 +1,15 @@
-import { enumToOptions } from '../../util/util'
+import { enumToOptions } from '../../util/util';
 
 export default function (def, schema) {
-  const { type } = schema
+  const { type } = schema;
 
   if (type === 'array' && schema.items && schema.items.enum) {
-    def.type = 'checkboxes'
-    def.options = enumToOptions(schema.items.enum)
+    def.type = 'checkboxes';
+    def.options = enumToOptions(schema.items.enum);
     // schema.default = []
 
     if (def.required && !schema.minItems) {
-      schema.minItems = 1
+      schema.minItems = 1;
     }
   }
 }

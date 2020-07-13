@@ -4,8 +4,8 @@ import {
   checkBeforeRunGenerator,
   openDialogToGetDirectory,
   loadFeflowConfigFile,
-} from '../../bridge'
-import { CREATE_CODE, DEFAULT_WORKSPACE } from '../../bridge/constants'
+} from '../../bridge';
+import { CREATE_CODE, DEFAULT_WORKSPACE } from '../../bridge/constants';
 // Vuex 被放置在主进程中
 
 const state = {
@@ -19,86 +19,86 @@ const state = {
   initCode: CREATE_CODE.INITIAL,
   projectListFromConfig: [],
   isWorking: true,
-}
+};
 
 const mutations = {
   SET_GENERATOR_LIST(state, data) {
-    const { list, configMap } = data
-    state.list = list
-    state.configMap = configMap
+    const { list, configMap } = data;
+    state.list = list;
+    state.configMap = configMap;
   },
   SET_LOCAL_CONFIG_NAME(state, localConfigName) {
-    state.localConfigName = localConfigName
+    state.localConfigName = localConfigName;
   },
   SET_WORK_SPACE(state, workSpace) {
-    state.workSpace = workSpace
+    state.workSpace = workSpace;
   },
   SET_IMPORT_WORK_SPACE(state, workSpace) {
-    state.importWorkSpace = workSpace
+    state.importWorkSpace = workSpace;
   },
   SET_PROJECT_INIT_STATE(state, { code }) {
-    state.initCode = code
+    state.initCode = code;
   },
   SET_PROJECT_LIST(state, projectList) {
-    state.projectListFromConfig = projectList
+    state.projectListFromConfig = projectList;
   },
   SET_WORKING_STATUS(state, isWorking) {
-    state.isWorking = isWorking
+    state.isWorking = isWorking;
   },
   SET_LIST(state, list) {
-    state.list = list
+    state.list = list;
   },
-}
+};
 
 const actions = {
   getGenerator({ commit }) {
-    loadGenerator().then(res => {
-      commit('SET_GENERATOR_LIST', res)
-    })
+    loadGenerator().then((res) => {
+      commit('SET_GENERATOR_LIST', res);
+    });
   },
   builConfig({ commit }, config) {
     // 同步写
-    return new Promise(resolve => {
-      const localConfigName = buildGeneratorConfig(config)
-      commit('SET_LOCAL_CONFIG_NAME', localConfigName)
-      resolve(localConfigName)
-    })
+    return new Promise((resolve) => {
+      const localConfigName = buildGeneratorConfig(config);
+      commit('SET_LOCAL_CONFIG_NAME', localConfigName);
+      resolve(localConfigName);
+    });
   },
   selectWorkSpace({ commit }) {
-    openDialogToGetDirectory().then(files => {
-      commit('SET_WORK_SPACE', files[0])
-    })
+    openDialogToGetDirectory().then((files) => {
+      commit('SET_WORK_SPACE', files[0]);
+    });
   },
   importWorkSpace({ commit }) {
-    openDialogToGetDirectory().then(files => {
-      commit('SET_IMPORT_WORK_SPACE', files[0])
-    })
+    openDialogToGetDirectory().then((files) => {
+      commit('SET_IMPORT_WORK_SPACE', files[0]);
+    });
   },
   resetState({ commit }) {
-    commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL })
-    commit('SET_IMPORT_WORK_SPACE', '')
-    commit('SET_WORK_SPACE', DEFAULT_WORKSPACE)
+    commit('SET_PROJECT_INIT_STATE', { code: CREATE_CODE.INITIAL });
+    commit('SET_IMPORT_WORK_SPACE', '');
+    commit('SET_WORK_SPACE', DEFAULT_WORKSPACE);
   },
   checkBeforeRun(_, obj) {
-    return new Promise(resolve => {
-      const ret = checkBeforeRunGenerator(obj)
-      resolve(ret)
-    })
+    return new Promise((resolve) => {
+      const ret = checkBeforeRunGenerator(obj);
+      resolve(ret);
+    });
   },
   getProjectListFromConfig({ commit }) {
-    const { projects = [] } = loadFeflowConfigFile()
-    commit('SET_PROJECT_LIST', projects)
+    const { projects = [] } = loadFeflowConfigFile();
+    commit('SET_PROJECT_LIST', projects);
   },
   toggleWorkStatus({ commit, state }, status) {
-    commit('SET_WORKING_STATUS', status !== undefined ? status : !state.isWorking)
+    commit('SET_WORKING_STATUS', status !== undefined ? status : !state.isWorking);
   },
   resetGenerateList({ commit }) {
-    commit('SET_GENERATOR_LIST', { list: [], configMap: {} })
+    commit('SET_GENERATOR_LIST', { list: [], configMap: {} });
   },
-}
+};
 
 export default {
   state,
   mutations,
   actions,
-}
+};

@@ -7,15 +7,15 @@ import prodConfig from '@/config/prod';
 const config = process.env.NODE_ENV !== 'production' ? devConfig : prodConfig;
 
 Object.assign(config, {
-    project: 'weadmin',
-    name: '可视化构建工具',
-    url: 'http://dev.mmgame.oa.com/',
-    // site    : {}
-    // mock    : {}
+  project: 'weadmin',
+  name: '可视化构建工具',
+  url: 'http://dev.mmgame.oa.com/',
+  // site    : {}
+  // mock    : {}
 
-    pagination: {
-        pageSize: 10,
-    },
+  pagination: {
+    pageSize: 10,
+  },
 });
 
-export default config
+export default config;

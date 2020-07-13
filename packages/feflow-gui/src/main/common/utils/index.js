@@ -1,1 +1,1 @@
-export { default as getUrl } from './getUrl'
+export { default as getUrl } from './getUrl';

@@ -21,7 +21,7 @@ const mutations = {
     state.plugins = payload.plugins;
     state.hasConfig = payload.hasConfig;
   },
-}
+};
 
 // getters
 const getters = {
@@ -51,7 +51,7 @@ const getters = {
       }
     } catch (e) { }
   },
-}
+};
 
 const actions = {
   SET_USER_INFO_ACTION({ commit }, payload) {
@@ -60,7 +60,7 @@ const actions = {
   SET_ROLE_INFO_ACTION({ commit }, payload) {
     commit('SET_ROLE_INFO', payload);
   },
-}
+};
 
 export default {
   namespaced: true,
@@ -68,4 +68,4 @@ export default {
   getters,
   mutations,
   actions,
-}
+};

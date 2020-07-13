@@ -1,4 +1,4 @@
-const { Menu, shell } = require('electron')
+const { Menu, shell } = require('electron');
 
 // 文档 https://electronjs.org/docs/api/menu-item
 // 菜单项目
@@ -9,15 +9,15 @@ const menus = [
       {
         label: 'New Window',
         accelerator: 'CmdOrCtrl+Shift+N',
-        click () {
+        click() {
           // open new window
         },
       },
       {
         label: 'Open Folder',
         accelerator: 'CmdOrCtrl+O',
-        click () {
-         // open project file
+        click() {
+          // open project file
         },
       },
     ],
@@ -75,20 +75,20 @@ const menus = [
         label: 'Keyboard Shortcuts',
         accelerator: 'CmdOrCtrl+/',
         enabled: true,
-        click () {
+        click() {
           // showKeyboardHelp()
         },
       }, {
         type: 'separator',
       }, {
         label: 'Feflow Help',
-        click () {
-          shell.openExternal('https://github.com/Tencent/feflow')
+        click() {
+          shell.openExternal('https://github.com/Tencent/feflow');
         },
       }, {
         label: 'Report Issues',
-        click () {
-          shell.openExternal('https://github.com/Tencent/feflow/issues')
+        click() {
+          shell.openExternal('https://github.com/Tencent/feflow/issues');
         },
       },
       {
@@ -99,7 +99,7 @@ const menus = [
       },
     ],
   },
-]
+];
 
-const m = Menu.buildFromTemplate(menus)
-Menu.setApplicationMenu(m)
+const m = Menu.buildFromTemplate(menus);
+Menu.setApplicationMenu(m);

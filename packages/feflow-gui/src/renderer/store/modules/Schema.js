@@ -1,3 +1,3 @@
-import SchemaStore from '../../components/create/schema-parser/vuex/store'
+import SchemaStore from '../../components/create/schema-parser/vuex/store';
 
-export default { ...SchemaStore }
+export default { ...SchemaStore };

@@ -5,19 +5,19 @@
  */
 export default function curry(fn, length = fn.length) {
   const subCurry = function (fn) {
-    const args = [].slice.call(arguments, 1)
-    return function() {
-      return fn.apply(this, args.concat([].slice.call(arguments)))
-    }
-  }
+    const args = [].slice.call(arguments, 1);
+    return function () {
+      return fn.apply(this, args.concat([].slice.call(arguments)));
+    };
+  };
 
-  const { slice } = Array.prototype
-  const len = length
-  return function() {
+  const { slice } = Array.prototype;
+  const len = length;
+  return function () {
     if (arguments.length < len) {
-      const combined = [fn].concat(slice.call(arguments))
-      return curry(subCurry.apply(this, combined), len - arguments.length)
+      const combined = [fn].concat(slice.call(arguments));
+      return curry(subCurry.apply(this, combined), len - arguments.length);
     }
-      return fn.apply(this, arguments)
-  }
+    return fn.apply(this, arguments);
+  };
 }

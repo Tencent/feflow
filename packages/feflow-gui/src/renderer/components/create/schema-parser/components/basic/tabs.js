@@ -1,4 +1,4 @@
-import Vue from 'vue'
-import Tabs from './tabs.vue'
+import Vue from 'vue';
+import Tabs from './tabs.vue';
 
-Vue.component('tabs', Tabs)
+Vue.component('tabs', Tabs);

@@ -1,3 +1,3 @@
-import { getSchemaByPath } from '../util/util'
+import { getSchemaByPath } from '../util/util';
 
-export const getSchema = state => path => getSchemaByPath(state.schema, path)
+export const getSchema = state => path => getSchemaByPath(state.schema, path);

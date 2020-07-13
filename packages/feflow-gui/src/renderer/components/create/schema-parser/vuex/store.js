@@ -1,6 +1,6 @@
-import * as mutations from './mutations'
-import * as getters from './getters'
-import * as actions from './actions'
+import * as mutations from './mutations';
+import * as getters from './getters';
+import * as actions from './actions';
 
 const state = {
   schema: {},
@@ -16,7 +16,7 @@ const state = {
   // generator: new Generator()
   isSchemaValid: false, // 校验schema是否有效
   switchProperties: [], // 条件属性
-}
+};
 
 export default {
   namespaced: true,
@@ -30,4 +30,4 @@ export default {
   getters: {
     ...getters,
   },
-}
+};

@@ -1,11 +1,11 @@
-import { mapActions, mapState } from 'vuex'
-import { installPlugin, unInstallPlugin } from '../../../bridge'
+import { mapActions, mapState } from 'vuex';
+import { installPlugin, unInstallPlugin } from '../../../bridge';
 
 export default {
   data() {
     return {
       targetPkgName: '',
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -17,23 +17,23 @@ export default {
     checkTaskValid(fullPkgName) {
       // 防止任务重复
       if (this.taskMap[fullPkgName]) {
-        this.toast(`${fullPkgName}插件正在任务队列中, 请任务完成后再试`)
-        return false
+        this.toast(`${fullPkgName}插件正在任务队列中, 请任务完成后再试`);
+        return false;
       }
-      return true
+      return true;
     },
     handleInstallAction(isInstalled, fullPkgName) {
-      const targetPkgName = fullPkgName
-      const handleFn = !isInstalled ? installPlugin : unInstallPlugin
-      this.setTaskMap({ key: fullPkgName, value: true })
-      return new Promise(resolve => {
-        const childProcess = handleFn(targetPkgName)
-        childProcess.on('close', code => {
-          this.setTaskMap({ key: fullPkgName, value: false })
-          this.handleCode(code, isInstalled ? 'uninstall' : 'install', targetPkgName)
-          resolve(code)
-        })
-      })
+      const targetPkgName = fullPkgName;
+      const handleFn = !isInstalled ? installPlugin : unInstallPlugin;
+      this.setTaskMap({ key: fullPkgName, value: true });
+      return new Promise((resolve) => {
+        const childProcess = handleFn(targetPkgName);
+        childProcess.on('close', (code) => {
+          this.setTaskMap({ key: fullPkgName, value: false });
+          this.handleCode(code, isInstalled ? 'uninstall' : 'install', targetPkgName);
+          resolve(code);
+        });
+      });
     },
     handleCode(code, type, targetPkgName) {
       const typeText = {
@@ -50,36 +50,36 @@ export default {
           failMessage: `请尝试手动卸载 
           fef uninstall ${targetPkgName}`,
         },
-      }
+      };
 
-      const message = typeText[type]
+      const message = typeText[type];
       if (!message) {
-        this.toast(`类型错误：${type}`, '', 'error')
-        return
+        this.toast(`类型错误：${type}`, '', 'error');
+        return;
       }
       if (code === 0) {
         // 任务成功
-        this.toast(message.success, '', 'success')
+        this.toast(message.success, '', 'success');
         // 刷新插件
-        this.getLocalPluginList()
+        this.getLocalPluginList();
       } else if (code === 2) {
         // 网络异常
-        this.toast(message.fail, message.network, 'error')
+        this.toast(message.fail, message.network, 'error');
       } else {
         // 其他状态
-        this.toast(message.fail, message.failMessage, 'error')
+        this.toast(message.fail, message.failMessage, 'error');
       }
     },
     toast(title, msg, type = 'info', isPersistent = false) {
       const opt = {
         title,
         message: msg,
-      }
+      };
       if (isPersistent) {
-        opt.duration = 0
+        opt.duration = 0;
       }
 
-      return this.$notify[type](opt)
+      return this.$notify[type](opt);
     },
   },
-}
+};

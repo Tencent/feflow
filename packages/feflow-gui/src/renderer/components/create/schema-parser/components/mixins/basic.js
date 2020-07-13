@@ -1,7 +1,7 @@
-import _ from 'lodash'
-import { createNamespacedHelpers, mapState as mapStoreState } from 'vuex'
+import _ from 'lodash';
+import { createNamespacedHelpers, mapState as mapStoreState } from 'vuex';
 
-const { mapState, mapActions } = createNamespacedHelpers('Schema')
+const { mapState, mapActions } = createNamespacedHelpers('Schema');
 
 export default {
   // data () {
@@ -42,31 +42,31 @@ export default {
     }),
     value: {
       get() {
-        return _.get(this.model, this.path)
+        return _.get(this.model, this.path);
       },
       set(val) {
         // 无值
         if (val === '') {
-          this.removeValue(this.path)
+          this.removeValue(this.path);
         } else {
-          this.setValue({ path: this.path, value: val })
+          this.setValue({ path: this.path, value: val });
         }
       },
     },
     name() {
-      return this.path.join('.')
+      return this.path.join('.');
     },
     type() {
-      return this.definition.type
+      return this.definition.type;
     },
     required() {
-      return this.definition.required
+      return this.definition.required;
     },
     showType() {
-      return this.$store.state.Schema.schema.showType
+      return this.$store.state.Schema.schema.showType;
     },
   },
   methods: {
     ...mapActions(['setValue', 'removeValue']),
   },
-}
+};

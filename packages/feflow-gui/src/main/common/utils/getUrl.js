@@ -1,14 +1,14 @@
 import { app } from 'electron';
 
 export default function (routeName = '') {
-  const isDev = process.env.NODE_ENV === 'development'
+  const isDev = process.env.NODE_ENV === 'development';
 
-  let localUrl = 'http://localhost:9080/'
-  let serveUrl = `http://localhost:${app.guiPort}/`
+  let localUrl = 'http://localhost:9080/';
+  let serveUrl = `http://localhost:${app.guiPort}/`;
   if (routeName) {
-    localUrl += `#/${routeName}`
-    serveUrl += `#/${routeName}`
+    localUrl += `#/${routeName}`;
+    serveUrl += `#/${routeName}`;
   }
 
-  return isDev ? localUrl : serveUrl
+  return isDev ? localUrl : serveUrl;
 }
