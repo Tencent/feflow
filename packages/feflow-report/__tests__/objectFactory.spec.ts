@@ -1,6 +1,6 @@
 import chai from 'chai';
 import objectFactory from '../src/common/objectFactory';
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - objectFactory', () => {
   beforeEach(() => {

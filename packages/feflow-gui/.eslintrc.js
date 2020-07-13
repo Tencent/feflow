@@ -32,7 +32,7 @@ module.exports = {
     // 'no-unused-expressions': 0,
     // 'one-var': 0,
     'no-underscore-dangle': 0,
-    'no-multi-assign': 0,
+    // 'no-multi-assign': 0,
     'import/no-default-export': 0,
     'import/prefer-default-export': 0,
     // codecc 要求 && 这种放在行首，所以先不添加 prettier

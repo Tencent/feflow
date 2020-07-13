@@ -1,8 +1,8 @@
 import chai from 'chai';
 const Report = require('../src/index');
-const { getUserName, httpRegex, sshRegex } = require('../src/common/utils');
+const { getUserName } = require('../src/common/utils');
 
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - report', () => {
   let report;

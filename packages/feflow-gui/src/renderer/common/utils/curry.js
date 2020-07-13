@@ -1,3 +1,4 @@
+/* eslint-disable prefer-rest-params */
 /**
  * 函数柯里化
  * @param {Function} fn 被柯里化的函数

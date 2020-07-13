@@ -1,7 +1,7 @@
 import chai from 'chai';
 const Report = require('../src/index');
 
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - report', () => {
   let report;

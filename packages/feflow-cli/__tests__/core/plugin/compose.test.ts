@@ -1,6 +1,6 @@
 import compose from '../../../src/core/plugin/compose';
 import chai from 'chai';
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/core - Plugin compose', () => {
   it('Composes from right to left', () => {

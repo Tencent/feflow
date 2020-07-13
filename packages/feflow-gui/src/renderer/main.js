@@ -10,6 +10,7 @@ import apiAuthorize from '@/api/authorize';
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'));
 Vue.use(ElementUI);
+// eslint-disable-next-line no-multi-assign
 Vue.http = Vue.prototype.$http = axios;
 Vue.config.productionTip = false;
 

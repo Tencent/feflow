@@ -1,7 +1,7 @@
 import chai from 'chai';
 const { httpRegex, sshRegex, getProjectByGit, getGitStatus, getSystemInfo } = require('../src/common/utils');
 
-const expect = chai.expect;
+const { expect } = chai;
 
 const remoteUrlMap = {
   http: { valid: 'https://github.com/Tencent/feflow.git', invalid: 'https:github.com/Tencent/feflow.git' },
