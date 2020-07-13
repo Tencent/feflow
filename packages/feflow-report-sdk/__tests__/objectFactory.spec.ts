@@ -14,7 +14,7 @@ describe('@feflow/report - objectFactory', () => {
     expect(obj).to.deep.eq({});
   });
 
-  it('objectFactory - load', function() {
+  it('objectFactory - load', () => {
     const obj = objectFactory.create()
       .load('a', 123)
       .load('b', 321)
@@ -24,7 +24,7 @@ describe('@feflow/report - objectFactory', () => {
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
   });
 
-  it('objectFactory - done', function() {
+  it('objectFactory - done', () => {
     const obj = objectFactory.create()
       .load('a', 123)
       .load('b', 321)
