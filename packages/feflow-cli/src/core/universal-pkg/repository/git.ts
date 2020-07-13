@@ -3,12 +3,12 @@ import childProcess from 'child_process';
 import { promisify } from 'util';
 import versionImpl from '../dep/version';
 import {
-  transformUrl
+  transformUrl,
 } from '../../../shared/git';
 
 export async function getTag(
   repoUrl: string,
-  version?: string
+  version?: string,
 ): Promise<string | undefined> {
   const execFile = promisify(childProcess.execFile);
   const url = await transformUrl(repoUrl);
@@ -16,7 +16,7 @@ export async function getTag(
     'ls-remote',
     '--tags',
     '--refs',
-    url
+    url,
   ]);
 
   const tagListStr = stdout?.trim();
@@ -26,6 +26,7 @@ export async function getTag(
 
   const tagList = tagListStr.split('\n');
   let satisfiedMaxVersion: string | undefined;
+  // eslint-disable-next-line no-restricted-syntax
   for (const tagStr of tagList) {
     const [, tagReference] = tagStr.split('\t');
     const tag = tagReference?.substring('refs/tags/'.length);
@@ -45,9 +46,7 @@ export async function getTag(
   return satisfiedMaxVersion;
 }
 
-export async function getCurrentTag(
-  repoPath: string
-): Promise<string | undefined> {
+export async function getCurrentTag(repoPath: string): Promise<string | undefined> {
   const status = spawn.sync('git', ['-C', repoPath, 'status']);
   const head = status?.stdout?.toString().trim().split('\n')[0];
   const fields = head.split(' ');

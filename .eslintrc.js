@@ -19,11 +19,13 @@ module.exports = {
         'operator-linebreak': ['error', 'before', { overrides: { '=': 'none' } }],
         camelcase: 0,
         'no-param-reassign': 0,
+        'no-case-declarations': 0,
         '@typescript-eslint/consistent-type-assertions': 0,
         // 允许使用 require
         '@typescript-eslint/no-require-imports': 0,
         '@typescript-eslint/prefer-optional-chain': 0,
         '@typescript-eslint/explicit-member-accessibility': 0,
+        '@typescript-eslint/member-ordering': 0,
       },
     },
   ],

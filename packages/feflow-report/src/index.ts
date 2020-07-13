@@ -2,7 +2,7 @@ import Api from './api';
 import {
   getUserNameFromGit,
   getSystemInfoByOS,
-  getProjectByPackage
+  getProjectByPackage,
 } from './common/utils';
 import objectFactory from './common/objectFactory';
 

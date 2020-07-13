@@ -2,7 +2,7 @@ import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
-  EVENT_DONE
+  EVENT_DONE,
 } from '../../shared/constant';
 
 export default class Hook {
@@ -14,7 +14,7 @@ export default class Hook {
   }
 
   on(type: any, listener: any) {
-    const listeners = this.listeners;
+    const { listeners } = this;
     if (listeners[type] && listeners[type].length >= this.maxListener) {
       throw new Error(`Listener's maxCount is ${this.maxListener}, has exceed`);
     }
@@ -28,6 +28,7 @@ export default class Hook {
   }
 
   emit(type: any) {
+    // eslint-disable-next-line prefer-rest-params
     const args = Array.prototype.slice.call(arguments);
     args.shift();
     switch (type) {
@@ -47,6 +48,7 @@ export default class Hook {
           return;
         }
         this.listeners[type].forEach((listener: any) => {
+          // eslint-disable-next-line prefer-spread
           listener.apply(null, args);
         });
         break;
@@ -73,13 +75,15 @@ export default class Hook {
       if (result && typeof result.then === 'function') {
         result.then(
           () => {
+            // eslint-disable-next-line no-plusplus
             next(++i);
           },
           () => {
             throw new Error('Promise rejected with no or falsy reason');
-          }
+          },
         );
       } else {
+        // eslint-disable-next-line no-plusplus
         next(++i);
       }
     };
@@ -87,9 +91,8 @@ export default class Hook {
     process.nextTick(() => {
       if (!hooks) {
         return fn();
-      } else {
-        next(0);
       }
+      next(0);
     });
   }
 }

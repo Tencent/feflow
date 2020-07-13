@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { PkgRelation } from './relation';
 import fs from 'fs';
 import { toInstalled } from './base';
@@ -7,7 +8,7 @@ import path from 'path';
 export class UniversalPkg {
   private pkgFile: string;
 
-  private version: string = '0.0.0';
+  private version = '0.0.0';
 
   // pkg: version
   private installed: Map<string, string> = new Map();
@@ -26,10 +27,8 @@ export class UniversalPkg {
     this.dependencies = this.toDependencies(universalPkg?.dependencies);
   }
 
-  private toDependencies(
-    oDependencies: any
-  ): Map<string, Map<string, PkgRelation>> {
-    let dependencies = new Map<string, Map<string, PkgRelation>>();
+  private toDependencies(oDependencies: any): Map<string, Map<string, PkgRelation>> {
+    const dependencies = new Map<string, Map<string, PkgRelation>>();
     if (!oDependencies) {
       return dependencies;
     }
@@ -38,7 +37,7 @@ export class UniversalPkg {
       if (!versionRelationMap) {
         continue;
       }
-      let pkgRelation = new Map<string, PkgRelation>();
+      const pkgRelation = new Map<string, PkgRelation>();
       for (const version in versionRelationMap) {
         const oVersionRelation = versionRelationMap[version];
         if (versionImpl.check(version)) {
@@ -62,12 +61,12 @@ export class UniversalPkg {
     }
     if (version && includeDep) {
       return this.getPkgRelation(pkg, version) !== undefined;
-    } else {
-      const v = this.installed.get(pkg);
-      if (v && version === v) {
-        return true;
-      }
     }
+    const v = this.installed.get(pkg);
+    if (v && version === v) {
+      return true;
+    }
+
     return false;
   }
 
@@ -75,11 +74,11 @@ export class UniversalPkg {
     this.installed.set(pkg, version);
     let versionMap = this.dependencies.get(pkg);
     if (!versionMap) {
-        versionMap = new Map<string, PkgRelation>();
+      versionMap = new Map<string, PkgRelation>();
     }
     let r = versionMap.get(version);
     if (!r) {
-        r = new PkgRelation(null);
+      r = new PkgRelation(null);
     }
     versionMap.set(version, r);
     this.dependencies.set(pkg, versionMap);
@@ -100,7 +99,7 @@ export class UniversalPkg {
     pkg: string,
     version: string,
     dependPkg: string,
-    dependPkgVersion: string
+    dependPkgVersion: string,
   ) {
     let versionMap = this.dependencies.get(pkg);
     if (!versionMap) {
@@ -158,7 +157,7 @@ export class UniversalPkg {
     pkg: string,
     version: string,
     dependPkg: string,
-    dependPkgVersion: string
+    dependPkgVersion: string,
   ) {
     const dependencies = this.getDependencies(pkg, version);
     if (dependencies) {
@@ -175,7 +174,7 @@ export class UniversalPkg {
     pkg: string,
     version: string,
     dependedOnPkg: string,
-    dependedOnPkgVersion: string
+    dependedOnPkgVersion: string,
   ) {
     let versionMap = this.dependencies.get(pkg);
     if (!versionMap) {
@@ -217,7 +216,7 @@ export class UniversalPkg {
     pkg: string,
     version: string,
     dependedPkg: string,
-    dependedVersion: string
+    dependedVersion: string,
   ) {
     const dependedOn = this.getDepended(pkg, version);
     if (!dependedOn) {
@@ -238,7 +237,7 @@ export class UniversalPkg {
 
   getDependencies(
     pkg: string,
-    version: string
+    version: string,
   ): Map<string, string> | undefined {
     const r = this.getPkgRelation(pkg, version);
     if (!r) {
@@ -264,7 +263,7 @@ export class UniversalPkg {
       const d = path.resolve(this.pkgFile, '..');
       if (!fs.existsSync(d)) {
         fs.mkdirSync(d, {
-          recursive: true
+          recursive: true,
         });
       }
     }
@@ -274,11 +273,11 @@ export class UniversalPkg {
         {
           version: this.version,
           installed: this.toObject(this.installed),
-          dependencies: this.toObject(this.dependencies)
+          dependencies: this.toObject(this.dependencies),
         },
         null,
-        4
-      )
+        4,
+      ),
     );
   }
 
@@ -286,8 +285,9 @@ export class UniversalPkg {
     if (!obj || typeof obj !== 'object') {
       return obj;
     }
-    let newObj = Object.create(null);
+    const newObj = Object.create(null);
     if (obj instanceof Map) {
+      // eslint-disable-next-line prefer-const
       for (let [k, v] of obj) {
         v = typeof v === 'object' ? this.toObject(v) : v;
         newObj[k] = v;

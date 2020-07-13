@@ -7,57 +7,54 @@ const universalPluginRegex = new RegExp('^feflow-(?:devkit|plugin)-(.*)', 'i');
 function getModuleVersion(dir: string, name: string): string {
   const packagePath = path.resolve(dir, name, 'package.json');
   if (fs.existsSync(packagePath)) {
-    let content = fs.readFileSync(packagePath, 'utf8');
+    const content = fs.readFileSync(packagePath, 'utf8');
     const json = JSON.parse(content);
-    return json && json.version || 'unknown';
-  } else {
-    return 'unknown';
+    return (json && json.version) || 'unknown';
   }
+  return 'unknown';
 }
 
 function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
   const extend = function (target: any, source: any) {
-    for (var obj in source) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const obj in source) {
       target[obj] = source[obj];
     }
     return target;
   };
   if (fs.existsSync(packagePath)) {
-    let content = fs.readFileSync(packagePath, 'utf8');
+    const content = fs.readFileSync(packagePath, 'utf8');
     const json = JSON.parse(content);
     const deps = extend(json.dependencies || {}, json.devDependencies || {});
-    let keys = Object.keys(deps);
-    let list = keys.filter(function (name) {
+    const keys = Object.keys(deps);
+    const list = keys.filter((name) => {
       if (
         !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)
-      )
-        return false;
+      ) return false;
       const pluginPath = path.join(pluginDir, name);
       return fs.existsSync(pluginPath);
-    }).map(key => {
-      return {
-        name: key,
-        version: getModuleVersion(pluginDir, key)
-      };
-    });
+    }).map(key => ({
+      name: key,
+      version: getModuleVersion(pluginDir, key),
+    }));
     return list;
-  } else {
-    return [];
   }
+  return [];
 }
 
 function loadUniversalPlugin(ctx: any): any[] {
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
-  let availablePluigns: any[] = [];
+  const availablePluigns: any[] = [];
   const pluginsInCommand = ctx.commander.store;
+  // eslint-disable-next-line no-restricted-syntax
   for (const [pkg, version] of universalPkg.getInstalled()) {
-    const pluginCommand = (universalPluginRegex.exec(pkg) || [])[1];
+    const [, pluginCommand] = (universalPluginRegex.exec(pkg) || []);
     if (pluginsInCommand[pluginCommand]) {
       availablePluigns.push({
         name: pkg,
-        version: version
+        version,
       });
     }
   }
@@ -72,18 +69,14 @@ module.exports = (ctx: any) => {
     let pluginCnt = 0;
     list.push(...universalPlugins);
 
-    console.log(
-      'You can search more templates or plugins through https://feflowjs.com/encology/'
-    );
+    console.log('You can search more templates or plugins through https://feflowjs.com/encology/');
     if (!list.length) {
-      console.log(
-        chalk.magenta('No templates and plugins have been installed')
-      );
+      console.log(chalk.magenta('No templates and plugins have been installed'));
       return;
     }
 
     console.log('templates');
-    list.map(function (item) {
+    list.forEach((item) => {
       if (/generator-|^@[^/]+\/generator-/.test(item.name)) {
         console.log(chalk.magenta(`${item.name}(${item.version})`));
         templateCnt = 1;
@@ -94,7 +87,7 @@ module.exports = (ctx: any) => {
     }
 
     console.log('plugins');
-    list.map(function (item) {
+    list.forEach((item) => {
       if (/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(item.name)) {
         console.log(chalk.magenta(`${item.name}(${item.version})`));
         pluginCnt = 1;

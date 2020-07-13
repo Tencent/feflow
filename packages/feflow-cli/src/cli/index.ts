@@ -6,23 +6,19 @@ import semver from 'semver';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
-  EVENT_COMMAND_BEGIN
+  EVENT_COMMAND_BEGIN,
 } from '../shared/constant';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
-    console.log(
-      chalk.red(
-        'You are using Node ' +
-          process.version +
-          ', but this version of ' +
-          id +
-          ' requires Node ' +
-          wanted +
-          '.\nPlease upgrade your Node version.'
-      )
-    );
+    console.log(chalk.red(`You are using Node ${
+      process.version
+    }, but this version of ${
+      id
+    } requires Node ${
+      wanted
+    }.\nPlease upgrade your Node version.`));
     process.exit(1);
   }
 };
@@ -40,30 +36,18 @@ const printBanner = () => {
     {
       font: '3D-ASCII',
       horizontalLayout: 'default',
-      verticalLayout: 'default'
+      verticalLayout: 'default',
     },
-    function (err, data: any) {
+    (err, data: any) => {
       if (err) {
         handleError(err);
       }
 
       console.log(chalk.green(data));
-      console.log(
-        chalk.green(
-          ` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `
-        )
-      );
-      console.log(
-        chalk.green(
-          ' (c) powered by Tencent, aims to improve front end workflow.                                       '
-        )
-      );
-      console.log(
-        chalk.green(
-          ' Run fef --help to see usage.                                                                      '
-        )
-      );
-    }
+      console.log(chalk.green(` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `));
+      console.log(chalk.green(' (c) powered by Tencent, aims to improve front end workflow.                                       '));
+      console.log(chalk.green(' Run fef --help to see usage.                                                                      '));
+    },
   );
 };
 
@@ -105,16 +89,14 @@ export default function entry() {
 
     feflow.hook.emit(HOOK_TYPE_BEFORE);
 
-    feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
-      return feflow
-        .call(cmd, feflow)
-        .then(() => {
-          feflow.hook.emit(HOOK_TYPE_AFTER);
-          logger.debug(`call ${cmd} success`);
-        })
-        .catch((err) => {
-          handleError(err);
-        });
-    });
+    feflow.hook.on(EVENT_COMMAND_BEGIN, () => feflow
+      .call(cmd, feflow)
+      .then(() => {
+        feflow.hook.emit(HOOK_TYPE_AFTER);
+        logger.debug(`call ${cmd} success`);
+      })
+      .catch((err) => {
+        handleError(err);
+      }));
   });
 }

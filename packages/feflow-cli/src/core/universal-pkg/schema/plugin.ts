@@ -13,7 +13,7 @@ export class Plugin {
 
   command: Command;
 
-  autoUpdate: boolean = true;
+  autoUpdate = true;
 
   test: Command;
 
@@ -37,7 +37,7 @@ export class Plugin {
     }
     this.ctx = ctx;
     this.path = pluginPath;
-    this.desc = config['desc'];
+    this.desc = config.desc;
     this.dep = new Dependencies(config?.dep);
     this.command = new Command(this.ctx, this.path, config?.command);
     this.autoUpdate = config['auto-update'] || false;
@@ -46,7 +46,7 @@ export class Plugin {
     this.postInstall = new Command(
       this.ctx,
       this.path,
-      config?.['post-install']
+      config?.['post-install'],
     );
     this.preRun = new Command(this.ctx, this.path, config?.['pre-run']);
     this.postRun = new Command(this.ctx, this.path, config?.['post-run']);
@@ -54,7 +54,7 @@ export class Plugin {
     this.postUpgrade = new Command(
       this.ctx,
       this.path,
-      config?.['post-upgrade']
+      config?.['post-upgrade'],
     );
     this.usage = config?.['usage'];
   }

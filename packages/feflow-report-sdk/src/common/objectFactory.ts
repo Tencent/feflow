@@ -15,7 +15,7 @@ const objectFactory: ObjectFactory = {
   },
   load(key, value): ObjectFactory {
     let objValue = '';
-    if (typeof value == 'function') {
+    if (typeof value === 'function') {
       objValue = value();
     } else {
       objValue = value === undefined ? cache[key] : value;

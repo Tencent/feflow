@@ -12,7 +12,7 @@ const objectFactory: ObjectFactory = {
     return this;
   },
   load(key, value): ObjectFactory {
-    if (typeof value == "function") {
+    if (typeof value === 'function') {
       this.obj[key] = value();
     } else {
       this.obj[key] = value;
@@ -23,7 +23,7 @@ const objectFactory: ObjectFactory = {
     const target = Object.assign({}, this.obj);
     this.obj = null;
     return target;
-  }
+  },
 };
 
 export default objectFactory;

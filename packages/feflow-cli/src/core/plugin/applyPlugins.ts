@@ -9,6 +9,7 @@ export default function applyPlugins(plugins: any) {
     if (!plugins.length) {
       return;
     }
+    // eslint-disable-next-line array-callback-return
     const chain = plugins.map((name: any) => {
       const home = path.join(osenv.home(), FEFLOW_ROOT);
       const pluginPath = path.join(home, 'node_modules', name);
@@ -17,9 +18,9 @@ export default function applyPlugins(plugins: any) {
         return require(pluginPath)(ctx);
       } catch (err) {
         ctx.logger.error(
-          { err: err },
+          { err },
           'Plugin load failed: %s',
-          chalk.magenta(name)
+          chalk.magenta(name),
         );
       }
     });

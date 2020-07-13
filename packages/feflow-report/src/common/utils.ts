@@ -9,16 +9,14 @@ export const getUserNameFromGit = () => {
   return upperUserName.toLowerCase();
 };
 
-export const getSystemInfoByOS = () => {
-  return objectFactory
-    .create()
-    .load('hostname', os.hostname())
-    .load('type', os.type())
-    .load('platform', os.platform())
-    .load('arch', os.arch())
-    .load('release', os.release())
-    .done();
-};
+export const getSystemInfoByOS = () => objectFactory
+  .create()
+  .load('hostname', os.hostname())
+  .load('type', os.type())
+  .load('platform', os.platform())
+  .load('arch', os.arch())
+  .load('release', os.release())
+  .done();
 
 export const getProjectByPackage = () => {
   let project = '';

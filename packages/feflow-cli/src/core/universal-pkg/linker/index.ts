@@ -8,7 +8,7 @@ import fs from 'fs';
 export default class Linker {
   private currentOs: NodeJS.Platform;
 
-  private startCommand: string = 'fef';
+  private startCommand = 'fef';
 
   private fileMode = 0o744;
 
@@ -63,7 +63,7 @@ export default class Linker {
     binPath: string,
     libPath: string,
     command: string,
-    name?: string
+    name?: string,
   ) {
     this.enableDir(binPath, libPath);
     const file = this.shellFile(libPath, name || command);
@@ -88,7 +88,7 @@ export default class Linker {
     fs.writeFileSync(file, content, {
       mode: this.fileMode,
       flag: 'w',
-      encoding: 'utf8'
+      encoding: 'utf8',
     });
   }
 

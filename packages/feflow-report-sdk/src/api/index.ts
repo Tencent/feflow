@@ -36,22 +36,22 @@ export default class ApiController {
   }
 
   private retryReport(cb) {
-    this.retryCount++;
+    this.retryCount = this.retryCount + 1;
     this.log.debug('feflow report timeout, and retry. ', this.retryCount);
     this.isNeedProxy = !this.isNeedProxy;
     this.loadProxy();
     this.doReport(cb);
   }
 
-  public doReport(cb = res => {}) {
+  public doReport(cb = (res) => {}) {
     this.log.debug('feflow report start.');
     rp(this.rpOption)
-      .then(response => {
+      .then((response) => {
         isNeedProxyLocal = this.isNeedProxy;
         this.log.debug('feflow report success.');
         cb(response || {});
       })
-      .catch(e => {
+      .catch((e) => {
         this.log.debug('feflow report fail. ', e.message);
         // timeout retry
         if (/ETIMEDOUT|ECONNREFUSED|ESOCKETTIMEDOUT/.test(e.message || '')) {

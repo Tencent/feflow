@@ -3,43 +3,41 @@ import inquirer from 'inquirer';
 import path from 'path';
 import yeoman from 'yeoman-environment';
 
-const loadGenerator = (root: string, rootPkg: string) => {
-  return new Promise<any>((resolve, reject) => {
-    fs.readFile(rootPkg, 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        const json = JSON.parse(data);
-        const deps = json.dependencies || json.devDependencies || {};
-        const generators = Object.keys(deps)
-          .filter((name) => {
-            if (!/^generator-|^@[^/]+\/generator-/.test(name)) {
-              return false;
-            }
-            const generatorPath = path.join(root, 'node_modules', name);
-            return fs.existsSync(generatorPath);
-          })
-          .map((name) => {
-            const generatorPkgPath = path.join(
-              root,
-              'node_modules',
-              name,
-              'package.json'
-            );
-            const generatorPkgData = fs.readFileSync(generatorPkgPath, 'utf8');
-            const generatorPkgJson = JSON.parse(generatorPkgData);
-            const desc = generatorPkgJson.description;
+const loadGenerator = (root: string, rootPkg: string) => new Promise<any>((resolve, reject) => {
+  fs.readFile(rootPkg, 'utf8', (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      const json = JSON.parse(data);
+      const deps = json.dependencies || json.devDependencies || {};
+      const generators = Object.keys(deps)
+        .filter((name) => {
+          if (!/^generator-|^@[^/]+\/generator-/.test(name)) {
+            return false;
+          }
+          const generatorPath = path.join(root, 'node_modules', name);
+          return fs.existsSync(generatorPath);
+        })
+        .map((name) => {
+          const generatorPkgPath = path.join(
+            root,
+            'node_modules',
+            name,
+            'package.json',
+          );
+          const generatorPkgData = fs.readFileSync(generatorPkgPath, 'utf8');
+          const generatorPkgJson = JSON.parse(generatorPkgData);
+          const desc = generatorPkgJson.description;
 
-            return { name, desc };
-          });
-        resolve(generators);
-      }
-    });
+          return { name, desc };
+        });
+      resolve(generators);
+    }
   });
-};
+});
 
 const run = (ctx: any, name: string) => {
-  const root = ctx.root;
+  const { root } = ctx;
   const yeomanEnv = yeoman.createEnv();
   let generatorEntry = path.join(root, 'node_modules', name, 'app/index.js');
 
@@ -49,7 +47,7 @@ const run = (ctx: any, name: string) => {
       'node_modules',
       name,
       'generators',
-      'app/index.js'
+      'app/index.js',
     );
   }
   yeomanEnv.register(require.resolve(generatorEntry), name);
@@ -88,26 +86,26 @@ module.exports = (ctx: any) => {
               type: 'list',
               name: 'desc',
               message: '您想要创建哪种类型的工程?',
-              choices: options
-            }
+              choices: options,
+            },
           ])
           .then((answer: any) => {
             let name;
 
+            // eslint-disable-next-line array-callback-return
             generators.map((item: any) => {
               if (item.desc === answer.desc) {
+                // eslint-disable-next-line prefer-destructuring
                 name = item.name;
               }
             });
 
-            ctx.reporter.report('init', name)
+            ctx.reporter.report('init', name);
             name && run(ctx, name);
           });
       } else {
-        ctx.logger.warn(
-          'You have not installed a template yet, ' +
-            ' please use install command. Guide: https://github.com/Tencent/feflow'
-        );
+        ctx.logger.warn('You have not installed a template yet, '
+            + ' please use install command. Guide: https://github.com/Tencent/feflow');
       }
     });
   });

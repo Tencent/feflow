@@ -3,7 +3,7 @@ import childProcess from 'child_process';
 import { promisify } from 'util';
 import semver from 'semver';
 import {
-  transformUrl
+  transformUrl,
 } from './git';
 
 export function getRegistryUrl(packageManager: string) {
@@ -26,7 +26,7 @@ export function getRegistryUrl(packageManager: string) {
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`
+          command: `${command} ${args.join(' ')}`,
         });
         return;
       }
@@ -42,13 +42,11 @@ export function install(
   cmd: any,
   dependencies: any,
   verbose: boolean,
-  isOnline: boolean
+  isOnline: boolean,
 ) {
   return new Promise((resolve, reject) => {
     const command = packageManager;
-    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(
-      dependencies
-    );
+    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
 
     if (verbose) {
       args.push('--verbose');
@@ -58,7 +56,7 @@ export function install(
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`
+          command: `${command} ${args.join(' ')}`,
         });
         return;
       }
@@ -74,10 +72,10 @@ async function listRepoTag(repoUrl: string): Promise<string[]> {
     'ls-remote',
     '--tags',
     '--refs',
-    url
+    url,
   ]);
   const tagStr = stdout?.trim();
-  let tagList: string[] = [];
+  const tagList: string[] = [];
 
   if (tagStr) {
     const tagVersionList = tagStr.split('\n');
@@ -99,6 +97,7 @@ export async function getTag(repoUrl: string, version?: string) {
   const tagList = await listRepoTag(repoUrl);
 
   if (tagList.length) {
+    // eslint-disable-next-line no-restricted-syntax
     for (const tag of tagList) {
       if (!version || version === tag) {
         return Promise.resolve(tag);
@@ -113,6 +112,7 @@ export async function getLatestTag(repoUrl: string) {
   let lastVersion = '';
 
   if (tagList.length) {
+    // eslint-disable-next-line no-restricted-syntax
     for (const tag of tagList) {
       if (!lastVersion) {
         lastVersion = tag;
@@ -134,7 +134,7 @@ export function checkoutVersion(repoPath: string, version: string) {
       if (code !== 0) {
         reject({
           command: `${command} ${checkArgs.join(' ')}`,
-          code
+          code,
         });
         return;
       }

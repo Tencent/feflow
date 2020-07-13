@@ -17,7 +17,7 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
-  UNIVERSAL_MODULES
+  UNIVERSAL_MODULES,
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
@@ -27,8 +27,8 @@ import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
 import Report from '@feflow/report';
-const pkg = require('../../package.json');
 import checkCliUpdate from '../shared/checkCliUpdate';
+const pkg = require('../../package.json');
 
 export default class Feflow {
   public args: any;
@@ -70,7 +70,7 @@ export default class Feflow {
     this.hook = new Hook();
     this.logger = logger({
       debug: Boolean(args.debug),
-      silent: Boolean(args.silent)
+      silent: Boolean(args.silent),
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
@@ -85,8 +85,7 @@ export default class Feflow {
     } else {
       await this.initClient();
       await this.initPackageManager();
-      const disableCheck =
-        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+      const disableCheck =        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
       if (disableCheck) {
         await checkCliUpdate(this, true);
         await this.checkUpdate();
@@ -119,11 +118,11 @@ export default class Feflow {
             {
               name: 'feflow-home',
               version: '0.0.0',
-              private: true
+              private: true,
             },
             null,
-            2
-          )
+            2,
+          ),
         );
       }
       resolve();
@@ -163,43 +162,37 @@ export default class Feflow {
         const packageManagers = [
           {
             name: 'npm',
-            installed: isInstalled('npm')
+            installed: isInstalled('npm'),
           },
           {
             name: 'tnpm',
-            installed: isInstalled('tnpm')
+            installed: isInstalled('tnpm'),
           },
           {
             name: 'cnpm',
-            installed: isInstalled('cnpm')
+            installed: isInstalled('cnpm'),
           },
           {
             name: 'yarn',
-            installed: isInstalled('yarn')
-          }
+            installed: isInstalled('yarn'),
+          },
         ];
 
-        const installedPackageManagers = packageManagers.filter(
-          (packageManager) => packageManager.installed
-        );
+        const installedPackageManagers = packageManagers.filter(packageManager => packageManager.installed);
 
         if (installedPackageManagers.length === 0) {
           const notify = 'You must installed a package manager';
           console.error(notify);
         } else {
-          const options = installedPackageManagers.map(
-            (installedPackageManager: any) => {
-              return installedPackageManager.name;
-            }
-          );
+          const options = installedPackageManagers.map((installedPackageManager: any) => installedPackageManager.name);
           inquirer
             .prompt([
               {
                 type: 'list',
                 name: 'packageManager',
                 message: 'Please select one package manager',
-                choices: options
-              }
+                choices: options,
+              },
             ])
             .then((answer: any) => {
               const configPath = path.join(root, '.feflowrc.yml');
@@ -209,9 +202,9 @@ export default class Feflow {
             });
         }
         return;
-      } else {
-        logger.debug('Use packageManager is: ', this.config.packageManager);
       }
+      logger.debug('Use packageManager is: ', this.config.packageManager);
+
       resolve();
     });
   }
@@ -223,59 +216,50 @@ export default class Feflow {
     }
 
     const table = new Table();
-    const packageManager = config.packageManager;
-    return Promise.all(
-      this.getInstalledPlugins().map(async (name: any) => {
-        const pluginPath = path.join(
-          root,
-          'node_modules',
-          name,
-          'package.json'
-        );
-        const content: any = fs.readFileSync(pluginPath);
-        const pkg: any = JSON.parse(content);
-        const localVersion = pkg.version;
-        const registryUrl = await getRegistryUrl(packageManager);
-        const latestVersion: any = await packageJson(name, registryUrl).catch(
-          (err) => {
-            logger.debug('Check plugin update error', err);
-          }
-        );
-
-        if (latestVersion && semver.gt(latestVersion, localVersion)) {
-          table.cell('Name', name);
-          table.cell(
-            'Version',
-            localVersion === latestVersion
-              ? localVersion
-              : localVersion + ' -> ' + latestVersion
-          );
-          table.cell('Tag', 'latest');
-          table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
-          table.newRow();
-
-          return {
-            name,
-            latestVersion
-          };
-        } else {
-          logger.debug('All plugins is in latest version');
-        }
-      })
-    ).then((plugins: any) => {
-      plugins = plugins.filter((plugin: any) => {
-        return plugin && plugin.name;
+    const { packageManager } = config;
+    return Promise.all(this.getInstalledPlugins().map(async (name: any) => {
+      const pluginPath = path.join(
+        root,
+        'node_modules',
+        name,
+        'package.json',
+      );
+      const content: any = fs.readFileSync(pluginPath);
+      const pkg: any = JSON.parse(content);
+      const localVersion = pkg.version;
+      const registryUrl = await getRegistryUrl(packageManager);
+      const latestVersion: any = await packageJson(name, registryUrl).catch((err) => {
+        logger.debug('Check plugin update error', err);
       });
-      if (plugins.length) {
-        this.logger.info(
-          'It will update your local templates or plugins, this will take few minutes'
+
+      if (latestVersion && semver.gt(latestVersion, localVersion)) {
+        table.cell('Name', name);
+        table.cell(
+          'Version',
+          localVersion === latestVersion
+            ? localVersion
+            : `${localVersion} -> ${latestVersion}`,
         );
+        table.cell('Tag', 'latest');
+        table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
+        table.newRow();
+
+        return {
+          name,
+          latestVersion,
+        };
+      }
+      logger.debug('All plugins is in latest version');
+    })).then((plugins: any) => {
+      plugins = plugins.filter((plugin: any) => plugin && plugin.name);
+      if (plugins.length) {
+        this.logger.info('It will update your local templates or plugins, this will take few minutes');
         console.log(table.toString());
 
         this.updatePluginsVersion(rootPkg, plugins);
 
         const needUpdatePlugins: any = [];
-        plugins.map((plugin: any) => {
+        plugins.forEach((plugin: any) => {
           needUpdatePlugins.push(plugin.name);
         });
 
@@ -285,7 +269,7 @@ export default class Feflow {
           packageManager === 'yarn' ? 'add' : 'install',
           needUpdatePlugins,
           false,
-          true
+          true,
         ).then(() => {
           this.logger.info('Plugin update success');
         });
@@ -296,7 +280,7 @@ export default class Feflow {
   updatePluginsVersion(packagePath: string, plugins: any) {
     const obj = require(packagePath);
 
-    plugins.map((plugin: any) => {
+    plugins.forEach((plugin: any) => {
       obj.dependencies[plugin.name] = plugin.latestVersion;
     });
 
@@ -328,9 +312,7 @@ export default class Feflow {
     }
     return plugins.filter((name: any) => {
       if (
-        !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(
-          name
-        )
+        !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)
       ) {
         return false;
       }
@@ -343,9 +325,8 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter((file) => {
-          return file.endsWith('.js');
-        })
+        .filter(file => file.endsWith('.js'))
+        // eslint-disable-next-line array-callback-return
         .map((file) => {
           require(path.join(__dirname, './native', file))(this);
         });
@@ -354,22 +335,23 @@ export default class Feflow {
   }
 
   loadInternalPlugins() {
+    // eslint-disable-next-line array-callback-return
     ['@feflow/feflow-plugin-devtool'].map((name: string) => {
       try {
         this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
         return require(name)(this);
       } catch (err) {
         this.logger.error(
-          { err: err },
+          { err },
           'Plugin load failed: %s',
-          chalk.magenta(name)
+          chalk.magenta(name),
         );
       }
     });
   }
 
   async call(name: any, ctx: any) {
-    const args = ctx.args;
+    const { args } = ctx;
     if (args.h || args.help) {
       const hasHelp = await this.showCommandOptionDescription(name, ctx);
       if (hasHelp) {
@@ -380,7 +362,7 @@ export default class Feflow {
     if (cmd) {
       await cmd.call(this, ctx);
     } else {
-      throw new Error('Command `' + name + '` has not been registered yet!');
+      throw new Error(`Command \`${name}\` has not been registered yet!`);
     }
   }
 
@@ -392,18 +374,18 @@ export default class Feflow {
       commandLine = getCommandLine(
         registriedCommand.options,
         registriedCommand.desc,
-        cmd
+        cmd,
       );
     }
 
     if (cmd === 'help') {
       return registriedCommand.call(this, ctx);
     }
-    if (commandLine.length == 0) {
+    if (commandLine.length === 0) {
       return false;
     }
 
-    let sections = [];
+    const sections = [];
 
     sections.push(...commandLine);
     const usage = commandLineUsage(sections);

@@ -12,7 +12,6 @@ type globalVal = {
 };
 
 export class Command {
-
   private val: globalVal = {} as globalVal;
 
   private ctx: any;
@@ -52,12 +51,13 @@ export class Command {
 
   run(...args: string[]) {
     const commands = this.getCommands();
+    // eslint-disable-next-line no-restricted-syntax
     for (let command of commands) {
       if (args && args.length > 0) {
         command = `${command} ${args.join(' ')}`;
       }
       execSync(command, {
-        stdio: 'inherit'
+        stdio: 'inherit',
       });
     }
   }
@@ -65,12 +65,13 @@ export class Command {
   // exception not thrown
   runLess() {
     const commands = this.getCommands();
-    for (let command of commands) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const command of commands) {
       try {
         execSync(command, {
-          stdio: 'inherit'
+          stdio: 'inherit',
         });
-      } catch(e) {
+      } catch (e) {
         this.ctx.logger.debug(e);
         this.ctx.logger.error(`[command interrupt] ${e}`);
         return;

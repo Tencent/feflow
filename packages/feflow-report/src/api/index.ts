@@ -21,18 +21,19 @@ export default {
     }
 
     rp(rpOption)
-      .then(res => {
+      .then((res) => {
         this.log.debug('got report response', res);
       })
-      .catch(e => {
+      .catch((e) => {
         this.log.debug('feflow report fail', e.message);
         if (/ETIMEDOUT/.test(e.message || '')) {
           if (this.retryCount > 2) return;
           // timeout retry
           this.log.debug('feflow report 超时重试', this.retryCount);
           // 3nd rp request, remove rp proxy
+          // eslint-disable-next-line eqeqeq
           const needProxy = this.retryCount != 2;
-          this.retryCount++;
+          this.retryCount = this.retryCount + 1;
           this.report(Object.assign({}, param), this.log, needProxy);
         }
       });

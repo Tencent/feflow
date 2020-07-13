@@ -12,7 +12,7 @@ export const PROJECT_CONFIG = [
   '.feflowrc.yml',
   '.feflowrc.json',
   '.feflowrc',
-  'package.json'
+  'package.json',
 ];
 
 export const DEVKIT_CONFIG = [
@@ -21,7 +21,7 @@ export const DEVKIT_CONFIG = [
   'devkit.yml',
   'devkit.json',
   'devkitrc',
-  'package.json'
+  'package.json',
 ];
 
 /**

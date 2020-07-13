@@ -31,7 +31,7 @@ const levelNames: IObject = {
   30: 'INFO ',
   40: 'WARN ',
   50: 'ERROR',
-  60: 'FATAL'
+  60: 'FATAL',
 };
 
 const levelColors: IObject = {
@@ -40,7 +40,7 @@ const levelColors: IObject = {
   30: 'green',
   40: 'orange',
   50: 'red',
-  60: 'red'
+  60: 'red',
 };
 
 class ConsoleStream extends Writable {
@@ -48,28 +48,28 @@ class ConsoleStream extends Writable {
 
   constructor(args: Args) {
     super({
-      objectMode: true
+      objectMode: true,
     });
 
     this.debug = Boolean(args.debug);
   }
 
   _write(data: any, enc: any, callback: any) {
-    const level = data.level;
+    const { level } = data;
     let msg = '';
 
     if (this.debug) {
-      msg += chalk.gray(data.time) + ' ';
+      msg += `${chalk.gray(data.time)} `;
     }
 
-    msg +=
-      chalk.keyword(levelColors[level])('Feflow' + ' ' + levelNames[level]) +
-      ' ';
-    msg += data.msg + '\n';
+    msg
+      += `${chalk.keyword(levelColors[level])(`${'Feflow' + ' '}${levelNames[level]}`)
+      } `;
+    msg += `${data.msg}\n`;
 
     if (data.err) {
       const err = data.err.stack || data.err.message;
-      if (err) msg += chalk.yellow(err) + '\n';
+      if (err) msg += `${chalk.yellow(err)}\n`;
     }
 
     if (level >= 40) {
@@ -90,23 +90,23 @@ export default function createLogger(options: any) {
     streams.push({
       type: 'raw',
       level: options.debug ? 'trace' : 'info',
-      stream: new ConsoleStream(options)
+      stream: new ConsoleStream(options),
     });
   }
 
   if (options.debug) {
     streams.push({
       level: 'trace',
-      path: 'debug.log'
+      path: 'debug.log',
     });
   }
 
   const logger = bunyan.createLogger({
     name: options.name || 'feflow',
-    streams: streams,
+    streams,
     serializers: {
-      err: bunyan.stdSerializers.err
-    }
+      err: bunyan.stdSerializers.err,
+    },
   });
 
   return logger;
