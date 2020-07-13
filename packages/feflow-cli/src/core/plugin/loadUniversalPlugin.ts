@@ -14,7 +14,7 @@ const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
-const excludeAgrs = ['--disable-check'];
+const excludeAgrs = ['--disable-check', '--slient'];
 
 function loadPlugin(
   ctx: any,
