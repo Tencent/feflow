@@ -21,7 +21,7 @@ const rulesMap = {
   date: dateRule,
   select: selectRule,
   text: textRule,
-  image: imageUploadRule
+  image: imageUploadRule,
 }
 
 const BUILD_IN_TYPE = ['text', 'select', 'textarea', 'html', 'grid', 'fieldset']
@@ -36,9 +36,7 @@ class Generator {
     const rules = {}
 
     _.each(rule, (list, type) => {
-      rules[type] = list.map(item => {
-        return rulesMap[item]
-      })
+      rules[type] = list.map(item => rulesMap[item])
     })
 
     this.rules = rules
@@ -66,7 +64,7 @@ class Generator {
    * @param {Array} definition
    */
   parse(schema, definition = [], model = {}) {
-    if (!(schema && schema.properties)) {
+    if (!(schema?.properties)) {
       throw new Error('schema no validate!')
     }
 
@@ -76,10 +74,10 @@ class Generator {
 
     // required的逻辑
     // then 和 else 中也可能有required
-    const branch = schema['if']
+    const branch = schema.if
     if (branch) {
-      const branchThen = schema['then']
-      const branchElse = schema['else']
+      const branchThen = schema.then
+      const branchElse = schema.else
 
       // 整合required
       const barnchKeys = Object.keys(branch.properties)
@@ -88,7 +86,7 @@ class Generator {
       barnchKeys.forEach(key => {
         const currentValue = model[key] !== undefined ? model[key] : schema.properties[key].default
         if (currentValue === branch.properties[key].const) {
-          isMatchCount++
+          isMatchCount = isMatchCount + 1
         }
       })
 
@@ -102,8 +100,8 @@ class Generator {
 
       this._parse(key, val, schemaForm, {
         path: [key],
-        required: required,
-        lookup: options.lookup
+        required,
+        lookup: options.lookup,
       })
     })
 
@@ -146,7 +144,7 @@ class Generator {
    */
   parseSwitchProperties(schema) {
     let switchProperties = []
-    const branch = schema['if']
+    const branch = schema.if
     if (branch) {
       switchProperties = Object.keys(branch.properties)
     }
@@ -155,7 +153,7 @@ class Generator {
   getDefaultModal(schema) {
     const model = {}
 
-    _.each(schema.properties, function(val, key) {
+    _.each(schema.properties, (val, key) => {
       defaultValue(val, key, model)
     })
 
@@ -164,12 +162,12 @@ class Generator {
 }
 
 function defaultValue(schema, key, model) {
-  var type = schema.type
+  const { type } = schema
 
   if (type === 'object') {
     model[key] = {}
 
-    _.each(schema.properties, function(val, _key) {
+    _.each(schema.properties, (val, _key) => {
       defaultValue(val, _key, model[key])
     })
   } else if (type === 'array') {
@@ -203,7 +201,7 @@ function combine(form, schemaForm, lookup) {
   _.each(form, obj => {
     if (typeof obj === 'string') {
       obj = {
-        key: obj
+        key: obj,
       }
     }
 
@@ -223,7 +221,7 @@ function combine(form, schemaForm, lookup) {
       def = lookup[path]
 
       if (def) {
-        _.each(def, function(val, key) {
+        _.each(def, (val, key) => {
           if (typeof obj[key] === 'undefined') {
             obj[key] = val
           }
@@ -234,7 +232,7 @@ function combine(form, schemaForm, lookup) {
 
     // 保留html,添加v-前缀
     if (_.indexOf(BUILD_IN_TYPE, obj.type) > -1) {
-      obj.type = 'v-' + obj.type
+      obj.type = `v-${obj.type}`
     }
 
     if (obj.items) {
@@ -251,7 +249,8 @@ function combine(form, schemaForm, lookup) {
   if (idx > -1 && !_.isEmpty(lookup)) {
     const defaultDefinitions = []
 
-    for (let path in lookup) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const path in lookup) {
       defaultDefinitions.push(lookup[path])
     }
 

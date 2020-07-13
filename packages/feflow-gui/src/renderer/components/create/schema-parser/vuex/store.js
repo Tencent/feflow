@@ -15,19 +15,19 @@ const state = {
   isRootArray: false,
   // generator: new Generator()
   isSchemaValid: false, // 校验schema是否有效
-  switchProperties: [] // 条件属性
+  switchProperties: [], // 条件属性
 }
 
 export default {
   namespaced: true,
   state,
   actions: {
-    ...actions
+    ...actions,
   },
   mutations: {
-    ...mutations
+    ...mutations,
   },
   getters: {
-    ...getters
-  }
+    ...getters,
+  },
 }

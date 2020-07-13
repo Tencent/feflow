@@ -8,42 +8,42 @@ import Generator from '../core/schema'
 const ARRAY_ROOT_KEY = 'silentList'
 const generator = new Generator()
 
-let ajv = new Ajv()
+const ajv = new Ajv()
 let validator = null
 
 export const init = ({ commit, state }, { schema, definition, model = {} }) => {
   const _state = {}
-  let isSchemaValid = ajv.validateSchema(schema)
+  const isSchemaValid = ajv.validateSchema(schema)
   // 根节点是array，要嵌套一层
   if (schema.type === 'array') {
-    let newSchema = {
+    const newSchema = {
       title: '列表',
       type: 'object',
       properties: {},
-      required: [ARRAY_ROOT_KEY]
+      required: [ARRAY_ROOT_KEY],
     }
 
     newSchema.properties[ARRAY_ROOT_KEY] = Object.assign({}, schema)
     schema = newSchema
 
     if (!_.isEmpty(model)) {
-      let newModel = {}
+      const newModel = {}
 
       newModel[ARRAY_ROOT_KEY] = model
       model = extend(true, {}, newModel)
     }
 
     if (!_.isEmpty(definition)) {
-      let newForm = [
+      const newForm = [
         {
           title: '',
           type: 'array',
           key: ARRAY_ROOT_KEY,
-          items: []
-        }
+          items: [],
+        },
       ]
 
-      newForm[0]['items'] = addRootArray(definition)
+      newForm[0].items = addRootArray(definition)
       definition = newForm
     }
 
@@ -52,7 +52,7 @@ export const init = ({ commit, state }, { schema, definition, model = {} }) => {
 
   if (Array.isArray(schema.propsOrder)) {
     const propsInOrder = {}
-    schema.propsOrder.forEach(function(key) {
+    schema.propsOrder.forEach((key) => {
       propsInOrder[key] = schema.properties[key]
     })
     schema.properties = propsInOrder
@@ -87,10 +87,10 @@ export const setMessages = ({ commit, state }, messages) => {
     map[path] = msg.message
       ? {
           status: 2,
-          message: messages[path].message
+          message: messages[path].message,
         }
       : {
-          status: 1
+          status: 1,
         }
   })
 
@@ -113,7 +113,7 @@ export const validate = ({ commit, state }, path) => {
 
   if (!valid) {
     localize(validator.errors, state.schema)
-    let allErrors = parseErrors(validator.errors)
+    const allErrors = parseErrors(validator.errors)
 
     if (path) {
       if (allErrors[path]) {
@@ -196,7 +196,7 @@ export const removeValue = ({ commit, state }, path) => {
 
     const model = _.get(state.model, path)
 
-    if (model && model.length) {
+    if (model?.length) {
       model.splice(last, 1)
     }
   } else {
@@ -263,7 +263,7 @@ function getDefinitionByPath(definition, path) {
 }
 
 function addRootArray(form) {
-  _.forEach(form, function(item, idx) {
+  _.forEach(form, (item, idx) => {
     item.key = ARRAY_ROOT_KEY + item.key
 
     if (item.items) {

@@ -13,9 +13,8 @@ function errorHandler(res) {
     const { errcode, data, errmsg } = res
     if (errcode === 0 && data) {
         return data
-    } else {
-        throw new Error(errmsg)
     }
+        throw new Error(errmsg)
 }
 
 export default {
@@ -28,7 +27,7 @@ export default {
     async getDocList({ groupName, projectName }) {
         const params = {
             groupName,
-            projectName
+            projectName,
         }
 
         return http.get(`${baseUrl}/getDocList`, params).then(errorHandler)
@@ -42,7 +41,7 @@ export default {
             userName,
             docName,
             docDesc,
-            docLink
+            docLink,
         }
 
         return http.post(`${baseUrl}/createDoc`, params).then(errorHandler)
@@ -56,16 +55,16 @@ export default {
             projectName,
             docName,
             docDesc,
-            docLink
+            docLink,
         }
         return http.post(`${baseUrl}/updateDoc`, params).then(errorHandler)
     },
 
     async deleteDoc({ docId }) {
         const params = {
-            docId
+            docId,
         }
 
         return http.post(`${baseUrl}/deleteDoc`, params).then(errorHandler)
-    }
+    },
 }

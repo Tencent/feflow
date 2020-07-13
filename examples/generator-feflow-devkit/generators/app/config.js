@@ -1,6 +1,6 @@
 'use strict';
-const path = require('path')
-const _ = require('lodash')
+const path = require('path');
+const _ = require('lodash');
 
 /**
  * 生成指定前缀的名称
@@ -8,17 +8,15 @@ const _ = require('lodash')
  * @param {string} prefix  指定前缀
  */
 function makePrefixName(name = '', prefix = 'generator-') {
-  name = _.kebabCase(name)
-  name = name.indexOf(prefix) === 0 ? name : prefix + name
-  return name
+  name = _.kebabCase(name);
+  name = name.indexOf(prefix) === 0 ? name : prefix + name;
+  return name;
 }
 
 /**
  * 获取 Git 用户名称
  */
-const getGitUserName = () => {
-  return this.user.git.name() || ''
-}
+const getGitUserName = () => this.user.git.name() || '';
 
 module.exports = {
   prompts: [
@@ -28,19 +26,17 @@ module.exports = {
       name: 'name',
       default: makePrefixName(path.basename(process.cwd()), 'feflow-devkit-'),
       filter: str => makePrefixName(str, 'feflow-devkit-'),
-      validate: str => {
-        return /^feflow-devkit-.+/.test(str);
-      }
+      validate: str => /^feflow-devkit-.+/.test(str),
     },
     {
       type: 'input',
       message: 'Feflow 开发套件作者(*)：',
       name: 'author',
-      default: function() {
+      default() {
         try {
-          return this.user.git.name()
+          return this.user.git.name();
         } catch {
-          return ''
+          return '';
         }
       },
     },
@@ -71,65 +67,65 @@ module.exports = {
   filesToCopy: [
     {
       input: 'bin/build.js',
-      output: 'bin/build.js'
+      output: 'bin/build.js',
     },
     {
       input: 'bin/dev.js',
-      output: 'bin/dev.js'
+      output: 'bin/dev.js',
     },
     {
       input: 'lib/utils/projectHelper.js',
-      output: 'lib/utils/projectHelper.js'
+      output: 'lib/utils/projectHelper.js',
     },
     {
       input: 'lib/webpack/index.js',
-      output: 'lib/webpack/index.js'
+      output: 'lib/webpack/index.js',
     },
     {
       input: 'lib/webpack/webpack.base.config.js',
-      output: 'lib/webpack/webpack.base.config.js'
+      output: 'lib/webpack/webpack.base.config.js',
     },
     {
       input: 'lib/webpack/webpack.dev.config.js',
-      output: 'lib/webpack/webpack.dev.config.js'
+      output: 'lib/webpack/webpack.dev.config.js',
     },
     {
       input: 'lib/webpack/webpack.prod.config.js',
-      output: 'lib/webpack/webpack.prod.config.js'
+      output: 'lib/webpack/webpack.prod.config.js',
     },
     {
       input: 'devkit.json',
-      output: 'devkit.json'
+      output: 'devkit.json',
     },
   ],
   filesToRender: [
     {
       input: '_editorconfig',
-      output: '.editorconfig'
+      output: '.editorconfig',
     },
     {
       input: '_gitignore',
-      output: '.gitignore'
+      output: '.gitignore',
     },
     {
       input: '_eslintrc',
-      output: '.eslintrc.js'
+      output: '.eslintrc.js',
     },
     {
       input: '_eslintignore',
-      output: '.eslintignore'
+      output: '.eslintignore',
     },
     {
       input: '_README',
-      output: 'README.md'
+      output: 'README.md',
     },
     {
       input: '_LICENSE',
-      output: 'LICENSE'
+      output: 'LICENSE',
     },
     {
       input: '_package',
-      output: 'package.json'
+      output: 'package.json',
     },
-  ]
-}
+  ],
+};

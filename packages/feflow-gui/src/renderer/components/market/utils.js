@@ -34,12 +34,11 @@ export function getPluginInfoFromTnpm(repo) {
       homepage = '',
       repository = {},
       readme = '',
-      version = ''
+      version = '',
     } = camelizeKeys(data)
     const displayName = name.split('/').pop()
     const updateTime = new Date(cnpmPublishTime).toLocaleDateString()
-    const gitCode =
-      homepage || (repository.url && repository.url.replace('git@git.code.oa.com:', 'https://git.code.oa.com/'))
+    const gitCode =      homepage || (repository.url && repository.url.replace('git@git.code.oa.com:', 'https://git.code.oa.com/'))
     const readmeHTML = markdown.render(readme)
 
     const master = getAuthorName({ author, maintainers })
@@ -52,7 +51,7 @@ export function getPluginInfoFromTnpm(repo) {
       gitCode,
       version,
       readmeHTML,
-      author
+      author,
     }
   })
 }
@@ -61,13 +60,12 @@ export function getPluginInfoFromTnpm(repo) {
 export function getTag(repo) {
   if (/generator/.test(repo)) {
     return 'generator'
-  } else if (/builder/.test(repo)) {
+  } if (/builder/.test(repo)) {
     return 'plugin'
-  } else if (/devkit/.test(repo)) {
+  } if (/devkit/.test(repo)) {
     return 'devkit'
-  } else {
-    return 'plugin'
   }
+    return 'plugin'
 }
 
 // 根据标签获取标签文本
@@ -102,13 +100,11 @@ export const formatPluginList = (plugins = []) => {
   const pluginsMap = {}
   const pluginList = []
   plugins.forEach(({ key, value }) => {
-    const pkgName = key.split('/')[1]
+    const [, pkgName] = key.split('/')
     pluginsMap[pkgName] = value
     pluginList.push({ key, value, pkgName })
   })
   return { pluginsMap, pluginList }
 }
 
-export const getPluginListFromLego = () => {
-  return axios.get(LEGO_URL, { params: { actid: ACT_ID } })
-}
+export const getPluginListFromLego = () => axios.get(LEGO_URL, { params: { actid: ACT_ID } })

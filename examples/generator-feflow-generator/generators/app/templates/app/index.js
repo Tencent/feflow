@@ -5,6 +5,7 @@ const Generator = require('yeoman-generator');
 
 module.exports = class extends Generator {
   constructor() {
+    // eslint-disable-next-line prefer-rest-params
     super(...arguments);
 
     this.answers = {};
@@ -73,7 +74,7 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
       `${this.templatePath()}/**/!(_)*`,
       this.destinationPath(),
-      this.answers
+      this.answers,
     );
   }
 

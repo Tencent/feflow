@@ -2,7 +2,7 @@ import objectpath from 'objectpath'
 
 export default function (name, schema, options) {
   const def = {
-    key: options.path
+    key: options.path,
   }
 
   def.title = typeof schema.title !== 'undefined' ? schema.title : name

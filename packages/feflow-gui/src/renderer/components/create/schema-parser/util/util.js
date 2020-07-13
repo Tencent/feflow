@@ -7,7 +7,7 @@ const enumToOptions = function (enm) {
   _.each(enm, item => {
     options.push({
       label: item,
-      value: item
+      value: item,
     })
   })
 
@@ -54,5 +54,5 @@ const parseErrors = function (errors) {
 export {
   enumToOptions,
   getSchemaByPath,
-  parseErrors
+  parseErrors,
 }

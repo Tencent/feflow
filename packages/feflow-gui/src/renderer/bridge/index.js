@@ -7,7 +7,7 @@ import {
   safeDump,
   dirExists,
   isExit,
-  getFileByJSON
+  getFileByJSON,
 } from './utils'
 import { Feflow } from './utils/core'
 import path from 'path'
@@ -21,7 +21,7 @@ import {
   FEFLOW_PROJECT_DEVKIT_CONFIG_NAME,
   FEFLOW_GENERATOR_CONFIG_HOME,
   FEFLOW_WHISTLE_JS_PATH,
-  FEFLOW_PROJECT_NPM_CONFIG_NAME
+  FEFLOW_PROJECT_NPM_CONFIG_NAME,
 } from './constants'
 import { dialog } from 'electron'
 import fs from 'fs'
@@ -31,20 +31,18 @@ import { execSync as ProcessExecSync } from 'child_process'
 /**
  * 载入全局脚手架
  */
-export const loadGenerator = () => {
-  return getFeflowHomeDepencies().then(dependencies => {
+export const loadGenerator = () => getFeflowHomeDepencies().then(dependencies => {
     let generators = []
-    let generatorConfigMap = {}
+    const generatorConfigMap = {}
 
     // 筛选脚手架
-    generators = dependencies.filter(dependence => {
-      return FEFLOW_GENERATOR_REGEX.test(dependence)
-    })
+    generators = dependencies.filter(dependence => FEFLOW_GENERATOR_REGEX.test(dependence))
 
     // 获取脚手架配置
     // 优先级  js > json
     if (generators.length) {
       generators.forEach(gen => {
+        // eslint-disable-next-line no-restricted-syntax
         for (const configName of GENERATOR_CONFIG_FILE_NAME) {
           if (!generatorConfigMap[gen]) {
             const generatorConfig = getFeflowDependenceConfig(gen, configName)
@@ -62,29 +60,23 @@ export const loadGenerator = () => {
 
     return { list: generators, configMap: generatorConfigMap }
   })
-}
 
 /**
  *
  * 载入全局脚手架和插件
  */
-export const loadLocalPluginAndGenerator = () => {
-  return getFeflowHomeDepencies().then(dependencies => {
+export const loadLocalPluginAndGenerator = () => getFeflowHomeDepencies().then(dependencies => {
     let generators = []
     // 筛选脚手架
-    generators = dependencies.filter(dependence => {
-      return FEFLOW_GENERATOR_AND_PLUGIN_REGEX.test(dependence)
-    })
+    generators = dependencies.filter(dependence => FEFLOW_GENERATOR_AND_PLUGIN_REGEX.test(dependence))
 
     return generators
   })
-}
 
 /**
  * 获取feflow项目依赖
  */
-const getFeflowHomeDepencies = () => {
-  return new Promise(resolve => {
+const getFeflowHomeDepencies = () => new Promise(resolve => {
     let packageContent = null
     let dependencies = []
 
@@ -100,14 +92,13 @@ const getFeflowHomeDepencies = () => {
   }).catch(e => {
     console.log('get feflow home depencies err', e)
   })
-}
 
 /**
  * 生成配置文件
  */
 export const buildGeneratorConfig = ({ config, genConfig }) => {
   const genName = genConfig.gererator || 'generator-default'
-  const fileName = genName + '-' + (Date.now() + '').slice(4)
+  const fileName = `${genName}-${(`${Date.now()}`).slice(4)}`
 
   if (!isExit(FEFLOW_GENERATOR_CONFIG_HOME)) {
     shell.mkdir(FEFLOW_GENERATOR_CONFIG_HOME)
@@ -121,17 +112,13 @@ export const buildGeneratorConfig = ({ config, genConfig }) => {
  * 安装插件
  * @param {String} plugin npm包名
  */
-export const installPlugin = plugin => {
-  return Feflow.install(plugin)
-}
+export const installPlugin = plugin => Feflow.install(plugin)
 
 /**
  * 卸载插件
  * @param {String} plugin npm包名
  */
-export const unInstallPlugin = plugin => {
-  return Feflow.unInstall(plugin)
-}
+export const unInstallPlugin = plugin => Feflow.unInstall(plugin)
 
 /**
  *
@@ -157,9 +144,7 @@ export const checkBeforeRunGenerator = ({ name, workSpace }) => {
   return CREATE_CODE.CHECK_SUCCESS
 }
 
-export const loadFeflowConfigFile = () => {
-  return parseYaml(FEFLOW_HOME_CONFIG_PATH)
-}
+export const loadFeflowConfigFile = () => parseYaml(FEFLOW_HOME_CONFIG_PATH)
 
 export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
   const doc = loadFeflowConfigFile()
@@ -170,16 +155,16 @@ export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
         [projectName]: {
           name: projectName,
           path: workSpace,
-          banner
-        }
-      }
+          banner,
+        },
+      },
     })
   } else {
     // 覆盖/新增
     doc.projects[projectName] = {
       name: projectName,
       path: workSpace,
-      banner
+      banner,
     }
 
     update = Object.assign({}, doc)
@@ -190,8 +175,8 @@ export const saveGeneratorConfig = ({ projectName, workSpace, banner }) => {
 
 const deleteFolderRecursive = function(path) {
   if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function(file) {
-      const curPath = path + '/' + file
+    fs.readdirSync(path).forEach((file) => {
+      const curPath = `${path}/${file}`
       if (fs.lstatSync(curPath).isDirectory()) {
         deleteFolderRecursive(curPath)
       } else {
@@ -213,9 +198,8 @@ export const deleteProject = (name, path) => {
 /**
  * 【项目模块适用】加载项目下的 feflow 配置文件
  */
-export const loadProjectFeflowConfigFile = projectPath => {
-  return getFileByJSON(path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME))
-}
+// eslint-disable-next-line max-len
+export const loadProjectFeflowConfigFile = projectPath => getFileByJSON(path.resolve(projectPath, FEFLOW_PROJECT_CONFIG_NAME))
 
 /**
  * 【项目模块适用】解析项目开发套件支持的命令列表
@@ -230,8 +214,7 @@ export const fetchProjectDevkitCommandList = projectPath => {
     const { builder, options } = commands[name]
 
     // 可运行命令拼接
-    const optionList =
-      options.length !== 0
+    const optionList =      options.length !== 0
         ? Object.keys(options)
             .map(optKey => `--${optKey}=${options[optKey]}`)
             .join(' ')
@@ -249,7 +232,7 @@ export const fetchProjectDevkitCommandList = projectPath => {
       builder,
       options,
       command,
-      description
+      description,
     }
   })
 
@@ -259,9 +242,7 @@ export const fetchProjectDevkitCommandList = projectPath => {
 /**
  * 【项目模块适用】加载项目支持的自定义命令
  */
-export const spawnProjectCommand = projectPath => {
-  return Feflow.spawn(projectPath)
-}
+export const spawnProjectCommand = projectPath => Feflow.spawn(projectPath)
 
 /**
  * 【项目模块适用】管理项目命令历史
@@ -279,7 +260,7 @@ export class ProjectCommandHistory {
     const conf = loadFeflowConfigFile()
     this.commandHistory = conf.projects[this.projectName].commandHistory || {}
 
-    let history = this.commandHistory
+    const history = this.commandHistory
     try {
       if (commandName) {
         return [].concat(history[commandName])
@@ -302,7 +283,7 @@ export class ProjectCommandHistory {
     if (!commandHistory[commandName]) commandHistory[commandName] = []
 
     // 已在历史记录中，不保存
-    let history = commandHistory[commandName]
+    const history = commandHistory[commandName]
     const lastLen = history.length
     if (history.includes(commandContent)) return
 
@@ -321,26 +302,23 @@ export class ProjectCommandHistory {
   }
 }
 
-export const openDialogToGetDirectory = () => {
-  return new Promise(resolve => {
+export const openDialogToGetDirectory = () => new Promise(resolve => {
     dialog.showOpenDialog(
       {
-        properties: ['openFile', 'openDirectory']
+        properties: ['openFile', 'openDirectory'],
       },
-      function(files) {
+      (files) => {
         resolve(files)
-      }
+      },
     )
   })
-}
 
 export const getFefProjectProxy = projectName => {
   const doc = loadFeflowConfigFile()
   if (!doc.projects || !doc.projects[projectName]) {
     return {}
-  } else {
-    return doc.projects[projectName]['proxy-plugin'] || {}
   }
+    return doc.projects[projectName]['proxy-plugin'] || {}
 }
 
 export const updateFefProjectProxy = (projectName, proxyConfig) => {
@@ -368,7 +346,7 @@ export const updateDefaultProjectProxy = (projectPath, proxyConfig) => {
 }
 
 export const generatorWhistleJS = proxyConfig => {
-  let filepath = FEFLOW_WHISTLE_JS_PATH
+  const filepath = FEFLOW_WHISTLE_JS_PATH
   const content = `module.exports = ${JSON.stringify(proxyConfig)}`
   fs.writeFileSync(filepath, content)
 }
@@ -391,7 +369,7 @@ export const getProjectGitNames = projectList => {
     try {
       const gitRepoUrl = ProcessExecSync('git config --local  --get remote.origin.url', {
         cwd: projectPath,
-        encoding: 'utf-8'
+        encoding: 'utf-8',
       })
 
       if (gitRepoUrl) {
@@ -436,6 +414,6 @@ export const getEditorCommand = () => {
  */
 export const updateEditorCommand = (command) => {
   const conf = loadFeflowConfigFile()
-  conf['editor'] = command
+  conf.editor = command
   safeDump(conf, FEFLOW_HOME_CONFIG_PATH)
 }

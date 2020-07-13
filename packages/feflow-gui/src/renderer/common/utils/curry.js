@@ -11,14 +11,13 @@ export default function curry(fn, length = fn.length) {
     }
   }
 
-  const slice = Array.prototype.slice
+  const { slice } = Array.prototype
   const len = length
   return function() {
     if (arguments.length < len) {
       const combined = [fn].concat(slice.call(arguments))
       return curry(subCurry.apply(this, combined), len - arguments.length)
-    } else {
-      return fn.apply(this, arguments)
     }
+      return fn.apply(this, arguments)
   }
 }

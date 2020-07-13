@@ -22,7 +22,7 @@ Vue.config.productionTip = false;
   store.dispatch('UserInfo/SET_USER_INFO_ACTION', {
     username: global.username,
     avatar: global.avatar,
-    department: global.department
+    department: global.department,
   });
 
   // 获取用户配置
@@ -32,7 +32,7 @@ Vue.config.productionTip = false;
       isAdmin: result.data.isAdmin,
       hasConfig: result.data.hasConfig,
       scaffold: result.data.scaffold,
-      plugins: result.data.plugins
+      plugins: result.data.plugins,
     });
   }
   /* eslint-disable no-new */
@@ -40,6 +40,6 @@ Vue.config.productionTip = false;
     components: { App },
     router,
     store,
-    template: '<App />'
+    template: '<App />',
   }).$mount('#app')
-})();
+}());

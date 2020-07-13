@@ -4,13 +4,13 @@ import { installPlugin, unInstallPlugin } from '../../../bridge'
 export default {
   data() {
     return {
-      targetPkgName: ''
+      targetPkgName: '',
     }
   },
   computed: {
     ...mapState({
-      taskMap: state => state.Market.taskMap
-    })
+      taskMap: state => state.Market.taskMap,
+    }),
   },
   methods: {
     ...mapActions(['getLocalPluginList', 'setTaskMap']),
@@ -42,19 +42,19 @@ export default {
           fail: `${targetPkgName}安装失败`,
           failMessage: `请尝试手动下载 
           fef install ${targetPkgName}`,
-          network: '请检查网络状况后重试'
+          network: '请检查网络状况后重试',
         },
         uninstall: {
           success: `${targetPkgName}卸载成功`,
           fail: `${targetPkgName}卸载失败`,
           failMessage: `请尝试手动卸载 
-          fef uninstall ${targetPkgName}`
-        }
+          fef uninstall ${targetPkgName}`,
+        },
       }
 
       const message = typeText[type]
       if (!message) {
-        this.toast('类型错误：' + type, '', 'error')
+        this.toast(`类型错误：${type}`, '', 'error')
         return
       }
       if (code === 0) {
@@ -71,15 +71,15 @@ export default {
       }
     },
     toast(title, msg, type = 'info', isPersistent = false) {
-      let opt = {
+      const opt = {
         title,
-        message: msg
+        message: msg,
       }
       if (isPersistent) {
         opt.duration = 0
       }
 
       return this.$notify[type](opt)
-    }
-  }
+    },
+  },
 }

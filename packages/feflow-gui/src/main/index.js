@@ -44,7 +44,7 @@ function createWindow() {
     width: 840,
     webPreferences: { webSecurity: false },
     titleBarStyle: 'hidden',
-    icon: dockIcon
+    icon: dockIcon,
   })
 
   if (process.platform === 'darwin') {
@@ -60,7 +60,7 @@ function createWindow() {
   // 进程通信中心
   registerEvent()
   global.isUsingWhistle = {
-    value: false
+    value: false,
   }
 }
 
@@ -76,7 +76,8 @@ app.on('ready', () => {
       setTimeout(() => {
         createWindow();
       }, 200);
-    }).catch(err => {
+    })
+.catch(err => {
       throw new Error(err);
     });
   }

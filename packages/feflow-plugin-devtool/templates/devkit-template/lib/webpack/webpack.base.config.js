@@ -20,23 +20,21 @@ const setMPA = () => {
       const pageName = match && match[1];
 
       entry[pageName] = entryFile;
-      return htmlWebpackPlugins.push(
-        new HtmlWebpackPlugin({
-          inlineSource: '.css$',
-          template: path.join(projectRoot, `./src/${pageName}/index.html`),
-          filename: `${pageName}.html`,
-          chunks: ['vendors', pageName],
-          inject: true,
-          minify: {
-            html5: true,
-            collapseWhitespace: true,
-            preserveLineBreaks: false,
-            minifyCSS: true,
-            minifyJS: true,
-            removeComments: false,
-          },
-        })
-      );
+      return htmlWebpackPlugins.push(new HtmlWebpackPlugin({
+        inlineSource: '.css$',
+        template: path.join(projectRoot, `./src/${pageName}/index.html`),
+        filename: `${pageName}.html`,
+        chunks: ['vendors', pageName],
+        inject: true,
+        minify: {
+          html5: true,
+          collapseWhitespace: true,
+          preserveLineBreaks: false,
+          minifyCSS: true,
+          minifyJS: true,
+          removeComments: false,
+        },
+      }));
     });
 
   return {
@@ -48,10 +46,10 @@ const setMPA = () => {
 const { entry, htmlWebpackPlugins } = setMPA();
 
 module.exports = {
-  entry: entry,
+  entry,
   output: {
     path: path.join(projectRoot, 'dist'),
-    filename: '[name]_[chunkhash:8].js'
+    filename: '[name]_[chunkhash:8].js',
   },
   module: {
     rules: [
@@ -59,8 +57,8 @@ module.exports = {
         test: /.js$/,
         use: [
           {
-            loader: 'babel-loader'
-          }
+            loader: 'babel-loader',
+          },
         ],
       },
       {
@@ -74,7 +72,7 @@ module.exports = {
               remUnit: 75,
               remPrecision: 8,
             },
-          }
+          },
         ],
       },
       {
@@ -99,7 +97,7 @@ module.exports = {
               ],
             },
           },
-          'less-loader'
+          'less-loader',
         ],
       },
       {
@@ -138,5 +136,5 @@ module.exports = {
         }
       });
     },
-  ].concat(htmlWebpackPlugins)
+  ].concat(htmlWebpackPlugins),
 };

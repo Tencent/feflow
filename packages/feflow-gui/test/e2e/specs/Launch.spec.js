@@ -1,6 +1,6 @@
 import utils from '../utils'
 
-describe('Launch', function () {
+describe('Launch', () => {
   beforeEach(utils.beforeEach)
   afterEach(utils.afterEach)
 

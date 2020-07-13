@@ -8,21 +8,22 @@ import errors from '@/common/errors';
 import { remote } from 'electron';
 
 const winURL = process.env.NODE_ENV === 'development'
-    ? `http://localhost:9080/`
+    ? 'http://localhost:9080/'
     : `http://localhost:${remote.app.guiPort}/`;
 
 console.log('winURL', winURL);
 
 // 抛出切面，如果return false，将会中断后续执行
-let requestConfig = {
+const requestConfig = {
     beforeSend: null,
-    afterReceive: null
+    afterReceive: null,
 };
 
 requestConfig.afterReceive = (response, originalResponse, options) => {
     let code;
 
     if (typeof response.code !== 'undefined') {
+        // eslint-disable-next-line prefer-destructuring
         code = response.code;
     } else if (typeof response.errcode !== 'undefined') {
         code = response.errcode;
@@ -38,47 +39,40 @@ requestConfig.afterReceive = (response, originalResponse, options) => {
     }
 };
 
-let request = function (options) {
+const request = function (options) {
     let { url } = options;
 
     url = url.replace(/\?.*$/, '');
 
     // 跨域需要设置 withCredentials，以发送 cookie @todo 安全考虑
-    let currentHost =
-        location.host + (location.port ? ':' + location.port : '');
-    let requestHostMatches = url.match(/^(?:https?:)?\/\/([^\/]+)/);
+    const currentHost =        location.host + (location.port ? `:${location.port}` : '');
+    const requestHostMatches = url.match(/^(?:https?:)?\/\/([^\/]+)/);
     if (
-        requestHostMatches &&
-        requestHostMatches.length > 1 &&
-        currentHost !== requestHostMatches[1]
+        requestHostMatches
+        && requestHostMatches.length > 1
+        && currentHost !== requestHostMatches[1]
     ) {
         options.withCredentials = true;
     }
 
     // 捕获request
     axios.interceptors.request.use(
-        config => {
-            return config;
-        },
+        config => config,
         error => {
             console.error(`network error: ${error}`);
             return Promise.reject(error);
-        }
+        },
     );
 
     // 捕获response
     axios.interceptors.response.use(
         response => {
-            let result;
-
             // 将jsonp转化为xhr的数据结构，支持 jsonp({...}) 和 jsonp([...])
             if (typeof response.data === 'string') {
-                let matches = response.data.match(
-                    /(\s*(?:{|\[)[\s\S]*(?:}|\])\s*)/
-                );
+                const matches = response.data.match(/(\s*(?:{|\[)[\s\S]*(?:}|\])\s*)/);
 
                 if (matches && matches.length > 1) {
-                    let jsonString = String(matches[1]).trim();
+                    const jsonString = String(matches[1]).trim();
 
                     try {
                         response.data = JSON.parse(jsonString);
@@ -86,21 +80,21 @@ let request = function (options) {
                         // C(`JSON Compatible mode (${exception.message}): ${response.data}`)
                         // borrowed from jQuery 1.11.2
                         let requireNonComma,
-                            depth = null,
-                            rvalidtokens;
+                            depth = null;
 
-                        rvalidtokens = /(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g;
+                        const rvalidtokens = /(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g;
 
                         // Guard against invalid (and possibly dangerous) input by ensuring that nothing remains
                         // after removing valid tokens
-                        jsonString &&
-                            !jsonString
-                                .replace(rvalidtokens, function (
+                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                        jsonString
+                            && !jsonString
+                                .replace(rvalidtokens, (
                                     token,
                                     comma,
                                     open,
-                                    close
-                                ) {
+                                    close,
+                                ) => {
                                     // Force termination if we see a misplaced comma
                                     if (requireNonComma && comma) {
                                         depth = 0;
@@ -124,17 +118,14 @@ let request = function (options) {
                                     return '';
                                 })
                                 .trim()
-                            ? (response.data = Function(
-                                'return ' + jsonString
-                            )())
+                            ? (response.data = Function(`return ${jsonString}`)())
                             : null;
                     }
                 }
             }
 
             // 此处去掉了 data 以外的信息，简化结果，其余控制信息仅做全局统一处理。
-            result =
-                response.headers && response.status ? response.data : response;
+            const result = response.headers && response.status ? response.data : response;
 
             if (requestConfig.afterReceive) {
                 try {
@@ -142,7 +133,7 @@ let request = function (options) {
                         null,
                         result,
                         response,
-                        options
+                        options,
                     );
                 } catch (error) {
                     throw error;
@@ -155,22 +146,18 @@ let request = function (options) {
             return result;
         },
         error => {
-            let status;
-
             if (options.ignoreError !== true) {
                 // 处理HTTP错误
                 if (error && (error.response || '').status) {
-                    status = error.response.status;
+                    const { status } = error.response;
 
                     // 做一个异步，让这个提示最优先
                     setTimeout(() => {
-                        console.error(
-                            `HTTP ${status} ${
+                        console.error(`HTTP ${status} ${
                             errors.status[status]
-                                ? ': ' + errors.status[status]
+                                ? `: ${errors.status[status]}`
                                 : ''
-                            }`
-                        );
+                            }`);
                     }, 0);
 
                     // 如果是401，则识别跳转地址
@@ -179,24 +166,22 @@ let request = function (options) {
                         console.log(401, location.href)
                         const origin = location.origin.replace(
                             /:\/\/[^\/]+/,
-                            '://' + 'gui.oa.com'
+                            '://' + 'gui.oa.com',
                         );
                         setTimeout(() => {
-                            let url = `${origin}/_sp_login_/?url=${
+                            const url = `${origin}/_sp_login_/?url=${
                                 winURL
                                 }`;
                             console.log(194, url);
                             // window.open(`http://passport.oa.com/modules/passport/signin.ashx?url=${encodeURIComponent(
                             //     url
                             // )}`)
-                            location.href = `http://passport.oa.com/modules/passport/signin.ashx?url=${encodeURIComponent(
-                                url
-                            )}`;
+                            location.href = `http://passport.oa.com/modules/passport/signin.ashx?url=${encodeURIComponent(url)}`;
                         }, 500);
                     }
 
                     return { errcode: status, errmsg: error.toString() };
-                } else {
+                }
                     // 做一个异步，让这个提示最优先
                     setTimeout(() => {
                         console.error(error.toString());
@@ -204,11 +189,10 @@ let request = function (options) {
 
                     // 520 stands for unknow error
                     return { errcode: 520, errmsg: error.toString() };
-                }
             }
 
             throw error;
-        }
+        },
     );
 
     // 公司的smartgate 是通过header中的X-Requested-With来判断是否为ajax请求的，如果是ajax，则返回HTTP401；否则就直接HTTP 302跳到登录页。
@@ -216,8 +200,8 @@ let request = function (options) {
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
     // 只要beforeSend 不阻断，则可发起请求
-    return requestConfig.beforeSend &&
-        requestConfig.beforeSend.call(null, axios)
+    return requestConfig.beforeSend
+        && requestConfig.beforeSend.call(null, axios)
         ? null
         : axios(options);
 };
@@ -227,14 +211,12 @@ export default {
     request,
     config: requestConfig,
 
-    get: function (url, data, options) {
+    get (url, data, options) {
         let params = data;
 
         if (data && typeof data === 'object') {
-            let removeNullValue;
-
             // 递归删除传值为空的参数
-            removeNullValue = params => {
+            const removeNullValue = params => {
                 if (params.constructor === Object) {
                     Object.keys(params).forEach(key => {
                         if (params[key] === '' || params[key] === null) {
@@ -246,66 +228,66 @@ export default {
                 }
             };
             removeNullValue(data);
-            params = 'data=' + encodeURIComponent(JSON.stringify(data));
+            params = `data=${encodeURIComponent(JSON.stringify(data))}`;
         }
         url += params ? (url.indexOf('?') >= 0 ? '&' : '?') + params : '';
 
         return request({
             url,
             method: 'get',
-            ...options
+            ...options,
         });
     },
 
-    post: function (url, data, options) {
+    post (url, data, options) {
         return request({
             url,
             data,
             method: 'post',
-            ...options
+            ...options,
         });
     },
 
-    upload: function (url, data, options) {
+    upload (url, data, options) {
         !options && (options = {});
         !options.headers && (options.headers = {});
 
         Object.assign(options.headers, {
-            'content-type': 'multipart/form-data'
+            'content-type': 'multipart/form-data',
         });
 
         return request({
             url,
             data,
             method: 'post',
-            ...options
+            ...options,
         });
     },
 
-    put: function (url, data, options) {
+    put (url, data, options) {
         return request({
             url,
             data,
             method: 'put',
-            ...options
+            ...options,
         });
     },
 
-    patch: function (url, data, options) {
+    patch (url, data, options) {
         return request({
             url,
             data,
             method: 'patch',
-            ...options
+            ...options,
         });
     },
 
     // 注意引用时不要使用 {delete} 导致和JS保留字冲突
-    delete: function (url, data, options) {
+    delete (url, data, options) {
         return request({
             url,
             method: 'delete',
-            ...options
+            ...options,
         });
-    }
+    },
 };

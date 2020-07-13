@@ -10,7 +10,7 @@ const state = {
   pluginsInfoMap: { isEmpty: true },
   localPlugins: [],
   // 记录插件任务状态
-  taskMap: {}
+  taskMap: {},
 }
 
 const mutations = {
@@ -32,7 +32,7 @@ const mutations = {
   },
   SET_TASK_MAP_KEY(state, { key, value }) {
     state.taskMap[key] = value
-  }
+  },
 }
 
 const actions = {
@@ -79,11 +79,11 @@ const actions = {
   },
   setTaskMap({ commit }, obj) {
     commit('SET_TASK_MAP_KEY', obj)
-  }
+  },
 }
 
 export default {
   state,
   mutations,
-  actions
+  actions,
 }

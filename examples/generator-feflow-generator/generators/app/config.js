@@ -1,6 +1,6 @@
 'use strict';
-const path = require('path')
-const _ = require('lodash')
+const path = require('path');
+const _ = require('lodash');
 
 /**
  * 生成指定前缀的名称
@@ -8,17 +8,15 @@ const _ = require('lodash')
  * @param {string} prefix  指定前缀
  */
 function makePrefixName(name = '', prefix = 'generator-') {
-  name = _.kebabCase(name)
-  name = name.indexOf(prefix) === 0 ? name : prefix + name
-  return name
+  name = _.kebabCase(name);
+  name = name.indexOf(prefix) === 0 ? name : prefix + name;
+  return name;
 }
 
 /**
  * 获取 Git 用户名称
  */
-const getGitUserName = () => {
-  return this.user.git.name() || ''
-}
+const getGitUserName = () => this.user.git.name() || '';
 
 module.exports = {
   prompts: [
@@ -28,19 +26,17 @@ module.exports = {
       name: 'name',
       default: makePrefixName(path.basename(process.cwd()), 'generator-feflow-'),
       filter: str => makePrefixName(str, 'generator-feflow-'),
-      validate: str => {
-        return /^generator-feflow-.+/.test(str);
-      }
+      validate: str => /^generator-feflow-.+/.test(str),
     },
     {
       type: 'input',
       message: 'Feflow 脚手架作者(*)：',
       name: 'author',
-      default: function() {
+      default() {
         try {
-          return this.user.git.name()
+          return this.user.git.name();
         } catch {
-          return ''
+          return '';
         }
       },
     },
@@ -72,15 +68,15 @@ module.exports = {
   filesToCopy: [
     {
       input: 'CHANGELOG.md',
-      output: 'CHANGELOG.md'
+      output: 'CHANGELOG.md',
     },
     {
       input: 'app/index.js',
-      output: 'generators/app/index.js'
+      output: 'generators/app/index.js',
     },
     {
       input: 'index.js',
-      output: 'generators/index.js'
+      output: 'generators/index.js',
     },
     {
       input: 'app/templates/dummyfile.txt',
@@ -89,40 +85,40 @@ module.exports = {
     {
       input: 'app/templates/package.json',
       output: 'generators/app/templates/package.json',
-    }
+    },
   ],
   filesToRender: [
     {
       input: '__tests__/app.js',
-      output: '__tests__/app.js'
+      output: '__tests__/app.js',
     },
     {
       input: '_editorconfig',
-      output: '.editorconfig'
+      output: '.editorconfig',
     },
     {
       input: '_gitignore',
-      output: '.gitignore'
+      output: '.gitignore',
     },
     {
       input: '_eslintrc',
-      output: '.eslintrc.js'
+      output: '.eslintrc.js',
     },
     {
       input: '_eslintignore',
-      output: '.eslintignore'
+      output: '.eslintignore',
     },
     {
       input: '_README',
-      output: 'README.md'
+      output: 'README.md',
     },
     {
       input: '_LICENSE',
-      output: 'LICENSE'
+      output: 'LICENSE',
     },
     {
       input: '_package',
-      output: 'package.json'
+      output: 'package.json',
     },
-  ]
-}
+  ],
+};

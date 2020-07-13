@@ -1,0 +1,10 @@
+node_modules
+.vscode
+# packages/feflow-cli
+# packages/feflow-cli/coverage
+# packages/feflow-gui
+# packages/feflow-plugin-devtool
+# packages/feflow-report
+# packages/feflow-report-sdk
+examples
+__tests__

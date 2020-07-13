@@ -5,9 +5,7 @@ import yaml from 'js-yaml'
 import { FEFLOW_HOME_PATH, FEFLOW_HOME_PACKAGE_PATH, FEFLOW_GENERATOR_CONFIG_HOME } from '../constants'
 
 // basic functions
-export const isExit = path => {
-  return fs.existsSync(path)
-}
+export const isExit = path => fs.existsSync(path)
 
 export const dirExists = filepath => {
   const stat = fs.statSync(filepath)
@@ -39,9 +37,7 @@ export const getFileByJSON = path => {
 /**
  * 检查feflow根目录是否存在
  */
-export const checkFeflowEnv = () => {
-  return isExit(FEFLOW_HOME_PATH)
-}
+export const checkFeflowEnv = () => isExit(FEFLOW_HOME_PATH)
 
 /**
  * 获取feflow更目录下的依赖
@@ -88,9 +84,9 @@ export function safeDump(obj, path) {
   try {
     doc = yaml.safeDump(obj, {
       styles: {
-        '!!null': 'canonical'
+        '!!null': 'canonical',
       },
-      sortKeys: true
+      sortKeys: true,
     })
   } catch (e) {
     throw new Error(e)
@@ -123,7 +119,7 @@ export function parseYaml(path) {
  *
  */
 export const generatorConfigFile = (fileName, config, schema) => {
-  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, fileName + '.js')
+  const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, `${fileName}.js`)
 
   if (!isExit(filepath)) {
     const content = []

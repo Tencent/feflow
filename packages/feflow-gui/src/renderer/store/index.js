@@ -12,11 +12,11 @@ export default new Vuex.Store({
   modules,
   plugins: [
     createPersistedState({
-      whitelist: []
+      whitelist: [],
     }),
     createSharedMutations(),
-    createPromiseAction()
+    createPromiseAction(),
   ],
   // plugins: [createSharedMutations(), createPromiseAction()],
-  strict: process.env.NODE_ENV !== 'production'
+  strict: process.env.NODE_ENV !== 'production',
 })

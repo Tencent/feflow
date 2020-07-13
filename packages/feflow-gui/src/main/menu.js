@@ -2,71 +2,71 @@ const { Menu, shell } = require('electron')
 
 // 文档 https://electronjs.org/docs/api/menu-item
 // 菜单项目
-let menus = [
+const menus = [
   {
     label: 'File',
     submenu: [
       {
         label: 'New Window',
         accelerator: 'CmdOrCtrl+Shift+N',
-        click: function () {
+        click () {
           // open new window
-        }
+        },
       },
       {
         label: 'Open Folder',
         accelerator: 'CmdOrCtrl+O',
-        click: function () {
+        click () {
          // open project file
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
   {
     label: 'Edit',
     submenu: [
       {
         label: 'Copy',
-        role: 'copy'
+        role: 'copy',
       },
       {
         label: 'Cut',
-        role: 'cut'
+        role: 'cut',
       },
       {
         label: 'Paste',
         accelerator: 'CmdOrCtrl+V',
         selector: 'paste:',
-        role: 'paste'
+        role: 'paste',
       },
       {
         label: 'Select All',
         accelerator: 'CmdOrCtrl+A',
         selector: 'selectAll:',
-        role: 'selectall'
-      }
-    ]
+        role: 'selectall',
+      },
+    ],
   },
   {
     label: 'Window',
     submenu: [
       {
-        role: 'minimize'
+        role: 'minimize',
       }, {
-        role: 'zoomin'
+        role: 'zoomin',
       }, {
-        role: 'zoomout'
+        role: 'zoomout',
       }, {
         label: 'resetZoom',
-        role: 'resetZoom'
+        role: 'resetZoom',
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
-        role: 'front'
+        role: 'front',
       }, {
-        role: 'quit'
-      }
-    ]
+        role: 'quit',
+      },
+    ],
   },
   {
     role: 'help',
@@ -77,29 +77,29 @@ let menus = [
         enabled: true,
         click () {
           // showKeyboardHelp()
-        }
+        },
       }, {
-        type: 'separator'
+        type: 'separator',
       }, {
         label: 'Feflow Help',
         click () {
           shell.openExternal('https://github.com/Tencent/feflow')
-        }
+        },
       }, {
         label: 'Report Issues',
         click () {
           shell.openExternal('https://github.com/Tencent/feflow/issues')
-        }
+        },
       },
       {
         role: 'reload',
-        accelerator: 'CmdOrCtrl+R'
+        accelerator: 'CmdOrCtrl+R',
       }, {
-        role: 'toggledevtools'
-      }
-    ]
-  }
+        role: 'toggledevtools',
+      },
+    ],
+  },
 ]
 
-let m = Menu.buildFromTemplate(menus)
+const m = Menu.buildFromTemplate(menus)
 Menu.setApplicationMenu(m)
