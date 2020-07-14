@@ -1,515 +1,627 @@
 <template>
-    <main class="wiki">
-        <side-bar></side-bar>
-        <section class="wiki-wrapper">
-            <div class="wiki-header">
-                <p class="wiki-header__text">团队WIKI</p>
-            </div>
-            <!-- S 过滤器 -->
-            <div class="wiki-filter">
-                <el-form class="wiki-filter__form" :inline="true" ref="filterForm" v-model="filterForm">
-                    <el-form-item label="所属级别" >
-                        <el-select v-model="filterForm.project" placeholder="选择所属级别" size="small" default-first-option>
-                            <el-option
-                                v-for="item in itemProjectOptions('filter')"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="所属分类">
-                        <el-select v-model="filterForm.tag" placeholder="选择所属分类" size="small" default-first-option>
-                            <el-option
-                                v-for="item in itemTagOptions('filter')"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button class="wiki-filter__clear" @click="resetfilterForm" size="mini">清除</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <!-- E 过滤器 -->
-            <!-- S 维基列表 -->
-            <div class="wiki-docs">
-                <!-- 非管理员权限：空提示 -->
-                <template v-if="!isAdmin && filterDocsList.length === 0">
-                    <div class="mod-tips">
-                        <i class="mod-tips__icon icon-empty"></i>
-                        <p class="mod-tips__text">还没有内容，请联系管理员进行录入</p>
-                    </div>
-                </template>
-                <template v-else>
-                    <ul class="wiki-docs__list">
-                        <!-- 添加：管理者权限 -->
-                        <li class="wiki-docs__add" v-if="isAdmin" @click="showDialog(dialogType.ADD)">
-                            <i class="wiki-docs__item-add-icon"></i>
-                        </li>
-                        <!-- 列表 -->
-                        <li class="wiki-docs__item"
-                            v-for="item in filterDocsList"
-                            :key="item.docId"
-                            @click="handleHrefClick(item.docLink)">
-                            <p class="wiki-docs__title">{{ item.docName }}</p>
-                            <p class="wiki-docs__desc">{{ item.docDesc }}</p>
-                            <div class="wiki-docs__project" v-if="item.projectName">
-                                <p class="wiki-docs__project-text">{{ item.projectName === 'common' ? '团队公共' : item.projectName}}</p>
-                            </div>
-                            <div class="wiki-docs__tag" v-if="item.tagName">
-                                <p class="wiki-docs__tag-text">{{ item.tagName }}</p>
-                            </div>
-
-                            <!-- 操作：管理员权限 -->
-                            <template v-if="isAdmin">
-                                <div class="wiki-docs__operation">
-                                    <el-button
-                                        class="wiki-docs__operation-edit"
-                                        type="primary"
-                                        size="small"
-                                        @click.stop="showDialog(dialogType.EDIT, item)">
-                                        <i class="icon-edit el-icon--left"></i>编辑
-                                    </el-button>
-                                    <el-button
-                                        class="wiki-docs__operation-delete"
-                                        type="danger"
-                                        size="small"
-                                        @click.stop="deleteDoc(item)">
-                                        <i class="icon-delete"></i>
-                                    </el-button>
-                                </div>
-                            </template>
-                        </li>
-                    </ul>
-                </template>
-            </div>
-            <!-- E 维基列表 -->
-
-            <!-- S 添加/编辑弹窗 -->
-            <el-dialog
-                custom-class="wiki-docs__dialog"
-                :title="dialogStatus.title"
-                :visible="dialogStatus.visible"
-                :show-close="false"
+  <main class="wiki">
+    <side-bar />
+    <section class="wiki-wrapper">
+      <div class="wiki-header">
+        <p class="wiki-header__text">
+          团队WIKI
+        </p>
+      </div>
+      <!-- S 过滤器 -->
+      <div class="wiki-filter">
+        <el-form
+          ref="filterForm"
+          v-model="filterForm"
+          class="wiki-filter__form"
+          :inline="true"
+        >
+          <el-form-item label="所属级别">
+            <el-select
+              v-model="filterForm.project"
+              placeholder="选择所属级别"
+              size="small"
+              default-first-option
             >
-                <el-form :model="itemEditForm" ref="itemEditForm" :rules="formRules" label-width="80px" @submit.native.prevent>
-                    <el-form-item label="所属级别" prop="projectName">
-                        <el-tooltip class="item" effect="dark" content="若需选择项目级别，请先导入项目" placement="right">
-                            <el-select v-model="itemEditForm.projectName" placeholder="请选择">
-                                <el-option
-                                    v-for="item in itemProjectOptions()"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-tooltip>
-                    </el-form-item>
-                    <el-form-item label="所属分类" prop="tagName">
-                        <el-tooltip class="item" effect="dark" content="从已有分类中选择，或输入自定义分类" placement="right">
-                            <el-select v-model="itemEditForm.tagName"  filterable allow-create default-first-option placeholder="请选择">
-                                <el-option
-                                    v-for="item in itemTagOptions()"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </el-tooltip>
-                    </el-form-item>
-                    <el-form-item label="名称" prop="docName">
-                        <el-input v-model="itemEditForm.docName" autocomplete="off" maxlength="10" show-word-limit></el-input>
-                    </el-form-item>
-                    <el-form-item label="简介" prop="docDesc">
-                        <el-input v-model="itemEditForm.docDesc" autocomplete="off" maxlength="30" show-word-limit></el-input>
-                    </el-form-item>
-                    <el-form-item label="地址" prop="docLink">
-                        <el-input v-model="itemEditForm.docLink"></el-input>
-                    </el-form-item>
-                </el-form>
+              <el-option
+                v-for="item in itemProjectOptions('filter')"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="所属分类">
+            <el-select
+              v-model="filterForm.tag"
+              placeholder="选择所属分类"
+              size="small"
+              default-first-option
+            >
+              <el-option
+                v-for="item in itemTagOptions('filter')"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="wiki-filter__clear"
+              size="mini"
+              @click="resetfilterForm"
+            >
+              清除
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <!-- E 过滤器 -->
+      <!-- S 维基列表 -->
+      <div class="wiki-docs">
+        <!-- 非管理员权限：空提示 -->
+        <template v-if="!isAdmin && filterDocsList.length === 0">
+          <div class="mod-tips">
+            <i class="mod-tips__icon icon-empty" />
+            <p class="mod-tips__text">
+              还没有内容，请联系管理员进行录入
+            </p>
+          </div>
+        </template>
+        <template v-else>
+          <ul class="wiki-docs__list">
+            <!-- 添加：管理者权限 -->
+            <li
+              v-if="isAdmin"
+              class="wiki-docs__add"
+              @click="showDialog(dialogType.ADD)"
+            >
+              <i class="wiki-docs__item-add-icon" />
+            </li>
+            <!-- 列表 -->
+            <li
+              v-for="item in filterDocsList"
+              :key="item.docId"
+              class="wiki-docs__item"
+              @click="handleHrefClick(item.docLink)"
+            >
+              <p class="wiki-docs__title">
+                {{ item.docName }}
+              </p>
+              <p class="wiki-docs__desc">
+                {{ item.docDesc }}
+              </p>
+              <div
+                v-if="item.projectName"
+                class="wiki-docs__project"
+              >
+                <p class="wiki-docs__project-text">
+                  {{ item.projectName === 'common' ? '团队公共' : item.projectName }}
+                </p>
+              </div>
+              <div
+                v-if="item.tagName"
+                class="wiki-docs__tag"
+              >
+                <p class="wiki-docs__tag-text">
+                  {{ item.tagName }}
+                </p>
+              </div>
 
-                <!-- 确认按钮 -->
-                <div slot="footer" class="wiki-docs__dialog-footer">
-                    <el-button @click="closeDialog">取 消</el-button>
-                    <el-button type="primary" @click="addDoc" v-if="dialogStatus.type === dialogType.ADD">确 认</el-button>
-                    <el-button type="primary" @click="editDoc" v-if="dialogStatus.type === dialogType.EDIT">确 认</el-button>
+              <!-- 操作：管理员权限 -->
+              <template v-if="isAdmin">
+                <div class="wiki-docs__operation">
+                  <el-button
+                    class="wiki-docs__operation-edit"
+                    type="primary"
+                    size="small"
+                    @click.stop="showDialog(dialogType.EDIT, item)"
+                  >
+                    <i class="icon-edit el-icon--left" />编辑
+                  </el-button>
+                  <el-button
+                    class="wiki-docs__operation-delete"
+                    type="danger"
+                    size="small"
+                    @click.stop="deleteDoc(item)"
+                  >
+                    <i class="icon-delete" />
+                  </el-button>
                 </div>
-            </el-dialog>
-            <!-- E 添加/编辑弹窗 -->
-        </section>
-    </main>
+              </template>
+            </li>
+          </ul>
+        </template>
+      </div>
+      <!-- E 维基列表 -->
+
+      <!-- S 添加/编辑弹窗 -->
+      <el-dialog
+        custom-class="wiki-docs__dialog"
+        :title="dialogStatus.title"
+        :visible="dialogStatus.visible"
+        :show-close="false"
+      >
+        <el-form
+          ref="itemEditForm"
+          :model="itemEditForm"
+          :rules="formRules"
+          label-width="80px"
+          @submit.native.prevent
+        >
+          <el-form-item
+            label="所属级别"
+            prop="projectName"
+          >
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="若需选择项目级别，请先导入项目"
+              placement="right"
+            >
+              <el-select
+                v-model="itemEditForm.projectName"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in itemProjectOptions()"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item
+            label="所属分类"
+            prop="tagName"
+          >
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="从已有分类中选择，或输入自定义分类"
+              placement="right"
+            >
+              <el-select
+                v-model="itemEditForm.tagName"
+                filterable
+                allow-create
+                default-first-option
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in itemTagOptions()"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item
+            label="名称"
+            prop="docName"
+          >
+            <el-input
+              v-model="itemEditForm.docName"
+              autocomplete="off"
+              maxlength="10"
+              show-word-limit
+            />
+          </el-form-item>
+          <el-form-item
+            label="简介"
+            prop="docDesc"
+          >
+            <el-input
+              v-model="itemEditForm.docDesc"
+              autocomplete="off"
+              maxlength="30"
+              show-word-limit
+            />
+          </el-form-item>
+          <el-form-item
+            label="地址"
+            prop="docLink"
+          >
+            <el-input v-model="itemEditForm.docLink" />
+          </el-form-item>
+        </el-form>
+
+        <!-- 确认按钮 -->
+        <div
+          slot="footer"
+          class="wiki-docs__dialog-footer"
+        >
+          <el-button @click="closeDialog">
+            取 消
+          </el-button>
+          <el-button
+            v-if="dialogStatus.type === dialogType.ADD"
+            type="primary"
+            @click="addDoc"
+          >
+            确 认
+          </el-button>
+          <el-button
+            v-if="dialogStatus.type === dialogType.EDIT"
+            type="primary"
+            @click="editDoc"
+          >
+            确 认
+          </el-button>
+        </div>
+      </el-dialog>
+      <!-- E 添加/编辑弹窗 -->
+    </section>
+  </main>
 </template>
 <script>
-import { mapState, mapGetters } from 'vuex'
-import { getUrlParam } from '@/common/utils'
-import { getProjectGitNames } from '@/bridge'
-import { openWebview } from '@/common/native'
-import apiWiki from '@/api/wiki'
+import { mapState, mapGetters } from 'vuex';
+import { getUrlParam } from '@/common/utils';
+import { getProjectGitNames } from '@/bridge';
+import { openWebview } from '@/common/native';
+import apiWiki from '@/api/wiki';
 
-import SideBar from '../SideBar'
+import SideBar from '../SideBar';
 
 function error(ctx, err) {
   ctx.$message({
     type: 'error',
-    message: err
-  })
+    message: err,
+  });
 }
 
 export default {
-    name: 'wiki-page',
-    components: {
-        SideBar
-    },
-    data() {
-        // 校验合法URI
-        const validateURL = (rule, value, callback) => {
-            const regex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
-            const isVaild = regex.test(value)
-            if (isVaild) {
-                callback()
-            } else {
-                callback(new Error('地址不合法'))
-            }
+  name: 'WikiPage',
+  components: {
+    SideBar,
+  },
+  data() {
+    // 校验合法URI
+    const validateURL = (rule, value, callback) => {
+      const regex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
+      const isVaild = regex.test(value);
+      if (isVaild) {
+        callback();
+      } else {
+        callback(new Error('地址不合法'));
+      }
+    };
+
+    // 检查是否同名
+    const validateDocName = (rule, value, callback) => {
+      const {
+        dialogStatus,
+        dialogType,
+        itemEditForm,
+      } = this;
+
+      const {
+        docId,
+      } = itemEditForm;
+
+      // 检查是否编辑状态
+      let isExist;
+      if (dialogStatus.type === dialogType.EDIT) {
+        // 除自身外，同名
+        isExist = this.docsList.some(doc => doc.docName === value && doc.docId !== docId);
+      } else {
+        // 检查同名
+        isExist = this.docsList.some(doc => doc.docName === value);
+      }
+
+      if (isExist) {
+        callback(new Error('存在同名分类'));
+      } else {
+        callback();
+      }
+    };
+
+    return {
+      projectPath: getUrlParam('path'),
+      projectGitList: getProjectGitNames(),
+      dialogType: {
+        ADD: 0, // 「添加快捷方式」弹窗
+        EDIT: 1, // 「编辑快捷方式」弹窗
+      },
+      dialogStatus: {
+        visible: false,
+        title: '编辑超链接',
+        type: 1,
+      },
+      filterForm: {
+        project: 'all',
+        tag: 'all',
+      },
+      itemEditForm: {
+        projectName: '',
+        tagName: '',
+        docName: '',
+        docDesc: '',
+        docLink: '',
+      },
+      formRules: {
+        projectName: [
+          { required: true, message: '请输入所属级别', trigger: 'change' },
+        ],
+        tagName: [
+          { required: true, message: '请输入所属分类', trigger: 'change' },
+        ],
+        docName: [
+          { required: true, message: '请输入名称', trigger: 'blur' },
+          { validator: validateDocName, trigger: 'change' },
+        ],
+        docLink: [
+          { required: true, message: '请输入地址', trigger: 'blur' },
+          { validator: validateURL, trigger: 'change' },
+        ],
+      },
+      tagList: [],
+      docsList: [],
+    };
+  },
+  computed: {
+    ...mapState('UserInfo', [
+      'username',
+      'isAdmin',
+      'department',
+    ]),
+    ...mapGetters('UserInfo', [
+      'groupName',
+    ]),
+    // 所属级别：筛选视图从数据中提取，添加编辑时从本地配置提取
+    // eslint-disable-next-line no-unused-vars
+    itemProjectOptions(type) {
+      return (type) => {
+        // 根据表单类型提取选项
+        const options = [];
+        let repoList = [];
+        if (type === 'filter') {
+          // 筛选视图，从文档列表中提取并去重处理
+          const projectArr = this.docsList.map(doc => doc.projectName);
+          const projectList = [...new Set(projectArr)];
+          repoList = projectList.map(projectName => ({
+            label: projectName === 'common' ? '团队公共' : projectName,
+            value: projectName,
+          }));
+
+          options.push({
+            label: '全部',
+            value: 'all',
+          });
+        } else {
+          // 添加编辑时从本地配置读取项目的 Git 远程仓库名称作为选择项
+          repoList = this.projectGitList.map(repo => ({
+            label: repo,
+            value: repo,
+          }));
+
+          options.push({
+            label: '团队公共',
+            value: 'common',
+          });
         }
 
-        // 检查是否同名
-        const validateDocName = (rule, value, callback) => {
-            const {
-                dialogStatus,
-                dialogType,
-                itemEditForm
-            } = this
+        return options.concat(repoList);
+      };
+    },
+    // 所属分类选项：已有数据中提出分类选择项
+    // eslint-disable-next-line no-unused-vars
+    itemTagOptions(type) {
+      return (type) => {
+        // 从已有文档中提取，去重并组装为指定格式
+        const tagArr = this.docsList.map(item => item.tagName);
+        let tagList = [...new Set(tagArr)];
+        tagList = tagList.map(tagName => ({
+          label: tagName,
+          value: tagName,
+        }));
 
-            const {
-                docId
-            } = itemEditForm
-
-            // 检查是否编辑状态
-            let isExist
-            if (dialogStatus.type === dialogType.EDIT) {
-                // 除自身外，同名
-                isExist = this.docsList.some(doc => doc.docName === value && doc.docId !== docId)
-            } else {
-                // 检查同名
-                isExist = this.docsList.some(doc => doc.docName === value)
-            }
-
-            if (isExist) {
-                callback(new Error('存在同名分类'))
-            } else {
-                callback()
-            }
+        // 根据表单类型增加选项
+        const options = [];
+        if (type === 'filter') {
+          options.push({
+            label: '全部',
+            value: 'all',
+          });
         }
 
-        return {
-            projectPath: getUrlParam('path'),
-            projectGitList: getProjectGitNames(),
-            dialogType: {
-                ADD: 0, // 「添加快捷方式」弹窗
-                EDIT: 1 // 「编辑快捷方式」弹窗
-            },
-            dialogStatus: {
-                visible: false,
-                title: '编辑超链接',
-                type: 1
-            },
-            filterForm: {
-                project: 'all',
-                tag: 'all'
-            },
-            itemEditForm: {
-                projectName: '',
-                tagName: '',
-                docName: '',
-                docDesc: '',
-                docLink: ''
-            },
-            formRules: {
-                projectName: [
-                    { required: true, message: '请输入所属级别', trigger: 'change' }
-                ],
-                tagName: [
-                    { required: true, message: '请输入所属分类', trigger: 'change' }
-                ],
-                docName: [
-                    { required: true, message: '请输入名称', trigger: 'blur' },
-                    { validator: validateDocName, trigger: 'change' }
-                ],
-                docLink: [
-                    { required: true, message: '请输入地址', trigger: 'blur' },
-                    { validator: validateURL, trigger: 'change' }
-                ]
-            },
-            tagList: [],
-            docsList: []
-        }
+        return options.concat(tagList);
+      };
     },
-    computed: {
-        ...mapState('UserInfo', [
-            'username',
-            'isAdmin',
-            'department'
-        ]),
-        ...mapGetters('UserInfo', [
-            'groupName'
-        ]),
-        // 所属级别：筛选视图从数据中提取，添加编辑时从本地配置提取
-        itemProjectOptions(type) {
-            return type => {
-                // 根据表单类型提取选项
-                let options = []
-                let repoList = []
-                if (type === 'filter') {
-                    // 筛选视图，从文档列表中提取并去重处理
-                    const projectArr = this.docsList.map(doc => doc.projectName)
-                    let projectList = [ ...new Set(projectArr) ]
-                    repoList = projectList.map(projectName => {
-                        return {
-                            label: projectName === 'common' ? '团队公共' : projectName,
-                            value: projectName
-                        }
-                    })
+    filterDocsList() {
+      const { project, tag } = this.filterForm;
 
-                    options.push({
-                        label: '全部',
-                        value: 'all'
-                    })
-                } else {
-                    // 添加编辑时从本地配置读取项目的 Git 远程仓库名称作为选择项
-                    repoList = this.projectGitList.map(repo => {
-                        return {
-                            label: repo,
-                            value: repo
-                        }
-                    })
+      // 根据所属分类过滤
+      let filterResult = this.docsList;
+      if (tag !== 'all') {
+        filterResult = filterResult.filter(doc => doc.tagName === tag);
+      }
+      // 根据所属项目过滤
+      if (project !== 'all') {
+        filterResult = filterResult.filter(doc => doc.projectName === project);
+      }
 
-                    options.push({
-                        label: '团队公共',
-                        value: 'common'
-                    })
-                }
-
-                return options.concat(repoList)
-            }
-        },
-        // 所属分类选项：已有数据中提出分类选择项
-        itemTagOptions(type) {
-            return type => {
-                // 从已有文档中提取，去重并组装为指定格式
-                const tagArr = this.docsList.map(item => item.tagName)
-                let tagList = [ ...new Set(tagArr) ]
-                tagList = tagList.map(tagName => {
-                    return {
-                        label: tagName,
-                        value: tagName
-                    }
-                })
-
-                // 根据表单类型增加选项
-                let options = []
-                if (type === 'filter') {
-                    options.push({
-                        label: '全部',
-                        value: 'all'
-                    })
-                }
-
-                return options.concat(tagList)
-            }
-        },
-        filterDocsList() {
-            const { project, tag } = this.filterForm
-
-            // 根据所属分类过滤
-            let filterResult = this.docsList
-            if (tag !== 'all') {
-                filterResult = filterResult.filter(doc => doc.tagName === tag)
-            }
-            // 根据所属项目过滤
-            if (project !== 'all') {
-                filterResult = filterResult.filter(doc => doc.projectName === project)
-            }
-
-            return filterResult
-        }
+      return filterResult;
     },
-    mounted () {
-        // 拉取数据
-        this.fetchWikiList()
+  },
+  mounted() {
+    // 拉取数据
+    this.fetchWikiList();
+  },
+  methods: {
+    // 拉取全部文档
+    async fetchWikiList() {
+      const { groupName } = this;
+      try {
+        const docsList = await apiWiki.getDocList({ groupName });
+
+        // 过滤无效数据
+        this.docsList = docsList.filter(item => item.status === 0);
+      } catch (err) {
+        error(this, err);
+      }
     },
-    methods: {
-        // 拉取全部文档
-        async fetchWikiList() {
-            const { groupName } = this
-            try {
-                const docsList = await apiWiki.getDocList({ groupName })
 
-                // 过滤无效数据
-                this.docsList = docsList.filter(item => item.status === 0)
-            } catch (err) {
-                error(this, err)
-            }
-        },
+    // 增加超链接
+    async addDoc() {
+      const {
+        itemEditForm,
+        groupName,
+        username,
+      } = this;
 
-        // 增加超链接
-        async addDoc() {
-            const {
-                itemEditForm,
-                groupName,
-                username
-            } = this
+      const {
+        tagName,
+        projectName,
+        docName,
+        docDesc,
+        docLink,
+      } = itemEditForm;
 
-            const {
-                tagName,
-                projectName,
-                docName,
-                docDesc,
-                docLink
-            } = itemEditForm
-
-            apiWiki.createDoc({
-                tagName,
-                groupName,
-                projectName,
-                userName: username,
-                docName,
-                docDesc,
-                docLink
-            }).then(data => {
-                // 清空数据
-                this.resetForm('itemEditForm')
-                // 关闭弹窗
-                this.closeDialog()
-                // 重新拉取更新数据
-                this.fetchWikiList()
-                // 提示用户
-                this.$message({
-                    type: 'success',
-                    message: '添加成功!'
-                })
-            }).catch(err => {
-                error(this, err)
-            })
-        },
-
-        // 编辑超链接
-        editDoc() {
-            const {
-                itemEditForm,
-                groupName,
-                username
-            } = this
-
-            const {
-                docId,
-                projectName,
-                tagName,
-                docName,
-                docDesc,
-                docLink
-            } = itemEditForm
-
-            apiWiki.updateDoc({
-                docId,
-                groupName,
-                tagName,
-                projectName,
-                userName: username,
-                docName,
-                docDesc,
-                docLink
-            }).then(data => {
-                // 重新拉取更新数据
-                this.fetchWikiList()
-                // 关闭弹窗
-                this.closeDialog()
-                // 提示用户
-                this.$message({
-                    type: 'success',
-                    message: '修改成功!'
-                })
-            }).catch(err => {
-                error(this, err)
-            })
-        },
-
-        // 删除超链接
-        deleteDoc(item) {
-            const { docId, docName } = item
-
-            // 二次确认
-            this.$confirm(`删除后无法恢复，请谨慎操作`, `要删除超链接「${docName}」吗？`, {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                // 请求删除
-                apiWiki.deleteDoc({ docId })
-                .then(() => {
-                    // 更新数据
-                    this.fetchWikiList()
-                    // 关闭弹窗
-                    this.closeDialog()
-                    // 提示用户
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    })
-                })
-                .catch(err => {
-                    error(this, err)
-                })
-            })
-        },
-
-        // 显示弹窗
-        showDialog(type, item) {
-            const { dialogType } = this
-            this.dialogStatus.type = type
-            this.dialogStatus.visible = true
-
-            // 根据弹窗类型进行加载
-            switch (type) {
-                case dialogType.EDIT:
-                    this.dialogStatus.title = '编辑超链接'
-                    this.itemEditForm = { ...item }
-                    break
-                case dialogType.ADD:
-                    this.dialogStatus.title = '添加超链接'
-                    break
-                default:
-                break
-            }
-        },
-
+      apiWiki.createDoc({
+        tagName,
+        groupName,
+        projectName,
+        userName: username,
+        docName,
+        docDesc,
+        docLink,
+      }).then(() => {
+        // 清空数据
+        this.resetForm('itemEditForm');
         // 关闭弹窗
-        closeDialog() {
+        this.closeDialog();
+        // 重新拉取更新数据
+        this.fetchWikiList();
+        // 提示用户
+        this.$message({
+          type: 'success',
+          message: '添加成功!',
+        });
+      })
+        .catch((err) => {
+          error(this, err);
+        });
+    },
+
+    // 编辑超链接
+    editDoc() {
+      const {
+        itemEditForm,
+        groupName,
+        username,
+      } = this;
+
+      const {
+        docId,
+        projectName,
+        tagName,
+        docName,
+        docDesc,
+        docLink,
+      } = itemEditForm;
+
+      apiWiki.updateDoc({
+        docId,
+        groupName,
+        tagName,
+        projectName,
+        userName: username,
+        docName,
+        docDesc,
+        docLink,
+      }).then(() => {
+        // 重新拉取更新数据
+        this.fetchWikiList();
+        // 关闭弹窗
+        this.closeDialog();
+        // 提示用户
+        this.$message({
+          type: 'success',
+          message: '修改成功!',
+        });
+      })
+        .catch((err) => {
+          error(this, err);
+        });
+    },
+
+    // 删除超链接
+    deleteDoc(item) {
+      const { docId, docName } = item;
+
+      // 二次确认
+      this.$confirm('删除后无法恢复，请谨慎操作', `要删除超链接「${docName}」吗？`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        // 请求删除
+        apiWiki.deleteDoc({ docId })
+          .then(() => {
+            // 更新数据
+            this.fetchWikiList();
             // 关闭弹窗
-            this.dialogStatus.visible = false
-            // 清空表格
-            this.resetForm('itemEditForm')
-        },
-        // 重置过滤表单
-        resetfilterForm() {
-            this.filterForm = {
-                project: 'all',
-                tag: 'all'
-            }
-        },
-        // 重置表单
-        resetForm(formName) {
-            this.$refs[formName] && this.$refs[formName].resetFields();
-        },
-        // 内嵌打开超链接
-        // 点击跳转
-        handleHrefClick(link) {
-            openWebview(link)
-        }
-    }
-}
+            this.closeDialog();
+            // 提示用户
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            });
+          })
+          .catch((err) => {
+            error(this, err);
+          });
+      });
+    },
+
+    // 显示弹窗
+    showDialog(type, item) {
+      const { dialogType } = this;
+      this.dialogStatus.type = type;
+      this.dialogStatus.visible = true;
+
+      // 根据弹窗类型进行加载
+      switch (type) {
+        case dialogType.EDIT:
+          this.dialogStatus.title = '编辑超链接';
+          this.itemEditForm = { ...item };
+          break;
+        case dialogType.ADD:
+          this.dialogStatus.title = '添加超链接';
+          break;
+        default:
+          break;
+      }
+    },
+
+    // 关闭弹窗
+    closeDialog() {
+      // 关闭弹窗
+      this.dialogStatus.visible = false;
+      // 清空表格
+      this.resetForm('itemEditForm');
+    },
+    // 重置过滤表单
+    resetfilterForm() {
+      this.filterForm = {
+        project: 'all',
+        tag: 'all',
+      };
+    },
+    // 重置表单
+    resetForm(formName) {
+      this.$refs[formName] && this.$refs[formName].resetFields();
+    },
+    // 内嵌打开超链接
+    // 点击跳转
+    handleHrefClick(link) {
+      openWebview(link);
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @import "../../assets/less/_function";

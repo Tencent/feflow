@@ -1,23 +1,23 @@
 <template>
   <el-input
+    v-model.lazy="value"
     type="textarea"
     class="form-control vue-form-input"
-    v-model.lazy="value"
     :placeholder="definition.placeholder"
     :disabled="definition.disabled"
     :maxlength="schema.maxlength"
-    :minLength="schema.minLength"
+    :min-length="schema.minLength"
     :name="name"
     :readonly="definition.readonly"
     :required="definition.required"
     :rows="definition.row || 3"
-  ></el-input>
+  />
 </template>
 
 <script>
-import basicMixin from '../mixins/basic.js'
+import basicMixin from '../mixins/basic.js';
 
 export default {
-  mixins: [basicMixin]
-}
+  mixins: [basicMixin],
+};
 </script>

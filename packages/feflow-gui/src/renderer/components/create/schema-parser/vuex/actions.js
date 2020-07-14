@@ -196,7 +196,7 @@ export const removeValue = ({ commit, state }, path) => {
 
     const model = _.get(state.model, path);
 
-    if (model?.length) {
+    if (model && model.length) {
       model.splice(last, 1);
     }
   } else {

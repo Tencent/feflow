@@ -1,42 +1,59 @@
 <template>
-<div>
-  <div class="setting-wrapper" v-if="visible" ref="settingContainer">
-    <div 
-    class="tab"  
-    @mouseenter="setActiveTab('checkUpdate')" 
-    @mouseleave="setActiveTab('checkUpdate')" 
-    v-bind:class="{active: activeTab === 'checkUpdate'}"
-    >检查更新
+  <div>
+    <div
+      v-if="visible"
+      ref="settingContainer"
+      class="setting-wrapper"
+    >
+      <div
+        class="tab"
+        :class="{active: activeTab === 'checkUpdate'}"
+        @mouseenter="setActiveTab('checkUpdate')"
+        @mouseleave="setActiveTab('checkUpdate')"
+      >
+        检查更新
+      </div>
+      <div
+        class="tab"
+        :class="{active: activeTab==='setting' }"
+        @click="openAbout"
+        @mouseenter="setActiveTab('setting')"
+        @mouseleave="setActiveTab('setting')"
+      >
+        关于
+      </div>
     </div>
-    <div 
-    class="tab" 
-    @click="openAbout"
-    @mouseenter="setActiveTab('setting')" 
-    @mouseleave="setActiveTab('setting')" 
-    v-bind:class="{active: activeTab==='setting' }"
-    >关于</div>
+    <About
+      :visible="isOpenAbout"
+      @hideAboutDialog="hideAboutDialog"
+    />
   </div>
-  <About :visible="isOpenAbout" @hideAboutDialog="hideAboutDialog"/>
-</div>
 </template>
 <script>
-import About from './about'
+import About from './about';
 export default {
-  name: 'setting-panel',
+  name: 'SettingPanel',
   components: {
-    About
-  },
-  data() {
-    return {
-      activeTab: 'None',
-      isOpenAbout: false
-    }
+    About,
   },
   props: {
     visible: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+  },
+  data() {
+    return {
+      activeTab: 'None',
+      isOpenAbout: false,
+    };
+  },
+  watch: {
+    visible(val) {
+      if (!val) {
+        this.activeTab = 'None';
+      }
+    },
   },
   mounted() {
     window.addEventListener('click', (e) => {
@@ -45,30 +62,23 @@ export default {
   },
   methods: {
     setActiveTab(tabName) {
-      this.activeTab = tabName
+      this.activeTab = tabName;
     },
     openAbout() {
-      this.isOpenAbout = true
+      this.isOpenAbout = true;
     },
     hideAboutDialog() {
-      this.isOpenAbout = false
+      this.isOpenAbout = false;
     },
-    queryHide (e) {
-      let dom = document.getElementById('settingContainer');
+    queryHide(e) {
+      const dom = document.getElementById('settingContainer');
       if ((!dom.contains(e.target)) && this.visible) {
-    /* 关闭元素 */
-        this.$emit('closeSettingPanel')
+        /* 关闭元素 */
+        this.$emit('closeSettingPanel');
       }
-    }
+    },
   },
-  watch: {
-    visible(val) {
-      if (!val) {
-        this.activeTab = 'None'
-      }
-    }
-  }
-}
+};
 </script>
 
 <style scoped>

@@ -1,12 +1,12 @@
 <template>
   <el-input
+    v-model.lazy="value"
     type="text"
     class="form-control spark-input"
-    v-model.lazy="value"
     :placeholder="definition.placeholder"
     :disabled="isWorking"
     :maxlength="schema.maxlength"
-    :minLength="schema.minLength"
+    :min-length="schema.minLength"
     :name="name"
     :pattern="schema.pattern"
     :readonly="definition.readonly"
@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import basicMixin from '../mixins/basic.js'
+import basicMixin from '../mixins/basic.js';
 
 export default {
-  mixins: [basicMixin]
-}
+  mixins: [basicMixin],
+};
 </script>

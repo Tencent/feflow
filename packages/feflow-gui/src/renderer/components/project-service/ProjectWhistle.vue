@@ -2,82 +2,170 @@
   <div class="project-whistle">
     <div class="project-whistle__row">
       <div class="project-whistle__side">
-        <el-button class="project-whistle__button" type="success" @click="handelDialog(true)">
-          <i class="el-icon-plus"></i>新增
+        <el-button
+          class="project-whistle__button"
+          type="success"
+          @click="handelDialog(true)"
+        >
+          <i class="el-icon-plus" />新增
         </el-button>
-        <el-button class="project-whistle__button" type="primary" @click="runWhistle" :disabled="startStatus !==0 ">
-          <i :class="startStatus === 1?'el-icon-loading':'el-icon-base el-icon-start'"></i>{{startStatus === 1?'启动中':'启动'}}
+        <el-button
+          class="project-whistle__button"
+          type="primary"
+          :disabled="startStatus !==0 "
+          @click="runWhistle"
+        >
+          <i :class="startStatus === 1?'el-icon-loading':'el-icon-base el-icon-start'" />
+          {{ startStatus === 1?'启动中':'启动' }}
         </el-button>
-        <el-button class="project-whistle__button" type="danger" @click="closeWhistle" :disabled="startStatus !== 2">
-          <i :class="startStatus === 3?'el-icon-loading':'el-icon-base el-icon-pause'"></i>{{startStatus === 3?'停止中':'停止'}}
+        <el-button
+          class="project-whistle__button"
+          type="danger"
+          :disabled="startStatus !== 2"
+          @click="closeWhistle"
+        >
+          <i :class="startStatus === 3?'el-icon-loading':'el-icon-base el-icon-pause'" />
+          {{ startStatus === 3?'停止中':'停止' }}
         </el-button>
       </div>
       <div class="project-whistle__side">
         <span class="project-whistle__font">whistle端口：</span>
-        <el-input class="project-whistle__port" v-model="whistlePort" :disabled="!isEditPort"></el-input>
-        <i class="el-icon-edit project-whistle__icon" @click="editProxyPort"></i>
-        <i class="el-icon-check project-whistle__icon" @click="saveProxyPort"></i>
+        <el-input
+          v-model="whistlePort"
+          class="project-whistle__port"
+          :disabled="!isEditPort"
+        />
+        <i
+          class="el-icon-edit project-whistle__icon"
+          @click="editProxyPort"
+        />
+        <i
+          class="el-icon-check project-whistle__icon"
+          @click="saveProxyPort"
+        />
       </div>
     </div>
-    <span class="project-whistle__line"></span>
-      <div class="project-whistle__main">
-        <div class="project-whistle__menu">
-          <div :class="['project-whistle__item', index === currentIndex && 'project-whistle__current']" v-for="(item, index) in completeProxyList" @click="changeProxyConfig(index)">
-            <div class="project-whistle__name">
-              <span class="project-whistle__select"><i v-if="item.id == selectId" class="el-icon-blue-check"></i></span>
-              <span class="project-whistle__text">{{item.name}}</span>
-              <img v-if="item.isDefault" class="project-whistle__baseicon" v-bind:src="require('../../assets/img/whistle/base.png')" />
-            </div>
-            <div class="project-whistle__btn">
-              <i class="el-icon-close" @click.stop="deleteProxy(item, index)"></i>
-            </div>
+    <span class="project-whistle__line" />
+    <div class="project-whistle__main">
+      <div class="project-whistle__menu">
+        <div
+          v-for="(item, index) in completeProxyList"
+          :key="index"
+          :class="['project-whistle__item', index === currentIndex && 'project-whistle__current']"
+          @click="changeProxyConfig(index)"
+        >
+          <div class="project-whistle__name">
+            <span class="project-whistle__select"><i
+              v-if="item.id == selectId"
+              class="el-icon-blue-check"
+            /></span>
+            <span class="project-whistle__text">{{ item.name }}</span>
+            <img
+              v-if="item.isDefault"
+              class="project-whistle__baseicon"
+              :src="require('../../assets/img/whistle/base.png')"
+            >
           </div>
-        </div>
-        <div class="project-whistle__content">
-          <div class="project-whistle__operation">
-              <div class="project-whistle__side">
-                <el-button class="project-whistle__button" plain icon="el-icon-refresh" @click="handelSelect">切换</el-button>
-                <el-button class="project-whistle__button" plain @click="handelCancel"><i class="el-icon-base el-icon-undo"></i>撤销</el-button>
-              </div>
-              <el-button class="project-whistle__button" type="primary" plain @click="handelSave"><i class="el-icon-base el-icon-save"></i>保存</el-button>
-          </div>
-          <div class="project-whistle__textarea">
-            <el-input
-                    type="textarea"
-                    :rows="18"
-                    placeholder="请输入需要配置的代理"
-                    v-model="editProxy">
-            </el-input>
+          <div class="project-whistle__btn">
+            <i
+              class="el-icon-close"
+              @click.stop="deleteProxy(item, index)"
+            />
           </div>
         </div>
       </div>
-      <el-dialog class="project-whistle__dialog" title="添加测试环境" :visible.sync="showDialog">
-        <el-form :model="form">
-          <div class="project-whistle__form">
-            <span class="project-whistle__form-title">测试环境名称</span>
-            <el-input class="project-whistle__form-input" v-model="form.name"></el-input>
+      <div class="project-whistle__content">
+        <div class="project-whistle__operation">
+          <div class="project-whistle__side">
+            <el-button
+              class="project-whistle__button"
+              plain
+              icon="el-icon-refresh"
+              @click="handelSelect"
+            >
+              切换
+            </el-button>
+            <el-button
+              class="project-whistle__button"
+              plain
+              @click="handelCancel"
+            >
+              <i class="el-icon-base el-icon-undo" />撤销
+            </el-button>
           </div>
-          <div class="project-whistle__form project-whistle__form-radio">
-            <span class="project-whistle__form-title">是否为通用代理</span>
-            <el-radio v-model="form.isDefault" label="1">是</el-radio>
-            <el-radio v-model="form.isDefault" label="0">否</el-radio>
-          </div>
-          <div class="project-whistle__form">
-            <span class="project-whistle__form-title">代理规则配置</span>
-            <el-input
-                    class="project-whistle__form-textarea"
-                    type="textarea"
-                    :rows="10"
-                    placeholder="请输入需要配置的代理"
-                    v-model="form.rules">
-            </el-input>
-          </div>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="handelDialog(false)">取消</el-button>
-          <el-button type="primary" @click="handelAddProxy">添加</el-button>
+          <el-button
+            class="project-whistle__button"
+            type="primary"
+            plain
+            @click="handelSave"
+          >
+            <i class="el-icon-base el-icon-save" />保存
+          </el-button>
         </div>
-      </el-dialog>
+        <div class="project-whistle__textarea">
+          <el-input
+            v-model="editProxy"
+            type="textarea"
+            :rows="18"
+            placeholder="请输入需要配置的代理"
+          />
+        </div>
+      </div>
+    </div>
+    <el-dialog
+      v-model:visible="showDialog"
+      class="project-whistle__dialog"
+      title="添加测试环境"
+    >
+      <el-form :model="form">
+        <div class="project-whistle__form">
+          <span class="project-whistle__form-title">测试环境名称</span>
+          <el-input
+            v-model="form.name"
+            class="project-whistle__form-input"
+          />
+        </div>
+        <div class="project-whistle__form project-whistle__form-radio">
+          <span class="project-whistle__form-title">是否为通用代理</span>
+          <el-radio
+            v-model="form.isDefault"
+            label="1"
+          >
+            是
+          </el-radio>
+          <el-radio
+            v-model="form.isDefault"
+            label="0"
+          >
+            否
+          </el-radio>
+        </div>
+        <div class="project-whistle__form">
+          <span class="project-whistle__form-title">代理规则配置</span>
+          <el-input
+            v-model="form.rules"
+            class="project-whistle__form-textarea"
+            type="textarea"
+            :rows="10"
+            placeholder="请输入需要配置的代理"
+          />
+        </div>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="handelDialog(false)">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handelAddProxy"
+        >
+          添加
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -86,15 +174,15 @@ import {
   updateFefProjectProxy,
   getDefaultProjectProxy,
   updateDefaultProjectProxy,
-  generatorWhistleJS
-} from '../../bridge'
-import { FEFLOW_WHISTLE_JS_PATH } from '../../bridge/constants'
-import { spawn } from 'child_process'
-import { getUrlParam } from '../../common/utils'
-const electron = require('electron')
+  generatorWhistleJS,
+} from '../../bridge';
+import { FEFLOW_WHISTLE_JS_PATH } from '../../bridge/constants';
+import { spawn } from 'child_process';
+import { getUrlParam } from '../../common/utils';
+const electron = require('electron');
 
 export default {
-  name: 'project-whistle',
+  name: 'ProjectWhistle',
   data() {
     return {
       proxy: {},
@@ -110,209 +198,203 @@ export default {
       whistlePort: 0,
       isEditPort: false,
       startStatus: 0,
-      needWhistle: false // whistle.js 文件中是否有内容
-    }
+      needWhistle: false, // whistle.js 文件中是否有内容
+    };
   },
   computed: {
     lastId() {
-      let idList = []
-      this.completeProxyList.map(item => {
-        return idList.push(item.id)
-      })
-      return idList.length > 0 ? Math.max(...idList) || 0 : 0
+      const idList = [];
+      this.completeProxyList.map(item => idList.push(item.id));
+      return idList.length > 0 ? Math.max(...idList) || 0 : 0;
     },
     currentProxy() {
-      return this.completeProxyList[this.currentIndex] || {}
-    }
+      return this.completeProxyList[this.currentIndex] || {};
+    },
   },
   mounted() {
-    this.projectPath = getUrlParam('path')
-    this.projectName = getUrlParam('name')
-    this.proxy = getFefProjectProxy(this.projectName)
-    this.defaultProxy = getDefaultProjectProxy(this.projectPath)
-    this.initWhistle()
+    this.projectPath = getUrlParam('path');
+    this.projectName = getUrlParam('name');
+    this.proxy = getFefProjectProxy(this.projectName);
+    this.defaultProxy = getDefaultProjectProxy(this.projectPath);
+    this.initWhistle();
   },
   methods: {
     initWhistle() {
-      this.proxyList = this.proxy.list || []
-      this.whistlePort = this.proxy.port || 8899
-      this.completeProxyList = this.defaultProxy.concat(this.proxyList)
-      this.editProxy = this.currentProxy.rules
-      this.selectId = this.currentProxy.id || 0
-      this.updateWhistleJS()
+      this.proxyList = this.proxy.list || [];
+      this.whistlePort = this.proxy.port || 8899;
+      this.completeProxyList = this.defaultProxy.concat(this.proxyList);
+      this.editProxy = this.currentProxy.rules;
+      this.selectId = this.currentProxy.id || 0;
+      this.updateWhistleJS();
     },
 
     editProxyPort() {
-      this.isEditPort = true
+      this.isEditPort = true;
     },
     saveProxyPort() {
-      this.isEditPort = false
-      this.doSavePersonal()
+      this.isEditPort = false;
+      this.doSavePersonal();
     },
     // 切换测试环境
     handelSelect() {
-      this.selectId = this.currentProxy.id
-      this.updateWhistleJS()
+      this.selectId = this.currentProxy.id;
+      this.updateWhistleJS();
       this.$message({
         type: 'success',
-        message: 'whistle配置切换成功！'
-      })
-      this.doRunAction('restart')
+        message: 'whistle配置切换成功！',
+      });
+      this.doRunAction('restart');
     },
     // 切换右侧展示proxy
     changeProxyConfig(index) {
-      this.currentIndex = index
-      this.editProxy = (this.completeProxyList[index] || {}).rules || ''
+      this.currentIndex = index;
+      this.editProxy = (this.completeProxyList[index] || {}).rules || '';
     },
     // 删除测试环境
     deleteProxy(item, index) {
-      let delIndex = 0
-      this.completeProxyList.splice(index, 1)
+      let delIndex = 0;
+      this.completeProxyList.splice(index, 1);
       if (this.selectId === item.id) {
-        this.selectId = (this.completeProxyList[0] || {}).id || 0
+        this.selectId = (this.completeProxyList[0] || {}).id || 0;
       }
       if (this.currentIndex === index) {
-        this.changeProxyConfig(0)
+        this.changeProxyConfig(0);
       }
       if (item.isDefault) {
-        delIndex = this.defaultProxy.findIndex(proxy => {
-          return proxy.id === item.id
-        })
-        this.defaultProxy.splice(delIndex, 1)
-        this.doSaveDefault()
+        delIndex = this.defaultProxy.findIndex(proxy => proxy.id === item.id);
+        this.defaultProxy.splice(delIndex, 1);
+        this.doSaveDefault();
       } else {
-        delIndex = this.proxyList.findIndex(proxy => {
-          return proxy.id === item.id
-        })
-        this.proxyList.splice(delIndex, 1)
-        this.doSavePersonal()
+        delIndex = this.proxyList.findIndex(proxy => proxy.id === item.id);
+        this.proxyList.splice(delIndex, 1);
+        this.doSavePersonal();
       }
     },
     // 创建弹窗
     handelDialog(status) {
-      this.form = { rules: (this.defaultProxy[0] || {}).rules || '' }
-      this.showDialog = status
+      this.form = { rules: (this.defaultProxy[0] || {}).rules || '' };
+      this.showDialog = status;
     },
     // 新增测试环境
     handelAddProxy() {
       if (!this.form.name) {
         this.$alert('请填写测试环境名称', '温馨提示', {
-          confirmButtonText: '确定'
-        })
-        return
+          confirmButtonText: '确定',
+        });
+        return;
       }
-      this.form.id = this.lastId + 1
-      this.completeProxyList.push(this.form)
-      this.form.isDefault = Number(this.form.isDefault)
+      this.form.id = this.lastId + 1;
+      this.completeProxyList.push(this.form);
+      this.form.isDefault = Number(this.form.isDefault);
       if (this.form.isDefault) {
-        this.defaultProxy.push(this.form)
-        this.doSaveDefault()
+        this.defaultProxy.push(this.form);
+        this.doSaveDefault();
       } else {
-        this.proxyList.push(this.form)
-        this.doSavePersonal()
+        this.proxyList.push(this.form);
+        this.doSavePersonal();
       }
-      this.handelDialog(false)
+      this.handelDialog(false);
       this.$message({
         type: 'success',
-        message: '测试环境增加成功！'
-      })
+        message: '测试环境增加成功！',
+      });
     },
     // 修改proxy
     handelSave() {
-      this.currentProxy.rules = this.editProxy
+      this.currentProxy.rules = this.editProxy;
       if (this.currentProxy.isDefault) {
-        this.doSaveDefault()
+        this.doSaveDefault();
       } else {
-        this.doSavePersonal()
+        this.doSavePersonal();
       }
       this.$message({
         type: 'success',
-        message: '测试环境保存成功！'
-      })
+        message: '测试环境保存成功！',
+      });
     },
     // 取消修改
     handelCancel() {
-      this.editProxy = this.currentProxy.rules || ''
+      this.editProxy = this.currentProxy.rules || '';
     },
     // 更新default配置
     doSaveDefault() {
-      updateDefaultProjectProxy(this.projectPath, this.defaultProxy)
+      updateDefaultProjectProxy(this.projectPath, this.defaultProxy);
     },
     // 更新个性化配置
     doSavePersonal() {
       updateFefProjectProxy(this.projectName, {
         port: this.whistlePort,
-        list: this.proxyList
-      })
+        list: this.proxyList,
+      });
     },
     updateWhistleJS() {
-      let config = this.completeProxyList.find(proxy => proxy.id === this.selectId)
+      const config = this.completeProxyList.find(proxy => proxy.id === this.selectId);
       if (config) {
-        this.needWhistle = false
-        generatorWhistleJS({ name: config.name, rules: config.rules })
+        this.needWhistle = false;
+        generatorWhistleJS({ name: config.name, rules: config.rules });
       } else {
-        this.needWhistle = true
+        this.needWhistle = true;
       }
     },
     runWhistle() {
       if (this.needWhistle) {
         this.$message({
           type: 'error',
-          message: '请先切换测试环境！'
-        })
+          message: '请先切换测试环境！',
+        });
         return;
       }
-      let status = this.getGlobalConfig()
+      const status = this.getGlobalConfig();
       if (!status) {
-         this.doRunAction()
+        this.doRunAction();
       } else {
         this.$confirm('当前存在whistle进程，是否覆盖?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
+          type: 'warning',
         }).then(() => {
-          this.doRunAction('restart')
-        })
+          this.doRunAction('restart');
+        });
       }
     },
     doRunAction(command = 'start') {
-      this.startStatus = 1
+      this.startStatus = 1;
       this.runCommand(command, () => {
         this.runCommand(`add ${FEFLOW_WHISTLE_JS_PATH} --force`, () => {
-          this.startStatus = 2
-          this.$electron.shell.openExternal(`http://127.0.0.1:${this.whistlePort}/`)
-          this.setGlobalConfig(true)
-        })
-      })
+          this.startStatus = 2;
+          this.$electron.shell.openExternal(`http://127.0.0.1:${this.whistlePort}/`);
+          this.setGlobalConfig(true);
+        });
+      });
     },
     closeWhistle() {
-      this.startStatus = 3
+      this.startStatus = 3;
       this.runCommand('stop', () => {
-        this.startStatus = 0
-        this.setGlobalConfig(false)
-        console.log('kill success')
-      })
+        this.startStatus = 0;
+        this.setGlobalConfig(false);
+        console.log('kill success');
+      });
     },
     // 运行命令
     runCommand(command, exitCallback) {
       const childProcess = spawn('w2', [command], {
         stdio: 'pipe',
-        shell: true
-      })
-      childProcess.stdout.on('data', data => {})
-      childProcess.on('close', data => {
-        exitCallback && exitCallback()
-      })
-      return childProcess
+        shell: true,
+      });
+      childProcess.stdout.on('data', () => {});
+      childProcess.on('close', () => {
+        exitCallback && exitCallback();
+      });
+      return childProcess;
     },
     getGlobalConfig() {
-     return electron.remote.getGlobal('isUsingWhistle').value
+      return electron.remote.getGlobal('isUsingWhistle').value;
     },
     setGlobalConfig(status) {
-      electron.remote.getGlobal('isUsingWhistle').value = status
-    }
-  }
-}
+      electron.remote.getGlobal('isUsingWhistle').value = status;
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @import '../../assets/less/_function';

@@ -1,48 +1,64 @@
 <template>
-    <div class="project-list">
-        <div class="title-bar">
-            <div class="title">我的项目</div>
-            <div class="switch">
-                <i class="grid-icon" :class="{'grid-icon-active' : currIndex === 0}" @click="switchClickHandle(0)"></i>
-                <i class="list-icon" :class="{'list-icon-active' : currIndex === 1}" @click="switchClickHandle(1)"></i>
-            </div>
-        </div>
-        <grid-project-list  v-bind:projects="projects" v-if="currIndex === 0"></grid-project-list>
-        <list-project-list  v-bind:projects="projects" v-if="currIndex === 1"></list-project-list>
+  <div class="project-list">
+    <div class="title-bar">
+      <div class="title">
+        我的项目
+      </div>
+      <div class="switch">
+        <i
+          class="grid-icon"
+          :class="{'grid-icon-active' : currIndex === 0}"
+          @click="switchClickHandle(0)"
+        />
+        <i
+          class="list-icon"
+          :class="{'list-icon-active' : currIndex === 1}"
+          @click="switchClickHandle(1)"
+        />
+      </div>
     </div>
+    <grid-project-list
+      v-if="currIndex === 0"
+      :projects="projects"
+    />
+    <list-project-list
+      v-if="currIndex === 1"
+      :projects="projects"
+    />
+  </div>
 </template>
 <script>
-  import { FEFLOW_HOME_CONFIG_PATH } from '../../bridge/constants'
-  import { parseYaml } from '../../bridge/utils/index'
-  import GridProjectList from './GridProjectList'
-  import ListProjectList from './ListProjectList'
+import { FEFLOW_HOME_CONFIG_PATH } from '../../bridge/constants';
+import { parseYaml } from '../../bridge/utils/index';
+import GridProjectList from './GridProjectList';
+import ListProjectList from './ListProjectList';
 
-  export default {
-    name: 'project-list',
-    components: { GridProjectList, ListProjectList },
-    data () {
-      return {
-        currIndex: 0,
-        projects: []
-      }
+export default {
+  name: 'ProjectList',
+  components: { GridProjectList, ListProjectList },
+  data() {
+    return {
+      currIndex: 0,
+      projects: [],
+    };
+  },
+  created() {
+    this.init();
+  },
+  methods: {
+    switchClickHandle(index) {
+      this.currIndex = index;
     },
-    created() {
-      this.init()
+    init() {
+      this.fetchProjects();
     },
-    methods: {
-      switchClickHandle (index) {
-        this.currIndex = index
-      },
-      init() {
-        this.fetchProjects()
-      },
-      fetchProjects() {
-        const feflowConfig = parseYaml(FEFLOW_HOME_CONFIG_PATH)
-        const { projects } = feflowConfig
-        this.projects = projects
-      }
-    }
-  }
+    fetchProjects() {
+      const feflowConfig = parseYaml(FEFLOW_HOME_CONFIG_PATH);
+      const { projects } = feflowConfig;
+      this.projects = projects;
+    },
+  },
+};
 </script>
 <style scoped>
 .project-list {

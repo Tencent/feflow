@@ -1,24 +1,24 @@
 <template>
   <div id="wrapper">
     <main>
-      <side-bar></side-bar>
-      <project-list></project-list>
+      <side-bar />
+      <project-list />
     </main>
   </div>
 </template>
 
 <script>
-  import SideBar from './SideBar'
-  import ProjectList from './project-list/ProjectList'
-  export default {
-    name: 'landing-page',
-    components: { SideBar, ProjectList },
-    methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      }
-    }
-  }
+import SideBar from './SideBar';
+import ProjectList from './project-list/ProjectList';
+export default {
+  name: 'LandingPage',
+  components: { SideBar, ProjectList },
+  methods: {
+    open(link) {
+      this.$electron.shell.openExternal(link);
+    },
+  },
+};
 </script>
 <style scoped>
   #wrapper {

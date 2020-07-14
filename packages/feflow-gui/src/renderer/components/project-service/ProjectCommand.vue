@@ -1,334 +1,374 @@
 <template>
-    <div class="project-command">
-        <template v-if="projectCommand.length > 0">
-            <div class="project-command__sidebar">
-                <!-- 命令列表 -->
-                <ul class="project-command__list">
-                    <li
-                        class="project-command__item"
-                        :class="{ 'is-active': current === itemIndex }"
-                        v-for="(item, itemIndex) in projectCommand"
-                        :key="itemIndex"
-                        @click="selectPane(itemIndex)">
-                        <i class="project-command__item-icon" :class="{'is-running': item.running}"></i>
-                        <p class="project-command__item-name">{{item.name | pascalCase}}</p>
-                        <p class="project-command__item-desc">{{item.running ? '运行中' : item.description}}</p>
-                    </li>
-                </ul>
+  <div class="project-command">
+    <template v-if="projectCommand.length > 0">
+      <div class="project-command__sidebar">
+        <!-- 命令列表 -->
+        <ul class="project-command__list">
+          <li
+            v-for="(item, itemIndex) in projectCommand"
+            :key="itemIndex"
+            class="project-command__item"
+            :class="{ 'is-active': current === itemIndex }"
+            @click="selectPane(itemIndex)"
+          >
+            <i
+              class="project-command__item-icon"
+              :class="{'is-running': item.running}"
+            />
+            <p class="project-command__item-name">
+              {{ item.name | pascalCase }}
+            </p>
+            <p class="project-command__item-desc">
+              {{ item.running ? '运行中' : item.description }}
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 命令内容  -->
+      <div class="project-command__detail">
+        <!-- 命令名称 & 描述 -->
+        <div class="project-command__name">
+          {{ currentCommand.name | pascalCase }}
+        </div>
+        <div class="project-command__desc">
+          {{ currentCommand.description }}
+        </div>
+
+        <div class="project-command__operation">
+          <!-- 命令脚本 -->
+          <div class="project-command__operation-command">
+            <el-autocomplete
+              ref="commandInput"
+              v-model="currentCommand.command"
+              class="project-command__operation-input"
+              :disabled="!isCmdEdited"
+              :fetch-suggestions="querySearchAsync"
+              @select="selectCommandHistory"
+            />
+
+            <div class="project-command__operation-options">
+              <!-- 编辑 -->
+              <div class="project-command__operation-option">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="编辑命令"
+                  placement="top"
+                >
+                  <i
+                    class="project-command__operation-edit"
+                    @click="handleEditCmd"
+                  />
+                </el-tooltip>
+              </div>
+
+              <!-- 保存 -->
+              <div class="project-command__operation-option">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="保存命令"
+                  placement="top"
+                >
+                  <i
+                    class="project-command__operation-save"
+                    @click="handleSaveCmd"
+                  />
+                </el-tooltip>
+              </div>
+
+              <!-- 复制 -->
+              <div class="project-command__operation-option">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="复制到剪贴板"
+                  placement="top"
+                >
+                  <i
+                    class="project-command__operation-copy"
+                    @click="handleCopyCmd"
+                  />
+                </el-tooltip>
+              </div>
             </div>
+          </div>
 
-            <!-- 命令内容  -->
-            <div class="project-command__detail">
-                <!-- 命令名称 & 描述 -->
-                <div class="project-command__name">{{currentCommand.name | pascalCase}}</div>
-                <div class="project-command__desc">{{currentCommand.description}}</div>
+          <!-- 命令操作 -->
+          <div class="project-command__operation-btns">
+            <el-button
+              type="primary"
+              size="mini"
+              :disabled="currentCommand.running"
+              @click="handleRunCmd"
+            >
+              <i class="project-command__icon-run" />运行
+            </el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              :disabled="!currentCommand.running"
+              @click="handleStopCmd"
+            >
+              <i class="project-command__icon-stop" />停止
+            </el-button>
+          </div>
+        </div>
 
-                <div class="project-command__operation">
-                    <!-- 命令脚本 -->
-                    <div class="project-command__operation-command">
-                        <el-autocomplete
-                            class="project-command__operation-input"
-                            ref="commandInput"
-                            v-model="currentCommand.command"
-                            :disabled="!isCmdEdited"
-                            :fetch-suggestions="querySearchAsync"
-                            @select="selectCommandHistory">
-                        </el-autocomplete>
-
-                        <div class="project-command__operation-options">
-                            <!-- 编辑 -->
-                            <div class="project-command__operation-option">
-                                <el-tooltip class="item" effect="dark" content="编辑命令" placement="top">
-                                    <i class="project-command__operation-edit" @click="handleEditCmd"></i>
-                                </el-tooltip>
-                            </div>
-
-                            <!-- 保存 -->
-                            <div class="project-command__operation-option">
-                                <el-tooltip class="item" effect="dark" content="保存命令" placement="top">
-                                    <i class="project-command__operation-save" @click="handleSaveCmd"></i>
-                                </el-tooltip>
-                            </div>
-
-                            <!-- 复制 -->
-                            <div class="project-command__operation-option">
-                                <el-tooltip class="item" effect="dark" content="复制到剪贴板" placement="top">
-                                    <i class="project-command__operation-copy" @click="handleCopyCmd"></i>
-                                </el-tooltip>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 命令操作 -->
-                    <div class="project-command__operation-btns">
-                        <el-button
-                            type="primary"
-                            size="mini"
-                            :disabled="currentCommand.running"
-                            @click="handleRunCmd">
-                            <i class="project-command__icon-run"></i>运行
-                        </el-button>
-                        <el-button
-                            type="danger"
-                            size="mini"
-                            :disabled="!currentCommand.running"
-                            @click="handleStopCmd">
-                            <i class="project-command__icon-stop"></i>停止
-                        </el-button>
-                    </div>
-                </div>
-
-                <!-- 控制台日志 -->
-                <div class="project-command__console">
-                    <div class="project-command__console-terminal" ref="terminal"></div>
-                </div>
-            </div>
-        </template>
-        <template v-else>
-            <div class="mod-tips">
-                <i class="mod-tips__icon icon-empty"></i>
-                <p class="mod-tips__text">暂无任务</p>
-            </div>
-        </template>
-
-    </div>
+        <!-- 控制台日志 -->
+        <div class="project-command__console">
+          <div
+            ref="terminal"
+            class="project-command__console-terminal"
+          />
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="mod-tips">
+        <i class="mod-tips__icon icon-empty" />
+        <p class="mod-tips__text">
+          暂无任务
+        </p>
+      </div>
+    </template>
+  </div>
 </template>
 <script>
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import 'xterm/css/xterm.css'
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
 
-import { getUrlParam } from '@/common/utils'
+import { getUrlParam } from '@/common/utils';
 import {
-    ProjectCommandHistory,
-    spawnProjectCommand,
-    fetchProjectDevkitCommandList
-} from '@/bridge'
-import { copyText } from '@/common/native'
+  ProjectCommandHistory,
+  spawnProjectCommand,
+  fetchProjectDevkitCommandList,
+} from '@/bridge';
+import { copyText } from '@/common/native';
 
 export default {
-    name: 'project-command',
-    data() {
+  name: 'ProjectCommand',
+  filters: {
+    pascalCase(str) {
+      return `${str.substr(0, 1).toUpperCase()}${str.substr(1).toLowerCase()}`;
+    },
+  },
+  data() {
+    return {
+      current: 0,
+      isCmdEdited: false,
+      isCmdRunning: false,
+      runningCommand: null,
+      currentCmdProcess: null,
+      projectCommand: [
+        {
+          name: '',
+          command: '',
+          description: '',
+          builder: '',
+          options: '',
+        },
+      ],
+      commandHistory: {},
+    };
+  },
+  computed: {
+    currentCommand() {
+      return this.projectCommand[this.current];
+    },
+    currentCommandHistory() {
+      return this.commandHistory[this.currentCommand.name] || [];
+    },
+  },
+  mounted() {
+    this.projectPath = getUrlParam('path');
+    this.projectName = getUrlParam('name');
+    this.ProjectCommandHistory = new ProjectCommandHistory(this.projectName);
+    this.getCommand(this.projectPath);
+    this.initTerminal();
+  },
+  methods: {
+    // 初始化控制台
+    initTerminal() {
+      this.term = new Terminal({
+        theme: {
+          background: '#F3F4F5',
+          foreground: '#434650',
+        },
+        convertEol: true, // 解决换行符问题 https://xtermjs.org/docs/api/terminal/interfaces/iterminaloptions/#optional-converteol
+        cols: 80,
+        rows: 26,
+        fontSize: 12,
+        disableStdin: true, // 禁止输入
+        cursorBlink: false,
+        cursorStyle: 'bar',
+        cursorWidth: 0,
+      });
+      const fitAddon = new FitAddon();
+      this.term.loadAddon(fitAddon);
+
+      // 将 term 挂载 dom 节点上渲染
+      this.term.open(this.$refs.terminal);
+      fitAddon.fit();
+    },
+    // 获取项目开发套件命令
+    getCommand(projectPath) {
+      const commandList = fetchProjectDevkitCommandList(projectPath);
+      const history = this.ProjectCommandHistory.get();
+
+      this.projectCommand = commandList.map((item) => {
+        const { name, command, builder, options, description } = item;
+
+        // 读取最近的命令历史
+        const lastCommandHistory = (history[name] || []).pop();
+
         return {
-            current: 0,
-            isCmdEdited: false,
-            isCmdRunning: false,
-            runningCommand: null,
-            currentCmdProcess: null,
-            projectCommand: [
-                {
-                    name: '',
-                    command: '',
-                    description: '',
-                    builder: '',
-                    options: ''
-                }
-            ],
-            commandHistory: {}
-        }
+          name,
+          originCommand: command,
+          command: lastCommandHistory || command,
+          builder,
+          options,
+          description,
+          running: false, // 增加是否运行中的标识
+        };
+      });
     },
-    filters: {
-        pascalCase(str) {
-            return `${str.substr(0, 1).toUpperCase()}${str.substr(1).toLowerCase()}`
-        }
+    // 运行命令
+    runCommand(commandName, commandScript, exitCallback) {
+      this.term.writeln(`[${(new Date()).toTimeString()
+        .split(' ')[0]}]Start Running Command ${commandScript}...`);
+
+      const execCommand = spawnProjectCommand(this.projectPath);
+      const commandOptions = commandScript.split(commandName)[1].trim();
+      const childProcess = execCommand([commandName, commandOptions]);
+      childProcess.stdout.on('data', (data) => {
+        this.term.writeln(data);
+      });
+      childProcess.on('close', () => {
+        this.term.writeln(`[${(new Date()).toTimeString()
+          .split(' ')[0]}]Stop Run Command ${commandScript}.`);
+        exitCallback && exitCallback();
+      });
+
+      return childProcess;
     },
-    computed: {
-        currentCommand() {
-            return this.projectCommand[this.current]
-        },
-        currentCommandHistory() {
-            return this.commandHistory[this.currentCommand.name] || []
-        }
+    // 获取命令历史
+    fetchCommandHistory() {
+      const history = this.ProjectCommandHistory.get();
+      const cmdHistory = {};
+      Object.keys(history).forEach((cmd) => {
+        const h = history[cmd].map(item => ({
+          value: item,
+        }));
+
+        cmdHistory[cmd] = [].concat(h);
+      });
+
+      return { ...cmdHistory };
     },
-    mounted () {
-        this.projectPath = getUrlParam('path')
-        this.projectName = getUrlParam('name')
-        this.ProjectCommandHistory = new ProjectCommandHistory(this.projectName)
-        this.getCommand(this.projectPath)
-        this.initTerminal()
+    // 查询命令历史
+    querySearchAsync(queryString, cb) {
+      this.commandHistory = this.fetchCommandHistory();
+      const history = this.currentCommandHistory;
+      const results = queryString ? history.filter(this.createStateFilter(queryString)) : history;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        cb(results);
+      }, 3000 * Math.random());
     },
-    methods: {
-        // 初始化控制台
-        initTerminal() {
-            this.term = new Terminal({
-                    theme: {
-                        background: '#F3F4F5',
-                        foreground: '#434650'
-                    },
-                    convertEol: true, // 解决换行符问题 https://xtermjs.org/docs/api/terminal/interfaces/iterminaloptions/#optional-converteol
-                    cols: 80,
-                    rows: 26,
-                    fontSize: 12,
-                    disableStdin: true, // 禁止输入
-                    cursorBlink: false,
-                    cursorStyle: 'bar',
-                    cursorWidth: 0
-            })
-            const fitAddon = new FitAddon()
-            this.term.loadAddon(fitAddon)
+    // 命令历史过滤
+    createStateFilter(queryString) {
+      return state => (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+    },
+    // 选择任务面板
+    selectPane(index) {
+      this.current = index;
+    },
+    // 选择命令历史
+    selectCommandHistory() {
+      // 保存命令
+      this.handleSaveCmd();
+    },
+    // 编辑命令
+    handleEditCmd() {
+      this.isCmdEdited = true;
+      this.$nextTick(() => {
+        this.$refs.commandInput.focus();
+      });
+    },
+    // 保存命令
+    handleSaveCmd() {
+      this.isCmdEdited = false;
 
-            // 将 term 挂载 dom 节点上渲染
-            this.term.open(this.$refs.terminal)
-            fitAddon.fit()
-        },
-        // 获取项目开发套件命令
-        getCommand(projectPath) {
-            const commandList = fetchProjectDevkitCommandList(projectPath)
-            const history = this.ProjectCommandHistory.get()
+      // 校验命令
+      const { name, command, originCommand } = this.currentCommand;
 
-            this.projectCommand = commandList.map(item => {
-                const { name, command, builder, options, description } = item
+      if (command.indexOf(originCommand)) {
+        // 重置为原始命令
+        this.currentCommand.command = originCommand;
 
-                // 读取最近的命令历史
-                const lastCommandHistory = (history[name] || []).pop()
+        this.$notify.error({
+          title: '命令错误',
+          message: `命令内容不属于该任务命令 ${originCommand}`,
+        });
+        return;
+      }
 
-                return {
-                    name,
-                    originCommand: command,
-                    command: lastCommandHistory || command,
-                    builder,
-                    options,
-                    description,
-                    running: false // 增加是否运行中的标识
-                }
-            })
-        },
-        // 运行命令
-        runCommand(commandName, commandScript, exitCallback) {
-            this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Start Running Command ${commandScript}...`)
+      this.ProjectCommandHistory.update(name, command.trim());
+      this.$message({
+        type: 'success',
+        message: '保存成功！',
+      });
+    },
+    // 复制命令
+    handleCopyCmd() {
+      // 保存命令
+      if (this.isCmdEdited) this.handleSaveCmd();
 
-            const execCommand = spawnProjectCommand(this.projectPath)
-            const commandOptions = commandScript.split(commandName)[1].trim()
-            const childProcess = execCommand([commandName, commandOptions])
-            childProcess.stdout.on('data', (data) => {
-                this.term.writeln(data)
-            })
-            childProcess.on('close', (data) => {
-                this.term.writeln(`[${(new Date()).toTimeString().split(' ')[0]}]Stop Run Command ${commandScript}.`)
-                exitCallback && exitCallback()
-            })
+      const { command } = this.currentCommand;
+      copyText(command);
+    },
+    // 运行命令
+    handleRunCmd() {
+      // 保存命令
+      if (this.isCmdEdited) this.handleSaveCmd();
 
-            return childProcess
-        },
-        // 获取命令历史
-        fetchCommandHistory() {
-            const history = this.ProjectCommandHistory.get()
-            let cmdHistory = {}
-            Object.keys(history).map(cmd => {
-                const h = history[cmd].map(item => {
-                return {
-                    value: item
-                }
-                })
+      // 禁止命令并行
+      if (this.isCmdRunning) {
+        this.$alert(
+          '如果想运行其他任务，请先停止当前任务。',
+          `对不起，${this.runningCommand.command}正在运行中`,
+          {
+            confirmButtonText: '确定',
+          },
+        );
+        return;
+      }
 
-                cmdHistory[cmd] = [].concat(h)
-            })
+      this.isCmdRunning = true;
+      this.runningCommand = this.currentCommand;
+      this.runningCommand.running = true;
 
-            return { ...cmdHistory }
-        },
-        // 查询命令历史
-        querySearchAsync(queryString, cb) {
-            this.commandHistory = this.fetchCommandHistory()
-            const history = this.currentCommandHistory
-            const results = queryString ? history.filter(this.createStateFilter(queryString)) : history
+      const { name, command } = this.runningCommand;
+      this.currentCmdProcess = this.runCommand(name, command, () => {
+        this.isCmdRunning = false;
+        this.runningCommand.running = false;
+        this.currentCmdProcess = null;
+      });
+    },
+    // 停止命令
+    handleStopCmd() {
+      if (!this.isCmdRunning) return;
+      if (this.runningCommand.command !== this.currentCommand.command) return;
 
-            clearTimeout(this.timeout)
-            this.timeout = setTimeout(() => {
-                cb(results)
-            }, 3000 * Math.random())
-        },
-        // 命令历史过滤
-        createStateFilter(queryString) {
-            return (state) => {
-                return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-            }
-        },
-        // 选择任务面板
-        selectPane(index) {
-            this.current = index
-        },
-        // 选择命令历史
-        selectCommandHistory(item) {
-            // 保存命令
-            this.handleSaveCmd()
-        },
-        // 编辑命令
-        handleEditCmd() {
-            this.isCmdEdited = true
-            this.$nextTick(() => {
-                this.$refs.commandInput.focus()
-            })
-        },
-        // 保存命令
-        handleSaveCmd() {
-            this.isCmdEdited = false
-
-            // 校验命令
-            const { name, command, originCommand } = this.currentCommand
-
-            if (command.indexOf(originCommand)) {
-                // 重置为原始命令
-                this.currentCommand.command = originCommand
-
-                this.$notify.error({
-                    title: '命令错误',
-                    message: `命令内容不属于该任务命令 ${originCommand}`
-                })
-                return
-            }
-
-            this.ProjectCommandHistory.update(name, command.trim())
-            this.$message({
-                type: 'success',
-                message: '保存成功！'
-            })
-        },
-        // 复制命令
-        handleCopyCmd() {
-            // 保存命令
-            if (this.isCmdEdited) this.handleSaveCmd()
-
-            const { command } = this.currentCommand
-            copyText(command)
-        },
-        // 运行命令
-        handleRunCmd() {
-            // 保存命令
-            if (this.isCmdEdited) this.handleSaveCmd()
-
-            // 禁止命令并行
-            if (this.isCmdRunning) {
-                this.$alert(
-                    '如果想运行其他任务，请先停止当前任务。',
-                    `对不起，${this.runningCommand.command}正在运行中`,
-                    {
-                        confirmButtonText: '确定'
-                    }
-                )
-                return
-            }
-
-            this.isCmdRunning = true
-            this.runningCommand = this.currentCommand
-            this.runningCommand.running = true
-
-            const { name, command } = this.runningCommand
-            this.currentCmdProcess = this.runCommand(name, command, () => {
-                this.isCmdRunning = false
-                this.runningCommand.running = false
-                this.currentCmdProcess = null
-            })
-        },
-        // 停止命令
-        handleStopCmd() {
-            if (!this.isCmdRunning) return
-            if (this.runningCommand.command !== this.currentCommand.command) return
-
-            this.isCmdRunning = false
-            this.currentCmdProcess.kill('SIGINT')
-        }
-    }
-}
+      this.isCmdRunning = false;
+      this.currentCmdProcess.kill('SIGINT');
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @import "../../assets/less/_function";

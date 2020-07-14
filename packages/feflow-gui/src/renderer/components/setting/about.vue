@@ -1,45 +1,59 @@
 <template>
-<div class="about-dialog-wrapper"  v-if="visible">
-<div class="about-dialog" >
-    <div class="dialog-title">
+  <div
+    v-if="visible"
+    class="about-dialog-wrapper"
+  >
+    <div class="about-dialog">
+      <div class="dialog-title">
         <span>关于</span>
-        <div class="close-button" @click="close">
-            <i class="el-icon el-icon-close"></i>
+        <div
+          class="close-button"
+          @click="close"
+        >
+          <i class="el-icon el-icon-close" />
         </div>
+      </div>
 
-    </div>
-    
-    <div class="content-wrapper">
-        <div class="icon-wrapper"></div>
-        <div class="description">Feflow 桌面版</div>
-        <div class="version">V1.0</div>
-        <div class="feedback" @click="feedback">
+      <div class="content-wrapper">
+        <div class="icon-wrapper" />
+        <div class="description">
+          Feflow 桌面版
+        </div>
+        <div class="version">
+          V1.0
+        </div>
+        <div
+          class="feedback"
+          @click="feedback"
+        >
           Bug反馈
         </div>
+      </div>
+      <div class="copyright">
+        © 2020 Feflow
+      </div>
     </div>
-    <div class="copyright">© 2020 Feflow</div>
-</div>
-</div>
+  </div>
 </template>
 <script>
-import { openBrowser } from '@/common/native'
+import { openBrowser } from '@/common/native';
 export default {
   props: {
     visible: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   methods: {
     close() {
-      this.$emit('hideAboutDialog')
+      this.$emit('hideAboutDialog');
     },
     feedback() {
       openBrowser('https://github.com/Tencent/feflow/issues');
       this.close();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style scoped>
 .about-dialog-wrapper {

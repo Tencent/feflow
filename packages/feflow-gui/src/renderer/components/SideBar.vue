@@ -1,102 +1,134 @@
 <template>
-    <div class="side-bar">
-        <div class="head">
-            <div class="account">
-                <div class="personal-info">
-                    <div class="avatar">
-                        <img v-bind:src="avatar" />
-                    </div>
-                    <div class="nickname">{{ username }}</div>
-                </div>
-                <div class="logout" @click="logout"/>
-            </div>
-            <ul class="nav" v-if="!isProjectPage">
-                <router-link to="/">
-                    <li class="project"><i class="icon" />我的项目</li>
-                </router-link>
-                <router-link to="/market">
-                    <li class="market"><i class="icon" />插件市场</li>
-                </router-link>
-
-                <router-link to="/admin">
-                    <li class="project"><i class="icon" />管理中心</li>
-                </router-link>
-
-                <router-link to="/wiki">
-                    <li class="wiki"><i class="icon" />团队WIKI</li>
-                </router-link>
-            </ul>
-            <ul class="nav" v-if="isProjectPage">
-                <li class="sub"  :class="{ 'current': projectCurrent === itemIndex }"
-                    v-for="(item, itemIndex) in projectSides"
-                    :key="itemIndex"
-                    @click="activeTab(itemIndex)"><i class="icon" :style="{ background: `url(${item.icon})` }"></i>{{item.name}}</li>
-            </ul>
+  <div class="side-bar">
+    <div class="head">
+      <div class="account">
+        <div class="personal-info">
+          <div class="avatar">
+            <img :src="avatar">
+          </div>
+          <div class="nickname">
+            {{ username }}
+          </div>
         </div>
-        <div class="footer">
-            <div class="setting-wrap" id="settingContainer">
-                <div class="divder"></div>
-                <li
-                    class="setting"
-                    @click="showSettingPanel(true)"
-                ><i class="icon" />设置</li>
-                <SettingPanel :visible="isSettingVisble" @closeSettingPanel="closeSettingPanel"/>
-            </div>
-        </div>
+        <div
+          class="logout"
+          @click="logout"
+        />
+      </div>
+      <ul
+        v-if="!isProjectPage"
+        class="nav"
+      >
+        <router-link to="/">
+          <li class="project">
+            <i class="icon" />我的项目
+          </li>
+        </router-link>
+        <router-link to="/market">
+          <li class="market">
+            <i class="icon" />插件市场
+          </li>
+        </router-link>
 
+        <router-link to="/admin">
+          <li class="project">
+            <i class="icon" />管理中心
+          </li>
+        </router-link>
+
+        <router-link to="/wiki">
+          <li class="wiki">
+            <i class="icon" />团队WIKI
+          </li>
+        </router-link>
+      </ul>
+      <ul
+        v-if="isProjectPage"
+        class="nav"
+      >
+        <li
+          v-for="(item, itemIndex) in projectSides"
+          :key="itemIndex"
+          class="sub"
+          :class="{ 'current': projectCurrent === itemIndex }"
+          @click="activeTab(itemIndex)"
+        >
+          <i
+            class="icon"
+            :style="{ background: `url(${item.icon})` }"
+          />{{ item.name }}
+        </li>
+      </ul>
     </div>
+    <div class="footer">
+      <div
+        id="settingContainer"
+        class="setting-wrap"
+      >
+        <div class="divder" />
+        <li
+          class="setting"
+          @click="showSettingPanel(true)"
+        >
+          <i class="icon" />设置
+        </li>
+        <SettingPanel
+          :visible="isSettingVisble"
+          @closeSettingPanel="closeSettingPanel"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 <script>
-import SettingPanel from './setting'
-import Cookie from '../common/utils/cookie'
+import SettingPanel from './setting';
+import Cookie from '../common/utils/cookie';
 export default {
-    model: {
-        prop: 'activeTabId', // 绑定的值，通过父组件传递
-        event: 'updateTabId' // Vue 内部会自动为父组件绑定该自定义事件
+  components: {
+    SettingPanel,
+  },
+  model: {
+    prop: 'activeTabId', // 绑定的值，通过父组件传递
+    event: 'updateTabId', // Vue 内部会自动为父组件绑定该自定义事件
+  },
+  props: {
+    isProjectPage: {
+      type: Boolean,
+      default: false,
     },
-    components: {
-        SettingPanel
+    projectSides: {
+      type: Array,
+      default: () => [],
     },
-    props: {
-        isProjectPage: {
-            type: Boolean,
-            default: false
-        },
-        projectSides: {
-            type: Array,
-            default: () => {
-                return []
-            }
-        },
-        projectCurrent: {
-            type: Number,
-            default: 0
-        }
+    projectCurrent: {
+      type: Number,
+      default: 0,
     },
-    data() {
-        return {
-            isSettingVisble: false,
-            username: global.username,
-            avatar: global.avatar
-        }
+  },
+  data() {
+    return {
+      isSettingVisble: false,
+      username: global.username,
+      avatar: global.avatar,
+    };
+  },
+  methods: {
+    showSettingPanel() {
+      this.isSettingVisble = !this.isSettingVisble;
     },
-    methods: {
-        showSettingPanel() {
-            this.isSettingVisble = !this.isSettingVisble;
-        },
-        closeSettingPanel() {
-            this.isSettingVisble = false;
-        },
-        activeTab(index) {
-            // 子组件与父组件通讯，告知父组件更新
-            this.$emit('updateTabId', index)
-        },
-        logout() {
-            Cookie.clearCookies();
-            location.reload();
-        }
-    }
-}
+    closeSettingPanel() {
+      this.isSettingVisble = false;
+    },
+    activeTab(index) {
+      // 子组件与父组件通讯，告知父组件更新
+      this.$emit('updateTabId', index);
+    },
+    logout() {
+      Cookie.clearCookies();
+      location.reload();
+    },
+  },
+};
 </script>
 <style>
 .side-bar {

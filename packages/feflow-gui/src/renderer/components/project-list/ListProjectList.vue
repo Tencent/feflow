@@ -1,31 +1,44 @@
 <template>
-    <div class="list-projects">
+  <div class="list-projects">
     <div class="create">
-        <i class="create-icon" />
-        创建项目
+      <i class="create-icon" />
+      创建项目
     </div>
-    <div class="project-item" v-bind:key="item.name" v-for="item in projects" @click="createProjectService(item)">
-        <div class="project-logo">
-            <img v-bind:src="item.banner || require('../../assets/default-project-banner.jpg')" />
+    <div
+      v-for="item in projects"
+      :key="item.name"
+      class="project-item"
+      @click="createProjectService(item)"
+    >
+      <div class="project-logo">
+        <img :src="item.banner || require('../../assets/default-project-banner.jpg')">
+      </div>
+      <div class="project-info">
+        <div class="project-name">
+          {{ item.name }}
         </div>
-        <div class="project-info">
-            <div class="project-name">
-                {{ item.name }}
-            </div>
-            <div class="project-path">
-                {{ item.path }}
-            </div>
+        <div class="project-path">
+          {{ item.path }}
         </div>
-        <div class="project-setting" @contextmenu.prevent="showSettingPanel(index)">
-            <div class="setting-icon" />
-            <div class="dropdown" :class="{'dropdown-show' : showSettig === true && index === selectedIndex}">
-                <ul class="menu">
-                    <li @click.stop="deleteProject(item.name, item.path)">删除</li>
-                </ul>
-            </div>
+      </div>
+      <div
+        class="project-setting"
+        @contextmenu.prevent="showSettingPanel(index)"
+      >
+        <div class="setting-icon" />
+        <div
+          class="dropdown"
+          :class="{'dropdown-show' : showSettig === true && index === selectedIndex}"
+        >
+          <ul class="menu">
+            <li @click.stop="deleteProject(item.name, item.path)">
+              删除
+            </li>
+          </ul>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <style scoped>
@@ -154,44 +167,45 @@
 }
 </style>
 <script>
-import electron from 'electron'
-import { deleteProject } from '../../bridge/index'
-const { ipcRenderer } = electron
+import electron from 'electron';
+import { deleteProject } from '../../bridge/index';
+const { ipcRenderer } = electron;
 
 export default {
+  // eslint-disable-next-line
   props: ['projects'],
   data() {
     return {
-        showSettig: false,
-        selectedIndex: null
-    }
+      showSettig: false,
+      selectedIndex: null,
+    };
   },
   mounted() {
     document.addEventListener('click', () => {
-        this.showSettig = false
+      this.showSettig = false;
     });
   },
   methods: {
     createProjectService(project) {
-      const { path, name } = project
-      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name })
+      const { path, name } = project;
+      ipcRenderer.send('create-project-service', { routeName: 'project-service', projectPath: path, projectName: name });
     },
     showSettingPanel(index) {
-        this.showSettig = true
-        this.selectedIndex = index
+      this.showSettig = true;
+      this.selectedIndex = index;
     },
     deleteProject(name, path) {
-        deleteProject(name, path)
-        this.toast('项目删除成功', '', 'success')
+      deleteProject(name, path);
+      this.toast('项目删除成功', '', 'success');
     },
-    toast(title, msg, type = 'info', isPersistent = false) {
-      let opt = {
+    toast(title, msg, type = 'info') {
+      const opt = {
         title,
         message: msg,
-        duration: 0
-      }
-      return this.$notify[type](opt)
-    }
-  }
-}
+        duration: 0,
+      };
+      return this.$notify[type](opt);
+    },
+  },
+};
 </script>

@@ -1,19 +1,20 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    sourceType: 'module'
+    parser: "babel-eslint",
+    sourceType: 'module',
   },
   env: {
     browser: true,
     node: true
   },
-  extends: ['@tencent/eslint-config-tencent', '@tencent/eslint-config-tencent/ts'],
+  extends: ['plugin:vue/vue3-recommended', '@tencent/eslint-config-tencent'],
   globals: {
     __static: true
   },
   plugins: [
-    'html'
+    'vue'
   ],
   overrides: [
     {
@@ -22,18 +23,19 @@ module.exports = {
         // allow paren-less arrow functions
         // 'arrow-parens': 0,
         // allow async-await
-        'generator-star-spacing': 0,
-        // allow debugger during development
-        'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-        'space-before-function-paren': 0,
-        'semi': 0,
-        'indent': 0,
-        'no-unexpected-multiline': 0,
-        'no-undef': 0,
+        // 'generator-star-spacing': 0,
+        // // allow debugger during development
+        // 'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+        // 'space-before-function-paren': 0,
+        // 'semi': 0,
+        // 'indent': 0,
+        // 'no-unexpected-multiline': 0,
+        // 'no-undef': 0,
         'no-useless-escape': 0,
+        'new-cap': 0,
         'no-new-func': 0,
         'no-unused-expressions': 0,
-        'one-var': 0,
+        // 'one-var': 0,
         'no-underscore-dangle': 0,
         // 'no-multi-assign': 0,
         'import/no-default-export': 0,
@@ -42,14 +44,21 @@ module.exports = {
         'operator-linebreak': ['error', 'before', { overrides: { '=': 'none' } }],
         // 'camelcase': 0,
         'no-param-reassign': 0,
-        '@typescript-eslint/consistent-type-assertions': 0,
-        // 允许使用 require
-        '@typescript-eslint/no-require-imports': 0,
-        '@typescript-eslint/prefer-optional-chain': 0,
-        '@typescript-eslint/explicit-member-accessibility': 0,
         'prefer-rest-params': 0,
         'no-eval': 0,
         'object-shorthand': 0,
+        'vue/no-deprecated-slot-attribute': 0,
+        'vue/no-deprecated-v-on-native-modifier': 0,
+        'vue/custom-event-name-casing': 0,
+        'vue/require-valid-default-prop': 0,
+        'vue/no-deprecated-filter': 0,
+        'vue/component-tags-order': 0,
+        'vue/require-prop-types': 0,
+        'vue/no-v-html': 0,
+        'vue/order-in-components': 0,
+        'vue/require-default-prop': 0,
+        'vue/this-in-template': 0,
+        'vue/no-template-shadow': 0,
       },
     },
   ]

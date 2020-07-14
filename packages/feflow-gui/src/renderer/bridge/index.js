@@ -42,7 +42,7 @@ export const loadGenerator = () => getFeflowHomeDepencies().then((dependencies) 
   // 优先级  js > json
   if (generators.length) {
     generators.forEach((gen) => {
-      // eslint-disable-next-line no-restricted-syntax
+      // eslint-disable-next-line
       for (const configName of GENERATOR_CONFIG_FILE_NAME) {
         if (!generatorConfigMap[gen]) {
           const generatorConfig = getFeflowDependenceConfig(gen, configName);

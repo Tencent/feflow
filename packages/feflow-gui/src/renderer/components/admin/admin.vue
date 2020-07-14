@@ -1,55 +1,61 @@
 <template>
-    <div class="admin-wrap">
-        <div class="title-bar">
-            <div class="title">管理中心</div>
-        </div>
-        <div class="admin-main">
-            <el-button
-                v-if="showConfigButton"
-                @click="createConfig"
-            >创建配置</el-button>
-            <el-form
-                v-else
-                ref="form"
-                :model="form"
-                label-width="100px"
-                :rules="rules"
-            >
-                <el-form-item label="组织名称">
-                    <el-input
-                        v-model="form.groupname"
-                        :disabled="true"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item
-                    label="配置脚手架"
-                    prop="scaffold"
-                >
-                    <el-input
-                        v-model="form.scaffold"
-                        placeholder="输入 scaffold 名称，以 ; 号分隔"
-                        :disable="!isAdmin"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item
-                    label="配置插件"
-                    prop="plugins"
-                >
-                    <el-input
-                        v-model="form.plugins"
-                        placeholder="输入 plugins 名称，以 ; 号分隔"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button
-                        type="primary"
-                        @click="onCreate('form')"
-                        :disabled="!canCreate"
-                    >提交</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+  <div class="admin-wrap">
+    <div class="title-bar">
+      <div class="title">
+        管理中心
+      </div>
     </div>
+    <div class="admin-main">
+      <el-button
+        v-if="showConfigButton"
+        @click="createConfig"
+      >
+        创建配置
+      </el-button>
+      <el-form
+        v-else
+        ref="form"
+        :model="form"
+        label-width="100px"
+        :rules="rules"
+      >
+        <el-form-item label="组织名称">
+          <el-input
+            v-model="form.groupname"
+            :disabled="true"
+          />
+        </el-form-item>
+        <el-form-item
+          label="配置脚手架"
+          prop="scaffold"
+        >
+          <el-input
+            v-model="form.scaffold"
+            placeholder="输入 scaffold 名称，以 ; 号分隔"
+            :disable="!isAdmin"
+          />
+        </el-form-item>
+        <el-form-item
+          label="配置插件"
+          prop="plugins"
+        >
+          <el-input
+            v-model="form.plugins"
+            placeholder="输入 plugins 名称，以 ; 号分隔"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            :disabled="!canCreate"
+            @click="onCreate('form')"
+          >
+            提交
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -57,158 +63,159 @@ import { mapState, mapGetters } from 'vuex';
 import apiAuthorize from '@/api/authorize';
 
 export default {
-    name: 'admin-page',
-    data() {
-        const validateNPM = async (rule, value, callback) => {
-            if (value) {
-                let arr = value.split(';').map(item => item.trim());
+  name: 'AdminPage',
+  data() {
+    const validateNPM = async (rule, value, callback) => {
+      if (value) {
+        const arr = value.split(';').map(item => item.trim());
 
-                if (!arr || !arr.length) callback();
+        if (!arr || !arr.length) callback();
 
-                const reg = /^feflow-plugin-|^@[^/]+\/feflow-plugin-|^generator-|^@[^/]+\/generator-/;
+        const reg = /^feflow-plugin-|^@[^/]+\/feflow-plugin-|^generator-|^@[^/]+\/generator-/;
 
-                for (let i = 0; i < arr.length; i++) {
-                    if (!reg.test(arr[i])) {
-                        callback(new Error(`${arr[i]} 不符合规则(feflow-plugin 或 generator)`));
-                        break;
-                    }
+        for (let i = 0; i < arr.length; i++) {
+          if (!reg.test(arr[i])) {
+            callback(new Error(`${arr[i]} 不符合规则(feflow-plugin 或 generator)`));
+            break;
+          }
 
-                    let hasInNPM = await this.checkNPM(arr[i]);
+          const hasInNPM = await this.checkNPM(arr[i]);
 
-                    if (!hasInNPM) {
-                        callback(new Error(`${arr[i]} 不存在于 tnpm`));
-                        break;
-                    }
-                }
+          if (!hasInNPM) {
+            callback(new Error(`${arr[i]} 不存在于 tnpm`));
+            break;
+          }
+        }
 
-                callback();
-            } else {
-                callback();
-            }
+        callback();
+      } else {
+        callback();
+      }
+    };
+    return {
+      showConfigButton: true,
+
+      form: {
+        groupname: '',
+        scaffold: '',
+        plugins: '',
+      },
+
+      rules: {
+        scaffold: [
+          { validator: validateNPM, trigger: 'blur' },
+        ],
+        plugins: [
+          { validator: validateNPM, trigger: 'blur' },
+        ],
+      },
+    };
+  },
+  created() {
+    this.showConfigButton = !this.hasConfig;
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.groupName) {
+        this.form.groupname = this.groupName;
+        this.form.scaffold = this.scaffold;
+        this.form.plugins = this.plugins;
+      }
+    });
+  },
+  computed: {
+    ...mapState('UserInfo', [
+      'username',
+      'isAdmin',
+      'hasConfig',
+    ]),
+
+    ...mapGetters('UserInfo', [
+      'groupName',
+      'scaffold',
+      'plugins',
+    ]),
+
+    canCreate() {
+      // eslint-disable-next-line
+      return (this.isAdmin && (this.form.scaffold || this.form.plugins)) || (!this.isAdmin && !this.hasConfig && (this.form.scaffold || this.form.plugins));
+    },
+  },
+  methods: {
+    createConfig() {
+      this.showConfigButton = false;
+    },
+
+    strToJSON(str) {
+      if (!str) return;
+
+      const arr = str.split(';').map(item => item.trim());
+
+      if (arr && arr.length) {
+        return JSON.stringify(arr);
+      }
+      return '{}';
+    },
+
+    async checkNPM(pkg) {
+      const url = `http://r.tnpm.oa.com/${pkg}`;
+      const result = await this.$http.get(url);
+
+      if (result && result.errcode !== 404) {
+        return true;
+      }
+
+      return false;
+    },
+
+    async initAuth() {
+      // 获取用户配置
+      // eslint-disable-next-line
+      const result = await apiAuthorize.checkAuth({ EngName: username, DeptNameString: department });
+      if (result && result.errcode === 0 && result.data) {
+        this.$store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
+          isAdmin: result.data.isAdmin,
+          hasConfig: result.data.hasConfig,
+          scaffold: result.data.scaffold,
+          plugins: result.data.plugins,
+        });
+      }
+    },
+
+    onCreate(formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (!valid) {
+          return false;
         };
-        return {
-            showConfigButton: true,
 
-            form: {
-                groupname: '',
-                scaffold: '',
-                plugins: ''
-            },
+        const scaffold = this.strToJSON(this.form.scaffold);
+        const plugins = this.strToJSON(this.form.plugins);
 
-            rules: {
-                scaffold: [
-                    { validator: validateNPM, trigger: 'blur' }
-                ],
-                plugins: [
-                    { validator: validateNPM, trigger: 'blur' }
-                ]
-            }
+        const params = {
+          username: this.username,
+          groupname: this.groupName,
+          scaffold,
+          plugins,
+        };
+
+        const result = await apiAuthorize.createConfig(params);
+
+        if (result && result.errcode === 0) {
+          this.$message({
+            message: '提交成功',
+            type: 'success',
+          });
+          this.initAuth();
+        } else {
+          this.$message({
+            message: result.errmsg,
+            type: 'error',
+          });
         }
+      });
     },
-    created() {
-        this.showConfigButton = !this.hasConfig;
-    },
-    mounted() {
-        this.$nextTick(() => {
-            if (this.groupName) {
-                this.form.groupname = this.groupName;
-                this.form.scaffold = this.scaffold;
-                this.form.plugins = this.plugins;
-            }
-        })
-    },
-    computed: {
-        ...mapState('UserInfo', [
-            'username',
-            'isAdmin',
-            'hasConfig'
-        ]),
-
-        ...mapGetters('UserInfo', [
-            'groupName',
-            'scaffold',
-            'plugins'
-        ]),
-
-        canCreate() {
-            return (this.isAdmin && (this.form.scaffold || this.form.plugins)) || (!this.isAdmin && !this.hasConfig && (this.form.scaffold || this.form.plugins));
-        }
-    },
-    methods: {
-        createConfig() {
-            this.showConfigButton = false;
-        },
-
-        strToJSON(str) {
-            if (!str) return;
-
-            let arr = str.split(';').map(item => item.trim());
-
-            if (arr && arr.length) {
-                return JSON.stringify(arr);
-            } else {
-                return '{}';
-            }
-        },
-
-        async checkNPM(pkg) {
-            let url = `http://r.tnpm.oa.com/${pkg}`;
-            let result = await this.$http.get(url);
-
-            if (result && result.errcode !== 404) {
-                return true;
-            }
-
-            return false;
-        },
-
-        async initAuth() {
-            // 获取用户配置
-            const result = await apiAuthorize.checkAuth({ EngName: username, DeptNameString: department });
-            if (result && result.errcode === 0 && result.data) {
-                this.$store.dispatch('UserInfo/SET_ROLE_INFO_ACTION', {
-                    isAdmin: result.data.isAdmin,
-                    hasConfig: result.data.hasConfig,
-                    scaffold: result.data.scaffold,
-                    plugins: result.data.plugins
-                });
-            }
-        },
-
-        onCreate(formName) {
-            this.$refs[formName].validate(async (valid) => {
-                if (!valid) {
-                    return false;
-                };
-
-                let scaffold = this.strToJSON(this.form.scaffold);
-                let plugins = this.strToJSON(this.form.plugins);
-
-                let params = {
-                    username: this.username,
-                    groupname: this.groupName,
-                    scaffold,
-                    plugins
-                };
-
-                let result = await apiAuthorize.createConfig(params);
-
-                if (result && result.errcode === 0) {
-                    this.$message({
-                        message: '提交成功',
-                        type: 'success'
-                    });
-                    this.initAuth();
-                } else {
-                    this.$message({
-                        message: result.errmsg,
-                        type: 'error'
-                    });
-                }
-            });
-        }
-    }
-}
+  },
+};
 </script>
 
 

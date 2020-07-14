@@ -1,112 +1,137 @@
 <template>
   <div class="import-wrapper">
-    <el-form label-position="left" label-width="140px" ref="form">
+    <el-form
+      ref="form"
+      label-position="left"
+      label-width="140px"
+    >
       <el-form-item label="项目名称">
-        <el-input v-model="name" placeholder="请输入内容" clearable />
+        <el-input
+          v-model="name"
+          placeholder="请输入内容"
+          clearable
+        />
       </el-form-item>
       <el-form-item label="项目截图">
-        <el-input v-model="banner" placeholder="图片链接" clearable />
+        <el-input
+          v-model="banner"
+          placeholder="图片链接"
+          clearable
+        />
       </el-form-item>
       <el-form-item label="目录">
-        <el-input :value="workSpace" :disabled="true">
-          <el-button @click="handleWorkSpaceClick" slot="append" class="workspace_btn">选择</el-button>
+        <el-input
+          :value="workSpace"
+          :disabled="true"
+        >
+          <el-button
+            slot="append"
+            class="workspace_btn"
+            @click="handleWorkSpaceClick"
+          >
+            选择
+          </el-button>
         </el-input>
       </el-form-item>
     </el-form>
 
     <div class="action-btn">
-      <el-button @click="handleReset">重置</el-button>
+      <el-button @click="handleReset">
+        重置
+      </el-button>
       <el-button
         type="primary"
-        @click="handleClick"
         :disabled="!(!!this.name && !!this.workSpace)"
-      >导入</el-button>
+        @click="handleClick"
+      >
+        导入
+      </el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { saveGeneratorConfig } from '../../bridge'
+import { mapState, mapActions } from 'vuex';
+import { saveGeneratorConfig } from '../../bridge';
 
 export default {
-  name: 'import-page',
+  name: 'ImportPage',
   data() {
     return {
       name: '',
-      banner: ''
-    }
+      banner: '',
+    };
   },
   computed: {
     ...mapState({
       workSpace: state => state.Generator.importWorkSpace,
-      projectListFromConfig: state => state.Generator.projectListFromConfig
-    })
+      projectListFromConfig: state => state.Generator.projectListFromConfig,
+    }),
   },
   created() {
     // 载入已有项目清单
-    this.getProjectListFromConfig()
+    this.getProjectListFromConfig();
     // 清空导入工作目录
-    this.handleReset()
+    this.handleReset();
   },
   methods: {
     ...mapActions(['importWorkSpace', 'getProjectListFromConfig', 'resetState']),
     handleWorkSpaceClick() {
-      this.importWorkSpace()
+      this.importWorkSpace();
     },
     handleClick() {
       // 校验是否已经存在
       // 名称和目录
-      if (!this.check()) return
+      if (!this.check()) return;
 
       // 导入项目
-      saveGeneratorConfig({ projectName: this.name, workSpace: this.workSpace, banner: this.banner })
-      this.toast('导入成功', '', 'success')
-      this.handleReset()
+      saveGeneratorConfig({ projectName: this.name, workSpace: this.workSpace, banner: this.banner });
+      this.toast('导入成功', '', 'success');
+      this.handleReset();
     },
     check() {
-      const projectName = []
-      const projectPath = []
-      Object.keys(this.projectListFromConfig).forEach(key => {
-        projectName.push(key)
-        projectPath.push(this.projectListFromConfig[key].path)
-      })
+      const projectName = [];
+      const projectPath = [];
+      Object.keys(this.projectListFromConfig).forEach((key) => {
+        projectName.push(key);
+        projectPath.push(this.projectListFromConfig[key].path);
+      });
 
       if (this.banner) {
         if (!/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
-          this.toast('表单错误', '图片链接格式有误', 'error')
-          return false
+          this.toast('表单错误', '图片链接格式有误', 'error');
+          return false;
         }
       }
 
       if (projectName.indexOf(this.name) >= 0) {
-        this.toast('导入失败', '项目名重复', 'error')
-        return false
+        this.toast('导入失败', '项目名重复', 'error');
+        return false;
       }
 
       if (projectPath.indexOf(this.workSpace) >= 0) {
-        this.toast('导入失败', '该路径下的项目已导入', 'error')
-        return false
+        this.toast('导入失败', '该路径下的项目已导入', 'error');
+        return false;
       }
-      return true
+      return true;
     },
     handleReset() {
-      this.name = ''
-      this.resetState()
+      this.name = '';
+      this.resetState();
     },
     toast(title, msg, type = 'info', isPersistent = false) {
-      let opt = {
+      const opt = {
         title,
-        message: msg
-      }
+        message: msg,
+      };
       if (isPersistent) {
-        opt.duration = 0
+        opt.duration = 0;
       }
 
-      return this.$notify[type](opt)
-    }
-  }
-}
+      return this.$notify[type](opt);
+    },
+  },
+};
 </script>
 
 <style scoped lang="less">

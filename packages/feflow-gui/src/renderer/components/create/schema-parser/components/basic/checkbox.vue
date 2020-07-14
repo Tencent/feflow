@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import basicMixin from '../mixins/basic.js'
+import basicMixin from '../mixins/basic.js';
 
 export default {
-  mixins: [basicMixin]
-}
+  mixins: [basicMixin],
+};
 </script>

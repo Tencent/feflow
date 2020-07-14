@@ -1,50 +1,66 @@
 <template>
   <main>
-    <side-bar></side-bar>
+    <side-bar />
     <section class="market-info-wrapper">
       <div class="market-back">
         <router-link to="/market">
-          <el-link type="primary">返回</el-link>
+          <el-link type="primary">
+            返回
+          </el-link>
         </router-link>
-        <el-divider></el-divider>
+        <el-divider />
       </div>
       <div v-if="targetPlugin.isEmpty && !isTimedOut">
         <div class="market-empty">
-          <i class="el-icon-dessert"></i>
+          <i class="el-icon-dessert" />
           <p>插件加载中，请稍等</p>
         </div>
       </div>
       <section v-else-if="!targetPlugin.status && !isTimedOut && targetPlugin.name">
         <div class="market-info_box">
           <div class="market-info_meta">
-            <div class="market-info_meta_title">{{targetPlugin.name}}</div>
-            <p class="market-info_meta_description">{{targetPlugin.description}}</p>
+            <div class="market-info_meta_title">
+              {{ targetPlugin.name }}
+            </div>
+            <p class="market-info_meta_description">
+              {{ targetPlugin.description }}
+            </p>
             <div class="market-info_meta_more">
-              <span>最新版本: {{targetPlugin.version}}</span>
-              <span>发布时间: {{targetPlugin.updateTime}}</span>
-              <span>发布者: {{targetPlugin.master}}</span>
+              <span>最新版本: {{ targetPlugin.version }}</span>
+              <span>发布时间: {{ targetPlugin.updateTime }}</span>
+              <span>发布者: {{ targetPlugin.master }}</span>
             </div>
           </div>
           <div class="market-info_action">
             <el-button
               :type="isInstalled?'info':'primary'"
-              @click="handleClick(isInstalled)"
               :loading="isBtnPendding"
-            >{{!isInstalled?`安装${isBtnPendding?'中':''}`:`卸载${isBtnPendding?'中':''}`}}</el-button>
+              @click="handleClick(isInstalled)"
+            >
+              {{ !isInstalled?`安装${isBtnPendding?'中':''}`:`卸载${isBtnPendding?'中':''}` }}
+            </el-button>
           </div>
         </div>
 
-        <div class="market-info_readme content" v-html="targetPlugin.readmeHTML"></div>
+        <div
+          class="market-info_readme content"
+          v-html="targetPlugin.readmeHTML"
+        />
       </section>
 
-      <div v-else-if="targetPlugin.status || isTimedOut" class="market-empty">
-        <i class="el-icon-dessert"></i>
+      <div
+        v-else-if="targetPlugin.status || isTimedOut"
+        class="market-empty"
+      >
+        <i class="el-icon-dessert" />
 
         <p>
           <el-link
             :href="`http://tnpm.oa.com/package/@tencent/${fullPkgName}`"
             target="_blank"
-          >【{{targetPlugin.status}}】插件信息获取失败，请检查网络状况后重试，或点击这里查看</el-link>
+          >
+            【{{ targetPlugin.status }}】插件信息获取失败，请检查网络状况后重试，或点击这里查看
+          </el-link>
         </p>
       </div>
     </section>
@@ -52,13 +68,13 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import SideBar from '../SideBar'
-import Basic from './mixins/basic'
+import { mapState, mapActions } from 'vuex';
+import SideBar from '../SideBar';
+import Basic from './mixins/basic';
 // TODO 需要校验网络环境
 
 export default {
-  name: 'market-info',
+  name: 'MarketInfo',
   components: { SideBar },
   mixins: [Basic],
   data() {
@@ -66,44 +82,44 @@ export default {
       activeName: 'create',
       pkgName: null,
       isTimedOut: false,
-      isBtnPendding: false
-    }
+      isBtnPendding: false,
+    };
   },
   computed: {
     ...mapState({
       plugins: state => state.Market.plugins,
       pluginsInfoMap: state => state.Market.pluginsInfoMap,
       localPlugins: state => state.Market.localPlugins,
-      taskMap: state => state.Market.taskMap
+      taskMap: state => state.Market.taskMap,
     }),
     targetPlugin() {
-      let _targetPlugin = this.pluginsInfoMap[this.pkgName] || {}
+      let _targetPlugin = this.pluginsInfoMap[this.pkgName] || {};
       if (_targetPlugin.name) {
-        clearTimeout(this.timeoutPoint)
+        clearTimeout(this.timeoutPoint);
       } else {
-        _targetPlugin = { isEmpty: true }
+        _targetPlugin = { isEmpty: true };
       }
 
-      return _targetPlugin
+      return _targetPlugin;
     },
     isInstalled() {
-      return this.localPlugins.includes(this.fullPkgName)
-    }
+      return this.localPlugins.includes(this.fullPkgName);
+    },
   },
   created() {
-    const id = this.$route.params.id
-    const { key, pkgName } = this.plugins[id]
+    const { id } = this.$route.params;
+    const { key, pkgName } = this.plugins[id];
 
-    this.pkgName = pkgName
-    this.fullPkgName = key
+    this.pkgName = pkgName;
+    this.fullPkgName = key;
 
     // 获取该插件信息
     if (!this.targetPlugin.name) {
-      this.getPluginInfo(key)
+      this.getPluginInfo(key);
       // 超时
       this.timeoutPoint = setTimeout(() => {
-        this.isTimedOut = true
-      }, 4500)
+        this.isTimedOut = true;
+      }, 4500);
     }
 
     // 同步任务状态
@@ -118,14 +134,14 @@ export default {
   methods: {
     ...mapActions(['getPluginInfo', 'getLocalPluginList']),
     handleClick(isInstalled) {
-      if (!this.checkTaskValid(this.fullPkgName) || this.isBtnPendding) return
-      this.isBtnPendding = true
-      this.handleInstallAction(isInstalled, this.fullPkgName).then(code => {
-        this.isBtnPendding = false
-      })
-    }
-  }
-}
+      if (!this.checkTaskValid(this.fullPkgName) || this.isBtnPendding) return;
+      this.isBtnPendding = true;
+      this.handleInstallAction(isInstalled, this.fullPkgName).then(() => {
+        this.isBtnPendding = false;
+      });
+    },
+  },
+};
 </script>
 
 <style lang="less">

@@ -1,24 +1,24 @@
 <template>
-    <div class="main">
-        <side-bar></side-bar>
-        <admin-page></admin-page>
-    </div>
+  <div class="main">
+    <side-bar />
+    <admin-page />
+  </div>
 </template>
 
 <script>
-import AdminPage from './admin'
-import SideBar from '../SideBar'
+import AdminPage from './admin';
+import SideBar from '../SideBar';
 export default {
-    name: 'admin-page-index',
-    components: { SideBar, AdminPage },
-    data() {
-        return {
-        }
-    },
-    methods: {
+  name: 'AdminPageIndex',
+  components: { SideBar, AdminPage },
+  data() {
+    return {
+    };
+  },
+  methods: {
 
-    }
-}
+  },
+};
 </script>
 
 <style scoped>

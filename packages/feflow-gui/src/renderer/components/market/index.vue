@@ -1,21 +1,36 @@
 <template>
   <div class="market">
     <main>
-      <side-bar></side-bar>
+      <side-bar />
       <section class="market-wrapper">
-        <div class="market-title">插件市场</div>
+        <div class="market-title">
+          插件市场
+        </div>
         <el-row :gutter="20">
-          <el-col :span="8" v-for="(plugin, index) in pluginsFormated" :key="plugin.key">
-            <div @click="handleJump(index)" class="box-card">
+          <el-col
+            v-for="(plugin, index) in pluginsFormated"
+            :key="plugin.key"
+            :span="8"
+          >
+            <div
+              class="box-card"
+              @click="handleJump(index)"
+            >
               <el-card :class="getRandomBgColor(index)">
-                <h2 class="plugin-title">{{plugin.key}}</h2>
-                <p class="plugin-text">{{plugin.value}}</p>
+                <h2 class="plugin-title">
+                  {{ plugin.key }}
+                </h2>
+                <p class="plugin-text">
+                  {{ plugin.value }}
+                </p>
                 <el-button
                   plain
                   :loading="plugin.isBtnPendding"
                   :type="plugin.isInstalled?'info':'primary'"
                   @click.stop="handleBtnClick(plugin.isInstalled, plugin.key)"
-                >{{plugin.isInstalled ? `卸载${plugin.isBtnPendding?"中":""}`: `安装${plugin.isBtnPendding?"中":""}` }}</el-button>
+                >
+                  {{ plugin.isInstalled ? `卸载${plugin.isBtnPendding?"中":""}`: `安装${plugin.isBtnPendding?"中":""}` }}
+                </el-button>
               </el-card>
             </div>
           </el-col>
@@ -26,80 +41,76 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import SideBar from '../SideBar'
-import { mapActions, mapState } from 'vuex'
-import Basic from './mixins/basic'
+import _ from 'lodash';
+import SideBar from '../SideBar';
+import { mapActions, mapState } from 'vuex';
+import Basic from './mixins/basic';
 
-const claMap = {}
+const claMap = {};
 
 export default {
-  name: 'market-page',
+  name: 'MarketPage',
   components: { SideBar },
   mixins: [Basic],
   data() {
     return {
       activeName: 'create',
-      paddingPlugin: []
-    }
+      paddingPlugin: [],
+    };
   },
   created() {
-    this.getPlugins()
-    this.getLocalPluginList()
+    this.getPlugins();
+    this.getLocalPluginList();
   },
   computed: {
     ...mapState({
       plugins: state => state.Market.plugins,
       localPlugins: state => state.Market.localPlugins,
-      taskMap: state => state.Market.taskMap
+      taskMap: state => state.Market.taskMap,
     }),
     pluginsFormated() {
-      let _plugins = []
+      let _plugins = [];
       if (!this.plugins.length) {
-        return _plugins
+        return _plugins;
       }
-      _plugins = this.plugins.map((plugin, index) => {
-        return {
-          ...plugin,
-          isInstalled: this.localPlugins.includes(plugin.key),
-          isBtnPendding: this.paddingPlugin.includes(plugin.key)
-        }
-      })
-      return _plugins
-    }
+      _plugins = this.plugins.map(plugin => ({
+        ...plugin,
+        isInstalled: this.localPlugins.includes(plugin.key),
+        isBtnPendding: this.paddingPlugin.includes(plugin.key),
+      }));
+      return _plugins;
+    },
   },
   methods: {
     ...mapActions(['getPlugins', 'getLocalPluginList']),
     handleJump(id) {
       //   直接调用$router.push 实现携带参数的跳转
       this.$router.push({
-        path: `/market-info/${id}`
-      })
+        path: `/market-info/${id}`,
+      });
     },
     getRandomBgColor(index) {
-      if (claMap[index]) return claMap[index]
-      const randomInde = Math.floor(Math.random() * 4) + 1
-      const cln = `el-bg-color-${randomInde}`
-      claMap[index] = cln
-      return cln
+      if (claMap[index]) return claMap[index];
+      const randomInde = Math.floor(Math.random() * 4) + 1;
+      const cln = `el-bg-color-${randomInde}`;
+      claMap[index] = cln;
+      return cln;
     },
     handleBtnClick(isInstalled, fullPkgName) {
-      let tmpPaddingPlugin = []
-      if (!this.checkTaskValid(fullPkgName)) return
+      const tmpPaddingPlugin = [];
+      if (!this.checkTaskValid(fullPkgName)) return;
       if (this.paddingPlugin.length >= 2) {
-        return this.toast('任务执行过多，请稍后再试', '', 'info')
+        return this.toast('任务执行过多，请稍后再试', '', 'info');
       }
-      this.paddingPlugin.push(fullPkgName)
-      this.handleInstallAction(isInstalled, fullPkgName).then(code => {
-        tmpPaddingPlugin.push(...this.paddingPlugin)
-        _.remove(tmpPaddingPlugin, function(n) {
-          return n === fullPkgName
-        })
-        this.paddingPlugin = tmpPaddingPlugin
-      })
-    }
-  }
-}
+      this.paddingPlugin.push(fullPkgName);
+      this.handleInstallAction(isInstalled, fullPkgName).then(() => {
+        tmpPaddingPlugin.push(...this.paddingPlugin);
+        _.remove(tmpPaddingPlugin, n => n === fullPkgName);
+        this.paddingPlugin = tmpPaddingPlugin;
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -1,137 +1,164 @@
 <template>
-    <div class="project-profile">
-        <!-- S 项目信息 -->
-        <div class="project-profile__info">
-            <div class="project-profile__info-header">
-                <p class="project-profile__info-title">{{ projectTitle }}</p>
-                <p class="project-profile__info-version">{{ projectVersion }}</p>
-            </div>
-            <p class="project-profile__info-desc">{{ projectDesc }}</p>
-            <!-- git 地址 -->
-            <template v-if="projectRepo">
-                <div class="project-profile__path">
-                    <p class="project-profile__path-url">{{ projectRepo }}</p>
-                    <div class="project-profile__path-action">
-                        <i class="project-profile__path-action-open" @click="handleHrefClick(projectRepo)"></i>
-                        <i class="project-profile__path-action-copy" @click="handleCopy(projectRepo)"></i>
-                    </div>
-                </div>
-            </template>
+  <div class="project-profile">
+    <!-- S 项目信息 -->
+    <div class="project-profile__info">
+      <div class="project-profile__info-header">
+        <p class="project-profile__info-title">
+          {{ projectTitle }}
+        </p>
+        <p class="project-profile__info-version">
+          {{ projectVersion }}
+        </p>
+      </div>
+      <p class="project-profile__info-desc">
+        {{ projectDesc }}
+      </p>
+      <!-- git 地址 -->
+      <template v-if="projectRepo">
+        <div class="project-profile__path">
+          <p class="project-profile__path-url">
+            {{ projectRepo }}
+          </p>
+          <div class="project-profile__path-action">
+            <i
+              class="project-profile__path-action-open"
+              @click="handleHrefClick(projectRepo)"
+            />
+            <i
+              class="project-profile__path-action-copy"
+              @click="handleCopy(projectRepo)"
+            />
+          </div>
         </div>
-        <!-- E 项目信息 -->
-
-        <!-- S 项目维基：团队公共以及所属该项目的维基内容 -->
-        <template v-if="docsList.length > 0">
-            <p class="project-profile__title">项目WIKI</p>
-            <div class="project-profile__wiki"
-                v-for="tag in tagList"
-                :key="tag">
-                <!-- 所属分类 -->
-                <div class="project-profile__wiki-category">
-                    <p class="project-profile__wiki-category-text">{{ tag }}</p>
-                    <i class="project-profile__wiki-category-line"></i>
-                </div>
-                <!-- 该分类下的维基列表 -->
-                <ul class="project-profile__wiki-list">
-                    <li
-                        class="project-profile__wiki-item"
-                        v-for="doc in tagDocsList(tag)"
-                        :key="doc.docId"
-                        @click="handleHrefClick(doc.docLink)">
-                        <p class="project-profile__wiki-name">{{doc.docName}}</p>
-                        <p class="project-profile__wiki-desc">{{doc.docDesc}}</p>
-                    </li>
-                </ul>
-            </div>
-        </template>
-        <!-- E 项目维基 -->
+      </template>
     </div>
+    <!-- E 项目信息 -->
+
+    <!-- S 项目维基：团队公共以及所属该项目的维基内容 -->
+    <template v-if="docsList.length > 0">
+      <p class="project-profile__title">
+        项目WIKI
+      </p>
+      <div
+        v-for="tag in tagList"
+        :key="tag"
+        class="project-profile__wiki"
+      >
+        <!-- 所属分类 -->
+        <div class="project-profile__wiki-category">
+          <p class="project-profile__wiki-category-text">
+            {{ tag }}
+          </p>
+          <i class="project-profile__wiki-category-line" />
+        </div>
+        <!-- 该分类下的维基列表 -->
+        <ul class="project-profile__wiki-list">
+          <li
+            v-for="doc in tagDocsList(tag)"
+            :key="doc.docId"
+            class="project-profile__wiki-item"
+            @click="handleHrefClick(doc.docLink)"
+          >
+            <p class="project-profile__wiki-name">
+              {{ doc.docName }}
+            </p>
+            <p class="project-profile__wiki-desc">
+              {{ doc.docDesc }}
+            </p>
+          </li>
+        </ul>
+      </div>
+    </template>
+    <!-- E 项目维基 -->
+  </div>
 </template>
 <script>
-import { mapState, mapGetters } from 'vuex'
-import { getUrlParam } from '@/common/utils'
-import { copyText, openWebview } from '@/common/native'
-import { getProjectNpmConfig, getProjectGitNames } from '@/bridge'
-import apiWiki from '@/api/wiki'
+import { mapState, mapGetters } from 'vuex';
+import { getUrlParam } from '@/common/utils';
+import { copyText, openWebview } from '@/common/native';
+import { getProjectNpmConfig, getProjectGitNames } from '@/bridge';
+import apiWiki from '@/api/wiki';
 
 export default {
-    name: 'project-profile',
-    data() {
-        return {
-            projectTitle: getUrlParam('name'),
-            projectPath: getUrlParam('path'),
-            projectDesc: '',
-            projectVersion: 'v1.0',
-            projectRepo: '',
-            docsList: [], // 全部文档
-            groupDocsList: [] // 按分类分组的文档
-        }
+  name: 'ProjectProfile',
+  data() {
+    return {
+      projectTitle: getUrlParam('name'),
+      projectPath: getUrlParam('path'),
+      projectDesc: '',
+      projectVersion: 'v1.0',
+      projectRepo: '',
+      docsList: [], // 全部文档
+      groupDocsList: [], // 按分类分组的文档
+    };
+  },
+  computed: {
+    ...mapState('UserInfo', [
+      'username',
+      'department',
+    ]),
+    ...mapGetters('UserInfo', [
+      'groupName',
+    ]),
+    tagList() {
+      return Object.keys(this.groupDocsList);
     },
-    computed: {
-        ...mapState('UserInfo', [
-            'username',
-            'department'
-        ]),
-        ...mapGetters('UserInfo', [
-            'groupName'
-        ]),
-        tagList() {
-            return Object.keys(this.groupDocsList)
-        },
-        tagDocsList(tag) {
-            return tag => this.groupDocsList[tag]
-        }
+    // eslint-disable-next-line
+    tagDocsList(tag) {
+      return tag => this.groupDocsList[tag];
     },
-    mounted () {
-        // 从 packagejson 中读取项目描述
-        this.projectNpmConf = getProjectNpmConfig(this.projectPath)
-        this.projectDesc = this.projectNpmConf.description
-        this.projectVersion = `v${this.projectNpmConf.version}`
-        this.projectNpmConf.repository && (this.projectRepo = this.projectNpmConf.repository.url || '')
+  },
+  mounted() {
+    // 从 packagejson 中读取项目描述
+    this.projectNpmConf = getProjectNpmConfig(this.projectPath);
+    this.projectDesc = this.projectNpmConf.description;
+    this.projectVersion = `v${this.projectNpmConf.version}`;
+    this.projectNpmConf.repository && (this.projectRepo = this.projectNpmConf.repository.url || '');
 
-        // 获取文档展示
-        this.fetchWikiList()
+    // 获取文档展示
+    this.fetchWikiList();
+  },
+  methods: {
+    // 获取团队公共以及所属该项目级别的维基内容
+    async fetchWikiList() {
+      const { groupName } = this;
+      const projectName = ['common'];
+      const [projectGitName] = getProjectGitNames([this.projectPath]);
+
+      try {
+        // 若存在项目git名，一并查询
+        projectGitName && projectName.push(projectGitName);
+        const docsList = await apiWiki.getDocList({ groupName, projectName });
+
+        // 过滤无效数据：0 为有效
+        this.docsList = docsList.filter(doc => doc.status === 0);
+
+        // 分组数据
+        const groupDocsList = {};
+        this.docsList.forEach((item) => {
+          const { tagName } = item;
+
+          if (!groupDocsList[tagName]) groupDocsList[tagName] = [];
+          groupDocsList[tagName].push(item);
+        });
+
+        this.groupDocsList = groupDocsList;
+      } catch (err) {
+        // eslint-disable-next-line
+        error(this, err);
+      }
     },
-    methods: {
-        // 获取团队公共以及所属该项目级别的维基内容
-        async fetchWikiList() {
-            const { groupName } = this
-            const projectName = ['common']
-            const projectGitName = getProjectGitNames([this.projectPath])[0]
-
-            try {
-                // 若存在项目git名，一并查询
-                projectGitName && projectName.push(projectGitName)
-                const docsList = await apiWiki.getDocList({ groupName, projectName })
-
-                // 过滤无效数据：0 为有效
-                this.docsList = docsList.filter(doc => doc.status === 0)
-
-                // 分组数据
-                const groupDocsList = {}
-                this.docsList.forEach(item => {
-                    const { tagName } = item
-
-                    if (!groupDocsList[tagName]) groupDocsList[tagName] = []
-                    groupDocsList[tagName].push(item)
-                })
-
-                this.groupDocsList = groupDocsList
-            } catch (err) {
-                error(this, err)
-            }
-        },
-        // 内嵌打开超链接
-        // 点击跳转
-        handleHrefClick(link) {
-            openWebview(link)
-        },
-        // 复制文本到剪贴板
-        handleCopy(text) {
-            copyText(text)
-        }
-    }
-}
+    // 内嵌打开超链接
+    // 点击跳转
+    handleHrefClick(link) {
+      openWebview(link);
+    },
+    // 复制文本到剪贴板
+    handleCopy(text) {
+      copyText(text);
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @import "../../assets/less/_function";

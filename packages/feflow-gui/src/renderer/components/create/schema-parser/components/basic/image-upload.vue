@@ -2,7 +2,6 @@
   <div class="image-upload">
     <picture-input
       ref="upload"
-      @change="onChange"
       :width="config.width"
       :height="config.height"
       :margin="config.margin"
@@ -12,23 +11,24 @@
       :accept="config.accept"
       :size="config.size"
       :removable="config.removable"
-      :hideChangeButton="config.hideChangeButton"
-      :buttonClass="config.buttonClass"
-      :removeButtonClass="config.removeButtonClass"
-      :zIndex="config.zIndex"
+      :hide-change-button="config.hideChangeButton"
+      :button-class="config.buttonClass"
+      :remove-button-class="config.removeButtonClass"
+      :z-index="config.zIndex"
       :prefill="initializeValue"
-      :alertOnError="config.alertOnError"
-      :customStrings="config.customStrings"
-    ></picture-input>
+      :alert-on-error="config.alertOnError"
+      :custom-strings="config.customStrings"
+      @change="onChange"
+    />
     <span class="value">{{ value }}</span>
   </div>
 </template>
 
 <script>
-import PictureInput from 'vue-picture-input'
-import extend from 'extend'
-import { mapActions } from 'vuex'
-import basicMixin from '../mixins/basic.js'
+import PictureInput from 'vue-picture-input';
+import extend from 'extend';
+import { mapActions } from 'vuex';
+import basicMixin from '../mixins/basic.js';
 
 const defaults = {
   width: 200,
@@ -55,66 +55,66 @@ const defaults = {
     selected: '<p>选择成功</p>',
     fileSize: '文件大小超过限制',
     fileType: '不支持的文件类型',
-    aspect: 'Landscape/Portrait'
-  }
-}
+    aspect: 'Landscape/Portrait',
+  },
+};
 
 export default {
   data() {
     return {
-      initializeValue: ''
-    }
+      initializeValue: '',
+    };
   },
   computed: {
     config() {
-      return extend(true, {}, defaults, this.definition.config)
-    }
+      return extend(true, {}, defaults, this.definition.config);
+    },
   },
   created() {
     this.$watch(
       'value',
-      newValue => {
-        this.initializeValue = newValue
+      (newValue) => {
+        this.initializeValue = newValue;
       },
       {
-        immediate: true
-      }
-    )
+        immediate: true,
+      },
+    );
   },
   methods: {
     onChange(image) {
-      const { config } = this
+      const { config } = this;
 
       if (image) {
         if (config.action) {
           config
             .action(image, config.directory)
-            .then(uri => {
+            .then((uri) => {
               if (uri) {
-                this.value = uri
+                this.value = uri;
               }
             })
-            .catch(err => {
-              console.error(err)
-            })
+            .catch((err) => {
+              console.error(err);
+            });
         } else {
           this.uploadImage(image, config.directory)
-            .then(uri => {
+            .then((uri) => {
               if (uri) {
-                this.value = uri
+                this.value = uri;
               }
             })
-            .catch(err => {
-              console.error(err)
-            })
+            .catch((err) => {
+              console.error(err);
+            });
         }
       }
     },
-    ...mapActions(['uploadImage'])
+    ...mapActions(['uploadImage']),
+  },
+  components: {
+    PictureInput,
   },
   mixins: [basicMixin],
-  components: {
-    PictureInput
-  }
-}
+};
 </script>

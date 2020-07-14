@@ -64,7 +64,7 @@ class Generator {
    * @param {Array} definition
    */
   parse(schema, definition = [], model = {}) {
-    if (!(schema?.properties)) {
+    if (!(schema && schema.properties)) {
       throw new Error('schema no validate!');
     }
 
@@ -249,7 +249,7 @@ function combine(form, schemaForm, lookup) {
   if (idx > -1 && !_.isEmpty(lookup)) {
     const defaultDefinitions = [];
 
-    // eslint-disable-next-line no-restricted-syntax
+    // eslint-disable-next-line
     for (const path in lookup) {
       defaultDefinitions.push(lookup[path]);
     }

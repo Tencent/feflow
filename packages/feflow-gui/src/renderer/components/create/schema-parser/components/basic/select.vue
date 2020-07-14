@@ -1,25 +1,25 @@
 <template>
   <el-select
     v-model="option"
-    @change="handleChange"
     :disabled="definition.disabled"
     :placeholder="definition.placeholder"
     :multiple="config.multiple"
-    :pushTags="config.pushTags"
+    :push-tags="config.pushTags"
+    @change="handleChange"
   >
     <el-option
       v-for="option in definition.options"
-      :value="option.value"
       :key="option.value"
+      :value="option.value"
       :disabled="isWorking"
     />
   </el-select>
 </template>
 
 <script>
-import _ from 'lodash'
-import extend from 'extend'
-import basicMixin from '../mixins/basic.js'
+import _ from 'lodash';
+import extend from 'extend';
+import basicMixin from '../mixins/basic.js';
 
 const defaults = {
   maxHeight: '400px',
@@ -28,25 +28,25 @@ const defaults = {
   taggable: false,
   pushTags: false,
   filterable: true,
-  noDrop: false
-}
+  noDrop: false,
+};
 
 export default {
+  mixins: [basicMixin],
   data() {
     return {
-      option: _.get(this.model, this.path)
-    }
-  },
-  methods: {
-    handleChange(value) {
-      this.setValue({ path: this.path, value: value })
-    }
+      option: _.get(this.model, this.path),
+    };
   },
   computed: {
     config() {
-      return extend(true, {}, defaults, this.definition.config)
-    }
+      return extend(true, {}, defaults, this.definition.config);
+    },
   },
-  mixins: [basicMixin]
-}
+  methods: {
+    handleChange(value) {
+      this.setValue({ path: this.path, value: value });
+    },
+  },
+};
 </script>

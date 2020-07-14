@@ -4,13 +4,13 @@
     :type="config.type"
     :placeholder="definition.placeholder"
     :disabled="isWorking"
-  ></el-date-picker>
+  />
 </template>
 
 <script>
-import Datepicker from 'vue2-datepicker'
-import extend from 'extend'
-import basicMixin from '../mixins/basic.js'
+// import Datepicker from 'vue2-datepicker';
+import extend from 'extend';
+import basicMixin from '../mixins/basic.js';
 
 const defaults = {
   type: 'date',
@@ -26,43 +26,43 @@ const defaults = {
   width: 210,
   notBefore: '',
   notAfter: '',
-  disabledDays: null
-}
+  disabledDays: null,
+};
 
 export default {
+  components: {
+    // Datepicker,
+  },
+  mixins: [basicMixin],
   computed: {
     format() {
-      var date = this.definition.config
+      const date = this.definition.config;
 
       if (date && date.format) {
-        return date.format
+        return date.format;
       }
 
-      const dateFormat = this.schema.format || ''
-      let format
+      const dateFormat = this.schema.format || '';
+      let format;
 
       switch (dateFormat) {
         case 'date':
-          format = 'YYYY-MM-DD'
-          break
+          format = 'YYYY-MM-DD';
+          break;
         case 'time':
-          format = 'HH:mm:ss'
-          break
+          format = 'HH:mm:ss';
+          break;
         case 'date-time':
         default:
-          format = 'YYYY-MM-DD HH:mm:ss'
-          break
+          format = 'YYYY-MM-DD HH:mm:ss';
+          break;
       }
 
-      return format
+      return format;
     },
     config() {
-      return extend(true, {}, defaults, this.definition.config)
-    }
+      return extend(true, {}, defaults, this.definition.config);
+    },
   },
-  components: {
-    Datepicker
-  },
-  mixins: [basicMixin]
-}
+};
 </script>

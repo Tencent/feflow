@@ -2,17 +2,17 @@
   <div class="fieldset">
     <form-group
       v-for="(group, idx) in definition.items"
-      :definition="group"
       :key="`${(group && group.key) ? group.key.join('.') : ''}-${idx}`"
-    ></form-group>
+      :definition="group"
+    />
   </div>
 </template>
 
 <script>
-import objectMixin from '../mixins/object.js'
+import objectMixin from '../mixins/object.js';
 
 export default {
-  mixins: [objectMixin]
-}
+  mixins: [objectMixin],
+};
 </script>
 

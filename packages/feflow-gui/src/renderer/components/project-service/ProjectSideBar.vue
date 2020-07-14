@@ -1,49 +1,54 @@
 <template>
-    <div
-      class="project-sidebar"
-      :class="{'is-collapse': isCollapse }">
-      <!-- 导航栏 -->
-      <ul class="project-sidebar__list">
-        <li
-          class="project-sidebar__item"
-          :class="{ 'is-active': current === itemIndex }"
-          v-for="(item, itemIndex) in nav"
-          :key="itemIndex"
-          @click="activeTab(itemIndex, item)">
-          <i class="project-sidebar__item-icon" :style="{ backgroundImage: `url(${item.icon})` }"></i>
-          <span class="project-sidebar__item-text">{{item.name}}</span>
-        </li>
-      </ul>
-    </div>
+  <div
+    class="project-sidebar"
+    :class="{'is-collapse': isCollapse }"
+  >
+    <!-- 导航栏 -->
+    <ul class="project-sidebar__list">
+      <li
+        v-for="(item, itemIndex) in nav"
+        :key="itemIndex"
+        class="project-sidebar__item"
+        :class="{ 'is-active': current === itemIndex }"
+        @click="activeTab(itemIndex, item)"
+      >
+        <i
+          class="project-sidebar__item-icon"
+          :style="{ backgroundImage: `url(${item.icon})` }"
+        />
+        <span class="project-sidebar__item-text">{{ item.name }}</span>
+      </li>
+    </ul>
+  </div>
 </template>
 <script>
 export default {
-  name: 'project-sidebar',
+  name: 'ProjectSidebar',
   model: {
     prop: 'activeTabId', // 绑定的值，通过父组件传递
-    event: 'updateTabId' // Vue 内部会自动为父组件绑定该自定义事件
+    event: 'updateTabId', // Vue 内部会自动为父组件绑定该自定义事件
   },
   props: {
     nav: {
       type: Array,
-      default: []
-    }
+      default: [],
+    },
   },
   data() {
     return {
       current: 0,
-      isCollapse: false
-    }
+      isCollapse: false,
+    };
   },
   methods: {
-    activeTab(index, item) {
-      this.current = index
+    activeTab(index) {
+      this.current = index;
 
       // 子组件与父组件通讯，告知父组件更新
-      this.$emit('updateTabId', this.current)
-    }
-  }
-}
+      this.$emit('updateTabId', this.current);
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 @rootClass: '.project-sidebar';

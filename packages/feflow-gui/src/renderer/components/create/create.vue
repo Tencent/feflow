@@ -1,36 +1,60 @@
 <template>
   <div class="create-inner">
     <section v-if="generators.length">
-      <el-form label-position="left" label-width="140px" ref="form" :model="formData">
+      <el-form
+        ref="form"
+        label-position="left"
+        label-width="140px"
+        :model="formData"
+      >
         <el-form-item label="脚手架">
-          <el-select v-model="targetGenerator" :disabled="isWorking" placeholder="请选择">
+          <el-select
+            v-model="targetGenerator"
+            :disabled="isWorking"
+            placeholder="请选择"
+          >
             <el-option
-              :disabled="isWorking"
               v-for="item in generators"
               :key="item.value"
+              :disabled="isWorking"
               :label="item.label"
               :value="item.value"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
-        <el-form-item label="项目目录" v-if="!!targetGenerator">
-          <el-input :value="workSpace" :disabled="true">
+        <el-form-item
+          v-if="!!targetGenerator"
+          label="项目目录"
+        >
+          <el-input
+            :value="workSpace"
+            :disabled="true"
+          >
             <el-button
-              @click="handleWorkSpaceClick"
-              class="workspace_btn"
               slot="append"
+              class="workspace_btn"
               :disabled="isWorking"
-            >选择</el-button>
+              @click="handleWorkSpaceClick"
+            >
+              选择
+            </el-button>
           </el-input>
         </el-form-item>
         <schema-form
           v-if="targetGeneratorConfig.generator"
           :schema="targetGeneratorConfig"
-          :isWorking="isWorking"
+          :is-working="isWorking"
         />
 
-        <el-form-item label="项目图片" v-if="!!targetGenerator">
-          <el-input v-model="banner" clearable :disabled="isWorking" />
+        <el-form-item
+          v-if="!!targetGenerator"
+          label="项目图片"
+        >
+          <el-input
+            v-model="banner"
+            clearable
+            :disabled="isWorking"
+          />
         </el-form-item>
       </el-form>
 
@@ -44,21 +68,43 @@
           @after-enter="initTerminal"
         >
           <div class="create-inner__console">
-            <div class="create-inner__console_terminal" ref="terminal"></div>
+            <div
+              ref="terminal"
+              class="create-inner__console_terminal"
+            />
           </div>
-          <el-button class="create-pop-btn" slot="reference" @click="handleConsoleClick">运行日志</el-button>
+          <el-button
+            slot="reference"
+            class="create-pop-btn"
+            @click="handleConsoleClick"
+          >
+            运行日志
+          </el-button>
         </el-popover>
 
-        <el-button @click="handleReset" :disabled="isWorking">重置</el-button>
-        <el-button type="primary" @click="handleClick" :disabled="isWorking">创建</el-button>
+        <el-button
+          :disabled="isWorking"
+          @click="handleReset"
+        >
+          重置
+        </el-button>
+        <el-button
+          type="primary"
+          :disabled="isWorking"
+          @click="handleClick"
+        >
+          创建
+        </el-button>
       </div>
     </section>
     <section v-else>
       <div class="create-empty">
-        <i class="el-icon-sugar project-icon"></i>
+        <i class="el-icon-sugar project-icon" />
         <p>
           <router-link to="/market">
-            <el-link type="primary">未找到脚手架，请去插件市场安装</el-link>
+            <el-link type="primary">
+              未找到脚手架，请去插件市场安装
+            </el-link>
           </router-link>
         </p>
       </div>
@@ -67,23 +113,23 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import { CREATE_CODE } from '../../bridge/constants'
-import { runGenerator, saveGeneratorConfig } from '../../bridge'
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import 'xterm/css/xterm.css'
-import SchemaForm from './schema-parser/components/vue-form'
+import { mapActions, mapState } from 'vuex';
+import { CREATE_CODE } from '../../bridge/constants';
+import { runGenerator, saveGeneratorConfig } from '../../bridge';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
+import SchemaForm from './schema-parser/components/vue-form';
 // import tKill from 'tree-kill'
 
-const TimeOutTsp = 40 * 1000
+const TimeOutTsp = 40 * 1000;
 
 export default {
-  name: 'create-page',
-  props: ['isSelected'],
+  name: 'CreatePage',
   components: {
-    'schema-form': SchemaForm
+    'schema-form': SchemaForm,
   },
+  props: ['isSelected'],
   data() {
     return {
       targetGenerator: '',
@@ -94,17 +140,17 @@ export default {
       hasInitTerminal: false,
       popoverVisible: false,
       empty: false,
-      watchTimer: null
-    }
+      watchTimer: null,
+    };
   },
   mounted() {},
   created() {
     // 载入脚手架
-    this.init()
+    this.init();
   },
   computed: {
     targetGeneratorConfig() {
-      return this.generatorsConfig[this.targetGenerator] || {}
+      return this.generatorsConfig[this.targetGenerator] || {};
     },
     ...mapState({
       workSpace: state => state.Generator.workSpace,
@@ -114,18 +160,18 @@ export default {
       valid: state => state.Schema.valid,
       isWorking: state => state.Generator.isWorking,
       list: state => state.Generator.list,
-      configMap: state => state.Generator.configMap
-    })
+      configMap: state => state.Generator.configMap,
+    }),
   },
   watch: {
     isSelected(newValue) {
       if (!newValue) {
-        this.popoverVisible = false
+        this.popoverVisible = false;
       }
     },
-    configMap(newValue) {
-      this.getSchemaForm()
-    }
+    configMap() {
+      this.getSchemaForm();
+    },
   },
   methods: {
     ...mapActions([
@@ -134,54 +180,54 @@ export default {
       'selectWorkSpace',
       'resetState',
       'toggleWorkStatus',
-      'resetGenerateList'
+      'resetGenerateList',
     ]),
     init() {
       // 重新获取
-      this.resetGenerateList()
+      this.resetGenerateList();
       // 获取脚手架
-      this.getGenerator()
-      this.toggleWorkStatus(false)
+      this.getGenerator();
+      this.toggleWorkStatus(false);
       // 获取动态表单
-      this.getSchemaForm()
+      this.getSchemaForm();
     },
     getSchemaForm() {
-      const _generatorsConfig = {}
-      const _generators = []
-      const gens = Object.keys(this.configMap)
+      const _generatorsConfig = {};
+      const _generators = [];
+      const gens = Object.keys(this.configMap);
 
       // 没有脚手架
       if (!this.list.length) {
-        return (this.empty = true)
+        return (this.empty = true);
       }
 
-      Array.isArray(gens) &&
-        gens.forEach(genName => {
-          const key = genName
-          const gen = this.configMap[genName]
+      Array.isArray(gens)
+        && gens.forEach((genName) => {
+          const key = genName;
+          const gen = this.configMap[genName];
 
           _generators.push({
             value: key,
-            label: gen.description
-          })
+            label: gen.description,
+          });
 
-          _generatorsConfig[key] = this.configMap[key]
-        })
+          _generatorsConfig[key] = this.configMap[key];
+        });
 
-      this.generators = _generators
-      this.generatorsConfig = _generatorsConfig
+      this.generators = _generators;
+      this.generatorsConfig = _generatorsConfig;
 
       // 默认加载第一个脚手架
-      this.targetGenerator = (_generators[0] && _generators[0].value) || ''
+      this.targetGenerator = (_generators[0] && _generators[0].value) || '';
     },
     // 初始化控制台
     initTerminal() {
-      if (this.term) return
+      if (this.term) return;
 
       this.term = new Terminal({
         theme: {
           background: '#F3F4F5',
-          foreground: '#434650'
+          foreground: '#434650',
         },
         convertEol: true, // 解决换行符问题 https://xtermjs.org/docs/api/terminal/interfaces/iterminaloptions/#optional-converteol
         cols: 64,
@@ -190,46 +236,46 @@ export default {
         disableStdin: true, // 禁止输入
         cursorBlink: false,
         cursorStyle: 'bar',
-        cursorWidth: 0
-      })
-      const fitAddon = new FitAddon()
-      this.term.loadAddon(fitAddon)
+        cursorWidth: 0,
+      });
+      const fitAddon = new FitAddon();
+      this.term.loadAddon(fitAddon);
 
       // 将 term 挂载 dom 节点上渲染
-      this.term.open(this.$refs.terminal)
-      fitAddon.fit()
+      this.term.open(this.$refs.terminal);
+      fitAddon.fit();
     },
     async handleClick() {
-      const { execType } = this.generatorsConfig[this.targetGenerator] || {}
-      let isValid = await this.checkFormData()
+      const { execType } = this.generatorsConfig[this.targetGenerator] || {};
+      let isValid = await this.checkFormData();
       // 如果脚手架没有配置文件，那就直接生成
       if (!this.targetGeneratorConfig.generator) {
-        isValid = true
+        isValid = true;
       }
 
-      let config = {}
+      let config = {};
 
-      if (!isValid || this.messageInstance) return
+      if (!isValid || this.messageInstance) return;
 
       // 创建配置文件
       if (execType === 'path') {
         config = await this.$store.dispatchPromise('builConfig', {
           config: this.jsonData,
-          genConfig: this.generatorsConfig[this.targetGenerator]
-        })
+          genConfig: this.generatorsConfig[this.targetGenerator],
+        });
       } else {
-        config = Object.assign({}, this.jsonData, { banner: this.banner })
+        config = Object.assign({}, this.jsonData, { banner: this.banner });
       }
 
       if (this.messageInstance) {
-        this.messageInstance.close()
-        this.messageInstance = null
+        this.messageInstance.close();
+        this.messageInstance = null;
       }
 
-      this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true)
+      this.messageInstance = this.toast('脚手架生成中, 请稍等', '', 'info', true);
 
-      this.toggleWorkStatus(true)
-      this.popoverVisible = true
+      this.toggleWorkStatus(true);
+      this.popoverVisible = true;
       // 直接传参
       // 执行脚手架初始化命令
 
@@ -237,152 +283,152 @@ export default {
         execType,
         config,
         generator: this.targetGenerator,
-        workSpace: this.workSpace
-      })
+        workSpace: this.workSpace,
+      });
 
       if (typeof childProcess === 'number') {
-        return this.handleInitCode(childProcess)
+        return this.handleInitCode(childProcess);
       }
 
-      this.childProcessPid = childProcess.pid
-      this.childProcess = childProcess
+      this.childProcessPid = childProcess.pid;
+      this.childProcess = childProcess;
 
       // 清理上次的日志
-      this.term && this.term.clear()
+      this.term && this.term.clear();
 
-      childProcess.stdout.on('data', data => {
-        this.steamWatcher()
-        this.term.writeln(data)
-      })
-      childProcess.on('close', code => {
-        this.steamWatcherClose()
-        this.handleInitCode(code)
-      })
-      childProcess.on('error', err => {
-        this.steamWatcherClose()
-        this.messageInstance && this.messageInstance.close()
-        this.messageInstance = null
+      childProcess.stdout.on('data', (data) => {
+        this.steamWatcher();
+        this.term.writeln(data);
+      });
+      childProcess.on('close', (code) => {
+        this.steamWatcherClose();
+        this.handleInitCode(code);
+      });
+      childProcess.on('error', (err) => {
+        this.steamWatcherClose();
+        this.messageInstance && this.messageInstance.close();
+        this.messageInstance = null;
         // 上报点
-        this.toast('脚手架生成过程发生异常', err, 'error')
-      })
+        this.toast('脚手架生成过程发生异常', err, 'error');
+      });
     },
     steamWatcher() {
-      if (this.watchTimer) clearTimeout(this.watchTimer)
+      if (this.watchTimer) clearTimeout(this.watchTimer);
       this.watchTimer = setTimeout(() => {
-        this.handleTimeout()
-      }, TimeOutTsp)
+        this.handleTimeout();
+      }, TimeOutTsp);
     },
     steamWatcherClose() {
-      if (this.watchTimer) clearTimeout(this.watchTimer)
+      if (this.watchTimer) clearTimeout(this.watchTimer);
     },
     handleTimeout() {
       this.$alert('检测到当前任务耗时异常，是否中止？', '任务异常', {
         confirmButtonText: '中止',
         cancelButtonText: '再等等',
         showCancelButton: true,
-        callback: action => {
+        callback: (action) => {
           // 拿到子进程pid然后kill
           if (action === 'confirm') {
             if (this.childProcess.exitCode === null) {
-              console.log('还未退出')
+              console.log('还未退出');
               // 尝试退出子进程
-              this.childProcess.kill('SIGHUP')
-              this.messageInstance && this.messageInstance.close()
-              this.messageInstance = null
-              this.popoverVisible = false
-              this.toggleWorkStatus(false)
+              this.childProcess.kill('SIGHUP');
+              this.messageInstance && this.messageInstance.close();
+              this.messageInstance = null;
+              this.popoverVisible = false;
+              this.toggleWorkStatus(false);
             }
           } else {
             // 继续超时逻辑
-            this.steamWatcher()
+            this.steamWatcher();
           }
-        }
-      })
+        },
+      });
     },
     handleConsoleClick() {
-      this.popoverVisible = !this.popoverVisible
+      this.popoverVisible = !this.popoverVisible;
     },
     async checkFormData() {
-      let errMsg = []
-      let isValidWorkspace = false
-      this.$store.dispatch('Schema/validate')
+      const errMsg = [];
+      let isValidWorkspace = false;
+      this.$store.dispatch('Schema/validate');
       // 表单校验
 
       if (this.banner && !/(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?/.test(this.banner)) {
-        errMsg.push('图片链接格式有误')
+        errMsg.push('图片链接格式有误');
       }
 
       if (errMsg.length) {
         this.$notify.error({
           title: '表单输入错误',
           message: errMsg[0],
-          duration: 0
-        })
+          duration: 0,
+        });
       }
 
       // 项目路径检查
       if (this.jsonData.name && this.workSpace) {
         const initCode = await this.$store.dispatchPromise('checkBeforeRun', {
           name: this.jsonData.name,
-          workSpace: this.workSpace
-        })
-        this.handleInitCode(initCode)
-        isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS
+          workSpace: this.workSpace,
+        });
+        this.handleInitCode(initCode);
+        isValidWorkspace = initCode === CREATE_CODE.CHECK_SUCCESS;
       }
 
-      return !errMsg.length && isValidWorkspace && this.valid
+      return !errMsg.length && isValidWorkspace && this.valid;
     },
     handleWorkSpaceClick() {
-      this.selectWorkSpace()
+      this.selectWorkSpace();
     },
     // 处理响应码
     handleInitCode(initCode) {
-      if (initCode === CREATE_CODE.CHECK_SUCCESS) return
+      if (initCode === CREATE_CODE.CHECK_SUCCESS) return;
       switch (initCode) {
         case CREATE_CODE.SUCCESS: {
-          this.messageInstance && this.messageInstance.close()
-          this.messageInstance = null
+          this.messageInstance && this.messageInstance.close();
+          this.messageInstance = null;
           // 保存
           saveGeneratorConfig({
             projectName: this.jsonData.name,
-            workSpace: this.workSpace + '/' + this.jsonData.name,
-            banner: this.banner
-          })
-          this.toast('项目创建成功', '', 'success')
-          this.handleReset()
-          break
+            workSpace: `${this.workSpace}/${this.jsonData.name}`,
+            banner: this.banner,
+          });
+          this.toast('项目创建成功', '', 'success');
+          this.handleReset();
+          break;
         }
         case CREATE_CODE.INVALID_WORKSPACE_NOT_EMPTY: {
-          this.toast('项目创建失败', '项目路径重复，请修改项目名', 'error')
-          break
+          this.toast('项目创建失败', '项目路径重复，请修改项目名', 'error');
+          break;
         }
         default: {
-          this.handleReset()
+          this.handleReset();
         }
       }
     },
     toast(title, msg, type = 'info', isPersistent = false) {
       // TODO mixins
-      let opt = {
+      const opt = {
         title,
-        message: msg
-      }
+        message: msg,
+      };
       if (isPersistent) {
-        opt.duration = 0
+        opt.duration = 0;
       }
 
-      return this.$notify[type](opt)
+      return this.$notify[type](opt);
     },
     handleReset() {
       // 重置表单， 防止重复初始化项目
-      this.toggleWorkStatus(false)
-      this.banner = ''
+      this.toggleWorkStatus(false);
+      this.banner = '';
       if (this.targetGeneratorConfig) {
-        this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig })
+        this.$store.dispatch('Schema/init', { schema: this.targetGeneratorConfig });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 

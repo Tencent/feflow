@@ -1,13 +1,16 @@
 <template>
-  <div class="vue-form-html" v-html="definition.tpl"></div>
+  <div
+    class="vue-form-html"
+    v-html="definition.tpl"
+  />
 </template>
 
 <script>
 export default {
   props: {
     definition: {
-      type: Object
-    }
-  }
-}
+      type: Object,
+    },
+  },
+};
 </script>

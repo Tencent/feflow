@@ -13,7 +13,7 @@ function createServer(callback) {
     res.write(data);
     res.end();
 
-    callback?.();
+    callback && callback();
   }).listen(app.guiPort);
 }
 

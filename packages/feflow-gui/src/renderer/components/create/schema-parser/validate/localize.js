@@ -159,7 +159,7 @@ export default function localize(errors = [], schema) {
     return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
+  // eslint-disable-next-line
   for (let i = 0; i < errors.length; i++) {
     const e = errors[i];
     let title;

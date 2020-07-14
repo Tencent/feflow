@@ -60,7 +60,7 @@ const sucCall = (response, options) => {
 
         // Guard against invalid (and possibly dangerous) input by ensuring that nothing remains
         // after removing valid tokens
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        // eslint-disable-next-line
         jsonString
                     && !jsonString
                       .replace(rvalidtokens, (
