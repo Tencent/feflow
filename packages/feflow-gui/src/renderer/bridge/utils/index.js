@@ -118,7 +118,7 @@ export function parseYaml(path) {
  * @param {object} schema, 脚手架参数
  *
  */
-export const generatorConfigFile = (fileName, config, schema) => {
+export const generatorConfigFile = (fileName, config) => {
   const filepath = path.resolve(FEFLOW_GENERATOR_CONFIG_HOME, `${fileName}.js`);
 
   if (!isExit(filepath)) {

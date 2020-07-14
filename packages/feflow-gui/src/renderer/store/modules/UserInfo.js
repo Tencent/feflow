@@ -25,7 +25,7 @@ const mutations = {
 
 // getters
 const getters = {
-  groupName: (state, getters) => {
+  groupName: (state) => {
     let { department } = state;
     department = department.split('/');
     department.pop();

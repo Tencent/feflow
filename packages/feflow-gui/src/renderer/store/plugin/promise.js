@@ -2,7 +2,7 @@ import promiseIpc from 'electron-promise-ipc';
 
 const DISPATCH = 'promise-action-dispatch';
 
-export default (options = {}) => (store) => {
+export default () => (store) => {
   function renderer() {
     store.dispatchPromise = (type, payload) => promiseIpc.send(DISPATCH, {
       type,

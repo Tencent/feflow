@@ -11,7 +11,7 @@ const generator = new Generator();
 const ajv = new Ajv();
 let validator = null;
 
-export const init = ({ commit, state }, { schema, definition, model = {} }) => {
+export const init = ({ commit }, { schema, definition, model = {} }) => {
   const _state = {};
   const isSchemaValid = ajv.validateSchema(schema);
   // 根节点是array，要嵌套一层
@@ -263,7 +263,7 @@ function getDefinitionByPath(definition, path) {
 }
 
 function addRootArray(form) {
-  _.forEach(form, (item, idx) => {
+  _.forEach(form, (item) => {
     item.key = ARRAY_ROOT_KEY + item.key;
 
     if (item.items) {
