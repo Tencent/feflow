@@ -9,7 +9,7 @@ module.exports = {
           {
             enforceInMethodNames: false,
             allowAfterThis: true,
-            allow: ['_this', '__importDefault', '__esModule', '__read', '__values', '_a', '__awaiter', '__generator', '__assign', '_args'],
+            allow: ['_this', '__importDefault', '__esModule', '__read', '__values', '_a', '__awaiter', '__generator', '__assign', '_args', '_obj'],
           },
         ],
         // 'no-multi-assign': 0,
@@ -26,7 +26,14 @@ module.exports = {
         '@typescript-eslint/prefer-optional-chain': 0,
         '@typescript-eslint/explicit-member-accessibility': 0,
         '@typescript-eslint/member-ordering': 0,
+        '@typescript-eslint/no-unused-expressions': 0,
       },
     },
   ],
+  "env": {
+    "commonjs": true,
+    "node": true,
+    "mocha": true,
+    "jest": true,
+  },
 };

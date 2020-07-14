@@ -15,9 +15,9 @@ describe('@feflow/core - Plugin compose', () => {
   });
 
   it('Composes functions from right to left', () => {
-    const a = (next: any) => (x: string) => next(x + 'a');
-    const b = (next: any) => (x: string) => next(x + 'b');
-    const c = (next: any) => (x: string) => next(x + 'c');
+    const a = (next: any) => (x: string) => next(`${x}a`);
+    const b = (next: any) => (x: string) => next(`${x}b`);
+    const c = (next: any) => (x: string) => next(`${x}c`);
     const final = (x: any) => x;
     expect(compose(a, b, c)(final)('')).to.be.eql('abc');
 

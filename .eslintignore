@@ -7,4 +7,8 @@ node_modules
 # packages/feflow-report
 # packages/feflow-report-sdk
 # examples
-__tests__
+packages/feflow-cli/lib
+packages/feflow-cli/coverage
+# __tests__
+dist
+build
