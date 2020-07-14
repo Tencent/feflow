@@ -1,3 +1,47 @@
+## [0.20.9](https://github.com/Tencent/feflow/compare/v0.20.8...v0.20.9) (2020-07-14)
+
+
+### Bug Fixes
+
+* **report:** fix git command ([803cde4](https://github.com/Tencent/feflow/commit/803cde4202ce1a96fd640abe6409a9066ee1a340))
+* fix hook emit with arguments ([c659792](https://github.com/Tencent/feflow/commit/c659792edb752355d2bba3ead27b37357f558251))
+* get username in linux ([#277](https://github.com/Tencent/feflow/issues/277)) ([3476aff](https://github.com/Tencent/feflow/commit/3476aff28f160eead46a7dd9c487ea5a70258657))
+* install npm package ([7fc370f](https://github.com/Tencent/feflow/commit/7fc370f4636b5f99a8b9785b594df037cb0bbd20))
+* 去掉冗余依赖 execa;修改 this.reporter.init 不存在的报错;去掉没有使用的变量 ([ec4c9a2](https://github.com/Tencent/feflow/commit/ec4c9a2a3432cee856edd1eccc82a4616660e070))
+
+
+### Features
+
+*  remove plugin cmd link when uninstall plugin ([604b959](https://github.com/Tencent/feflow/commit/604b959f7d421f9ef5ae25e9230d060212701298))
+* add register event to Commander, and allow link npm plugin to global with install option -g ([2221b2a](https://github.com/Tencent/feflow/commit/2221b2a85f6d904908d4c0de951707311a34650d))
+* add upgrade command ([#279](https://github.com/Tencent/feflow/issues/279)) ([409b079](https://github.com/Tencent/feflow/commit/409b079b6f13d0735b39dea04e4bf2366c6ee4cc))
+* command source ([d801a4f](https://github.com/Tencent/feflow/commit/d801a4f33d50d77802751403d8602fa8d91525c5))
+* only updated once an hour later ([5dbb8f3](https://github.com/Tencent/feflow/commit/5dbb8f3017443e7ca5cd08c24e779beb4dcdb2a4))
+* optimize performance and fix bugso ([936185c](https://github.com/Tencent/feflow/commit/936185c1161590afa5de58bc086cff2ff26d8098))
+* report url ([e6ec008](https://github.com/Tencent/feflow/commit/e6ec0087b03decc95df6815c8f64f4e6b04e9d06))
+* **report:** update report version ([dbb351c](https://github.com/Tencent/feflow/commit/dbb351c99de2025779078a2c3c581fb72974e051))
+* support report init result ([6d43033](https://github.com/Tencent/feflow/commit/6d43033163353d4b39aae55f989daab0c133cf49))
+* support report init result ([29fea39](https://github.com/Tencent/feflow/commit/29fea393355078f65b9f147b32b040f376ac7c15))
+* **report:** report generator and devkit ([86ca850](https://github.com/Tencent/feflow/commit/86ca8500a8119636396a7d9b097b7c473e715636))
+* support report init result ([#288](https://github.com/Tencent/feflow/issues/288)) ([05a0ea2](https://github.com/Tencent/feflow/commit/05a0ea22c6990d4b586390340b1397f6c3feab43))
+* support the uninstall hook, update after run ([d0d1f5b](https://github.com/Tencent/feflow/commit/d0d1f5bf430d7ca414799dc4f42b662ccce0e0ed))
+* **report:** mount report on ctx ([93fb8c0](https://github.com/Tencent/feflow/commit/93fb8c0324ca47742fcf41fafb09c323642d73d1))
+* update report version ([1eca90c](https://github.com/Tencent/feflow/commit/1eca90cbe8e85c7a2a1b9c2543ee645fea14e580))
+* **examples:** add generators for feflow-generaotr-* & feflow-devkit-* ([#282](https://github.com/Tencent/feflow/issues/282)) ([0491954](https://github.com/Tencent/feflow/commit/04919543ed079cbe8b2479139430046057b039c5))
+* **report:** format usrname string ([802fec0](https://github.com/Tencent/feflow/commit/802fec06b1ddabf6c9f8565d81c198529f160cd1))
+* 提供官方命令 doctor 展示用户环境信息 ([beb7663](https://github.com/Tencent/feflow/commit/beb7663f98a514148da0561e84f4d24a8c4879e2))
+* 支持 fef help xxx 展示插件对应的 usage 信息 ([17a99e6](https://github.com/Tencent/feflow/commit/17a99e6c9b000b6fbf74913fc2f7fd0ecb079f84))
+* **report:** get project from git ([692f9e8](https://github.com/Tencent/feflow/commit/692f9e85b6a3b1b898a2de760397e0b237e83812))
+* **report:** get username from linux ([dd5f4f8](https://github.com/Tencent/feflow/commit/dd5f4f8860da014bbbd48c64b613f6606215f7b1))
+* **report:** plugin name from options ([4d81c4a](https://github.com/Tencent/feflow/commit/4d81c4a9c30f597577dafaf26c0b20ceda7ea73f))
+* **report:** point log ([12486c5](https://github.com/Tencent/feflow/commit/12486c53e776513d4684e44f78111c933c3ca4ab))
+* **report:** report feflow version ([c213fd9](https://github.com/Tencent/feflow/commit/c213fd9214caf63d3576c3eda44e1704b3c112cc))
+* **report:** reset timeout ([9f5be87](https://github.com/Tencent/feflow/commit/9f5be87b90ae0c623daef77b16fe8c0b27fdda14))
+* **report:** sniff user network and save ([9e1a7d1](https://github.com/Tencent/feflow/commit/9e1a7d15037ea4e7129d79d2850be51238a8827d))
+* **report:** update ([c0220eb](https://github.com/Tencent/feflow/commit/c0220eb35667ca0d0ecc9d77fbc801f1c7bef140))
+
+
+
 ## [0.20.8](https://github.com/Tencent/feflow/compare/v0.20.7...v0.20.8) (2020-06-17)
 
 
