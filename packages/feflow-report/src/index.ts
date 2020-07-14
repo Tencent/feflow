@@ -3,26 +3,6 @@ import { getUserName, getSystemInfo, getProject } from './common/utils';
 import objectFactory from './common/objectFactory';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS, REPORT_COMMAND_ERR } from './constants';
 
-interface ReportContext {
-  log: any;
-  logger: any;
-  args: any;
-  pkgConfig: {
-    name: string;
-  };
-  commander: {
-    store: {};
-  };
-  hook: {
-    on(eventName: string, listener: any): void;
-  };
-  version: string;
-}
-
-interface ReportBody {
-  [key: string]: any;
-}
-
 class Report {
   ctx: ReportContext;
   costTime: number;
@@ -79,7 +59,7 @@ class Report {
     this.recallReport();
   };
 
-  private getReportBody(cmd, args): ReportBody {
+  private getReportBody(cmd, args): any {
     return objectFactory
       .create()
       .load('command', cmd)
@@ -95,7 +75,7 @@ class Report {
       .done();
   }
 
-  private getRecallBody(): ReportBody {
+  private getRecallBody(): any {
     return objectFactory
       .create()
       .load('command')
@@ -148,7 +128,7 @@ class Report {
     this.isRecallActivating = true;
     if (!this.reCallId) return;
     try {
-      const reCallBody: ReportBody = this.getRecallBody();
+      const reCallBody: RecallBody = this.getRecallBody();
       this.ctx.log.debug('reCallBody', JSON.stringify(reCallBody));
       const report = new ApiController(reCallBody, this.ctx.log);
       report.doReport();
