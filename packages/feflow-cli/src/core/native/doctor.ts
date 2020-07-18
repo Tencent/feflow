@@ -46,12 +46,12 @@ module.exports = (ctx: any) => {
                 header: 'Proxy config info',
                 optionList: [
                     {
-                        name: 'http_porxy ',
+                        name: 'http_proxy ',
                         typeLabel: '{underline info:}',
                         description: executeSync('echo $http_proxy')
                     },
                     {
-                        name: 'npm_config_porxy ',
+                        name: 'npm_config_proxy ',
                         typeLabel: '{underline info:}',
                         description: executeSync('npm config get proxy')
                     },
