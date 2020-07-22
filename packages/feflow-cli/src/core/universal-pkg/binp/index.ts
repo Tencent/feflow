@@ -11,13 +11,6 @@ export default class Binp {
 
   private currentOs: NodeJS.Platform;
 
-  private alternativeProfiles = [
-    '.profile',
-    '.bashrc',
-    '.bash_profile',
-    '.zshrc'
-  ];
-
   constructor() {
     this.currentOs = os.platform();
   }
@@ -40,8 +33,8 @@ export default class Binp {
       this.registerToWin32(binPath, prior);
     } else {
       const profile = this.checkTerminal(binPath, prior);
-      this.registerToUnixLike(binPath, prior);
       if (profile) {
+        this.registerToUnixLike(binPath, prior);
         this.handleUnsupportedTerminal(profile);
       }
     }
@@ -94,6 +87,7 @@ export default class Binp {
   ) {
     const [profile, setStatement] = this.detectProfile(binPath, prior);
     if (!profile || !setStatement) {
+      console.warn(`unknown terminal, please add ${binPath} to the path`);
       return;
     }
     const content = fs.readFileSync(profile)?.toString();
@@ -104,7 +98,7 @@ export default class Binp {
   }
 
   private handleUnsupportedTerminal(profile: string) {
-    console.error('feflow is ready, but the current terminal cannot use feflow normally, please open a new terminal or execute the following statement:');
+    console.error('the current terminal cannot use feflow normally, please open a new terminal or execute the following statement:');
     console.error(`source ${profile}`);
     process.exit(1);
   }
@@ -144,20 +138,7 @@ export default class Binp {
         }
         return [this.detectCshProfile(home), toPath];
     }
-    const profile = this.detectAlternativeProfiles(home);
-    if (profile) {
-      return [profile, toPath];
-    }
     return [undefined, undefined];
-  }
-
-  
-  private detectAlternativeProfiles(home: string): string | undefined {
-    const findFunc = (p: string) => {
-      const absProfile = path.join(home, p);
-      return fs.existsSync(absProfile);
-    };
-    return this.alternativeProfiles.find(findFunc);
   }
 
   private detectBashProfile(home: string): string {
@@ -176,7 +157,12 @@ export default class Binp {
   }
 
   addToPath(file: string, content: string) {
-    fs.appendFileSync(file, `\n${content}\n`);
+    try {
+      fs.appendFileSync(file, `\n${content}\n`);
+    } catch(e) {
+      console.error(e);
+      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+    }
   }
 
 }

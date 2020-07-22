@@ -17,7 +17,8 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
-  UNIVERSAL_MODULES
+  UNIVERSAL_MODULES,
+  HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import packageJson from '../shared/packageJson';
@@ -32,6 +33,7 @@ import CommandPicker, {
   LOAD_DEVKIT,
   LOAD_ALL
 } from './command-picker';
+import Report from '@feflow/report';
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -52,6 +54,7 @@ export default class Feflow {
   public bin: string;
   public lib: string;
   public universalPkg: UniversalPkg;
+  public reporter: any;
 
   constructor(args: any) {
     args = args || {};
@@ -69,12 +72,15 @@ export default class Feflow {
     this.version = pkg.version;
     this.config = parseYaml(configPath);
     this.configPath = configPath;
-    this.commander = new Commander();
     this.hook = new Hook();
+    this.commander = new Commander((cmdName: string) => {
+      this.hook.emit(HOOK_TYPE_ON_COMMAND_REGISTERED, cmdName);
+    });
     this.logger = logger({
       debug: Boolean(args.debug),
       silent: Boolean(args.silent)
     });
+    this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
     this.initBinPath();
   }
@@ -96,6 +102,7 @@ export default class Feflow {
       return picker.pickCommand();
     }
 
+    this.reporter.init && this.reporter.init(cmd);
     await this.loadCommands(picker.getLoadOrder());
   }
 
@@ -518,7 +525,8 @@ export default class Feflow {
     }
 
     if (cmd === 'help') {
-      return registriedCommand.call(this, ctx);
+      registriedCommand.call(this, ctx);
+      return true;
     }
     if (commandLine.length == 0) {
       return false;

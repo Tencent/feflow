@@ -1,25 +1,32 @@
 import spawn from 'cross-spawn';
 
+let isSSH: any;
 async function isSupportSSH(url: string): Promise<any> {
-  const res: any = Promise.race([
-    spawn.sync('ssh', ['-vT', url]),
-    new Promise((resolve: any, reject: any) => {
-      setTimeout(() => {
-        reject(new Error('SSH check timeout'));
-      }, 1000);
-    })
-  ]);
+  if (isSSH) {
+    return isSSH;
+  }
+  try {
+    const res: any = await Promise.race([
+      spawn.sync('ssh', ['-vT', url]),
+      new Promise((resolve: any, reject: any) => {
+        setTimeout(() => {
+          reject(new Error('SSH check timeout'));
+        }, 1000);
+      })
+    ]);
 
-  res.then((ret: any) => {
-    const stderr = ret?.stderr?.toString();
+    const stderr = res?.stderr?.toString();
     if (/Authentication succeeded/.test(stderr)) {
-      return true;
+      isSSH = true;
+    } else {
+      isSSH = false;
     }
-    return false;
-  }).catch((err: any) => {
+    return isSSH;
+  } catch (err) {
     console.log('Git ssh check timeout, use https');
-    return false;
-  });
+    isSSH = false;
+    return isSSH;
+  }
 }
 
 function getHostname(url: string): string {
@@ -32,7 +39,8 @@ function getHostname(url: string): string {
   }
 }
 
-export async function transformUrl(url: string): Promise<any> {
+let gitAccount: any;
+export async function transformUrl(url: string, account?: any): Promise<any> {
   const hostname = getHostname(url);
   const isSSH = await isSupportSSH(`git@${hostname}`);
   if (isSSH) {
@@ -42,10 +50,19 @@ export async function transformUrl(url: string): Promise<any> {
       return url;
     }
   } else {
+    let transformedUrl;
     if (/https?/.test(url)) {
-      return url;
+      transformedUrl = url;
     } else {
-      return url.replace(`git@${ hostname }:`, `http://${ hostname }/`);
+      transformedUrl = url.replace(`git@${ hostname }:`, `http://${ hostname }/`);
     }
+    if (account) {
+      gitAccount = account;
+    }
+    if (gitAccount) {
+      const { username, password } = gitAccount;
+      return transformedUrl.replace(/http:\/\//, `http://${username}:${password}@`);
+    }
+    return transformedUrl;
   }
 }

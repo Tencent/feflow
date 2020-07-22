@@ -1,5 +1,6 @@
 import chai from 'chai';
 const Report = require('../src/index');
+const { getUserName, httpRegex, sshRegex } = require('../src/common/utils');
 
 const expect = chai.expect;
 
@@ -10,29 +11,10 @@ describe('@feflow/report - report', () => {
     report = new Report({});
   });
 
-  it('getProject() - get project name from package.json', () => {
-    const projectName = report.getProject();
-
-    expect(projectName).to.not.empty;
-    expect(projectName).to.be.eq('@feflow/report');
-  });
-
   it('getUserName() - username is not empty', () => {
-    const username = report.getUserName();
+    const username = getUserName();
 
     expect(username).to.not.empty;
-  });
-
-  it('getSystemInfo() - get system info, and is not empty', () => {
-    const systemInfoStr = report.getSystemInfo();
-    const info = JSON.parse(systemInfoStr);
-    expect(systemInfoStr).to.not.empty;
-    expect(info).to.not.empty;
-    expect(info.hostname).to.not.empty;
-    expect(info.type).to.not.empty;
-    expect(info.platform).to.not.empty;
-    expect(info.arch).to.not.empty;
-    expect(info.release).to.not.empty;
   });
 
   it('getReportBody() ', () => {

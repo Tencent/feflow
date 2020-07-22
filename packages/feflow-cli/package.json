@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.20.6",
+  "version": "0.20.9",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
@@ -24,19 +24,26 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "prepublish": "npm run build"
   },
+  "oclif": {
+    "bin": "fef",
+    "macos": {
+      "identifier": "com.feflow.cli"
+    }
+  },
   "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
     "@types/abbrev": "^1.1.0",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.0",
     "@types/command-line-usage": "^5.0.1",
     "@types/cross-spawn": "^6.0.0",
     "@types/easy-table": "0.0.32",
-    "@types/execa": "^2.0.0",
     "@types/figlet": "^1.2.0",
     "@types/inquirer": "^6.0.3",
     "@types/js-yaml": "^3.12.1",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.7",
+    "@types/nedb": "^1.8.9",
     "@types/node": "^12.0.10",
     "@types/osenv": "^0.1.0",
     "@types/request-promise": "^4.1.45",
@@ -53,16 +60,15 @@
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "0.0.1",
-    "@feflow/report": "^0.1.9",
-    "@types/execa": "^2.0.0",
+    "@feflow/report": "^0.2.7",
     "abbrev": "^1.1.1",
+    "axios": "^0.19.2",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
     "command-line-usage": "^6.1.0",
     "commander": "^2.20.0",
     "cross-spawn": "^6.0.5",
     "easy-table": "^1.1.1",
-    "execa": "^4.0.1",
     "figlet": "^1.2.3",
     "import-fresh": "^3.1.0",
     "inquire": "^0.4.8",
@@ -70,6 +76,7 @@
     "js-yaml": "^3.13.1",
     "lookpath": "^1.0.6",
     "minimist": "^1.2.0",
+    "nedb": "^1.8.0",
     "osenv": "^0.1.5",
     "package-json": "^6.5.0",
     "request": "^2.88.0",
