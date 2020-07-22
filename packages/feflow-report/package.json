@@ -1,10 +1,10 @@
 {
   "name": "@feflow/report",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "nyc mocha -r ts-node/register __tests__/*.spec.ts",
+    "test": "npx mocha -r ts-node/register __tests__/*.spec.ts",
     "build": "tsc",
     "dev": "npm run build && node ./lib/dev.js"
   },
@@ -23,8 +23,10 @@
     "typescript": "^3.6.4"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
+  "types": "./types/index.d.ts",
   "dependencies": {
     "request": "^2.88.0",
     "request-promise": "^4.2.5",

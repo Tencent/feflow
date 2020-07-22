@@ -1,6 +1,6 @@
 import chai from 'chai';
-const Report = require('../src/index');
-const { getUserName, httpRegex, sshRegex } = require('../src/common/utils');
+const Report = require('../lib/index');
+const { getUserName, httpRegex, sshRegex } = require('../lib/common/utils');
 
 const expect = chai.expect;
 
