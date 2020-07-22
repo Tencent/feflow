@@ -49,10 +49,12 @@ export default class CommandPicker {
   }
 
   isAvailable() {
-    return this.isHelp ? false : !!this.getCommandConfig();
+    const { path } = this.getCommandConfig() || {};
+    const pathExists = fs.existsSync(path);
+    return this.isHelp ? false : !!pathExists;
   }
 
-  init() {
+  private init() {
     this.checkAndUpdate();
   }
 
@@ -87,7 +89,7 @@ export default class CommandPicker {
   }
 
   getCommandConfig() {
-    return this.cache?.commandPickerMap?.[this.cmd];
+    return this.cache.commandPickerMap?.[this.cmd];
   }
 
   initCommandPickerMap() {
@@ -139,9 +141,11 @@ export default class CommandPicker {
   }
 
   pickCommand() {
-    this.ctx.logger.debug('pickCommand');
     const { path, type } = this.getCommandConfig() || {};
-    switch (type) {
+    this.ctx.logger.debug('pick command type', type);
+    this.ctx.logger.debug('pick command path', path);
+
+    switch (path) {
       case NATIVE_TYPE:
       case PLUGIN_TYPE: {
         try {
@@ -183,6 +187,8 @@ export default class CommandPicker {
   getLoadOrder() {
     if (this.isUniverslPlugin()) {
       return LOAD_UNIVERSAL_PLUGIN;
+    } else if (this.cmd === 'help') {
+      return LOAD_ALL;
     } else {
       return LOAD_DEVKIT | LOAD_PLUGIN;
     }

@@ -87,12 +87,13 @@ export default class Feflow {
 
   async init(cmd: string) {
     const disableCheck =
-      !this.args['disable-check'] && !(this.config.disableCheck === 'true');
+      (this.args['disable-check'] || (this.config.disableCheck === true))
+    this.reporter.init && this.reporter.init(cmd);
 
     await this.initClient();
     await this.initPackageManager();
 
-    if (disableCheck) {
+    if (!disableCheck) {
       await this.checkCliUpdate();
       await this.checkUpdate();
     }
@@ -102,7 +103,6 @@ export default class Feflow {
       return picker.pickCommand();
     }
 
-    this.reporter.init && this.reporter.init(cmd);
     await this.loadCommands(picker.getLoadOrder());
   }
 
@@ -224,7 +224,7 @@ export default class Feflow {
 
   checkUpdate() {
     const { root, rootPkg, config, logger } = this;
-    if (!config || !this.isTimeToCheckUpdate()) {
+    if (!config) {
       return;
     }
 
@@ -388,11 +388,6 @@ export default class Feflow {
       }
     }
 
-    if (name === 'help') {
-      await this.loadCommands(LOAD_ALL);
-      new CommandPicker(ctx, '-h').loadHelp();
-    }
-
     const cmd = this.commander.get(name);
     if (cmd) {
       await cmd.call(this, ctx);
@@ -430,26 +425,6 @@ export default class Feflow {
     });
   }
 
-  isTimeToCheckUpdate() {
-    const { config } = this;
-    let shouldCheckUpdate = true;
-    const TIME_TO_CHECK_VERSION = 1000 * 3600 * 10;
-    if (!config) {
-      return shouldCheckUpdate;
-    }
-    if (
-      config.lastUpdateCheck &&
-      +new Date() - parseInt(config.lastUpdateCheck, 10) <=
-        TIME_TO_CHECK_VERSION
-    ) {
-      shouldCheckUpdate = false;
-    }
-
-    if (shouldCheckUpdate) {
-      this.updateCheckVersionTsp();
-    }
-    return shouldCheckUpdate;
-  }
   updateCheckVersionTsp() {
     const { config, configPath } = this;
     safeDump(
@@ -463,7 +438,7 @@ export default class Feflow {
 
   async checkCliUpdate() {
     const { args, version, config } = this;
-    if (!config || !this.isTimeToCheckUpdate()) {
+    if (!config) {
       return;
     }
     const packageManager = config.packageManager;
