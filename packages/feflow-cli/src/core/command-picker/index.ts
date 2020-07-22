@@ -64,7 +64,12 @@ export default class CommandPicker {
     if (!fs.existsSync(cacheFilePath)) {
       this.initCacheFile(cacheFilePath);
     } else {
-      this.cache = parseYaml(cacheFilePath);
+      try {
+        this.cache = parseYaml(cacheFilePath);        
+      } catch (error) {
+        this.ctx.logger.debug('.feflowCache.yml parse err');
+        this.initCacheFile(cacheFilePath);
+      }
     }
 
     const { token: versionFromCache } = this.cache;
