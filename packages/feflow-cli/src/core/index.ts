@@ -164,16 +164,16 @@ export default class Feflow {
 
         const packageManagers = [
           {
-            name: 'npm',
-            installed: isInstalled('npm')
-          },
-          {
             name: 'tnpm',
             installed: isInstalled('tnpm')
           },
           {
             name: 'cnpm',
             installed: isInstalled('cnpm')
+          },
+          {
+            name: 'npm',
+            installed: isInstalled('npm')
           },
           {
             name: 'yarn',
@@ -194,21 +194,14 @@ export default class Feflow {
               return installedPackageManager.name;
             }
           );
-          inquirer
-            .prompt([
-              {
-                type: 'list',
-                name: 'packageManager',
-                message: 'Please select one package manager',
-                choices: options
-              }
-            ])
-            .then((answer: any) => {
-              const configPath = path.join(root, '.feflowrc.yml');
-              safeDump(answer, configPath);
-              this.config = parseYaml(configPath);
-              resolve();
-            });
+
+          const defaultPackageManager = options[0];
+          const configPath = path.join(root, '.feflowrc.yml');
+          safeDump({
+            packageManager: defaultPackageManager
+          }, configPath);
+          this.config = parseYaml(configPath);
+          resolve();
         }
         return;
       } else {
