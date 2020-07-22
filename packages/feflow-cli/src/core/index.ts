@@ -162,40 +162,17 @@ export default class Feflow {
           }
         };
 
-        const packageManagers = [
-          {
-            name: 'tnpm',
-            installed: isInstalled('tnpm')
-          },
-          {
-            name: 'cnpm',
-            installed: isInstalled('cnpm')
-          },
-          {
-            name: 'npm',
-            installed: isInstalled('npm')
-          },
-          {
-            name: 'yarn',
-            installed: isInstalled('yarn')
-          }
-        ];
+        const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
         const installedPackageManagers = packageManagers.filter(
-          (packageManager) => packageManager.installed
+          (packageManager) => isInstalled(packageManager)
         );
 
         if (installedPackageManagers.length === 0) {
           const notify = 'You must installed a package manager';
           console.error(notify);
         } else {
-          const options = installedPackageManagers.map(
-            (installedPackageManager: any) => {
-              return installedPackageManager.name;
-            }
-          );
-
-          const defaultPackageManager = options[0];
+          const defaultPackageManager = installedPackageManagers[0];
           const configPath = path.join(root, '.feflowrc.yml');
           safeDump({
             packageManager: defaultPackageManager
