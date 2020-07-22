@@ -65,7 +65,7 @@ export default class CommandPicker {
       this.initCacheFile(cacheFilePath);
     } else {
       try {
-        this.cache = parseYaml(cacheFilePath);        
+        this.cache = parseYaml(cacheFilePath);
       } catch (error) {
         this.ctx.logger.debug('.feflowCache.yml parse err');
         this.initCacheFile(cacheFilePath);
@@ -146,21 +146,36 @@ export default class CommandPicker {
     return commandPickerMap;
   }
 
+  checkCommand() {
+    const fn = this.ctx?.commander.get(this.cmd);
+    if (!fn) {
+      this.loadHelp();
+    }
+  }
+
+  getCommandSource(path: string): string {
+    let reg = /node_modules\/(.*)/;
+    const commandSource = (reg.exec(path) || [])[1];
+    return commandSource;
+  }
+
   pickCommand() {
     const { path, type } = this.getCommandConfig() || {};
     this.ctx.logger.debug('pick command type', type);
     this.ctx.logger.debug('pick command path', path);
+    const commandSource = this.getCommandSource(path) || NATIVE_TYPE;
 
     switch (type) {
       case NATIVE_TYPE:
       case PLUGIN_TYPE: {
         try {
+          this.ctx.reporter?.setCommandSource(commandSource);
           require(path)(this.ctx);
         } catch (error) {
           this.ctx.logger.error(
             { err: error },
             'command load failed: %s',
-            chalk.magenta(name)
+            chalk.magenta(error)
           );
         }
         break;
@@ -193,10 +208,8 @@ export default class CommandPicker {
   getLoadOrder() {
     if (this.isUniverslPlugin()) {
       return LOAD_UNIVERSAL_PLUGIN;
-    } else if (this.cmd === 'help') {
-      return LOAD_ALL;
     } else {
-      return LOAD_DEVKIT | LOAD_PLUGIN;
+      return LOAD_ALL
     }
   }
 }

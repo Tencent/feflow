@@ -102,10 +102,15 @@ export default class Feflow {
 
     const picker = new CommandPicker(this, cmd);
     if (picker.isAvailable()) {
+      // should hit the cache in most cases
       return picker.pickCommand();
+    } else {
+      // if not, load plugin/devkit/native in need
+      await this.loadCommands(picker.getLoadOrder());
     }
 
-    await this.loadCommands(picker.getLoadOrder());
+    // make sure the command has at least one funtion, otherwise replace to help command
+    picker.checkCommand();
   }
 
   initClient() {
@@ -347,9 +352,24 @@ export default class Feflow {
     });
   }
 
+  loadNative() {
+    return new Promise<any>((resolve, reject) => {
+      const nativePath = path.join(__dirname, './native');
+      fs.readdirSync(nativePath)
+        .filter((file) => {
+          return file.endsWith('.js');
+        })
+        .map((file) => {
+          require(path.join(__dirname, './native', file))(this);
+        });
+      resolve();
+    });
+  }
+
   async loadCommands(order: number) {
     this.logger.debug('load order: ', order);
     if ((order & LOAD_ALL) === LOAD_ALL) {
+      await this.loadNative();
       await loadPlugins(this);
       await loadDevkits(this);
       await loadUniversalPlugin(this);
