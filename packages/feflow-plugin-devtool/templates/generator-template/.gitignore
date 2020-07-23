@@ -1,5 +1,6 @@
+.DS_Store
 node_modules
 coverage
 *.log
-.idea
-.DS_Store
+*-lock.json
+.yo-repository

@@ -1,31 +1,23 @@
-# [generator-example](https://github.com/Tencent/feflow/tree/master/examples/generator-example)
+# <%= name %>
 
-Feflow example template. based on React and Redux.
+> <%= description %>
 
-## Features
+## 安装
 
-- ✔︎ Easy to create a project with react and redux
-- ✔︎ Support multiple page development
-- ✔︎ Built-in Rem, it's friendly to develop a mobile application
-- ✔︎ Fast build speed and very small artifacts size
+首先，需要先安装 [Feflow CLI](http://feflow.oa.com/) 环境，并通过 fef 安装本脚手架（<%= name %>）。
 
-## Installation
-
-You need to install [`feflow`](https://github.com/Tencent/feflow) first.
-
-```sh
-$ npm install @feflow/cli -g
+```bash
+$ tnpm install @feflow/cli -g
+$ fef install <%= name %>
 ```
 
-Then install @feflow/generator-example
+## 使用
 
-```sh
-$ fef install @feflow/generator-example
-```
-## Usage
-
-```sh
+```bash
 $ fef init
+? 您想要创建哪种类型的工程? <%= description %>
 ```
 
-Note: use arrow keys to select.
+## License
+
+MIT

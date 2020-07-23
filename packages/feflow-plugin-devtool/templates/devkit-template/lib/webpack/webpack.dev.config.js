@@ -1,23 +1,13 @@
-const merge = require('webpack-merge');
-const webpack = require('webpack');
-const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const baseConfig = require('./webpack.base.config');
-
-const devConfig = {
-  mode: 'development',
-  output: {
-    filename: '[name].js'
-  },
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new FriendlyErrorsWebpackPlugin(),
-  ],
-  devServer: {
-    contentBase: './dist',
-    hot: true,
-    stats: 'errors-only',
-  },
-  devtool: 'cheap-source-map',
-};
-
-module.exports = merge(baseConfig, devConfig);
+module.exports = (helper) => {
+  return {
+    mode: 'development',
+    devtool: 'cheap-source-map',
+    devServer: {
+      contentBase: helper.getProjectPath('dist'),
+      hot: true,
+      host: '127.0.0.1',
+      port: 8080,
+      stats: 'errors-only',
+    },
+  }
+}
