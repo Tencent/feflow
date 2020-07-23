@@ -41,15 +41,15 @@ module.exports = (ctx: any) => {
                 switch (type) {
                     case DEVTOOL_TYPE.SCAFFLOAD:
                         message = '以 generator- 开头';
-                        templatePath = path.join(__dirname, '../templates/generator-template');
+                        templatePath = path.join(__dirname, './templates/generator-template');
                         break;
                     case DEVTOOL_TYPE.DEVKIT:
                         message = '以 feflow-devkit- 开头';
-                        templatePath = path.join(__dirname, '../templates/devkit-template');
+                        templatePath = path.join(__dirname, './templates/devkit-template');
                         break;
                     case DEVTOOL_TYPE.PLUGIN:
                         message = '以 feflow-plugin- 开头';
-                        templatePath = path.join(__dirname, '../templates/plugin-template');
+                        templatePath = path.join(__dirname, './templates/plugin-template');
                         break;
                 }
 

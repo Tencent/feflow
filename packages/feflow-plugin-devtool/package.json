@@ -1,17 +1,12 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
   },
-  "files": [
-    "src",
-    "lib",
-    "templates"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Tencent/feflow.git"
