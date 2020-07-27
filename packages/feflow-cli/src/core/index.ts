@@ -173,53 +173,23 @@ export default class Feflow {
           }
         };
 
-        const packageManagers = [
-          {
-            name: 'npm',
-            installed: isInstalled('npm')
-          },
-          {
-            name: 'tnpm',
-            installed: isInstalled('tnpm')
-          },
-          {
-            name: 'cnpm',
-            installed: isInstalled('cnpm')
-          },
-          {
-            name: 'yarn',
-            installed: isInstalled('yarn')
-          }
-        ];
+        const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
         const installedPackageManagers = packageManagers.filter(
-          (packageManager) => packageManager.installed
+          (packageManager) => isInstalled(packageManager)
         );
 
         if (installedPackageManagers.length === 0) {
           const notify = 'You must installed a package manager';
           console.error(notify);
         } else {
-          const options = installedPackageManagers.map(
-            (installedPackageManager: any) => {
-              return installedPackageManager.name;
-            }
-          );
-          inquirer
-            .prompt([
-              {
-                type: 'list',
-                name: 'packageManager',
-                message: 'Please select one package manager',
-                choices: options
-              }
-            ])
-            .then((answer: any) => {
-              const configPath = path.join(root, '.feflowrc.yml');
-              safeDump(answer, configPath);
-              this.config = parseYaml(configPath);
-              resolve();
-            });
+          const defaultPackageManager = installedPackageManagers[0];
+          const configPath = path.join(root, '.feflowrc.yml');
+          safeDump({
+            packageManager: defaultPackageManager
+          }, configPath);
+          this.config = parseYaml(configPath);
+          resolve();
         }
         return;
       } else {

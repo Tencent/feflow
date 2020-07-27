@@ -1,5 +1,5 @@
 import chai from 'chai';
-import objectFactory from '../src/common/objectFactory';
+import objectFactory from '../lib/common/objectFactory';
 const expect = chai.expect;
 
 describe('@feflow/report - objectFactory', () => {
