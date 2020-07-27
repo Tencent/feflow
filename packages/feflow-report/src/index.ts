@@ -44,7 +44,7 @@ class Report {
   private reportOnHookBefore = () => {
     const { cmd, args } = this;
     const store = this.ctx.commander?.store[cmd] || {};
-    this.commandSource = store?.pluginName || '';
+    this.commandSource = store?.pluginName || this.commandSource;
     if (!this.commandSource && typeof store.options === 'string') {
       this.commandSource = store.options;
     }
@@ -95,6 +95,11 @@ class Report {
     this.cmd = cmd;
     return !!cmd;
   }
+
+  setCommandSource(commandSource: string) {
+    this.commandSource = commandSource
+  }
+
   init(cmd: string) {
     this.cmd = cmd;
     this.args = this.ctx.args;

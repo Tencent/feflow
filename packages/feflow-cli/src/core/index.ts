@@ -28,6 +28,13 @@ import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
 import Report from '@feflow/report';
+import CommandPicker, {
+  LOAD_UNIVERSAL_PLUGIN,
+  LOAD_PLUGIN,
+  LOAD_DEVKIT,
+  LOAD_ALL
+} from './command-picker';
+
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -81,25 +88,29 @@ export default class Feflow {
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
-    if (cmd === 'config') {
-      await this.initClient();
-      await this.loadNative();
-    } else {
-      await this.initClient();
-      await this.initPackageManager();
-      const disableCheck =
-        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
-      if (disableCheck) {
-        await this.checkCliUpdate();
-        await this.checkUpdate();
-        // await this.checkUniversalPluginAndUpdate();
-      }
-      await this.loadNative();
-      await this.loadInternalPlugins();
-      await loadPlugins(this);
-      await loadUniversalPlugin(this);
-      await loadDevkits(this);
+
+    const disableCheck =
+      this.args['disable-check'] || this.config.disableCheck === true;
+
+    await this.initClient();
+    await this.initPackageManager();
+
+    if (!disableCheck) {
+      await this.checkCliUpdate();
+      await this.checkUpdate();
     }
+
+    const picker = new CommandPicker(this, cmd);
+    if (picker.isAvailable()) {
+      // should hit the cache in most cases
+      return picker.pickCommand();
+    } else {
+      // if not, load plugin/devkit/native in need
+      await this.loadCommands(picker.getLoadOrder());
+    }
+
+    // make sure the command has at least one funtion, otherwise replace to help command
+    picker.checkCommand();
   }
 
   initClient() {
@@ -323,6 +334,26 @@ export default class Feflow {
         });
       resolve();
     });
+  }
+
+  async loadCommands(order: number) {
+    this.logger.debug('load order: ', order);
+    if ((order & LOAD_ALL) === LOAD_ALL) {
+      await this.loadNative();
+      await loadPlugins(this);
+      await loadDevkits(this);
+      await loadUniversalPlugin(this);
+      return;
+    }
+    if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
+      await loadPlugins(this);
+    }
+    if ((order & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
+      await loadUniversalPlugin(this);
+    }
+    if ((order & LOAD_DEVKIT) === LOAD_DEVKIT) {
+      await loadDevkits(this);
+    }
   }
 
   loadInternalPlugins() {
