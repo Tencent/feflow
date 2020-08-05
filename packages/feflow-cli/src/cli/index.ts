@@ -73,7 +73,7 @@ export default function entry() {
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
   let cmd: any = args._.shift();
-
+  logger.debug(`text`);
   if (!cmd && (args.v || args.version)) {
     feflow.reporter.report('version', args);
     console.log(chalk.green(pkg.version));

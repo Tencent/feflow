@@ -147,7 +147,6 @@ export default class Feflow {
 
   initPackageManager() {
     const { root, logger } = this;
-
     return new Promise<any>((resolve, reject) => {
       if (!this.config || !this.config.packageManager) {
         const isInstalled = (packageName: string) => {
