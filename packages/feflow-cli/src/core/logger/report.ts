@@ -20,7 +20,7 @@ class loggerReport {
       }
       if (writeData.length && (writeData.length > 20 || report)) {
         //5s 或 数量大于20上报
-        const response = await axios.post('http://test.feflowjs.com/api/v1/log/save', {
+        const response = await axios.post('http://feflowjs.com/api/v1/log/save', {
           plugin: PLUGE_NAME,
           data: JSON.stringify(writeData)
         });
