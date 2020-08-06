@@ -1,7 +1,13 @@
 import bunyan from 'bunyan';
 import chalk from 'chalk';
 import { Writable } from 'stream';
+import loggerReport from './report';
 
+const pkg = require('../../../package.json');
+const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
+const process = require('process');
+var timer:any;
+const report = new loggerReport();
 interface IObject {
   [key: string]: string;
 }
@@ -26,12 +32,12 @@ interface Stream {
 }
 
 const levelNames: IObject = {
-  10: 'TRACE',
-  20: 'DEBUG',
-  30: 'INFO ',
-  40: 'WARN ',
-  50: 'ERROR',
-  60: 'FATAL'
+  10: 'Trace',
+  20: 'Debug',
+  30: 'Info',
+  40: 'Warn',
+  50: 'Error',
+  60: 'Fatal'
 };
 
 const levelColors: IObject = {
@@ -43,6 +49,13 @@ const levelColors: IObject = {
   60: 'red'
 };
 
+var loggerArr:Array<Object> = [];
+
+process.on('SIGINT',async ()=>{
+  await report.init(loggerArr);
+  // 操作中断
+  process.exit();
+});
 class ConsoleStream extends Writable {
   private debug: Boolean;
 
@@ -54,30 +67,37 @@ class ConsoleStream extends Writable {
     this.debug = Boolean(args.debug);
   }
 
-  _write(data: any, enc: any, callback: any) {
+  async _write(data: any, enc: any, callback: any) {
     const level = data.level;
     let msg = '';
 
     if (this.debug) {
       msg += chalk.gray(data.time) + ' ';
     }
-
-    msg +=
-      chalk.keyword(levelColors[level])('Feflow' + ' ' + levelNames[level]) +
-      ' ';
+    msg += chalk.keyword(levelColors[level])('[ Feflow' + ' ' + levelNames[level]+' ]');
+    msg += '[ '+PLUGE_NAME+' ] ';
     msg += data.msg + '\n';
-
     if (data.err) {
       const err = data.err.stack || data.err.message;
       if (err) msg += chalk.yellow(err) + '\n';
     }
+    //每次触发logger进行存储 大于20条上报
+    await report.init([{
+      level: level,
+      msg: `[Feflow ${levelNames[level]}][${PLUGE_NAME}]${data.msg}`,
+      date: new Date().getTime()
+    }]);
 
     if (level >= 40) {
       process.stderr.write(msg);
     } else {
       process.stdout.write(msg);
     }
-
+    clearTimeout(timer);
+    //单次logger上报间隔大于5s时自动进行一次上报
+    timer = setTimeout(async ()=>{
+      await report.init([],true);
+    },5000)
     callback();
   }
 }
@@ -90,7 +110,7 @@ export default function createLogger(options: any) {
     streams.push({
       type: 'raw',
       level: options.debug ? 'trace' : 'info',
-      stream: new ConsoleStream(options)
+      stream: new ConsoleStream(options),
     });
   }
 
@@ -108,6 +128,5 @@ export default function createLogger(options: any) {
       err: bunyan.stdSerializers.err
     }
   });
-
   return logger;
 }
