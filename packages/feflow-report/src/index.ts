@@ -43,7 +43,14 @@ class Report {
 
   private reportOnHookBefore = () => {
     const { cmd, args } = this;
-    const store = this.ctx.commander?.store[cmd] || {};
+    let commandWithoutVersion;
+    try {
+      commandWithoutVersion = cmd?.split('@')[0];
+    } catch (error) {
+      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`)
+      commandWithoutVersion = '';
+    }
+    const store = this.ctx.commander?.store[commandWithoutVersion] || this.ctx.commander?.store[cmd] || {};
     this.commandSource = store?.pluginName || this.commandSource;
     if (!this.commandSource && typeof store.options === 'string') {
       this.commandSource = store.options;
@@ -97,7 +104,7 @@ class Report {
   }
 
   setCommandSource(commandSource: string) {
-    this.commandSource = commandSource
+    this.commandSource = commandSource;
   }
 
   init(cmd: string) {
