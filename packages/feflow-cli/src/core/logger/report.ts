@@ -3,8 +3,6 @@ const axios = require('axios');
 const path = require('path');
 const os = require('os');
 const pkg = require('../../../package.json');
-const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
-
 const LOGGER_LOG_PATH = path.join(__dirname, '../../../logger.log');
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME  = os.hostname().split("-")[0];
@@ -39,7 +37,7 @@ class loggerReport {
       if (writeData.length && (writeData.length > 20 || report)) {
         //5s 或 数量大于20上报
         const response = await axios.post('http://test.feflowjs.com/api/v1/log/save', {
-          plugin: PLUGE_NAME,
+          plugin: writeData[0]['name'],
           data: JSON.stringify(writeData)
         },{
           headers:{

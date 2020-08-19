@@ -7,6 +7,7 @@ const pkg = require('../../../package.json');
 const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
 const process = require('process');
 var timer:any;
+let logger:any;
 const report = new loggerReport();
 interface IObject {
   [key: string]: string;
@@ -63,19 +64,18 @@ class ConsoleStream extends Writable {
     super({
       objectMode: true
     });
-
     this.debug = Boolean(args.debug);
   }
 
   async _write(data: any, enc: any, callback: any) {
     const level = data.level;
+    const loggerName = (logger.name && logger.name.split('/').pop()) || PLUGE_NAME;
     let msg = '';
-
     if (this.debug) {
       msg += chalk.gray(data.time) + ' ';
     }
     msg += chalk.keyword(levelColors[level])('[ Feflow' + ' ' + levelNames[level]+' ]');
-    msg += '[ '+PLUGE_NAME+' ] ';
+    msg += '[ '+(loggerName)+' ] ';
     msg += data.msg + '\n';
     if (data.err) {
       const err = data.err.stack || data.err.message;
@@ -84,8 +84,9 @@ class ConsoleStream extends Writable {
     //每次触发logger进行存储 大于20条上报
     await report.init([{
       level: level,
-      msg: `[Feflow ${levelNames[level]}][${PLUGE_NAME}]${data.msg}`,
-      date: new Date().getTime()
+      msg: `[Feflow ${levelNames[level]}][${loggerName}]${data.msg}`,
+      date: new Date().getTime(),
+      name:loggerName
     }]);
 
     if (level >= 40) {
@@ -101,7 +102,6 @@ class ConsoleStream extends Writable {
     callback();
   }
 }
-
 export default function createLogger(options: any) {
   options = options || {};
   const streams: Array<Stream> = [];
@@ -120,8 +120,7 @@ export default function createLogger(options: any) {
       path: 'debug.log'
     });
   }
-
-  const logger = bunyan.createLogger({
+  logger = bunyan.createLogger({
     name: options.name || 'feflow',
     streams: streams,
     serializers: {
