@@ -85,3 +85,6 @@ module.exports = (ctx: any) => {
     checkCliUpdate(ctx);
   });
 };
+
+module.exports.updateCli = updateCli;
+module.exports.checkCliUpdate = checkCliUpdate;

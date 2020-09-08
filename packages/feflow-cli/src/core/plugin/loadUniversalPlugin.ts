@@ -16,7 +16,7 @@ const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
 const excludeAgrs = ['--disable-check', '--slient'];
 
-function loadPlugin(
+export function loadPlugin(
   ctx: any,
   pkg: string,
   version: string

@@ -60,3 +60,9 @@ export const NPM_PLUGIN_INFO_JSON = 'npm-plugin-info.json';
 export const UNIVERSAL_README_CONFIG = 'README.md';
 
 export const CACHE_FILE = ".feflowCache.yml";
+
+export const HEART_BEAT_COLLECTION = 'heart-beat.db';
+
+export const BEAT_GAP = 5000;
+
+export const CHECK_UPDATE_GAP = 1000 * 60 * 5;

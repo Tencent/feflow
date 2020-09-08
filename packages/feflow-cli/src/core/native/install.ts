@@ -631,3 +631,4 @@ function canUpgrade(lastUpgradeTime: number | undefined): boolean {
 module.exports.installPlugin = installPlugin;
 module.exports.updateUniversalPlugin = updateUniversalPlugin;
 module.exports.getRepoInfo = getRepoInfo;
+module.exports.getPkgInfo = getPkgInfo;
