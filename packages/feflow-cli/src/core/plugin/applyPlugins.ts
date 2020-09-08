@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import osenv from 'osenv';
 import path from 'path';
 import { FEFLOW_ROOT } from '../../shared/constant';
-import { CommandPickConfig,COMMAND_TYPE } from '../command-picker';
+import { CommandPickConfig, COMMAND_TYPE } from '../command-picker';
 
 export default function applyPlugins(plugins: any[]) {
   return (ctx: any) => {
