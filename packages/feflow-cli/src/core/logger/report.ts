@@ -2,7 +2,6 @@ const fs = require('fs');
 const axios = require('axios');
 const path = require('path');
 const os = require('os');
-const pkg = require('../../../package.json');
 const LOGGER_LOG_PATH = path.join(__dirname, '../../../logger.log');
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME  = os.hostname().split("-")[0];

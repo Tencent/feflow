@@ -372,13 +372,6 @@ export default class Feflow {
   }
 
   async call(name: any, ctx: any) {
-    const args = ctx.args;
-    if (args.h || args.help) {
-      const hasHelp = await this.showCommandOptionDescription(name, ctx);
-      if (hasHelp) {
-        return;
-      }
-    }
     const cmd = this.commander.get(name);
     if (cmd) {
       this.logger.name = this.commander.store[name].pluginName;
