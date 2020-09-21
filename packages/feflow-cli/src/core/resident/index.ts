@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import path from 'path';
 import { spawn } from 'child_process';
 import chalk from 'chalk';
@@ -11,10 +12,10 @@ import {
   CHECK_UPDATE_GAP
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
-// import { getLatestVersion } from './utils';
 
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
+const isSilent = process.argv.slice(3).includes('--slient');
 let db: DBInstance;
 const table = new Table();
 
@@ -50,28 +51,25 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
   child.unref();
 }
 
-async function checkUpdateMsg(ctx: any, db: DBInstance) {
-  const cliUpdateMsg = await db.read('cli_update_msg');
-  const pluginsUpdateMsg = await db.read('plugins_update_msg');
-  const universalPluginsUpdateMsg = await db.read(
-    'universal_plugins_update_msg'
-  );
-
-  if (cliUpdateMsg) {
-    try {
-      const updateMsg = JSON.parse(cliUpdateMsg['value']);
+async function _checkUpdateMsg(ctx: any, updateData: any) {
+  const _showCliUpdateM = async () => {
+    const updateMsg = updateData?.['cli_update_msg'];
+    if (updateMsg) {
+      const { version, latestVersion } = updateMsg;
       ctx.logger.info(
-        `@feflow/cil has been updated from ${updateMsg.version} to ${updateMsg.latestVersion}.Enjoy it.`
+        `@feflow/cil has been updated from ${version} to ${latestVersion}.Enjoy it.`
       );
-      db.update('cli_update_msg', '');
-    } catch (e) {
-      ctx.logger.debug(e);
+      const newUpdateData = {
+        ...updateData,
+        cli_update_msg: ''
+      };
+      await db.update('update_data', newUpdateData);
     }
-  }
+  };
 
-  if (pluginsUpdateMsg) {
-    try {
-      const updatePkg = JSON.parse(pluginsUpdateMsg['value']);
+  const _showPluginsUpdateM = async () => {
+    const updatePkg = updateData?.['plugins_update_msg'];
+    if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
         const { name, localVersion, latestVersion } = pkg;
         table.cell('Name', name);
@@ -89,17 +87,20 @@ async function checkUpdateMsg(ctx: any, db: DBInstance) {
       ctx.logger.info(
         'Your local templates or plugins has been updated last time.'
       );
-      console.log(table.toString());
-      db.update('plugins_update_msg', '');
-    } catch (e) {
-      ctx.logger.debug(e);
-    }
-  }
+      if (!isSilent) console.log(table.toString());
 
-  if (universalPluginsUpdateMsg) {
-    try {
-      const universalUpdatePkg = JSON.parse(universalPluginsUpdateMsg['value']);
-      const updatePkg = JSON.parse(universalUpdatePkg);
+      const newUpdateData = {
+        ...updateData,
+        plugins_update_msg: ''
+      };
+      await db.update('update_data', newUpdateData);
+    }
+  };
+
+  const _showUniversalPluginsM = async () => {
+    const updatePkg = updateData?.['universal_plugins_update_msg'];
+
+    if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
         const { name, localVersion, latestVersion } = pkg;
         table.cell('Name', name);
@@ -117,94 +118,110 @@ async function checkUpdateMsg(ctx: any, db: DBInstance) {
       ctx.logger.info(
         'Your local universal plugins has been updated last time.'
       );
-      console.log(table.toString());
+      if (!isSilent) console.log(table.toString());
 
-      db.update('universal_plugins_update_msg', '');
-    } catch (e) {
-      ctx.logger.debug(e);
+      const newUpdateData = {
+        ...updateData,
+        universal_plugins_update_msg: ''
+      };
+      await db.update('update_data', newUpdateData);
+    }
+  };
+
+  // cli -> tnpm -> universal
+  await _showCliUpdateM();
+  await _showPluginsUpdateM();
+  await _showUniversalPluginsM();
+}
+
+async function _checkLock(updateData: any) {
+  const updateLock = updateData?.['update_lock'];
+  const nowTime = new Date().getTime();
+  if (
+    updateLock &&
+    updateLock['time'] &&
+    nowTime - updateLock['time'] < CHECK_UPDATE_GAP
+  ) {
+    return true;
+  } else {
+    const newUpdateData = {
+      ...updateData,
+      update_lock: {
+        time: String(nowTime),
+        pid: process.pid
+      }
+    };
+    await db.update('update_data', newUpdateData);
+
+    // Optimistic Concurrency Control
+    let nowUpdateData = await db.read('update_data');
+    nowUpdateData = nowUpdateData?.['value'];
+    const nowUpdateLock = nowUpdateData?.['update_lock'];
+    if (nowUpdateLock && nowUpdateLock['pid'] !== process.pid) {
+      return true;
     }
   }
+  return false;
 }
 
 export async function checkUpdate(ctx: any) {
   const dbFile = path.join(ctx.root, HEART_BEAT_COLLECTION);
   const autoUpdate =
     ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
+  const nowTime = new Date().getTime();
   let latestVersion: any = '';
   let cacheValidate: boolean = false;
   if (!db) {
     db = new DBInstance(dbFile);
   }
 
-  await checkUpdateMsg(ctx, db);
-
-  const data = await db.read('beat_time');
-  const nowTime = new Date().getTime();
-  if (data) {
-    // 给更新进程读取
-    db.update(
-      'config',
-      JSON.stringify({
-        ...ctx.config,
-        autoUpdate
-      })
-    );
-    const lastBeatTime = parseInt(data['value'], 10);
-
+  let updateData = await db.read('update_data');
+  updateData = updateData?.['value'];
+  if (updateData) {
     // add lock to keep only one updating process is running
-    const updateLock = await db.read('update_lock');
-    if (updateLock && nowTime - updateLock['value'] < CHECK_UPDATE_GAP) {
-      return;
-    } else {
-      await db.update('update_lock', String(nowTime));
-    }
+    const isLocked = await _checkLock(updateData);
+    if (isLocked) return;
 
-    cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
-    // 子进程心跳停止了
-    if (cacheValidate) {
-      // 读 db
-      const cliVersionData: any = await db.read('latest_cli_version');
-      latestVersion = cliVersionData && cliVersionData.value;
-    } else {
-      // todo：进程检测，清理一下僵死的进程(兼容不同系统)
+    await _checkUpdateMsg(ctx, updateData);
 
-      startUpdateBeat(ctx);
-      // 不做任何网络请求
-      // latestVersion = await getLatestVersion(
-      //   '@feflow/cli',
-      //   ctx.config.packageManager
-      // );
+    const data = await db.read('beat_time');
+    if (data) {
+      const lastBeatTime = parseInt(data['value'], 10);
+
+      cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
+      // 子进程心跳停止了
+      if (cacheValidate) {
+        // 读 db
+        const cliVersionData: any = updateData['latest_cli_version'];
+        latestVersion = cliVersionData && cliVersionData.value;
+      } else {
+        // todo：进程检测，清理一下僵死的进程(兼容不同系统)
+
+        startUpdateBeat(ctx);
+      }
     }
   } else {
-    // 初始化心跳数据
-    await db.create('beat_time', String(nowTime));
-
-    // 初始化自动更新任务数据
-    await db.create('latest_cli_version', '');
-    await db.create('latest_plugins', '');
-    await db.create('latest_universal_plugins', '');
-
-    // 初始化更新信息
-    await db.create('cli_update_msg', '');
-    await db.create('plugins_update_msg', '');
-    await db.create('universal_plugins_update_msg', '');
-
-    // 初始化更新锁，保持只有一个进程在更新
-    await db.create('update_lock', String(nowTime));
-    await db.create(
-      'config',
-      JSON.stringify({
-        ...ctx.config,
-        autoUpdate
+    // init
+    await Promise.all([
+      // 初始化心跳数据
+      db.create('beat_time', String(nowTime)),
+      db.create('update_data', {
+        // 初始化自动更新任务数据
+        latest_cli_version: '',
+        latest_plugins: '',
+        latest_universal_plugins: '',
+        // 初始化更新信息
+        cli_update_msg: '',
+        plugins_update_msg: '',
+        universal_plugins_update_msg: '',
+        // 初始化更新锁，保持只有一个进程在更新
+        update_lock: {
+          time: String(nowTime),
+          pid: process.pid
+        }
       })
-    );
+    ]);
     startUpdateBeat(ctx);
-
-    // 不做任何网络请求
-    // latestVersion = await getLatestVersion(
-    //   '@feflow/cli',
-    //   ctx.config.packageManager
-    // );
   }
 
   if (latestVersion && semver.gt(latestVersion, ctx.version)) {
@@ -216,7 +233,6 @@ export async function checkUpdate(ctx: any) {
         `Feflow will auto update version from ${ctx.version} to ${latestVersion}.`
       );
       ctx.logger.debug('Update message will be shown next time.');
-      db.update('latest_cli_version', '');
       return startUpdate(ctx, cacheValidate, latestVersion);
     }
 

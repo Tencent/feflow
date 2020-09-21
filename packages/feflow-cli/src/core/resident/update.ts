@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 // 更新依赖
 import semver from 'semver';
 import fs from 'fs';
@@ -21,7 +22,8 @@ import {
   getInstalledPlugins,
   getLatestVersion,
   updatePluginsVersion,
-  getUniversalPluginVersion
+  getUniversalPluginVersion,
+  promisify
 } from './utils';
 
 // 设置特殊的进程名字
@@ -72,29 +74,29 @@ const ctx = {
   lib,
   config
 };
+let updateData: any;
 
-async function startUpdateCli() {
-  if (latestVersion) {
-    await updateCli(packageManager);
+function startUpdateCli() {
+  return new Promise(async resolve => {
+    if (latestVersion) {
+      await updateCli(packageManager);
 
-    // 存储更新结果
-    db.update(
-      'cli_update_msg',
-      JSON.stringify({
-        version,
-        latestVersion
-      })
-    );
-
-    // 清除缓存
-    db.update('latest_cli_version', '');
-  }
+      const newUpdateData = {
+        ...updateData,
+        cli_update_msg: {
+          version,
+          latestVersion
+        },
+        latest_cli_version: ''
+      };
+      await db.update('update_data', newUpdateData);
+    }
+    resolve();
+  });
 }
 
-function startPluginsUpdate(plugins: string[]) {
+async function startPluginsUpdate(plugins: string[]) {
   updatePluginsVersion(rootPkg, plugins);
-
-  db.update('plugins_update_msg', JSON.stringify(plugins));
 
   const needUpdatePlugins: any = [];
   plugins.forEach((plugin: any) => {
@@ -108,124 +110,150 @@ function startPluginsUpdate(plugins: string[]) {
     needUpdatePlugins,
     false,
     true
-  ).then(() => {
-    db.update('latest_plugins', '');
+  ).then(async () => {
+    const newUpdateData = {
+      ...updateData,
+      plugins_update_msg: plugins,
+      latest_plugins: ''
+    };
+    await db.update('update_data', newUpdateData);
+
     logger.info('Plugin update success');
   });
 }
 
-async function checkPluginsUpdate() {
-  if (String(cacheValidate) === 'true') {
-    // 用缓存数据
-    const latestPlugins = await db.read('latest_plugins');
-    if (latestPlugins) {
-      try {
-        const updatePkg = JSON.parse(latestPlugins['value'] || '[]');
-        if (updatePkg.length) {
-          startPluginsUpdate(updatePkg);
-        }
-      } catch (e) {
-        logger.debug(e);
+function checkPluginsUpdate() {
+  return new Promise(async (resolve, reject) => {
+    if (String(cacheValidate) === 'true') {
+      // 用缓存数据
+      const updatePkg = updateData['latest_plugins'];
+      if (updatePkg.length) {
+        await startPluginsUpdate(updatePkg);
       }
-    }
-  } else {
-    // 实时拉取最新更新
-    Promise.all(
-      getInstalledPlugins().map(async (name: any) => {
-        try {
-          const pluginPath = path.join(
-            root,
-            'node_modules',
-            name,
-            'package.json'
-          );
-          const content: any = fs.readFileSync(pluginPath);
-          const pkg: any = JSON.parse(content);
-          const localVersion = pkg.version;
-          const latestVersion = await getLatestVersion(name, packageManager);
-          if (latestVersion && semver.gt(latestVersion, localVersion)) {
-            return {
+      resolve();
+    } else {
+      // 实时拉取最新更新
+      Promise.all(
+        getInstalledPlugins().map(async (name: any) => {
+          try {
+            const pluginPath = path.join(
+              root,
+              'node_modules',
               name,
-              latestVersion
-            };
-          } else {
-            logger.debug('All plugins is in latest version');
+              'package.json'
+            );
+            const content: any = fs.readFileSync(pluginPath);
+            const pkg: any = JSON.parse(content);
+            const localVersion = pkg.version;
+            const latestVersion = await getLatestVersion(name, packageManager);
+            if (latestVersion && semver.gt(latestVersion, localVersion)) {
+              return {
+                name,
+                latestVersion
+              };
+            } else {
+              logger.debug('All plugins is in latest version');
+            }
+          } catch (e) {
+            logger.debug(e);
+            reject(e);
           }
-        } catch (e) {
-          logger.debug(e);
+        })
+      ).then(async (plugins: any) => {
+        plugins = plugins.filter((plugin: any) => {
+          return plugin && plugin.name;
+        });
+        if (plugins.length) {
+          await startPluginsUpdate(plugins);
         }
-      })
-    ).then((plugins: any) => {
-      plugins = plugins.filter((plugin: any) => {
-        return plugin && plugin.name;
+        resolve();
       });
-      if (plugins.length) {
-        startPluginsUpdate(plugins);
-      }
-    });
-  }
+    }
+  });
 }
 
-async function checkUniversalPluginsUpdate() {
-  if (String(cacheValidate) === 'true') {
-    // 用缓存数据
-    const latestPlugins = await db.read('latest_universal_plugins');
-    if (latestPlugins) {
-      try {
-        const cachePlugins = latestPlugins['value'];
-        const updatePkg = JSON.parse(cachePlugins || '[]');
-        db.update('universal_plugins_update_msg', cachePlugins);
-        if (updatePkg.length) {
-          updatePkg.map(async (item: VersionObj) => {
-            const { name, installVersion } = item;
-            // 使用之前的方法进行更新，后续修改
-            const plugin = loadPlugin(ctx, name, installVersion);
-            await updateUniversalPlugin(ctx, name, installVersion, plugin);
-          });
+function checkUniversalPluginsUpdate() {
+  return new Promise(async resolve => {
+    let updatePkg: any[] = [];
+    if (String(cacheValidate) === 'true') {
+      // 用缓存数据
+      updatePkg = updateData['latest_universal_plugins'];
+    } else {
+      // 实时拉取最新更新
+      const { serverUrl } = config;
+      if (!serverUrl) {
+        return;
+      }
+
+      // eslint-disable-next-line
+      for (const [pkg, version] of universalPkg.getInstalled()) {
+        // 记录更改项
+        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`);
+        if (!pkgInfo) {
+          continue;
         }
-      } catch (e) {
-        logger.debug(e);
+        const versionObj = await getUniversalPluginVersion(
+          pkgInfo,
+          universalPkg
+        );
+        if (versionObj.latestVersion) {
+          updatePkg.push(versionObj);
+        }
       }
     }
-  } else {
-    // 实时拉取最新更新
-    const { serverUrl } = config;
-    if (!serverUrl) {
-      return;
-    }
 
-    const latestUniversalPlugins: any[] = [];
-
-    // eslint-disable-next-line
-    for (const [pkg, version] of universalPkg.getInstalled()) {
-      // 记录更改项
-      const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`);
-      if (!pkgInfo) {
-        continue;
-      }
-      const versionObj = await getUniversalPluginVersion(pkgInfo, universalPkg);
-      if (versionObj.latestVersion) {
-        latestUniversalPlugins.push(versionObj);
-
+    if (updatePkg.length) {
+      const updateTasks = updatePkg.map(async (item: VersionObj) => {
+        const { name, installVersion } = item;
         // 使用之前的方法进行更新，后续修改
-        const plugin = loadPlugin(ctx, pkg, version);
-        await updateUniversalPlugin(ctx, pkg, version, plugin);
+        const plugin = loadPlugin(ctx, name, installVersion);
+        return promisify(
+          updateUniversalPlugin,
+          ctx,
+          name,
+          installVersion,
+          plugin
+        );
+      });
+
+      // 顺序执行多语言插件的更新来保证依赖的插件不会同时更新而冲突
+      // eslint-disable-next-line
+      for (const updateTask of updateTasks) {
+        await (await updateTask)();
       }
+
+      const newUpdateData = {
+        ...updateData,
+        universal_plugins_update_msg: updatePkg,
+        latest_universal_plugins: ''
+      };
+      await db.update('update_data', newUpdateData);
     }
-    db.update(
-      'universal_plugins_update_msg',
-      JSON.stringify(latestUniversalPlugins)
-    );
-  }
-  db.update('latest_universal_plugins', '');
+    resolve();
+  });
 }
 
-async function checkUpdate() {
-  // 保持之前的顺序不变
-  await startUpdateCli();
-  await checkPluginsUpdate();
-  await checkUniversalPluginsUpdate();
-  db.update('update_lock', '');
-}
-
-checkUpdate();
+db.read('update_data')
+  .then(data => {
+    updateData = data?.['value'];
+    return Promise.all([
+      startUpdateCli(),
+      checkPluginsUpdate(),
+      checkUniversalPluginsUpdate()
+    ]);
+  })
+  .then(() => {
+    const newUpdateData = {
+      ...updateData,
+      update_lock: ''
+    };
+    db.update('update_data', newUpdateData);
+  })
+  .catch((reason: any) => {
+    logger.debug(reason);
+    const newUpdateData = {
+      ...updateData,
+      update_lock: ''
+    };
+    db.update('update_data', newUpdateData);
+  });

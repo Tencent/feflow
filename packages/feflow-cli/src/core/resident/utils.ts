@@ -98,7 +98,7 @@ export const updatePluginsVersion = (packagePath: string, plugins: any) => {
 };
 
 export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
-  return new Promise<VersionObj>(async (resolve, reject) => {
+  return new Promise<VersionObj>(async resolve => {
     const repoPath = path.join(
       universalModulesPath,
       `${pkgInfo.repoName}@${pkgInfo.installVersion}`
@@ -125,4 +125,13 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
       installVersion: pkgInfo.installVersion
     });
   });
+};
+
+export const promisify = (asyncFun: Function, ...args: any) => {
+  return () => {
+    return new Promise<undefined>(async resolve => {
+      await asyncFun(...args);
+      resolve();
+    });
+  };
 };

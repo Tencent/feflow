@@ -8,7 +8,7 @@ export default class DBInstance {
     this.db.loadDatabase();
   }
 
-  create(key: string, value: string): Promise<undefined> {
+  create(key: string, value: any): Promise<undefined> {
     return new Promise((resolve, reject) => {
       this.db.insert(
         {
@@ -47,7 +47,7 @@ export default class DBInstance {
     });
   }
 
-  update(key: string, value: string): Promise<undefined> {
+  update(key: string, value: any): Promise<undefined> {
     return new Promise((resolve, reject) => {
       this.db.update(
         {

@@ -10,7 +10,6 @@ import {
 } from '../../shared/constant';
 import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
-const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
@@ -85,11 +84,6 @@ async function execPlugin(
   });
   plugin.command.run(...args);
   plugin.postRun.runLess();
-  try {
-    await updateUniversalPlugin(ctx, pkg, version, plugin);
-  } catch (e) {
-    ctx.logger.debug(`[${pkg}] update fail, ${e}`);
-  }
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {
