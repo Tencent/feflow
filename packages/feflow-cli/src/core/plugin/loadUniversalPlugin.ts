@@ -10,6 +10,8 @@ import {
 } from '../../shared/constant';
 import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
+import { CommandPickConfig, COMMAND_TYPE } from "../command-picker";
+
 const { updateUniversalPlugin } = require('../native/install');
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
@@ -61,7 +63,7 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   }
 }
 
-async function execPlugin(
+export async function execPlugin(
   ctx: any,
   pkg: string,
   version: string
@@ -94,9 +96,11 @@ async function execPlugin(
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {
   const universalPkg: UniversalPkg = ctx.universalPkg;
+  const pickConfig = new CommandPickConfig(ctx);
 
   const installed = universalPkg.getInstalled();
   for (const [pkg, version] of installed) {
+    pickConfig.registSubCommand(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store, pkg, version);
     register(ctx, pkg, version, true);
   }
 
@@ -106,4 +110,7 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
       register(ctx, pkg, version, false);
     }
   }
+
+  pickConfig.registSubCommand(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store);
+  pickConfig.updateCache(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE);
 }

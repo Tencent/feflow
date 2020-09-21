@@ -29,6 +29,7 @@ import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 import InstallPersistence, { InstallAttribute } from '../universal-pkg/persistence/install';
 import applyPlugins from '../plugin/applyPlugins';
+import { CommandPickConfig  } from "../command-picker";
 
 let installP: InstallPersistence;
 let account: any;
@@ -131,7 +132,10 @@ module.exports = (ctx: any) => {
         return uninstallUniversalPlugin(ctx, pkgInfo);
       }
 
-      return uninstallNpmPlugin(ctx, dependencies);
+      uninstallNpmPlugin(ctx, dependencies);
+
+      const pickerConfig = new CommandPickConfig(ctx);
+      pickerConfig.removeCache(dependencies[0]);
     }
   );
 };
