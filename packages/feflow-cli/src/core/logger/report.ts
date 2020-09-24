@@ -19,7 +19,17 @@ let KYE_FILE = {};
     }
     fs.writeFileSync(KEYS_FILE,JSON.stringify(KYE_FILE),'utf-8')
   }
-})()
+})();
+
+// 保证logger.log文件一定存在
+(() => {
+  try {
+    fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
+  } catch (_) {
+    fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
+  }
+})();
+
 class loggerReport {
   constructor() {}
   init(data: Array<Object> = [], report?: boolean) {

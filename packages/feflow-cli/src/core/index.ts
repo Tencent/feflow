@@ -89,8 +89,7 @@ export default class Feflow {
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
 
-    const disableCheck =
-      this.args['disable-check'] || this.config.disableCheck === true;
+    const disableCheck = this.args['disable-check'] || this.config.disableCheck;
 
     await this.initClient();
     await this.initPackageManager();
@@ -101,16 +100,16 @@ export default class Feflow {
     }
 
     const picker = new CommandPicker(this, cmd);
+
     if (picker.isAvailable()) {
       // should hit the cache in most cases
-      return picker.pickCommand();
+      picker.pickCommand();
     } else {
       // if not, load plugin/devkit/native in need
       await this.loadCommands(picker.getLoadOrder());
+      // make sure the command has at least one funtion, otherwise replace to help command
+      picker.checkCommand();
     }
-
-    // make sure the command has at least one funtion, otherwise replace to help command
-    picker.checkCommand();
   }
 
   initClient() {
@@ -176,7 +175,7 @@ export default class Feflow {
         const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
         const installedPackageManagers = packageManagers.filter(
-          (packageManager) => isInstalled(packageManager)
+          packageManager => isInstalled(packageManager)
         );
 
         if (installedPackageManagers.length === 0) {
@@ -185,9 +184,12 @@ export default class Feflow {
         } else {
           const defaultPackageManager = installedPackageManagers[0];
           const configPath = path.join(root, '.feflowrc.yml');
-          safeDump({
-            packageManager: defaultPackageManager
-          }, configPath);
+          safeDump(
+            {
+              packageManager: defaultPackageManager
+            },
+            configPath
+          );
           this.config = parseYaml(configPath);
           resolve();
         }
@@ -220,7 +222,7 @@ export default class Feflow {
         const localVersion = pkg.version;
         const registryUrl = await getRegistryUrl(packageManager);
         const latestVersion: any = await packageJson(name, registryUrl).catch(
-          (err) => {
+          err => {
             logger.debug('Check plugin update error', err);
           }
         );
@@ -340,9 +342,9 @@ export default class Feflow {
     this.logger.debug('load order: ', order);
     if ((order & LOAD_ALL) === LOAD_ALL) {
       await this.loadNative();
+      await loadUniversalPlugin(this);
       await loadPlugins(this);
       await loadDevkits(this);
-      await loadUniversalPlugin(this);
       return;
     }
     if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
@@ -372,6 +374,11 @@ export default class Feflow {
   }
 
   async call(name: any, ctx: any) {
+    const args = ctx.args;
+    if (args.h || args.help) {
+      // 先打印插件命令描述
+      await this.showCommandOptionDescription(name, ctx);
+    }
     const cmd = this.commander.get(name);
     if (cmd) {
       this.logger.name = this.commander.store[name].pluginName;
@@ -398,7 +405,7 @@ export default class Feflow {
             ];
 
       const child = spawn(packageManager, args, { stdio: 'inherit' });
-      child.on('close', (code) => {
+      child.on('close', code => {
         if (code !== 0) {
           reject({
             command: `${packageManager} ${args.join(' ')}`
