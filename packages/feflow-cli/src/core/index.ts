@@ -89,10 +89,10 @@ export default class Feflow {
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
 
-    const disableCheck = this.args['disable-check'] || this.config.disableCheck;
-
     await this.initClient();
     await this.initPackageManager();
+
+    const disableCheck = this.args['disable-check'] || (this.config && this.config.disableCheck);
 
     if (!disableCheck) {
       await this.checkCliUpdate();
