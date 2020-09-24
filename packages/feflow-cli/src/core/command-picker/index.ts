@@ -67,7 +67,7 @@ export class CommandPickConfig {
   ctx: Feflow;
   cache: Cache | undefined;
   lastCommand = '';
-  lastStore = {};
+  lastStore: Record<string, { pluginName: string }> = {};
   subCommandMap: { [key: string]: string[] } = {};
   subCommandMapWithVersion: {
     [key: string]: { name: string; version: string };
@@ -108,26 +108,39 @@ export class CommandPickConfig {
     pluginName: string = COMMAND_TYPE.NATIVE_TYPE,
     version = 'latest'
   ) {
-    const subCommands = _.difference(
+    const newCommands = _.difference(
       Object.keys(store),
       Object.keys(this.lastStore)
     );
 
-    if (type == COMMAND_TYPE.PLUGIN_TYPE) {
-      this.subCommandMap[this.lastCommand] = subCommands;
-    } else {
-      this.subCommandMapWithVersion[this.lastCommand] = {
-        name: subCommands[0],
-        version
-      };
+    if (!!this.lastCommand) {
+      if (type == COMMAND_TYPE.PLUGIN_TYPE) {
+        // 命令相同的场景，插件提供方变化后，依然可以探测到是新命令
+        const commonCommands = Object.keys(store).filter(
+          (item) => !newCommands.includes(item)
+        );
+        for (const common of commonCommands) {
+          if (!this.lastStore[common]) continue;
+          if (store[common].pluginName !== this.lastStore[common].pluginName) {
+            newCommands.push(common);
+          }
+        }
+        this.subCommandMap[this.lastCommand] = newCommands;
+      } else {
+        this.subCommandMapWithVersion[this.lastCommand] = {
+          name: newCommands[0],
+          version
+        };
+      }
     }
+
     this.lastCommand = pluginName;
     this.lastStore = Object.assign({}, store);
   }
 
   initCacheFile() {
     this.cache = {
-      commandPickerMap: this.initCommandPickerMap() as PickMap,
+      commandPickerMap: this.getAllCommandPickerMap() as PickMap,
       version: this.cacheVersion
     };
     this.writeCache();
@@ -155,7 +168,7 @@ export class CommandPickConfig {
     this.lastCommand = '';
   }
 
-  initCommandPickerMap(): Partial<PickMap> {
+  getAllCommandPickerMap(): Partial<PickMap> {
     const commandPickerMap: Partial<PickMap> = {};
     commandPickerMap[COMMAND_TYPE.NATIVE_TYPE] = this.getNativeMap();
     commandPickerMap[COMMAND_TYPE.PLUGIN_TYPE] = this.getPluginMap();
