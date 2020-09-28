@@ -42,7 +42,7 @@ export default {
     // 什么都没定义：原始返回码
     if (codeName) {
       this.message[codeName] && message.push(this.message[codeName]);
-      message.push(`(${codeName || code})`);
+      message.push(`(${codeName})`);
     } else {
       message.push(code);
     }

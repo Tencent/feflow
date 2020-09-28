@@ -2,19 +2,20 @@ module.exports = {
   root: true,
   parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: "babel-eslint",
+    parser: 'babel-eslint',
     sourceType: 'module',
   },
   env: {
     browser: true,
-    node: true
+    node: true,
+    mocha: true
   },
   extends: ['plugin:vue/vue3-recommended', '@tencent/eslint-config-tencent'],
   globals: {
-    __static: true
+    __static: true,
   },
   plugins: [
-    'vue'
+    'vue',
   ],
   overrides: [
     {
@@ -61,5 +62,5 @@ module.exports = {
         'vue/no-template-shadow': 0,
       },
     },
-  ]
-}
+  ],
+};

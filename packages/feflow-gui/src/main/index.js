@@ -1,5 +1,3 @@
-'use strict';
-
 import path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { getUrl } from './common/utils';
