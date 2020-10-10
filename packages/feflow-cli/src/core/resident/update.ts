@@ -81,15 +81,11 @@ function startUpdateCli() {
     if (latestVersion) {
       await updateCli(packageManager);
 
-      const newUpdateData = {
-        ...updateData,
-        cli_update_msg: {
-          version,
-          latestVersion
-        },
-        latest_cli_version: ''
+      updateData['cli_update_msg'] = {
+        version,
+        latestVersion
       };
-      await db.update('update_data', newUpdateData);
+      updateData['latest_cli_version'] = '';
     }
     resolve();
   });
@@ -111,12 +107,8 @@ async function startPluginsUpdate(plugins: string[]) {
     false,
     true
   ).then(async () => {
-    const newUpdateData = {
-      ...updateData,
-      plugins_update_msg: plugins,
-      latest_plugins: ''
-    };
-    await db.update('update_data', newUpdateData);
+    updateData['plugins_update_msg'] = plugins;
+    updateData['latest_plugins'] = '';
 
     logger.info('Plugin update success');
   });
@@ -222,12 +214,8 @@ function checkUniversalPluginsUpdate() {
         await (await updateTask)();
       }
 
-      const newUpdateData = {
-        ...updateData,
-        universal_plugins_update_msg: updatePkg,
-        latest_universal_plugins: ''
-      };
-      await db.update('update_data', newUpdateData);
+      updateData['universal_plugins_update_msg'] = updatePkg;
+      updateData['latest_universal_plugins'] = '';
     }
     resolve();
   });
@@ -243,17 +231,11 @@ db.read('update_data')
     ]);
   })
   .then(() => {
-    const newUpdateData = {
-      ...updateData,
-      update_lock: ''
-    };
-    db.update('update_data', newUpdateData);
+    updateData['update_lock'] = '';
+    db.update('update_data', updateData);
   })
   .catch((reason: any) => {
     logger.debug(reason);
-    const newUpdateData = {
-      ...updateData,
-      update_lock: ''
-    };
-    db.update('update_data', newUpdateData);
+    updateData['update_lock'] = '';
+    db.update('update_data', updateData);
   });

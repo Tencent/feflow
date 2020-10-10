@@ -16,6 +16,7 @@ import { safeDump } from '../../shared/yaml';
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes('--slient');
+const disableCheck = process.argv.slice(3).includes('--disable-check');
 let db: DBInstance;
 const table = new Table();
 
@@ -51,24 +52,20 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
   child.unref();
 }
 
-async function _checkUpdateMsg(ctx: any, updateData: any) {
-  const _showCliUpdateM = async () => {
-    const updateMsg = updateData?.['cli_update_msg'];
+async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
+  const _showCliUpdateM = () => {
+    const updateMsg = updateData['cli_update_msg'];
     if (updateMsg) {
       const { version, latestVersion } = updateMsg;
       ctx.logger.info(
-        `@feflow/cil has been updated from ${version} to ${latestVersion}.Enjoy it.`
+        `@feflow/cil has been updated from ${version} to ${latestVersion}. Enjoy it.`
       );
-      const newUpdateData = {
-        ...updateData,
-        cli_update_msg: ''
-      };
-      await db.update('update_data', newUpdateData);
+      updateData['cli_update_msg'] = '';
     }
   };
 
-  const _showPluginsUpdateM = async () => {
-    const updatePkg = updateData?.['plugins_update_msg'];
+  const _showPluginsUpdateM = () => {
+    const updatePkg = updateData['plugins_update_msg'];
     if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
         const { name, localVersion, latestVersion } = pkg;
@@ -89,16 +86,12 @@ async function _checkUpdateMsg(ctx: any, updateData: any) {
       );
       if (!isSilent) console.log(table.toString());
 
-      const newUpdateData = {
-        ...updateData,
-        plugins_update_msg: ''
-      };
-      await db.update('update_data', newUpdateData);
+      updateData['plugins_update_msg'] = '';
     }
   };
 
-  const _showUniversalPluginsM = async () => {
-    const updatePkg = updateData?.['universal_plugins_update_msg'];
+  const _showUniversalPluginsM = () => {
+    const updatePkg = updateData['universal_plugins_update_msg'];
 
     if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
@@ -120,18 +113,16 @@ async function _checkUpdateMsg(ctx: any, updateData: any) {
       );
       if (!isSilent) console.log(table.toString());
 
-      const newUpdateData = {
-        ...updateData,
-        universal_plugins_update_msg: ''
-      };
-      await db.update('update_data', newUpdateData);
+      updateData['universal_plugins_update_msg'] = '';
     }
   };
 
   // cli -> tnpm -> universal
-  await _showCliUpdateM();
-  await _showPluginsUpdateM();
-  await _showUniversalPluginsM();
+  _showCliUpdateM();
+  _showPluginsUpdateM();
+  _showUniversalPluginsM();
+
+  await db.update('update_data', updateData);
 }
 
 async function _checkLock(updateData: any) {
@@ -144,14 +135,11 @@ async function _checkLock(updateData: any) {
   ) {
     return true;
   } else {
-    const newUpdateData = {
-      ...updateData,
-      update_lock: {
-        time: String(nowTime),
-        pid: process.pid
-      }
+    updateData['update_lock'] = {
+      time: String(nowTime),
+      pid: process.pid
     };
-    await db.update('update_data', newUpdateData);
+    await db.update('update_data', updateData);
 
     // Optimistic Concurrency Control
     let nowUpdateData = await db.read('update_data');
@@ -178,11 +166,13 @@ export async function checkUpdate(ctx: any) {
   let updateData = await db.read('update_data');
   updateData = updateData?.['value'];
   if (updateData) {
+
+    await _checkUpdateMsg(ctx, updateData);
+
     // add lock to keep only one updating process is running
     const isLocked = await _checkLock(updateData);
     if (isLocked) return;
 
-    await _checkUpdateMsg(ctx, updateData);
 
     const data = await db.read('beat_time');
     if (data) {
@@ -224,7 +214,8 @@ export async function checkUpdate(ctx: any) {
     startUpdateBeat(ctx);
   }
 
-  if (latestVersion && semver.gt(latestVersion, ctx.version)) {
+  // 开启更新时
+  if (!disableCheck && latestVersion && semver.gt(latestVersion, ctx.version)) {
     ctx.logger.debug(
       `Find new version, current version: ${ctx.version}, latest version: ${latestVersion}`
     );

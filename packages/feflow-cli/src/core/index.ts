@@ -88,8 +88,7 @@ export default class Feflow {
     const disableCheck =
       this.args['disable-check'] || this.config.disableCheck === true;
 
-    await this.initClient();
-    await this.initPackageManager();
+    await Promise.all[this.initClient(), this.initPackageManager()];
 
     if (!disableCheck) {
       checkUpdate(this);
