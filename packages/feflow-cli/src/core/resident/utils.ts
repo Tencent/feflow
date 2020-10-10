@@ -11,6 +11,7 @@ import {
 } from '../../shared/constant';
 import { getCurrentTag } from '../universal-pkg/repository/git';
 import loggerInstance from '../logger';
+import versionImpl from '../universal-pkg/dep/version';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -105,8 +106,8 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
     );
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
-        const currentVersion = await getCurrentTag(repoPath);
-        if (currentVersion !== pkgInfo.checkoutTag) {
+        const currentVersion = await getCurrentTag(repoPath) || '';
+        if (versionImpl.gt(pkgInfo.checkoutTag, currentVersion)) {
           resolve({
             name: pkgInfo.repoName,
             localVersion: currentVersion,
