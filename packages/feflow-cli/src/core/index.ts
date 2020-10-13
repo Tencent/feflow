@@ -381,10 +381,10 @@ export default class Feflow {
     }
     const cmd = this.commander.get(name);
     if (cmd) {
-      this.logger.name = this.commander.store[name].pluginName;
+      this.logger.name = cmd.pluginName;
       await cmd.call(this, ctx);
     } else {
-      throw new Error('Command `' + name + '` has not been registered yet!');
+      this.logger.debug('Command `' + name + '` has not been registered yet!')
     }
   }
 
