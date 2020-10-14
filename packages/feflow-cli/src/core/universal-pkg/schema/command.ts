@@ -56,9 +56,14 @@ export class Command {
       if (args && args.length > 0) {
         command = `${command} ${args.join(' ')}`;
       }
-      execSync(command, {
-        stdio: 'inherit'
-      });
+      try {
+        execSync(command, {
+          stdio: 'inherit'
+        });
+      } catch(e) {
+        this.ctx.logger.debug(e);
+        return;
+      }
     }
   }
 
