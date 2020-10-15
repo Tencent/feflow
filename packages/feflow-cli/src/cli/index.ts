@@ -84,7 +84,11 @@ export default function entry() {
     printBanner();
     return;
   }
-
+  // 捕获promise异常退出或catch中抛出异常
+  process.on('unhandledRejection', err => {
+    feflow?.reporter?.reportCommandError(err);
+    handleError(err);
+  });
   return feflow.init(cmd).then(() => {
     const isInvalidCmd = !(cmd && (args.h || args.help));
     if (!args.h && !args.help) {
