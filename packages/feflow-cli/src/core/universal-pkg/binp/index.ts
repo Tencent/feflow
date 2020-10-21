@@ -90,6 +90,9 @@ export default class Binp {
       console.warn(`unknown terminal, please add ${binPath} to the path`);
       return;
     }
+    if (!fs.existsSync(profile)) {
+      return profile;
+    }
     const content = fs.readFileSync(profile)?.toString();
     if (content?.indexOf(setStatement) === -1) {
       return profile;
