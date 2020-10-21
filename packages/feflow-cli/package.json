@@ -66,6 +66,7 @@
     "axios": "^0.19.2",
     "bunyan": "^1.8.14",
     "chalk": "^2.4.2",
+    "cli-markdown": "^1.7.0",
     "command-line-usage": "^6.1.0",
     "commander": "^2.20.0",
     "cross-spawn": "^6.0.5",
