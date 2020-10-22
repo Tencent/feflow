@@ -86,6 +86,7 @@ export default function entry() {
   }
   // 捕获promise异常退出或catch中抛出异常
   process.on('unhandledRejection', err => {
+    logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
     handleError(err);
   });
@@ -114,6 +115,7 @@ export default function entry() {
           logger.debug(`call ${cmd} success`);
         })
         .catch((err) => {
+          logger.debug(err);
           feflow?.reporter?.reportCommandError(err);
           handleError(err);
         });
