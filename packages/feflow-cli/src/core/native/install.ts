@@ -30,6 +30,7 @@ import versionImpl from '../universal-pkg/dep/version';
 import InstallPersistence, { InstallAttribute } from '../universal-pkg/persistence/install';
 import applyPlugins from '../plugin/applyPlugins';
 import { CommandPickConfig  } from "../command-picker";
+// import loggerReport from '../logger/report';
 
 let installP: InstallPersistence;
 let account: any;

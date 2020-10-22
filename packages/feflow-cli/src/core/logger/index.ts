@@ -6,7 +6,7 @@ import loggerReport from './report';
 const pkg = require('../../../package.json');
 const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
 const process = require('process');
-var timer:any;
+let timer:any;
 let logger:any;
 const report = new loggerReport();
 interface IObject {
