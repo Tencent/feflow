@@ -58,10 +58,12 @@ class loggerReport {
         }
         resolve();
       }
-      //非定时||上报数量过少 => 写入文件
-      fs.writeFile(LOGGER_LOG_PATH, JSON.stringify(writeData), 'utf8', () => {
-        resolve();
-      });
+      if (writeData && writeData.length) {
+        //非定时||上报数量过少 => 写入文件
+        fs.writeFile(LOGGER_LOG_PATH, JSON.stringify(writeData), 'utf8', () => {
+          resolve();
+        });
+      }
     });
   }
 }
