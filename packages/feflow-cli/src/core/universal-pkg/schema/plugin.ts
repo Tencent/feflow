@@ -36,13 +36,16 @@ export class Plugin {
 
   usage: any;
 
+  // 是否属于语言运行时，语言运行时不需要经过feflow代理执行
+  langRuntime: boolean = false;
+
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
       throw `current operating system [${platform}] is not supported`;
     }
     this.ctx = ctx;
     this.path = pluginPath;
-    this.desc = config['desc'];
+    this.desc = config?.desc;
     this.dep = new Dependencies(config?.dep);
     this.command = new Command(this.ctx, this.path, config?.command);
     this.autoUpdate = config['auto-update'] || false;
@@ -64,6 +67,7 @@ export class Plugin {
     this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
     this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
     this.usage = config?.['usage'];
+    this.langRuntime = config?.['lang-runtime'] || false;
   }
 
   async check() {

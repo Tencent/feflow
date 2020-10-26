@@ -272,6 +272,7 @@ async function installPlugin(
 
   installPluginStr = installPluginStr.trim();
   if (!serverUrl) {
+    logger.debug('please configure the serverUrl');
     return installJsPlugin(ctx, installPluginStr);
   }
   const pkgInfo = await getPkgInfo(ctx, installPluginStr);
@@ -357,13 +358,20 @@ async function installPlugin(
         curPkgInfo.repoName,
         curPkgInfo.installVersion
       );
-      // call {pkg}@{version} and disable-check
-      linker.register(
-        pluginBin,
-        pluginLib,
-        `${commandName}@${curPkgInfo.installVersion} --disable-check --slient`,
-        commandName
-      );
+      const pluginPath = path.join(universalModules, `${curPkgInfo.repoName}@${curPkgInfo.installVersion}`);
+      const curPlugin = resolvePlugin(ctx, pluginPath);
+      if (curPlugin.langRuntime) {
+        const commands = curPlugin.command.getCommands();
+        linker.registerCustom(pluginBin, pluginLib, commands, commandName);
+      } else {
+        // call {pkg}@{version} and disable-check
+        linker.register(
+          pluginBin,
+          pluginLib,
+          `${commandName}@${curPkgInfo.installVersion} --disable-check --slient`,
+          commandName
+        );
+      }
     } catch (e) {
       logger.error(`failed to install plugin dependency ${depPlugin}`);
       throw e;
@@ -382,7 +390,13 @@ async function installPlugin(
   }
 
   plugin.preInstall.run();
-  linker.register(bin, lib, toSimpleCommand(pkgInfo.repoName));
+  if (plugin.langRuntime) {
+    const cmdName = toSimpleCommand(pkgInfo.repoName);
+    const commands = plugin.command.getCommands();
+    linker.registerCustom(bin, lib, commands, cmdName);
+  } else {
+    linker.register(bin, lib, toSimpleCommand(pkgInfo.repoName));
+  }
   // install when global or not exists
   if (global || !universalPkg.isInstalled(pkgInfo.repoName)) {
     universalPkg.install(pkgInfo.repoName, pkgInfo.installVersion);
