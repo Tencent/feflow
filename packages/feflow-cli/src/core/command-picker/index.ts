@@ -67,11 +67,14 @@ export class CommandPickConfig {
   ctx: Feflow;
   cache: Cache | undefined;
   lastCommand = '';
+  lastVersion = '';
   lastStore: Record<string, { pluginName: string }> = {};
   subCommandMap: { [key: string]: string[] } = {};
   subCommandMapWithVersion: {
-    [key: string]: { name: string; version: string };
-  } = {};
+    commands: Array<{
+      [key: string]: { name: string; version: string };
+    }>;
+  } = { commands: [] };
   root: string;
   cacheFilePath: string;
   cacheVersion = '1.0.0';
@@ -127,13 +130,25 @@ export class CommandPickConfig {
         }
         this.subCommandMap[this.lastCommand] = newCommands;
       } else {
-        this.subCommandMapWithVersion[this.lastCommand] = {
-          name: newCommands[0],
-          version
-        };
+        if (!this.subCommandMapWithVersion[this.lastCommand]) {
+          this.subCommandMapWithVersion[this.lastCommand] = {
+            commands: [
+              {
+                name: newCommands[0],
+                version: this.lastVersion
+              }
+            ]
+          };
+        } else {
+          this.subCommandMapWithVersion[this.lastCommand].commands.push({
+            name: newCommands[0],
+            version: this.lastVersion
+          });
+        }
       }
     }
 
+    this.lastVersion = version;
     this.lastCommand = pluginName;
     this.lastStore = Object.assign({}, store);
   }
@@ -252,9 +267,9 @@ export class CommandPickConfig {
     const unversalPlugin: PluginInfo = {};
     for (let pkg of Object.keys(this.subCommandMapWithVersion)) {
       if (!pkg) continue;
-      const { name, version } = this.subCommandMapWithVersion[pkg];
+      const plugin = this.subCommandMapWithVersion[pkg];
       unversalPlugin[pkg] = {
-        commands: [{ name, version }],
+        ...plugin,
         type: COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE
       };
     }
@@ -365,14 +380,18 @@ export default class CommandPicker {
     const { type } = tartgetCommand;
 
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-      const { version } = tartgetCommand as TargetUniversalPlugin;
-      return !this.isHelp && !!version;
-    } else {
+      const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
+      const pkgPath = path.join(this.ctx.universalModules, `${pkg}@${version}`);
+      const pathExists = fs.existsSync(pkgPath);
+      return !this.isHelp && pathExists && !!version;
+    } else if (type === COMMAND_TYPE.PLUGIN_TYPE) {
       const { path } = tartgetCommand as TargetPlugin;
       const pathExists = fs.existsSync(path);
       const isCachType = this.SUPPORT_TYPE.includes(type);
       return !this.isHelp && !!pathExists && isCachType;
     }
+
+    return false;
   }
 
   checkCommand() {
