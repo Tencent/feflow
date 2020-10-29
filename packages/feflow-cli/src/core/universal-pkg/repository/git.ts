@@ -6,11 +6,12 @@ import {
   transformUrl
 } from '../../../shared/git';
 
+const execFile = promisify(childProcess.execFile);
+
 export async function getTag(
   repoUrl: string,
   version?: string
 ): Promise<string | undefined> {
-  const execFile = promisify(childProcess.execFile);
   const url = await transformUrl(repoUrl);
   const { stdout } = await execFile('git', [
     'ls-remote',
@@ -48,15 +49,10 @@ export async function getTag(
 export async function getCurrentTag(
   repoPath: string
 ): Promise<string | undefined> {
-  const status = spawn.sync('git', ['-C', repoPath, 'status']);
-  const head = status?.stdout?.toString().trim().split('\n')[0];
-  const fields = head.split(' ');
-  if (fields.length > 0) {
-    const v = fields[fields.length - 1];
-    if (versionImpl.check(v)) {
-      return v;
-    }
-  }
+  const tagsRsp = spawn.sync('git', ['-C', repoPath, 'tag', '-l']);
+  let tags = tagsRsp?.stdout?.toString().trim().split('\n');
+  tags = tags.filter(v => versionImpl.check(v)).sort((a, b) => versionImpl.gt(a, b) ? -1 : 1);
+  return tags?.[0];
 }
 
 export function checkoutVersion(repoPath: string, version: string) {

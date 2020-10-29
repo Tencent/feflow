@@ -107,21 +107,11 @@ module.exports = (ctx: any) => {
             const readmeText = parseReadme(pluginConfigPath);
 
             if (readmeText) {
-              console.log(
-                chalk.yellow(
-                  `No usage was found in command '${cmd}'. Below is the README.md`
-                )
-              );
               console.log(readmeText);
               return;
             }
 
             // case 3: 多语言情况下既没有 usage，又没有 README.md，则展示插件的 desc
-            console.log(
-              chalk.yellow(
-                `No usage was found in command '${cmd}'. Below is the description.`
-              )
-            );
             console.log(commandInfo.desc);
             return;
           }
@@ -133,11 +123,6 @@ module.exports = (ctx: any) => {
         }
 
         // case 5: nodejs 且没有写 options 的情况，直接展示插件的 desc
-        console.log(
-          chalk.yellow(
-            `No usage was found in command '${cmd}'. Below is the description.`
-          )
-        );
         console.log(commandInfo.desc);
         return;
       }

@@ -20,10 +20,15 @@ export class UniversalPkg {
       this.saveChange();
       return;
     }
-    const universalPkg = require(pkgFile);
-    this.version = universalPkg?.version || this.version;
-    this.installed = toInstalled(universalPkg?.installed);
-    this.dependencies = this.toDependencies(universalPkg?.dependencies);
+    try {
+      const data = fs.readFileSync(pkgFile, 'utf-8');
+      const universalPkg = JSON.parse(data);
+      this.version = universalPkg?.version || this.version;
+      this.installed = toInstalled(universalPkg?.installed);
+      this.dependencies = this.toDependencies(universalPkg?.dependencies);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   private toDependencies(

@@ -6,7 +6,7 @@ export default class InstallPersistence {
     private db: Datastore;
 
     constructor(dbFile: string) {
-        this.db = new Datastore({ filename: dbFile, autoload: true });
+        this.db = new Datastore({ filename: dbFile });
         this.db.loadDatabase();
     }
 

@@ -12,13 +12,11 @@ import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
 import { CommandPickConfig, COMMAND_TYPE } from "../command-picker";
 
-const { updateUniversalPlugin } = require('../native/install');
-
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
 const excludeAgrs = ['--disable-check', '--slient'];
 
-function loadPlugin(
+export function loadPlugin(
   ctx: any,
   pkg: string,
   version: string
@@ -87,11 +85,6 @@ export async function execPlugin(
   });
   plugin.command.run(...args);
   plugin.postRun.runLess();
-  try {
-    await updateUniversalPlugin(ctx, pkg, version, plugin);
-  } catch (e) {
-    ctx.logger.debug(`[${pkg}] update fail, ${e}`);
-  }
 }
 
 export default async function loadUniversalPlugin(ctx: any): Promise<any> {
