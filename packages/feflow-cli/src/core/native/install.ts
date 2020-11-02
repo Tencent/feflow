@@ -183,15 +183,16 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   });
 }
 
-async function installPlugin(
+async function startInstall(
   ctx: any,
-  installPluginStr: string,
+  pkgInfo: any,
+  repoPath: string,
+  updateFlag: boolean,
   global: boolean,
 ) {
   const {
     logger,
     universalPkg,
-    universalModules,
     bin,
     lib,
   }: {
@@ -201,58 +202,15 @@ async function installPlugin(
     bin: string;
     lib: string;
   } = ctx;
-  const serverUrl = ctx.config?.serverUrl;
-
-  installPluginStr = installPluginStr.trim();
-  if (!serverUrl) {
-    return installNpmPlugin(ctx, ctx?.args['_']);
-  }
-  const pkgInfo = await getPkgInfo(ctx, installPluginStr);
-  if (!pkgInfo) {
-    return installNpmPlugin(ctx, ctx?.args['_']);
-  }
-  if (!pkgInfo.repoName) {
-    throw `plugin [${pkgInfo.repoName}] does not exist`;
-  }
-
-  // if the specified version is already installed, skip it
-  if (
-    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !global)
-  ) {
-    return;
-  }
-
-  let updateFlag = false;
-
-  const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
-  if (pkgInfo.installVersion === LATEST_VERSION) {
-    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
-      const currentVersion = await getCurrentTag(repoPath);
-      if (!currentVersion || pkgInfo.checkoutTag === currentVersion) {
-        return;
-      }
-      updateFlag = true;
-    }
-  }
-  if (updateFlag) {
-    if (!upgradeUniq.upgradeable(pkgInfo.repoName, pkgInfo.installVersion)) {
-      return;
-    }
-    logger.info(`[${pkgInfo.repoName}] update the plugin to version ${pkgInfo.checkoutTag}`);
-    resolvePlugin(ctx, repoPath).preUpgrade.runLess();
-  } else {
-    logger.info(`[${pkgInfo.repoName}] installing plugin`);
-  }
   logger.debug('install version:', pkgInfo.checkoutTag);
   if (!fs.existsSync(repoPath)) {
     logger.info(`Start download from ${pkgInfo.repoUrl}`);
     await download(pkgInfo.repoUrl, repoPath);
   }
-  const linker = new Linker();
-
   logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
   checkoutVersion(repoPath, pkgInfo.checkoutTag);
 
+  const linker = new Linker();
   const oldVersion = universalPkg.getInstalled().get(pkgInfo.repoName);
   let oldDependencies;
   if (global && oldVersion) {
@@ -340,6 +298,68 @@ async function installPlugin(
   } else {
     logger.info('install success');
   }
+}
+
+async function installPlugin(
+  ctx: any,
+  installPluginStr: string,
+  global: boolean,
+) {
+  const {
+    logger,
+    universalPkg,
+    universalModules,
+  }: {
+    logger: any;
+    universalPkg: UniversalPkg;
+    universalModules: string;
+    bin: string;
+    lib: string;
+  } = ctx;
+  const serverUrl = ctx.config?.serverUrl;
+
+  installPluginStr = installPluginStr.trim();
+  if (!serverUrl) {
+    return installNpmPlugin(ctx, ctx?.args['_']);
+  }
+  const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+  if (!pkgInfo) {
+    return installNpmPlugin(ctx, ctx?.args['_']);
+  }
+  if (!pkgInfo.repoName) {
+    throw `plugin [${pkgInfo.repoName}] does not exist`;
+  }
+
+  // if the specified version is already installed, skip it
+  if (
+    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !global)
+  ) {
+    return;
+  }
+
+  let updateFlag = false;
+
+  const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
+  if (pkgInfo.installVersion === LATEST_VERSION) {
+    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
+      const currentVersion = await getCurrentTag(repoPath);
+      if (!currentVersion || pkgInfo.checkoutTag === currentVersion) {
+        return;
+      }
+      updateFlag = true;
+    }
+  }
+  if (updateFlag) {
+    if (!upgradeUniq.upgradeable(pkgInfo.repoName, pkgInfo.installVersion)) {
+      return;
+    }
+    logger.info(`[${pkgInfo.repoName}] update the plugin to version ${pkgInfo.checkoutTag}`);
+    resolvePlugin(ctx, repoPath).preUpgrade.runLess();
+  } else {
+    logger.info(`[${pkgInfo.repoName}] installing plugin`);
+  }
+
+  await startInstall(ctx, pkgInfo, repoPath, updateFlag, global);
 }
 
 function toSimpleCommand(command: string): string {
