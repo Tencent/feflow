@@ -57,7 +57,7 @@ export default class Binp {
     } else {
       toPath = `${pathStr};${binPath}`;
     }
-    spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore' });
+    spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore', windowsHide: true });
   }
 
   private registerToUnixLike(binPath: string, prior: boolean) {

@@ -11,7 +11,7 @@ export function getRegistryUrl(packageManager: string) {
     const command = packageManager;
     const args = ['config', 'get', 'registry'];
 
-    const child = spawn(command, args);
+    const child = spawn(command, args, { windowsHide: true });
 
     let output = '';
 
@@ -54,7 +54,7 @@ export function install(
       args.push('--verbose');
     }
 
-    const child = spawn(command, args, { stdio: 'inherit', cwd: root });
+    const child = spawn(command, args, { stdio: 'inherit', cwd: root, windowsHide: true });
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
@@ -75,7 +75,9 @@ async function listRepoTag(repoUrl: string): Promise<string[]> {
     '--tags',
     '--refs',
     url
-  ]);
+  ], {
+    windowsHide: true
+  });
   const tagStr = stdout?.trim();
   let tagList: string[] = [];
 
@@ -127,9 +129,9 @@ export async function getLatestTag(repoUrl: string) {
 export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
-    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore' });
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore', windowsHide: true });
     const checkArgs = ['-C', repoPath, 'checkout', version];
-    const child = spawn(command, checkArgs, { stdio: 'ignore' });
+    const child = spawn(command, checkArgs, { stdio: 'ignore', windowsHide: true });
     child.on('close', (code) => {
       if (code !== 0) {
         reject({

@@ -90,7 +90,7 @@ module.exports = (ctx: any) => {
     function executeSync(command: string): string {
         let resultBuf: Buffer;
         try {
-            resultBuf =  execSync(command);
+            resultBuf =  execSync(command, { windowsHide: true });
         } catch(e) {
             return e.message;
         }

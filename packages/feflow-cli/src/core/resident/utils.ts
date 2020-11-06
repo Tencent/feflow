@@ -67,7 +67,7 @@ export const getInstalledPlugins = () => {
 
 export const getNpmRegistryUrl = (packageManager: string) => {
   return spawn
-    .sync(packageManager, ['config', 'get', 'registry'])
+    .sync(packageManager, ['config', 'get', 'registry'], { windowsHide: true })
     .stdout.toString()
     .replace(/\n/, '')
     .replace(/\/$/, '');

@@ -31,7 +31,8 @@ function startUpdateBeat(ctx: any) {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
       silent: ctx.args.silent
-    }
+    },
+    windowsHide: true
   });
 
   // 父进程不会等待子进程
@@ -48,7 +49,8 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
       silent: ctx.args.silent,
       cacheValidate,
       latestVersion
-    }
+    },
+    windowsHide: true
   });
 
   // 父进程不会等待子进程
