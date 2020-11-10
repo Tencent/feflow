@@ -421,6 +421,7 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
+      ctx.logger.error('cant found application');
       return;
     }
     repoUrl = repoInfo.repo;

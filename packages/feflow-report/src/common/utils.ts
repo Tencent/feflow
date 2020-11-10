@@ -23,7 +23,8 @@ const exec = (command: string) => {
 };
 
 export const getGitStatus = (): boolean => {
-  const hasGitCommand = exec('which git');
+  const command = isWin ? 'where git' : 'which git';
+  const hasGitCommand = exec(command);
   const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
   return hasGitCommand && hasGitDir;
 };
