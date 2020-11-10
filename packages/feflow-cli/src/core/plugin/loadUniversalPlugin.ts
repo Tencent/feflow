@@ -11,6 +11,7 @@ import {
 import Binp from '../universal-pkg/binp';
 import Commander from '../commander';
 import { CommandPickConfig, COMMAND_TYPE } from "../command-picker";
+import { escape } from '../../shared/args';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
@@ -82,7 +83,7 @@ export async function execPlugin(
       return false;
     }
     return true;
-  });
+  }).map(arg => escape(arg));
   plugin.command.run(...args);
   plugin.postRun.runLess();
 }

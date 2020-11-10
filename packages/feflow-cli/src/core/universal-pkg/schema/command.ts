@@ -57,7 +57,8 @@ export class Command {
         command = `${command} ${args.join(' ')}`;
       }
       execSync(command, {
-        stdio: 'inherit'
+        stdio: 'inherit',
+        windowsHide: true
       });
     }
   }
@@ -68,7 +69,8 @@ export class Command {
     for (let command of commands) {
       try {
         execSync(command, {
-          stdio: 'inherit'
+          stdio: 'inherit',
+          windowsHide: true
         });
       } catch(e) {
         this.ctx.logger.debug(e);

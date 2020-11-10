@@ -7,7 +7,7 @@ async function isSupportSSH(url: string): Promise<any> {
   }
   try {
     const res: any = await Promise.race([
-      spawn.sync('ssh', ['-vT', url]),
+      spawn.sync('ssh', ['-vT', url], { windowsHide: true }),
       new Promise((resolve: any, reject: any) => {
         setTimeout(() => {
           reject(new Error('SSH check timeout'));
