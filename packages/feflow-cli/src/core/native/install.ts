@@ -421,7 +421,7 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      ctx.logger.error('未在应用市场找到相关内容');
+      ctx.logger.error('cant found application');
       return;
     }
     repoUrl = repoInfo.repo;
