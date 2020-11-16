@@ -1,0 +1,30 @@
+import compose from './compose';
+import chalk from 'chalk';
+import osenv from 'osenv';
+import path from 'path';
+import { FEFLOW_ROOT } from '../../shared/constant';
+
+export default function applyPlugins(plugins: any) {
+  return (ctx: any) => {
+    if (!plugins.length) {
+      return;
+    }
+    // eslint-disable-next-line array-callback-return
+    const chain = plugins.map((name: any) => {
+      const home = path.join(osenv.home(), FEFLOW_ROOT);
+      const pluginPath = path.join(home, 'node_modules', name);
+      try {
+        ctx.logger.debug('Plugin loaded: %s', chalk.magenta(name));
+        return require(pluginPath)(ctx);
+      } catch (err) {
+        ctx.logger.error(
+          { err },
+          'Plugin load failed: %s',
+          chalk.magenta(name),
+        );
+      }
+    });
+
+    return compose(...chain);
+  };
+}

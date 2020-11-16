@@ -1,0 +1,33 @@
+import { UniversalPkg } from './universal-pkg/dep/pkg';
+export default class Feflow {
+    args: any;
+    cmd: any;
+    projectConfig: any;
+    projectPath: any;
+    version: string;
+    logger: any;
+    commander: any;
+    hook: any;
+    root: any;
+    rootPkg: any;
+    universalPkgPath: string;
+    universalModules: string;
+    config: any;
+    configPath: any;
+    bin: string;
+    lib: string;
+    universalPkg: UniversalPkg;
+    reporter: any;
+    constructor(args: any);
+    init(cmd: string): Promise<void>;
+    initClient(): Promise<any>;
+    private initBinPath;
+    initPackageManager(): Promise<any>;
+    checkUpdate(): Promise<void | undefined> | undefined;
+    updatePluginsVersion(packagePath: string, plugins: any): void;
+    getInstalledPlugins(): any;
+    loadNative(): Promise<any>;
+    loadInternalPlugins(): void;
+    call(name: any, ctx: any): Promise<void>;
+    showCommandOptionDescription(cmd: any, ctx: any): Promise<any>;
+}

@@ -28,6 +28,10 @@
 
   Feflow 提供 JS 版本的插件机制和多语言插件机制，可以轻松基于 Feflow 的插件能力来定制团队的开发工具链体系打造。Feflow 提供安装、卸载、数据采集、日志上报、链式安装、增量更新等底层能力
 
+- 相关文档主页
+[Oteam主页](https://techmap.woa.com/oteam/7109)
+[iwiki主页](https://iwiki.woa.com/pages/viewpage.action?pageId=10721556)
+
 ## 快速上手
 
 1. 使用环境
@@ -178,7 +182,7 @@
 
 ## 如何加入
 
-> 欢迎有意向的个人或团队联系 @lewischeng。
+> 欢迎有意向的个人或团队联系 @stevenzhai。
 
 Teflow Oteam 中我们秉持着开放共建，开源协作的思想，欢迎个人和团队加入 Teflow Oteam 的协同生态，为了保持团队活跃和激励参与协同共建，我们为协作人员的加入和成长制定以下机制，为想要参与协同共建的人员提供参考：
 
