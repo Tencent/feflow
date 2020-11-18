@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import spawn from 'cross-spawn';
-import cliMd from 'cli-md';
+import cliMd from 'cli-html-c';
+import marked from 'marked';
 import { UNIVERSAL_README_CONFIG } from '../../shared/constant';
 
 const getCommands = (store: any) => {
@@ -69,7 +70,7 @@ const parseReadme = (path: any) => {
       throw new Error(e);
     }
   }
-  return cliMd(readmeText);
+  return cliMd(marked(readmeText));
 };
 
 module.exports = (ctx: any) => {
