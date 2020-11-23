@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.21.4",
+  "version": "0.21.5-alpha.0",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
@@ -60,8 +60,8 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@feflow/feflow-plugin-devtool": "^0.0.4",
-    "@feflow/report": "^0.2.11",
+    "@feflow/feflow-plugin-devtool": "^0.0.5",
+    "@feflow/report": "^0.2.12",
     "abbrev": "^1.1.1",
     "axios": "^0.19.2",
     "bunyan": "^1.8.14",
