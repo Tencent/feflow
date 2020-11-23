@@ -2,5 +2,14 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0"
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "test",
+        "*.log",
+        "*.md"
+      ]
+    }
+  },
+  "version": "independent"
 }
