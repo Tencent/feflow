@@ -1,6 +1,6 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
@@ -43,7 +43,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "@feflow/report": "^0.2.12",
+    "@feflow/report": "^0.2.14",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
@@ -94,5 +94,5 @@
   "bugs": {
     "url": "https://github.com/Tencent/feflow/issues"
   },
-  "gitHead": "9d9550a77034e079ff12f30cb2c009239bccc944"
+  "gitHead": "8ee45bcdbe272724c098d0561067f4cd64b5af5a"
 }
