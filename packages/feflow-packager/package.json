@@ -1,6 +1,6 @@
 {
   "name": "@feflow/packager",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Feflow packager",
   "directories": {
     "lib": "lib",

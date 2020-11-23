@@ -6,7 +6,10 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@feflow/feflow-plugin-devtool": "0.0.1",
+    "@feflow/cli": "file:packages/feflow-cli",
+    "@feflow/feflow-plugin-devtool": "file:packages/feflow-plugin-devtool",
+    "@feflow/packager": "file:packages/feflow-packager",
+    "@feflow/report": "file:packages/feflow-report",
     "@typescript-eslint/eslint-plugin": "^2.8.0",
     "@typescript-eslint/parser": "^2.8.0",
     "eslint": "^6.6.0",
