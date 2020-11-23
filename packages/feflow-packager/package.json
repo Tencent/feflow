@@ -1,6 +1,6 @@
 {
   "name": "@feflow/packager",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Feflow packager",
   "directories": {
     "lib": "lib",
@@ -80,5 +80,5 @@
   "bugs": {
     "url": "https://github.com/Tencent/feflow/issues"
   },
-  "gitHead": "19dde5c64bd991be0648ca27e80f283bc45ba0a9"
+  "gitHead": "834a44fcd9e9168483282d73d955c089dedcec5b"
 }
