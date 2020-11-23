@@ -1,6 +1,6 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
@@ -43,7 +43,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "@feflow/report": "^0.2.16",
+    "@feflow/report": "^0.2.17",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
