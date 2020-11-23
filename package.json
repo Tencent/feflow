@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "beta": "lerna publish -c --skip-git",
+    "publish": "lerna publish --skip-git"
+  },
   "devDependencies": {
     "lerna": "^3.13.1",
     "typescript": "^3.7.2"
