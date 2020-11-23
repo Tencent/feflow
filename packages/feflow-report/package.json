@@ -1,6 +1,6 @@
 {
   "name": "@feflow/report",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
@@ -53,5 +53,5 @@
     "instrument": true,
     "all": true
   },
-  "gitHead": "9d9550a77034e079ff12f30cb2c009239bccc944"
+  "gitHead": "2acf57be7fbf3a253d9787f43814da5c48947001"
 }
