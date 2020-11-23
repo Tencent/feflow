@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "^0.0.4",
-    "@feflow/report": "^0.2.11",
+    "@feflow/report": "^0.2.12",
     "abbrev": "^1.1.1",
     "axios": "^0.19.2",
     "bunyan": "^1.8.14",
@@ -124,5 +124,6 @@
   },
   "bugs": {
     "url": "https://github.com/Tencent/feflow/issues"
-  }
+  },
+  "gitHead": "9d9550a77034e079ff12f30cb2c009239bccc944"
 }
