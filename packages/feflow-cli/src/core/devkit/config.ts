@@ -15,7 +15,6 @@ export default class Config {
     let currDir: string = process.cwd();
 
     const isConfigExits = () => {
-      // eslint-disable-next-line no-restricted-syntax
       for (const filename of PROJECT_CONFIG) {
         if (fs.existsSync(path.join(currDir, filename))) {
           return true;
@@ -44,7 +43,6 @@ export default class Config {
   }
 
   loadConfig(directoryPath: string, configArray: Array<string>) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const filename of configArray) {
       const filePath = path.join(directoryPath, filename);
       if (fs.existsSync(filePath)) {
@@ -67,7 +65,7 @@ export default class Config {
       }
     }
 
-    this.ctx.logger.debug('Config file not found.');
+    this.ctx.logger.debug(`Config file not found.`);
     return null;
   }
 
@@ -120,8 +118,8 @@ export default class Config {
 
       if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
         throw Object.assign(
-          new Error('package.json file doesn\'t have \'feflowConfig\' field.'),
-          { code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND' },
+          new Error("package.json file doesn't have 'feflowConfig' field."),
+          { code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND' }
         );
       }
 
@@ -144,7 +142,7 @@ export default class Config {
       e.messageTemplate = 'failed-to-read-json';
       e.messageData = {
         path: filePath,
-        message: e.message,
+        message: e.message
       };
       throw e;
     }

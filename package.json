@@ -1,28 +1,24 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "beta": "lerna publish -c --skip-git",
+    "publish": "lerna publish --skip-git"
+  },
   "devDependencies": {
-    "@tencent/eslint-config-tencent": "^0.7.0",
-    "@types/chai": "^4.2.11",
-    "@types/jest": "^26.0.4",
-    "@types/mocha": "^8.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/parser": "^2.34.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-html": "^6.0.2",
-    "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-vue": "^7.0.0-alpha.9",
     "lerna": "^3.13.1",
-    "prettier": "^1.19.1",
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@feflow/feflow-plugin-devtool": "0.0.1",
-    "electron-promise-ipc": "^2.0.1"
-  },
-  "scripts": {
-    "lint": "eslint . --ext 'js,ts'",
-    "lint:fix": "eslint . --ext 'js,ts' --fix"
+    "@feflow/cli": "file:packages/feflow-cli",
+    "@feflow/feflow-plugin-devtool": "file:packages/feflow-plugin-devtool",
+    "@feflow/packager": "file:packages/feflow-packager",
+    "@feflow/report": "file:packages/feflow-report",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "@typescript-eslint/parser": "^2.8.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.19.1"
   }
 }

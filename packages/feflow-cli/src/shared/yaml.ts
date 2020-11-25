@@ -20,9 +20,9 @@ export function safeDump(obj: object, path: any) {
   try {
     doc = yaml.safeDump(obj, {
       styles: {
-        '!!null': 'canonical',
+        '!!null': 'canonical'
       },
-      sortKeys: true,
+      sortKeys: true
     });
   } catch (e) {
     throw new Error(e);

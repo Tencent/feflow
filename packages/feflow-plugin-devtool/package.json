@@ -1,17 +1,12 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.0.1",
+  "version": "0.0.9",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
   },
-  "files": [
-    "src",
-    "lib",
-    "templates"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Tencent/feflow.git"
@@ -19,7 +14,6 @@
   "scripts": {
     "start": "npm run build:live",
     "build": "rm -rf lib && tsc",
-    "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
@@ -49,7 +43,7 @@
     "typescript": "^3.5.2"
   },
   "dependencies": {
-    "@feflow/report": "^0.1.0",
+    "@feflow/report": "^0.2.18",
     "abbrev": "^1.1.1",
     "bunyan": "^1.8.12",
     "chalk": "^2.4.2",
@@ -99,5 +93,6 @@
   },
   "bugs": {
     "url": "https://github.com/Tencent/feflow/issues"
-  }
+  },
+  "gitHead": "834a44fcd9e9168483282d73d955c089dedcec5b"
 }

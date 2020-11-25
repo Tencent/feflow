@@ -8,7 +8,7 @@ import fs from 'fs';
 export default class Linker {
   private currentOs: NodeJS.Platform;
 
-  private startCommand = 'fef';
+  private startCommand: string = 'fef';
 
   private fileMode = 0o744;
 
@@ -29,6 +29,21 @@ export default class Linker {
       this.linkToWin32(binPath, command, name);
     } else {
       this.linkToUnixLike(binPath, libPath, command, name);
+    }
+  }
+
+  /**
+   * 注册自定义指定
+   * @param binPath
+   * @param libPath
+   * @param command it could be checkstyle or checkstyle@v0.0.5
+   * @param name    always checkstyle, use command when it does not exist
+   */
+  registerCustom(binPath: string, libPath: string, commands: string[], name: string) {
+    if (this.currentOs === 'win32') {
+      this.linkCustomeToWin32(binPath, commands, name);
+    } else {
+      this.linkCustomeToUnixLike(binPath, libPath, commands, name);
     }
   }
 
@@ -59,16 +74,40 @@ export default class Linker {
     this.writeExecFile(file, template);
   }
 
+  private linkCustomeToWin32(binPath: string, commands: string[], name: string) {
+    this.enableDir(binPath);
+    const file = this.cmdFile(binPath, name);
+    const template = this.customeCmdTemplate(commands);
+    this.writeExecFile(file, template);
+  }
+
   private linkToUnixLike(
     binPath: string,
     libPath: string,
     command: string,
-    name?: string,
+    name?: string
   ) {
     this.enableDir(binPath, libPath);
     const file = this.shellFile(libPath, name || command);
     const template = this.shellTemplate(command);
     const commandLink = path.join(binPath, name || command);
+    this.writeExecFile(file, template);
+    if (fs.existsSync(commandLink) && fs.statSync(commandLink).isSymbolicLink) {
+      return;
+    }
+    fs.symlinkSync(file, commandLink);
+  }
+
+  private linkCustomeToUnixLike(
+    binPath: string,
+    libPath: string,
+    commands: string[],
+    name: string
+  ) {
+    this.enableDir(binPath, libPath);
+    const file = this.shellFile(libPath, name);
+    const template = this.customeShellTemplate(commands);
+    const commandLink = path.join(binPath, name);
     this.writeExecFile(file, template);
     if (fs.existsSync(commandLink) && fs.statSync(commandLink).isSymbolicLink) {
       return;
@@ -88,16 +127,26 @@ export default class Linker {
     fs.writeFileSync(file, content, {
       mode: this.fileMode,
       flag: 'w',
-      encoding: 'utf8',
+      encoding: 'utf8'
     });
   }
 
   private shellTemplate(command: string): string {
-    return `#!/bin/sh\n${this.startCommand} ${command} $@`;
+    return `#!/bin/sh\n${this.startCommand} ${command} "$@"`;
+  }
+
+  private customeShellTemplate(commands: string[]): string {
+    const commandStr = commands.map(cmd => cmd += ' "$@"').join('\n');
+    return `#!/bin/sh\n${commandStr}`;
   }
 
   private cmdTemplate(command: string): string {
     return `@echo off\n${this.startCommand} ${command} %*`;
+  }
+
+  private customeCmdTemplate(commands: string[]): string {
+    const commandStr = commands.map(cmd => cmd += ' %*').join('\n');
+    return `@echo off\n${commandStr}`;
   }
 
   private shellFile(libPath: string, name: string): string {

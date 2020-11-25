@@ -32,7 +32,6 @@ export class Dependencies {
   }
 
   private async checkCommand() {
-    // eslint-disable-next-line no-restricted-syntax
     for (const command of this.command) {
       try {
         await lookpath(command);

@@ -1,9 +1,11 @@
 interface ObjectFactory {
   obj: object;
   create: () => ObjectFactory;
-  load: (key: string, value: any) => ObjectFactory;
+  load: (key: string, value?: string | number | boolean | Function) => ObjectFactory;
   done: () => object;
 }
+
+const cache: Object = {};
 
 const objectFactory: ObjectFactory = {
   obj: null,
@@ -12,10 +14,19 @@ const objectFactory: ObjectFactory = {
     return this;
   },
   load(key, value): ObjectFactory {
-    if (typeof value === 'function') {
-      this.obj[key] = value();
+    let objValue = '';
+    if (typeof value == 'function') {
+      objValue = value();
     } else {
-      this.obj[key] = value;
+      objValue = value === undefined ? cache[key] : value;
+    }
+    if (!objValue) {
+      return this;
+    }
+
+    this.obj[key] = objValue;
+    if (cache[key] === undefined) {
+      cache[key] = this.obj[key];
     }
     return this;
   },

@@ -2,11 +2,9 @@ import Commander from './commander';
 import Hook from './hook';
 import Binp from './universal-pkg/binp';
 import fs from 'fs';
-import inquirer from 'inquirer';
 import logger from './logger';
 import osenv from 'osenv';
 import path from 'path';
-import Table from 'easy-table';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadUniversalPlugin from './plugin/loadUniversalPlugin';
@@ -18,16 +16,21 @@ import {
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
   UNIVERSAL_MODULES,
+  HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
-import packageJson from '../shared/packageJson';
-import { getRegistryUrl, install } from '../shared/npm';
 import chalk from 'chalk';
-import semver from 'semver';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
 import Report from '@feflow/report';
-import checkCliUpdate from '../shared/checkCliUpdate';
+import CommandPicker, {
+  LOAD_UNIVERSAL_PLUGIN,
+  LOAD_PLUGIN,
+  LOAD_DEVKIT,
+  LOAD_ALL
+} from './command-picker';
+import { checkUpdate } from './resident';
+
 const pkg = require('../../package.json');
 
 export default class Feflow {
@@ -66,11 +69,13 @@ export default class Feflow {
     this.version = pkg.version;
     this.config = parseYaml(configPath);
     this.configPath = configPath;
-    this.commander = new Commander();
     this.hook = new Hook();
+    this.commander = new Commander((cmdName: string) => {
+      this.hook.emit(HOOK_TYPE_ON_COMMAND_REGISTERED, cmdName);
+    });
     this.logger = logger({
       debug: Boolean(args.debug),
-      silent: Boolean(args.silent),
+      silent: Boolean(args.silent)
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
@@ -79,23 +84,27 @@ export default class Feflow {
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
-    if (cmd === 'config') {
-      await this.initClient();
-      await this.loadNative();
+
+    await Promise.all([this.initClient(), this.initPackageManager()]);
+
+    const disableCheck =
+      this.args['disable-check'] ||
+      String(this.config?.disableCheck) === 'true';
+
+    if (!disableCheck) {
+      checkUpdate(this);
+    }
+
+    const picker = new CommandPicker(this, cmd);
+
+    if (picker.isAvailable()) {
+      // should hit the cache in most cases
+      picker.pickCommand();
     } else {
-      await this.initClient();
-      await this.initPackageManager();
-      const disableCheck =        !this.args['disable-check'] && !(this.config.disableCheck === 'true');
-      if (disableCheck) {
-        await checkCliUpdate(this, true);
-        await this.checkUpdate();
-        // await this.checkUniversalPluginAndUpdate();
-      }
-      await this.loadNative();
-      await this.loadInternalPlugins();
-      await loadPlugins(this);
-      await loadUniversalPlugin(this);
-      await loadDevkits(this);
+      // if not, load plugin/devkit/native in need
+      await this.loadCommands(picker.getLoadOrder());
+      // make sure the command has at least one funtion, otherwise replace to help command
+      picker.checkCommand();
     }
   }
 
@@ -118,11 +127,11 @@ export default class Feflow {
             {
               name: 'feflow-home',
               version: '0.0.0',
-              private: true,
+              private: true
             },
             null,
-            2,
-          ),
+            2
+          )
         );
       }
       resolve();
@@ -159,165 +168,32 @@ export default class Feflow {
           }
         };
 
-        const packageManagers = [
-          {
-            name: 'npm',
-            installed: isInstalled('npm'),
-          },
-          {
-            name: 'tnpm',
-            installed: isInstalled('tnpm'),
-          },
-          {
-            name: 'cnpm',
-            installed: isInstalled('cnpm'),
-          },
-          {
-            name: 'yarn',
-            installed: isInstalled('yarn'),
-          },
-        ];
+        const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
-        const installedPackageManagers = packageManagers.filter(packageManager => packageManager.installed);
+        const installedPackageManagers = packageManagers.filter(
+          packageManager => isInstalled(packageManager)
+        );
 
         if (installedPackageManagers.length === 0) {
           const notify = 'You must installed a package manager';
           console.error(notify);
         } else {
-          const options = installedPackageManagers.map((installedPackageManager: any) => installedPackageManager.name);
-          inquirer
-            .prompt([
-              {
-                type: 'list',
-                name: 'packageManager',
-                message: 'Please select one package manager',
-                choices: options,
-              },
-            ])
-            .then((answer: any) => {
-              const configPath = path.join(root, '.feflowrc.yml');
-              safeDump(answer, configPath);
-              this.config = parseYaml(configPath);
-              resolve();
-            });
+          const defaultPackageManager = installedPackageManagers[0];
+          const configPath = path.join(root, '.feflowrc.yml');
+          safeDump(
+            {
+              packageManager: defaultPackageManager
+            },
+            configPath
+          );
+          this.config = parseYaml(configPath);
+          resolve();
         }
         return;
+      } else {
+        logger.debug('Use packageManager is: ', this.config.packageManager);
       }
-      logger.debug('Use packageManager is: ', this.config.packageManager);
-
       resolve();
-    });
-  }
-
-  checkUpdate() {
-    const { root, rootPkg, config, logger } = this;
-    if (!config) {
-      return;
-    }
-
-    const table = new Table();
-    const { packageManager } = config;
-    return Promise.all(this.getInstalledPlugins().map(async (name: any) => {
-      const pluginPath = path.join(
-        root,
-        'node_modules',
-        name,
-        'package.json',
-      );
-      const content: any = fs.readFileSync(pluginPath);
-      const pkg: any = JSON.parse(content);
-      const localVersion = pkg.version;
-      const registryUrl = await getRegistryUrl(packageManager);
-      const latestVersion: any = await packageJson(name, registryUrl).catch((err) => {
-        logger.debug('Check plugin update error', err);
-      });
-
-      if (latestVersion && semver.gt(latestVersion, localVersion)) {
-        table.cell('Name', name);
-        table.cell(
-          'Version',
-          localVersion === latestVersion
-            ? localVersion
-            : `${localVersion} -> ${latestVersion}`,
-        );
-        table.cell('Tag', 'latest');
-        table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
-        table.newRow();
-
-        return {
-          name,
-          latestVersion,
-        };
-      }
-      logger.debug('All plugins is in latest version');
-    })).then((plugins: any) => {
-      plugins = plugins.filter((plugin: any) => plugin && plugin.name);
-      if (plugins.length) {
-        this.logger.info('It will update your local templates or plugins, this will take few minutes');
-        console.log(table.toString());
-
-        this.updatePluginsVersion(rootPkg, plugins);
-
-        const needUpdatePlugins: any = [];
-        plugins.forEach((plugin: any) => {
-          needUpdatePlugins.push(plugin.name);
-        });
-
-        return install(
-          packageManager,
-          root,
-          packageManager === 'yarn' ? 'add' : 'install',
-          needUpdatePlugins,
-          false,
-          true,
-        ).then(() => {
-          this.logger.info('Plugin update success');
-        });
-      }
-    });
-  }
-
-  updatePluginsVersion(packagePath: string, plugins: any) {
-    const obj = require(packagePath);
-
-    plugins.forEach((plugin: any) => {
-      obj.dependencies[plugin.name] = plugin.latestVersion;
-    });
-
-    fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
-  }
-
-  getInstalledPlugins() {
-    const { root, rootPkg } = this;
-
-    let plugins: any = [];
-    const exist = fs.existsSync(rootPkg);
-    const pluginDir = path.join(root, 'node_modules');
-
-    if (!exist) {
-      plugins = [];
-    } else {
-      const content: any = fs.readFileSync(rootPkg);
-
-      let json: any;
-
-      try {
-        json = JSON.parse(content);
-        const deps = json.dependencies || json.devDependencies || {};
-
-        plugins = Object.keys(deps);
-      } catch (ex) {
-        plugins = [];
-      }
-    }
-    return plugins.filter((name: any) => {
-      if (
-        !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)
-      ) {
-        return false;
-      }
-      const pathFn = path.join(pluginDir, name);
-      return fs.existsSync(pathFn);
     });
   }
 
@@ -325,8 +201,9 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter(file => file.endsWith('.js'))
-        // eslint-disable-next-line array-callback-return
+        .filter((file) => {
+          return file.endsWith('.js');
+        })
         .map((file) => {
           require(path.join(__dirname, './native', file))(this);
         });
@@ -334,35 +211,50 @@ export default class Feflow {
     });
   }
 
+  async loadCommands(order: number) {
+    this.logger.debug('load order: ', order);
+    if ((order & LOAD_ALL) === LOAD_ALL) {
+      await Promise.all([
+        this.loadNative(),
+        loadUniversalPlugin(this),
+        loadPlugins(this),
+        loadDevkits(this)
+      ]);
+      return;
+    }
+    if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
+      await loadPlugins(this);
+    }
+    if ((order & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
+      await loadUniversalPlugin(this);
+    }
+    if ((order & LOAD_DEVKIT) === LOAD_DEVKIT) {
+      await loadDevkits(this);
+    }
+  }
+
   loadInternalPlugins() {
-    // eslint-disable-next-line array-callback-return
     ['@feflow/feflow-plugin-devtool'].map((name: string) => {
       try {
         this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
         return require(name)(this);
       } catch (err) {
         this.logger.error(
-          { err },
+          { err: err },
           'Plugin load failed: %s',
-          chalk.magenta(name),
+          chalk.magenta(name)
         );
       }
     });
   }
 
   async call(name: any, ctx: any) {
-    const { args } = ctx;
-    if (args.h || args.help) {
-      const hasHelp = await this.showCommandOptionDescription(name, ctx);
-      if (hasHelp) {
-        return;
-      }
-    }
     const cmd = this.commander.get(name);
     if (cmd) {
+      this.logger.name = cmd.pluginName;
       await cmd.call(this, ctx);
     } else {
-      throw new Error(`Command \`${name}\` has not been registered yet!`);
+      this.logger.debug('Command `' + name + '` has not been registered yet!')
     }
   }
 
@@ -374,14 +266,15 @@ export default class Feflow {
       commandLine = getCommandLine(
         registriedCommand.options,
         registriedCommand.desc,
-        cmd,
+        cmd
       );
     }
 
     if (cmd === 'help') {
-      return registriedCommand.call(this, ctx);
+      registriedCommand.call(this, ctx);
+      return true;
     }
-    if (commandLine.length === 0) {
+    if (commandLine.length == 0) {
       return false;
     }
 

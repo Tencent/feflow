@@ -3,7 +3,7 @@ import childProcess from 'child_process';
 import { promisify } from 'util';
 import semver from 'semver';
 import {
-  transformUrl,
+  transformUrl
 } from './git';
 
 export function getRegistryUrl(packageManager: string) {
@@ -11,7 +11,7 @@ export function getRegistryUrl(packageManager: string) {
     const command = packageManager;
     const args = ['config', 'get', 'registry'];
 
-    const child = spawn(command, args);
+    const child = spawn(command, args, { windowsHide: true });
 
     let output = '';
 
@@ -26,7 +26,7 @@ export function getRegistryUrl(packageManager: string) {
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${args.join(' ')}`
         });
         return;
       }
@@ -42,21 +42,23 @@ export function install(
   cmd: any,
   dependencies: any,
   verbose: boolean,
-  isOnline: boolean,
+  isOnline: boolean
 ) {
   return new Promise((resolve, reject) => {
     const command = packageManager;
-    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
+    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(
+      dependencies
+    );
 
     if (verbose) {
       args.push('--verbose');
     }
 
-    const child = spawn(command, args, { stdio: 'inherit', cwd: root });
+    const child = spawn(command, args, { stdio: 'inherit', cwd: root, windowsHide: true });
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${args.join(' ')}`
         });
         return;
       }
@@ -72,10 +74,12 @@ async function listRepoTag(repoUrl: string): Promise<string[]> {
     'ls-remote',
     '--tags',
     '--refs',
-    url,
-  ]);
+    url
+  ], {
+    windowsHide: true
+  });
   const tagStr = stdout?.trim();
-  const tagList: string[] = [];
+  let tagList: string[] = [];
 
   if (tagStr) {
     const tagVersionList = tagStr.split('\n');
@@ -97,7 +101,6 @@ export async function getTag(repoUrl: string, version?: string) {
   const tagList = await listRepoTag(repoUrl);
 
   if (tagList.length) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const tag of tagList) {
       if (!version || version === tag) {
         return Promise.resolve(tag);
@@ -112,7 +115,6 @@ export async function getLatestTag(repoUrl: string) {
   let lastVersion = '';
 
   if (tagList.length) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const tag of tagList) {
       if (!lastVersion) {
         lastVersion = tag;
@@ -127,14 +129,14 @@ export async function getLatestTag(repoUrl: string) {
 export function checkoutVersion(repoPath: string, version: string) {
   return new Promise((resolve, reject) => {
     const command = 'git';
-    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore' });
+    spawn.sync(command, ['-C', repoPath, 'pull'], { stdio: 'ignore', windowsHide: true });
     const checkArgs = ['-C', repoPath, 'checkout', version];
-    const child = spawn(command, checkArgs, { stdio: 'ignore' });
+    const child = spawn(command, checkArgs, { stdio: 'ignore', windowsHide: true });
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
           command: `${command} ${checkArgs.join(' ')}`,
-          code,
+          code
         });
         return;
       }

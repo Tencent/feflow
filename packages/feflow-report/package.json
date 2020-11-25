@@ -1,12 +1,13 @@
 {
   "name": "@feflow/report",
-  "version": "0.1.4",
+  "version": "0.2.18",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "nyc mocha -r ts-node/register __tests__/*.spec.ts",
+    "test": "npx mocha -r ts-node/register __tests__/*.spec.ts",
     "build": "tsc",
-    "dev": "npm run build && node ./lib/dev.js"
+    "dev": "npm run build && node ./lib/dev.js",
+    "prepublish": "npm run build"
   },
   "author": "fXy-during <fxy1044667399@163.com>",
   "license": "ISC",
@@ -20,11 +21,13 @@
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
     "ts-node": "^8.5.2",
-    "typescript": "^3.6.4"
+    "typescript": "^3.9.7"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
+  "types": "./types/index.d.ts",
   "dependencies": {
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
@@ -50,5 +53,6 @@
     "sourceMap": true,
     "instrument": true,
     "all": true
-  }
+  },
+  "gitHead": "834a44fcd9e9168483282d73d955c089dedcec5b"
 }

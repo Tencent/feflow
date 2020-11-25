@@ -8,24 +8,25 @@ import osenv from 'osenv';
  * register the directory to the environment variable path
  */
 export default class Binp {
+
   private currentOs: NodeJS.Platform;
 
   constructor() {
     this.currentOs = os.platform();
   }
 
-  register(binPath: string, prior = false, temporary = false) {
+  register(binPath: string, prior: boolean = false, temporary = false) {
     if (this.isRegisted(binPath)) {
       return;
     }
     if (temporary) {
       let newPath: string;
       if (prior) {
-        newPath = `${binPath}${path.delimiter}${process.env.PATH}`;
+        newPath = `${binPath}${path.delimiter}${process.env['PATH']}`;
       } else {
-        newPath = `${process.env.PATH}${path.delimiter}${binPath}`;
+        newPath = `${process.env['PATH']}${path.delimiter}${binPath}`;
       }
-      process.env.PATH = newPath;
+      process.env['PATH'] = newPath;
       return;
     }
     if (this.currentOs === 'win32') {
@@ -40,7 +41,7 @@ export default class Binp {
   }
 
   private isRegisted(binPath: string): boolean {
-    const pathStr = process.env.PATH;
+    const pathStr = process.env['PATH'];
     let pathList: string[] = [];
     if (pathStr) {
       pathList = pathStr.split(path.delimiter);
@@ -49,14 +50,14 @@ export default class Binp {
   }
 
   private registerToWin32(binPath: string, prior: boolean) {
-    const pathStr = process.env.PATH;
+    const pathStr = process.env['PATH'];
     let toPath: string;
     if (prior) {
       toPath = `${binPath};${pathStr}`;
     } else {
       toPath = `${pathStr};${binPath}`;
     }
-    spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore' });
+    spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore', windowsHide: true });
   }
 
   private registerToUnixLike(binPath: string, prior: boolean) {
@@ -82,12 +83,15 @@ export default class Binp {
 
   private checkTerminal(
     binPath: string,
-    prior: boolean,
+    prior: boolean
   ) {
     const [profile, setStatement] = this.detectProfile(binPath, prior);
     if (!profile || !setStatement) {
       console.warn(`unknown terminal, please add ${binPath} to the path`);
       return;
+    }
+    if (!fs.existsSync(profile)) {
+      return profile;
     }
     const content = fs.readFileSync(profile)?.toString();
     if (content?.indexOf(setStatement) === -1) {
@@ -104,10 +108,10 @@ export default class Binp {
 
   private detectProfile(
     binPath: string,
-    prior: boolean,
+    prior: boolean
   ): [string | undefined, string | undefined] {
     const home = osenv.home();
-    const shell = process.env.SHELL;
+    const shell = process.env['SHELL'];
     let toPath: string;
     if (prior) {
       toPath = `export PATH=${binPath}:$PATH`;
@@ -118,9 +122,9 @@ export default class Binp {
       return [undefined, undefined];
     }
     const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    let shellType = '';
+    let shellType: string = '';
     if (Array.isArray(shellMatch) && shellMatch.length > 0) {
-      [shellType] = shellMatch;
+      shellType = shellMatch[0];
     }
     switch (shellType) {
       case 'zsh':
@@ -156,6 +160,12 @@ export default class Binp {
   }
 
   addToPath(file: string, content: string) {
-    fs.appendFileSync(file, `\n${content}\n`);
+    try {
+      fs.appendFileSync(file, `\n${content}\n`);
+    } catch(e) {
+      console.error(e);
+      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+    }
   }
+
 }

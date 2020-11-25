@@ -1,6 +1,0 @@
-#!/bin/sh
-basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
-
-"$basedir/../client/bin/fef.cmd" "$@"
-ret=$?
-exit $ret

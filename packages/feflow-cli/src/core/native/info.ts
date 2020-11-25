@@ -2,7 +2,7 @@ import os from 'os';
 
 module.exports = (ctx: any) => {
   ctx.commander.register('info', 'Info messages', () => {
-    const { versions } = process;
+    const versions: any = process.versions;
     const keys = Object.keys(versions);
     let key = '';
 

@@ -1,1 +1,0 @@
-{"version":3,"file":"upgrade.js","sourceRoot":"","sources":["../../../src/core/native/upgrade.ts"],"names":[],"mappings":";;;;;AAAA,+EAAyD;AAEzD,MAAM,CAAC,OAAO,GAAG,UAAC,GAAQ;IACxB,GAAG,CAAC,SAAS,CAAC,QAAQ,CAAC,SAAS,EAAE,iBAAiB,EAAE;QACnD,wBAAc,CAAC,GAAG,CAAC,CAAC;IACtB,CAAC,CAAC,CAAC;AACL,CAAC,CAAC"}

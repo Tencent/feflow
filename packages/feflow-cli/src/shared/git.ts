@@ -7,12 +7,12 @@ async function isSupportSSH(url: string): Promise<any> {
   }
   try {
     const res: any = await Promise.race([
-      spawn.sync('ssh', ['-vT', url]),
+      spawn.sync('ssh', ['-vT', url], { windowsHide: true }),
       new Promise((resolve: any, reject: any) => {
         setTimeout(() => {
           reject(new Error('SSH check timeout'));
         }, 1000);
-      }),
+      })
     ]);
 
     const stderr = res?.stderr?.toString();
@@ -33,9 +33,10 @@ function getHostname(url: string): string {
   if (/https?/.test(url)) {
     const match: any = url.match(/^http(s)?:\/\/(.*?)\//);
     return match[2];
+  } else {
+    const match: any = url.match(/@(.*):/);
+    return match[1];
   }
-  const match: any = url.match(/@(.*):/);
-  return match[1];
 }
 
 let gitAccount: any;
@@ -45,21 +46,23 @@ export async function transformUrl(url: string, account?: any): Promise<any> {
   if (isSSH) {
     if (/https?/.test(url)) {
       return url.replace(/https?:\/\//, 'git@').replace(/\//, ':');
+    } else {
+      return url;
     }
-    return url;
-  }
-  let transformedUrl;
-  if (/https?/.test(url)) {
-    transformedUrl = url;
   } else {
-    transformedUrl = url.replace(`git@${hostname}:`, `http://${hostname}/`);
+    let transformedUrl;
+    if (/https?/.test(url)) {
+      transformedUrl = url;
+    } else {
+      transformedUrl = url.replace(`git@${ hostname }:`, `http://${ hostname }/`);
+    }
+    if (account) {
+      gitAccount = account;
+    }
+    if (gitAccount) {
+      const { username, password } = gitAccount;
+      return transformedUrl.replace(/http:\/\//, `http://${username}:${password}@`);
+    }
+    return transformedUrl;
   }
-  if (account) {
-    gitAccount = account;
-  }
-  if (gitAccount) {
-    const { username, password } = gitAccount;
-    return transformedUrl.replace(/http:\/\//, `http://${username}:${password}@`);
-  }
-  return transformedUrl;
 }
