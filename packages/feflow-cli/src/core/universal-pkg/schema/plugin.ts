@@ -8,6 +8,8 @@ export class Plugin {
 
   path: string;
 
+  name: string;
+
   desc: string;
 
   dep: Dependencies;
@@ -45,6 +47,7 @@ export class Plugin {
     }
     this.ctx = ctx;
     this.path = pluginPath;
+    this.name = config?.name;
     this.desc = config?.desc;
     this.dep = new Dependencies(config?.dep);
     this.command = new Command(this.ctx, this.path, config?.command);

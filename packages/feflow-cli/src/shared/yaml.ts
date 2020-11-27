@@ -22,7 +22,8 @@ export function safeDump(obj: object, path: any) {
       styles: {
         '!!null': 'canonical'
       },
-      sortKeys: true
+      sortKeys: true,
+      skipInvalid: true
     });
   } catch (e) {
     throw new Error(e);

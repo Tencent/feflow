@@ -68,3 +68,4 @@ export const UPDATE_COLLECTION = 'update.db';
 export const BEAT_GAP = 5000;
 
 export const CHECK_UPDATE_GAP = 1000 * 60 * 5;
+

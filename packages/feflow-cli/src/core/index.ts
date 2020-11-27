@@ -19,6 +19,7 @@ import {
   HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import { setServerUrl } from '../shared/git';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
@@ -68,6 +69,7 @@ export default class Feflow {
     this.args = args;
     this.version = pkg.version;
     this.config = parseYaml(configPath);
+    setServerUrl(this.config?.serverUrl);
     this.configPath = configPath;
     this.hook = new Hook();
     this.commander = new Commander((cmdName: string) => {
@@ -201,10 +203,10 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter((file) => {
+        .filter(file => {
           return file.endsWith('.js');
         })
-        .map((file) => {
+        .map(file => {
           require(path.join(__dirname, './native', file))(this);
         });
       resolve();
@@ -254,7 +256,7 @@ export default class Feflow {
       this.logger.name = cmd.pluginName;
       await cmd.call(this, ctx);
     } else {
-      this.logger.debug('Command `' + name + '` has not been registered yet!')
+      this.logger.debug('Command `' + name + '` has not been registered yet!');
     }
   }
 

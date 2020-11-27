@@ -1,32 +1,12 @@
 import spawn from 'cross-spawn';
+import rp from 'request-promise';
+import { getURL } from './url';
 
-let isSSH: any;
-async function isSupportSSH(url: string): Promise<any> {
-  if (isSSH) {
-    return isSSH;
-  }
-  try {
-    const res: any = await Promise.race([
-      spawn.sync('ssh', ['-vT', url], { windowsHide: true }),
-      new Promise((resolve: any, reject: any) => {
-        setTimeout(() => {
-          reject(new Error('SSH check timeout'));
-        }, 1000);
-      })
-    ]);
+let gitAccount: any;
+let serverUrl: string;
 
-    const stderr = res?.stderr?.toString();
-    if (/Authentication succeeded/.test(stderr)) {
-      isSSH = true;
-    } else {
-      isSSH = false;
-    }
-    return isSSH;
-  } catch (err) {
-    console.log('Git ssh check timeout, use https');
-    isSSH = false;
-    return isSSH;
-  }
+export function setServerUrl(url: string) {
+  serverUrl = url;
 }
 
 function getHostname(url: string): string {
@@ -39,30 +19,65 @@ function getHostname(url: string): string {
   }
 }
 
-let gitAccount: any;
-export async function transformUrl(url: string, account?: any): Promise<any> {
-  const hostname = getHostname(url);
-  const isSSH = await isSupportSSH(`git@${hostname}`);
-  if (isSSH) {
-    if (/https?/.test(url)) {
-      return url.replace(/https?:\/\//, 'git@').replace(/\//, ':');
-    } else {
-      return url;
-    }
-  } else {
-    let transformedUrl;
-    if (/https?/.test(url)) {
-      transformedUrl = url;
-    } else {
-      transformedUrl = url.replace(`git@${ hostname }:`, `http://${ hostname }/`);
-    }
-    if (account) {
-      gitAccount = account;
-    }
-    if (gitAccount) {
-      const { username, password } = gitAccount;
-      return transformedUrl.replace(/http:\/\//, `http://${username}:${password}@`);
-    }
-    return transformedUrl;
+export async function prepareAccount() {
+  if (gitAccount) {
+    return;
   }
+  const url = getURL(serverUrl, 'apply/getlist?name=0');
+  if (!url) {
+    return;
+  }
+  const options = {
+    url: url,
+    method: 'GET'
+  };
+  return rp(options)
+    .then((response: any) => {
+      const data = JSON.parse(response);
+      if (data.account) {
+        gitAccount = data.account;
+      }
+    })
+    .catch((err: any) => {});
+}
+
+export async function transformUrl(url: string, account?: any): Promise<any> {
+  if (account) {
+    gitAccount = account;
+  } else {
+    await prepareAccount();
+  }
+  const hostname = getHostname(url);
+  let transformedUrl;
+  if (/https?/.test(url)) {
+    transformedUrl = url;
+  } else {
+    transformedUrl = url.replace(`git@${hostname}:`, `http://${hostname}/`);
+  }
+  if (gitAccount) {
+    const { username, password } = gitAccount;
+    return transformedUrl.replace(
+      /http:\/\//,
+      `http://${username}:${password}@`
+    );
+  }
+  return transformedUrl;
+}
+
+export async function clearGitCert(url: string) {
+  const { username } = gitAccount;
+  if (!username) {
+    return;
+  }
+  return new Promise(resolve => {
+    const child = spawn('git', ['credential', 'reject'], {
+      windowsHide: true,
+      timeout: 60 * 1000 * 1
+    });
+    child.stdin?.write(`url=${url}`);
+    child.stdin?.end();
+    child.on('close', code => {
+      resolve(code);
+    });
+  });
 }
