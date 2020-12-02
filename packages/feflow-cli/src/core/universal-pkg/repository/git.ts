@@ -4,7 +4,8 @@ import { promisify } from 'util';
 import versionImpl from '../dep/version';
 import {
   transformUrl,
-  clearGitCert
+  clearGitCert,
+  clearGitCertByPath
 } from '../../../shared/git';
 
 const execFile = promisify(childProcess.execFile);
@@ -59,9 +60,18 @@ export async function getCurrentTag(
   return tags?.[0];
 }
 
-export function checkoutVersion(repoPath: string, version: string) {
+export async function checkoutVersion(repoPath: string, version: string) {
   const command = 'git';
-  spawn.sync(command, ['fetch', '--tags', '-f'], { stdio: 'ignore', windowsHide: true, cwd: repoPath });
+  spawn.sync(command, ['fetch', '--tags', '-f'], {
+    stdio: 'ignore',
+    windowsHide: true,
+    cwd: repoPath
+  });
   const checkArgs = ['checkout', '-f', version];
-  return spawn.sync(command, checkArgs, { stdio: 'ignore', windowsHide: true, cwd: repoPath });
+  spawn.sync(command, checkArgs, {
+    stdio: 'ignore',
+    windowsHide: true,
+    cwd: repoPath
+  });
+  return clearGitCertByPath(repoPath);
 }

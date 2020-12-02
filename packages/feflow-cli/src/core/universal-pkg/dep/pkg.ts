@@ -76,7 +76,7 @@ export class UniversalPkg {
     return false;
   }
 
-  install(pkg: string, version: string) {
+  install(pkg: string, version: string, gitURL?: string) {
     this.installed.set(pkg, version);
     let versionMap = this.dependencies.get(pkg);
     if (!versionMap) {

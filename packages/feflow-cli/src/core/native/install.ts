@@ -9,31 +9,23 @@ import {
   checkoutVersion,
   getCurrentTag
 } from '../universal-pkg/repository/git';
-import { parseYaml } from '../../shared/yaml';
 import {
   HOOK_TYPE_ON_COMMAND_REGISTERED,
-  UNIVERSAL_PLUGIN_CONFIG,
   LATEST_VERSION,
   FEFLOW_BIN,
   FEFLOW_LIB,
-  NPM_PLUGIN_INFO_JSON,
-  UNIVERSAL_PLUGIN_INSTALL_COLLECTION,
-  UPGRADE_INTERVAL
+  NPM_PLUGIN_INFO_JSON
 } from '../../shared/constant';
 import { clearGitCert, transformUrl } from '../../shared/git';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
-import InstallPersistence, {
-  InstallAttribute
-} from '../universal-pkg/persistence/install';
-import applyPlugins from '../plugin/applyPlugins';
-import { CommandPickConfig  } from "../command-picker";
+import applyPlugins, { resolvePlugin } from '../plugin/applyPlugins';
+import { CommandPickConfig } from '../command-picker';
 import { getURL } from '../../shared/url';
 // import loggerReport from '../logger/report';
 
-let installP: InstallPersistence;
 let account: any;
 
 async function download(url: string, filepath: string): Promise<any> {
@@ -46,21 +38,6 @@ async function download(url: string, filepath: string): Promise<any> {
   });
   clearGitCert(cloneUrl);
   return clone;
-}
-
-function resolvePlugin(ctx: any, repoPath: string): Plugin {
-  const pluginFile = path.join(repoPath, UNIVERSAL_PLUGIN_CONFIG);
-  const exists = fs.existsSync(pluginFile);
-  if (!exists) {
-    throw `the ${UNIVERSAL_PLUGIN_CONFIG} file was not found`;
-  }
-  let config;
-  try {
-    config = parseYaml(pluginFile);
-  } catch (e) {
-    throw `the ${UNIVERSAL_PLUGIN_CONFIG} file failed to resolve, please check the syntax, e: ${e}`;
-  }
-  return new Plugin(ctx, repoPath, config);
 }
 
 async function getRepoInfo(ctx: any, packageName: string) {
@@ -104,25 +81,34 @@ function getRepoName(repoUrl: string): string | undefined {
 
 function deleteDir(dirPath: string) {
   let files: any = [];
-  if (fs.existsSync(dirPath)) {
-    files = fs.readdirSync(dirPath);
-    files.forEach((file: string) => {
-      const curPath = dirPath + '/' + file;
-      const stat = fs.statSync(curPath);
-      if (stat.isDirectory()) {
-        deleteDir(curPath);
-      } else {
-        fs.unlinkSync(curPath);
-      }
-    });
+  files = fs.readdirSync(dirPath);
+  files.forEach((file: string) => {
+    const curPath = dirPath + '/' + file;
+    const stat = fs.statSync(curPath);
+    if (stat.isDirectory()) {
+      deleteDir(curPath);
+    } else {
+      fs.unlinkSync(curPath);
+    }
+  });
+  const stat = fs.lstatSync(dirPath);
+  if (stat.isDirectory()) {
     fs.rmdirSync(dirPath);
+  } else {
+    fs.rmdirSync(fs.realpathSync(dirPath));
+    fs.unlinkSync(dirPath);
   }
 }
 
 function isGitRepo(url: string): boolean {
   return (
-    /^git@.+:.+\/.+\.git(@v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*))?$/i.test(url) ||
-    /^http(s)?:\/\/.+\/.+\/.+\.git(@v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*))?$/i.test(url)
+    new RegExp(
+      '^git@[a-zA-Z0-9._-]+:[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$'
+    ).test(url) ||
+    new RegExp(
+      '^http(s)?://([a-zA-Z0-9._-]*?(:[a-zA-Z0-9._-]*)?@)?[a-zA-Z0-9._-]+' +
+        '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$'
+    ).test(url)
   );
 }
 
@@ -252,8 +238,22 @@ async function startInstall(
     logger.info(`Start download from ${pkgInfo.repoUrl}`);
     await download(pkgInfo.repoUrl, repoPath);
   }
+  let lastRepoName = '';
+  const lastVersion = universalPkg.getInstalled().get(pkgInfo.repoName);
+  if (lastVersion) {
+    const oldRepoPath = getRepoPath(
+      universalModules,
+      pkgInfo.repoName,
+      lastVersion
+    );
+    lastRepoName = pkgInfo.repoName;
+    const oldPlugin = resolvePlugin(ctx, oldRepoPath);
+    if (oldPlugin.name) {
+      lastRepoName = oldPlugin.name;
+    }
+  }
   logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
-  checkoutVersion(repoPath, pkgInfo.checkoutTag);
+  await checkoutVersion(repoPath, pkgInfo.checkoutTag);
 
   // deal dependencies
   const linker = new Linker();
@@ -347,7 +347,10 @@ async function startInstall(
     const commands = plugin.command.getCommands();
     linker.registerCustom(bin, lib, commands, useCommandName);
   } else {
-    linker.register(bin, lib, useCommandName);
+    linker.register(bin, lib, cmdName, useCommandName);
+  }
+  if (lastRepoName) {
+    linker.remove(bin, lib, lastRepoName);
   }
   // install when global or not exists
   if (isGlobal || !universalPkg.isInstalled(pkgInfo.repoName)) {
@@ -375,6 +378,14 @@ async function startInstall(
         `was successful and it is called using [${useCommandName}]`
     );
   }
+}
+
+function getRepoPath(
+  universalModules: string,
+  repoName: string,
+  installVersion: string
+): string {
+  return path.join(universalModules, `${repoName}@${installVersion}`);
 }
 
 async function installPlugin(
@@ -416,7 +427,11 @@ async function installPlugin(
 
   let updateFlag = false;
 
-  const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
+  const repoPath = getRepoPath(
+    universalModules,
+    pkgInfo.repoName,
+    pkgInfo.installVersion
+  );
   if (pkgInfo.installVersion === LATEST_VERSION) {
     if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
       const currentVersion = await getCurrentTag(repoPath);
@@ -539,7 +554,7 @@ class PkgInfo {
   }
 }
 
-async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
+async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
   const {
     logger,
     universalPkg
@@ -549,29 +564,25 @@ async function uninstallUniversalPlugin(ctx: any, pkgInfo: PkgInfo) {
     bin: string;
     lib: string;
   } = ctx;
-  const version = universalPkg.getInstalled().get(pkgInfo.repoName);
+  const version = universalPkg.getInstalled().get(pluginName);
   if (!version) {
     logger.error('this plugin is not currently installed');
-    return;
-  }
-  if (
-    pkgInfo.installVersion != LATEST_VERSION &&
-    pkgInfo.installVersion != version
-  ) {
-    logger.error(
-      `this version of the plugin is not currently installed, the version you want to uninstall is ${pkgInfo.installVersion}, The installed version is ${version}`
-    );
     return;
   }
   try {
     const repoPath = path.join(
       ctx.universalModules,
-      `${pkgInfo.repoName}@${pkgInfo.installVersion}`
+      `${pluginName}@${version}`
     );
-    const plugin = resolvePlugin(ctx, repoPath);
-    plugin.preUninstall.run();
-    universalPkg.uninstall(pkgInfo.repoName, version);
-    plugin.postUninstall.runLess();
+    let plugin: Plugin | undefined;
+    try {
+      plugin = resolvePlugin(ctx, repoPath);
+    } catch (e) {
+      logger.debug(`resolve plugin failure, ${e}`);
+    }
+    plugin?.preUninstall?.run();
+    universalPkg.uninstall(pluginName, version);
+    plugin?.postUninstall?.runLess();
   } catch (e) {
     logger.error(`uninstall failure, ${e}`);
     return;
@@ -657,14 +668,6 @@ async function updateUniversalPlugin(
   version: string,
   plugin: Plugin
 ) {
-  if (!installP) {
-    const dbFile = path.join(ctx.root, UNIVERSAL_PLUGIN_INSTALL_COLLECTION);
-    installP = new InstallPersistence(dbFile);
-  }
-  const i = await installP.find(pkg, version);
-  if (!canUpgrade(i?.attributes.upgradeTime)) {
-    return;
-  }
   const universalPkg = ctx.universalPkg as UniversalPkg;
   const dependedOn = universalPkg.getDepended(pkg, version);
   // update parent
@@ -687,10 +690,6 @@ async function updateUniversalPlugin(
 }
 
 async function updatePlugin(ctx: any, pkg: string, version: string) {
-  const i = await installP.find(pkg, version);
-  if (!canUpgrade(i?.attributes.upgradeTime)) {
-    return;
-  }
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   const isGlobal = universalPkg.isInstalled(pkg, version);
   try {
@@ -698,16 +697,6 @@ async function updatePlugin(ctx: any, pkg: string, version: string) {
   } catch (e) {
     ctx.logger.error(`[${pkg}] update failure, ${e}`);
   }
-  const installAttribute = new InstallAttribute(i?.attributes);
-  installAttribute.upgradeTime = Date.now();
-  installP.save(pkg, version, '', installAttribute);
-}
-
-function canUpgrade(lastUpgradeTime: number | undefined): boolean {
-  if (lastUpgradeTime && Date.now() - lastUpgradeTime < UPGRADE_INTERVAL) {
-    return false;
-  }
-  return true;
 }
 
 module.exports = (ctx: any) => {
@@ -738,13 +727,13 @@ module.exports = (ctx: any) => {
       if (!serverUrl) {
         return uninstallNpmPlugin(ctx, dependencies);
       }
+      const { universalPkg } = ctx;
       const installPluginStr = dependencies[0];
-      const pkgInfo = await getPkgInfo(ctx, installPluginStr);
-      if (pkgInfo) {
-        return uninstallUniversalPlugin(ctx, pkgInfo);
+      if (universalPkg.isInstalled(installPluginStr)) {
+        return uninstallUniversalPlugin(ctx, installPluginStr);
       }
 
-      uninstallNpmPlugin(ctx, dependencies);
+      await uninstallNpmPlugin(ctx, dependencies);
 
       const pickerConfig = new CommandPickConfig(ctx);
       pickerConfig.removeCache(dependencies[0]);

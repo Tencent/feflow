@@ -12,14 +12,14 @@ export function setServerUrl(url: string) {
 function getHostname(url: string): string {
   if (/https?/.test(url)) {
     const match: any = url.match(/^http(s)?:\/\/(.*?)\//);
-    return match[2];
+    return match[2].split('@').pop();
   } else {
     const match: any = url.match(/@(.*):/);
     return match[1];
   }
 }
 
-export async function prepareAccount() {
+async function prepareAccount() {
   if (gitAccount) {
     return;
   }
@@ -57,7 +57,7 @@ export async function transformUrl(url: string, account?: any): Promise<any> {
   if (gitAccount) {
     const { username, password } = gitAccount;
     return transformedUrl.replace(
-      /http:\/\//,
+      /https?:\/\/(.*?(:.*?)?@)?/,
       `http://${username}:${password}@`
     );
   }
@@ -68,6 +68,9 @@ export async function clearGitCert(url: string) {
   const { username } = gitAccount;
   if (!username) {
     return;
+  }
+  if (!/https?:\/\/(.*?(:.*?)?@)/.test(url)) {
+    url = await transformUrl(url);
   }
   return new Promise(resolve => {
     const child = spawn('git', ['credential', 'reject'], {
@@ -80,4 +83,13 @@ export async function clearGitCert(url: string) {
       resolve(code);
     });
   });
+}
+
+export async function clearGitCertByPath(repoPath: string) {
+  const ret = spawn.sync('git', ['config', '--get', 'remote.origin.url'], {
+    windowsHide: true,
+    cwd: repoPath
+  });
+  const url = ret?.stdout?.toString().trim();
+  return clearGitCert(url);
 }

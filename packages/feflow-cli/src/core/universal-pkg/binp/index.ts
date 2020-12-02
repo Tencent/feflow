@@ -8,14 +8,13 @@ import osenv from 'osenv';
  * register the directory to the environment variable path
  */
 export default class Binp {
-
-  private currentOs: NodeJS.Platform;
+  private readonly currentOs: NodeJS.Platform;
 
   constructor() {
     this.currentOs = os.platform();
   }
 
-  register(binPath: string, prior: boolean = false, temporary = false) {
+  register(binPath: string, prior = false, temporary = false) {
     if (this.isRegisted(binPath)) {
       return;
     }
@@ -57,7 +56,10 @@ export default class Binp {
     } else {
       toPath = `${pathStr};${binPath}`;
     }
-    spawn.sync('setx', ['path', toPath, '/m'], { stdio: 'ignore', windowsHide: true });
+    spawn.sync('setx', ['path', toPath, '/m'], {
+      stdio: 'ignore',
+      windowsHide: true
+    });
   }
 
   private registerToUnixLike(binPath: string, prior: boolean) {
@@ -81,10 +83,7 @@ export default class Binp {
     this.addToPath(cshProfile, toPath);
   }
 
-  private checkTerminal(
-    binPath: string,
-    prior: boolean
-  ) {
+  private checkTerminal(binPath: string, prior: boolean) {
     const [profile, setStatement] = this.detectProfile(binPath, prior);
     if (!profile || !setStatement) {
       console.warn(`unknown terminal, please add ${binPath} to the path`);
@@ -101,7 +100,10 @@ export default class Binp {
   }
 
   private handleUnsupportedTerminal(profile: string) {
-    console.error('the current terminal cannot use feflow normally, please open a new terminal or execute the following statement:');
+    console.error(
+      'the current terminal cannot use feflow normally, ' +
+        'please open a new terminal or execute the following statement:'
+    );
     console.error(`source ${profile}`);
     process.exit(1);
   }
@@ -122,7 +124,7 @@ export default class Binp {
       return [undefined, undefined];
     }
     const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    let shellType: string = '';
+    let shellType = '';
     if (Array.isArray(shellMatch) && shellMatch.length > 0) {
       shellType = shellMatch[0];
     }
@@ -162,10 +164,11 @@ export default class Binp {
   addToPath(file: string, content: string) {
     try {
       fs.appendFileSync(file, `\n${content}\n`);
-    } catch(e) {
+    } catch (e) {
       console.error(e);
-      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+      console.warn(
+        `registration path to ${file} failed. If the file does not exist, you can try to create it`
+      );
     }
   }
-
 }
