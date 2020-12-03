@@ -3,6 +3,11 @@ import fs from 'fs';
 import chalk from 'chalk';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import { resolvePlugin } from '../plugin/applyPlugins';
+import {
+  FEFLOW_PLUGIN_GIT_PREFIX,
+  FEFLOW_PLUGIN_LOCAL_PREFIX,
+  FEFLOW_PLUGIN_PREFIX
+} from '../../shared/constant';
 
 function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
@@ -66,8 +71,22 @@ function loadUniversalPlugin(ctx: any): any[] {
   return availablePlugins;
 }
 
+function showPlugin(ctx: any, from: string, item: any) {
+  const repoPath = path.join(
+    ctx?.universalModules,
+    `${item.name}@${item.version}`
+  );
+  let useCommand = item.name.replace(FEFLOW_PLUGIN_PREFIX, '');
+  const plugin = resolvePlugin(ctx, repoPath);
+  if (plugin.name) {
+    useCommand = plugin.name;
+  }
+  console.log(
+    chalk.magenta(`${from}(command: ${useCommand}, version: ${item.version})`)
+  );
+}
+
 module.exports = (ctx: any) => {
-  const { universalModules } = ctx;
   ctx.commander.register('list', 'Show all plugins installed.', () => {
     const list = loadModuleList(ctx);
     const universalPlugins = loadUniversalPlugin(ctx);
@@ -100,12 +119,21 @@ module.exports = (ctx: any) => {
         console.log(chalk.magenta(`${item.name}(${item.version})`))
       );
     }
-    const storePlugins = plugins.filter(item =>
-      /^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(item.name)
-    );
-    const gitPlugins = plugins.filter(
-      item => !/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(item.name)
-    );
+    const storePlugins: any[] = [];
+    const gitPlugins: any[] = [];
+    const localPlugins: any[] = [];
+    plugins.forEach(item => {
+      if (item.name.startsWith(FEFLOW_PLUGIN_GIT_PREFIX)) {
+        gitPlugins.push(item);
+      } else if (item.name.startsWith(FEFLOW_PLUGIN_LOCAL_PREFIX)) {
+        localPlugins.push(item);
+      } else if (
+        item.name.startsWith(FEFLOW_PLUGIN_PREFIX) ||
+        /^@[^/]+\/feflow-plugin-/.test(item.name)
+      ) {
+        storePlugins.push(item);
+      }
+    });
     console.log('plugins');
     if (storePlugins.length == 0 && gitPlugins.length == 0) {
       console.log(chalk.magenta('No plugins have been installed'));
@@ -117,22 +145,22 @@ module.exports = (ctx: any) => {
     if (gitPlugins.length > 0) {
       console.log('git plugins');
       gitPlugins.forEach(item => {
-        const url = `http://${item.name.replace(/:/g, '/')}.git`;
-        const repoPath = path.join(
-          universalModules,
-          `${item.name}@${item.version}`
-        );
-        let useCommand = item.name;
-        const plugin = resolvePlugin(ctx, repoPath);
-        if (plugin.name) {
-          useCommand = plugin.name;
-        }
-        console.log(
-          chalk.magenta(
-            `${url}(command: ${useCommand}, version: ${item.version})`
-          )
-        );
+        const url = `http://${item.name
+          .replace(FEFLOW_PLUGIN_GIT_PREFIX, '')
+          .replace(/::/g, '/')}.git`;
+        showPlugin(ctx, url, item);
+      });
+    }
+    if (localPlugins.length > 0) {
+      console.log('local plugins');
+      localPlugins.forEach(item => {
+        const localPath = item.name
+          .replace(FEFLOW_PLUGIN_LOCAL_PREFIX, '')
+          .replace(/::/g, path.sep);
+        showPlugin(ctx, localPath,item);
       });
     }
   });
 };
+
+

@@ -15,17 +15,20 @@ export async function getTag(
   version?: string
 ): Promise<string | undefined> {
   const url = await transformUrl(repoUrl);
-  const { stdout } = await execFile('git', [
-    'ls-remote',
-    '--tags',
-    '--refs',
-    url
-  ], {
-    windowsHide: true
-  });
+  let ret: any;
+  try {
+    ret = await execFile('git', [
+      'ls-remote',
+      '--tags',
+      '--refs',
+      url
+    ], {windowsHide: true});
+  } catch (e) {
+    throw 'unable to access ' + repoUrl;
+  }
 
-  clearGitCert(url);
-  const tagListStr = stdout?.trim();
+  await clearGitCert(url);
+  const tagListStr = ret?.stdout?.trim();
   if (!tagListStr) {
     return;
   }
