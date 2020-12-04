@@ -2,10 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import util from 'util';
 
-const statAsync = util.promisify(fs.stat);
-const copyFileAsync = util.promisify(fs.copyFile);
-const mkdirAsync = util.promisify(fs.mkdir);
-const readdirAsync = util.promisify(fs.readdir);
+export const statAsync = util.promisify(fs.stat);
+export const copyFileAsync = util.promisify(fs.copyFile);
+export const mkdirAsync = util.promisify(fs.mkdir);
+export const readdirAsync = util.promisify(fs.readdir);
+export const unlinkAsync = util.promisify(fs.unlink);
+export const writeFileAsync = util.promisify(fs.writeFile);
 
 export async function copyDir(srcPath: string, tarPath: string) {
   const [srcStats, tarStats] = await Promise.all([

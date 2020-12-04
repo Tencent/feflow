@@ -31,6 +31,12 @@ import CommandPicker, {
   LOAD_ALL
 } from './command-picker';
 import { checkUpdate } from './resident';
+import {
+  mkdirAsync,
+  statAsync,
+  unlinkAsync,
+  writeFileAsync
+} from '../shared/fs';
 
 const pkg = require('../../package.json');
 
@@ -81,13 +87,16 @@ export default class Feflow {
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
-    this.initBinPath();
   }
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
 
-    await Promise.all([this.initClient(), this.initPackageManager()]);
+    await Promise.all([
+      this.initClient(),
+      this.initPackageManager(),
+      this.initBinPath()
+    ]);
 
     const disableCheck =
       this.args['disable-check'] ||
@@ -110,45 +119,45 @@ export default class Feflow {
     }
   }
 
-  initClient() {
+  async initClient() {
     const { root, rootPkg } = this;
 
-    return new Promise<any>((resolve, reject) => {
-      if (fs.existsSync(root) && fs.statSync(root).isFile()) {
-        fs.unlinkSync(root);
+    try {
+      const stats = await statAsync(root);
+      if (!stats.isDirectory()) {
+        await unlinkAsync(root);
       }
-
-      if (!fs.existsSync(root)) {
-        fs.mkdirSync(root);
-      }
-
-      if (!fs.existsSync(rootPkg)) {
-        fs.writeFileSync(
-          rootPkg,
-          JSON.stringify(
-            {
-              name: 'feflow-home',
-              version: '0.0.0',
-              private: true
-            },
-            null,
-            2
-          )
-        );
-      }
-      resolve();
-    });
-  }
-
-  private initBinPath() {
-    const { bin } = this;
-
-    if (fs.existsSync(bin) && fs.statSync(bin).isFile()) {
-      fs.unlinkSync(bin);
+    } catch (e) {
+      await mkdirAsync(root);
     }
 
-    if (!fs.existsSync(bin)) {
-      fs.mkdirSync(bin);
+    try {
+      await statAsync(rootPkg);
+    } catch (e) {
+      await writeFileAsync(
+        rootPkg,
+        JSON.stringify(
+          {
+            name: 'feflow-home',
+            version: '0.0.0',
+            private: true
+          },
+          null,
+          2
+        )
+      );
+    }
+  }
+
+  async initBinPath() {
+    const { bin } = this;
+    try {
+      const stats = await statAsync(bin);
+      if (!stats.isDirectory()) {
+        await unlinkAsync(bin);
+      }
+    } catch (e) {
+      await mkdirAsync(bin);
     }
     new Binp().register(bin);
   }
@@ -160,7 +169,10 @@ export default class Feflow {
       if (!this.config || !this.config.packageManager) {
         const isInstalled = (packageName: string) => {
           try {
-            const ret = spawn.sync(packageName, ['-v'], { stdio: 'ignore' });
+            const ret = spawn.sync(packageName, ['-v'], {
+              stdio: 'ignore',
+              windowsHide: true
+            });
             if (ret.status !== 0) {
               return false;
             }
