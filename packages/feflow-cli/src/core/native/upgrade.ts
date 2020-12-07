@@ -22,8 +22,11 @@ async function updateCli(packageManager: string) {
             '-g'
           ];
 
-    const child = spawn(packageManager, args, { stdio: 'inherit' });
-    child.on('close', (code) => {
+    const child = spawn(packageManager, args, {
+      stdio: 'inherit',
+      windowsHide: true
+    });
+    child.on('close', code => {
       if (code !== 0) {
         reject({
           command: `${packageManager} ${args.join(' ')}`

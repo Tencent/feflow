@@ -96,7 +96,9 @@ const queryPluginsUpdate = async () => {
       const pkg: any = JSON.parse(content);
       const localVersion = pkg.version;
       const registryUrl = spawn
-        .sync(config['packageManager'], ['config', 'get', 'registry'])
+        .sync(config['packageManager'], ['config', 'get', 'registry'], {
+          windowsHide: true
+        })
         .stdout.toString()
         .replace(/\n/, '')
         .replace(/\/$/, '');
