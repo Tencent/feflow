@@ -15,7 +15,9 @@ export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
 const exec = (command: string) => {
   let result = '';
   try {
-    result = execSync(command)
+    result = execSync(command, {
+      windowsHide: true,
+    })
       .toString()
       .replace(/\n/, '');
   } catch (err) {}

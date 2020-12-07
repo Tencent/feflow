@@ -40,7 +40,8 @@ async function download(url: string, filepath: string): Promise<any> {
 
   console.log('cloneUrl', url);
   return spawn.sync('git', ['clone', cloneUrl, filepath], {
-    stdio: 'inherit'
+    stdio: 'inherit',
+    windowsHide: true
   });
 }
 
