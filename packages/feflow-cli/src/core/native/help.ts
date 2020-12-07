@@ -94,7 +94,8 @@ module.exports = (ctx: any) => {
           if (type === 'usage') {
             spawn(content, {
               stdio: 'inherit',
-              shell: true
+              shell: true,
+              windowsHide: true
             });
             return;
           }

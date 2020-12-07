@@ -158,7 +158,10 @@ export default class Feflow {
       if (!this.config || !this.config.packageManager) {
         const isInstalled = (packageName: string) => {
           try {
-            const ret = spawn.sync(packageName, ['-v'], { stdio: 'ignore' });
+            const ret = spawn.sync(packageName, ['-v'], {
+              stdio: 'ignore',
+              windowsHide: true
+            });
             if (ret.status !== 0) {
               return false;
             }
