@@ -57,10 +57,11 @@ export async function getTag(
 export async function getCurrentTag(
   repoPath: string
 ): Promise<string | undefined> {
-  const tagsRsp = spawn.sync('git', ['tag', '-l'], { windowsHide: true, cwd: repoPath });
-  let tags = tagsRsp?.stdout?.toString().trim().split('\n');
-  tags = tags.filter(v => versionImpl.check(v)).sort((a, b) => versionImpl.gt(a, b) ? -1 : 1);
-  return tags?.[0];
+  const { stdout } = spawn.sync('git', ['status'], { windowsHide: true, cwd: repoPath });
+  const matches = /v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*)/.exec(stdout?.toString());
+  if (matches && matches[0]) {
+    return matches[0];
+  }
 }
 
 export async function checkoutVersion(repoPath: string, version: string) {

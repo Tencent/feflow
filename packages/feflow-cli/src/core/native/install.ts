@@ -273,10 +273,12 @@ async function startInstall(
       lastVersion
     );
     lastRepoName = toSimpleCommand(pkgInfo.repoName);
-    const oldPlugin = resolvePlugin(ctx, oldRepoPath);
-    if (oldPlugin.name) {
-      lastRepoName = oldPlugin.name;
-    }
+    try {
+      const oldPlugin = resolvePlugin(ctx, oldRepoPath);
+      if (oldPlugin.name) {
+        lastRepoName = oldPlugin.name;
+      }
+    } catch (e) {}
   }
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
@@ -462,17 +464,19 @@ async function installPlugin(
   );
   if (pkgInfo.installVersion === LATEST_VERSION) {
     if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
-      const currentVersion = await getCurrentTag(repoPath);
-      if (!currentVersion || pkgInfo.checkoutTag === currentVersion) {
-        if (global) {
-          logger.info(
-            `the plugin version currently installed is the latest version: ${currentVersion}`
-          );
+      try {
+        const currentVersion = await getCurrentTag(repoPath);
+        if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
+          if (global) {
+            logger.info(
+              `the plugin version currently installed is the latest version: ${currentVersion}`
+            );
+          }
+          return;
+        } else {
+          updateFlag = true;
         }
-        return;
-      } else {
-        updateFlag = true;
-      }
+      } catch (e) {}
     }
   }
   if (updateFlag) {
@@ -481,7 +485,9 @@ async function installPlugin(
         pkgInfo.checkoutTag
       }`
     );
-    resolvePlugin(ctx, repoPath).preUpgrade.runLess();
+    try {
+      resolvePlugin(ctx, repoPath).preUpgrade.runLess();
+    } catch (e) {}
   } else {
     logger.info(`[${pkgInfo.showName()}] installing plugin`);
   }
