@@ -93,3 +93,50 @@ export async function clearGitCertByPath(repoPath: string) {
   const url = ret?.stdout?.toString().trim();
   return clearGitCert(url);
 }
+
+export async function download(
+  url: string,
+  tag: string,
+  filepath: string
+): Promise<any> {
+  const cloneUrl = await transformUrl(url);
+
+  console.log('clone from', url);
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      'git',
+      ['clone', '-b', tag, '--progress', '--depth', '1', cloneUrl, filepath],
+      {
+        stdio: 'pipe',
+        windowsHide: true
+      }
+    );
+    let doneFlag = false;
+    child.stderr?.on('data', d => {
+      if (doneFlag) {
+        return;
+      }
+      if (d.toString().startsWith('Note:')) {
+        doneFlag = true;
+        return;
+      }
+      process.stderr.write(d);
+    });
+    child.stdout?.on('data', d => {
+      if (doneFlag) {
+        return;
+      }
+      process.stdout.write(d);
+    });
+    child.on('close', code => {
+      if (code === 0) {
+        resolve(0);
+      } else {
+        reject(code);
+      }
+    });
+    child.on('error', err => {
+      reject(err);
+    });
+  }).finally(() => clearGitCert(cloneUrl));
+}

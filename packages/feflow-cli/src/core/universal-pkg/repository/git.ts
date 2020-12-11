@@ -17,12 +17,9 @@ export async function getTag(
   const url = await transformUrl(repoUrl);
   let ret: any;
   try {
-    ret = await execFile('git', [
-      'ls-remote',
-      '--tags',
-      '--refs',
-      url
-    ], {windowsHide: true});
+    ret = await execFile('git', ['ls-remote', '--tags', '--refs', url], {
+      windowsHide: true
+    });
   } catch (e) {
     throw 'unable to access ' + repoUrl;
   }
@@ -57,25 +54,56 @@ export async function getTag(
 export async function getCurrentTag(
   repoPath: string
 ): Promise<string | undefined> {
-  const { stdout } = spawn.sync('git', ['status'], { windowsHide: true, cwd: repoPath });
-  const matches = /v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*)/.exec(stdout?.toString());
-  if (matches && matches[0]) {
-    return matches[0];
-  }
-}
-
-export async function checkoutVersion(repoPath: string, version: string) {
-  const command = 'git';
-  spawn.sync(command, ['fetch', '--tags', '-f'], {
-    stdio: 'ignore',
+  const { stdout } = spawn.sync('git', ['log', '--decorate', '-1'], {
     windowsHide: true,
     cwd: repoPath
   });
+  const matches = /tag: (v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*))/.exec(
+    stdout?.toString()
+  );
+  if (matches && matches[1]) {
+    return matches[1];
+  }
+}
+
+export async function checkoutVersion(
+  repoPath: string,
+  version: string,
+  lastVersion?: string
+) {
+  const command = 'git';
+  spawn.sync(
+    command,
+    ['fetch', '-n', '-f', '--depth', '1', 'origin', 'tag', version],
+    {
+      stdio: 'ignore',
+      windowsHide: true,
+      cwd: repoPath
+    }
+  );
   const checkArgs = ['checkout', '-f', version];
   spawn.sync(command, checkArgs, {
     stdio: 'ignore',
     windowsHide: true,
     cwd: repoPath
   });
+  if (lastVersion) {
+    try {
+      spawn.sync(command, ['tag', '-d', lastVersion], {
+        stdio: 'ignore',
+        windowsHide: true,
+        cwd: repoPath
+      });
+      gitGC(repoPath);
+    } catch (e) {}
+  }
   return clearGitCertByPath(repoPath);
+}
+
+function gitGC(repoPath: string) {
+  spawn.sync('git', ['gc', '--prune=all'], {
+    stdio: 'ignore',
+    windowsHide: true,
+    cwd: repoPath
+  });
 }

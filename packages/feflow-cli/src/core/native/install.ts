@@ -1,5 +1,4 @@
 import { getRegistryUrl, install } from '../../shared/npm';
-import spawn from 'cross-spawn';
 import fs from 'fs';
 import path from 'path';
 import rp from 'request-promise';
@@ -9,14 +8,18 @@ import {
   checkoutVersion,
   getCurrentTag
 } from '../universal-pkg/repository/git';
+import { download } from '../../shared/git';
 import {
   HOOK_TYPE_ON_COMMAND_REGISTERED,
   LATEST_VERSION,
   FEFLOW_BIN,
   FEFLOW_LIB,
-  NPM_PLUGIN_INFO_JSON, INVALID_VERSION, FEFLOW_PLUGIN_GIT_PREFIX, FEFLOW_PLUGIN_PREFIX, FEFLOW_PLUGIN_LOCAL_PREFIX,
+  NPM_PLUGIN_INFO_JSON,
+  INVALID_VERSION,
+  FEFLOW_PLUGIN_GIT_PREFIX,
+  FEFLOW_PLUGIN_PREFIX,
+  FEFLOW_PLUGIN_LOCAL_PREFIX
 } from '../../shared/constant';
-import { clearGitCert, transformUrl } from '../../shared/git';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
@@ -26,20 +29,6 @@ import { CommandPickConfig } from '../command-picker';
 import { getURL } from '../../shared/url';
 import { copyDir } from '../../shared/fs';
 // import loggerReport from '../logger/report';
-
-let account: any;
-
-async function download(url: string, filepath: string): Promise<any> {
-  const cloneUrl = await transformUrl(url, account);
-
-  console.log('cloneUrl', url);
-  const clone = spawn.sync('git', ['clone', cloneUrl, filepath], {
-    stdio: 'inherit',
-    windowsHide: true
-  });
-  await clearGitCert(cloneUrl);
-  return clone;
-}
 
 async function getRepoInfo(ctx: any, packageName: string) {
   const serverUrl = ctx.config?.serverUrl;
@@ -54,9 +43,6 @@ async function getRepoInfo(ctx: any, packageName: string) {
   return rp(options)
     .then((response: any) => {
       const data = JSON.parse(response);
-      if (data.account) {
-        account = data.account;
-      }
       return data.data && data.data[0];
     })
     .catch((err: any) => {
@@ -257,7 +243,7 @@ async function startInstall(
   if (pkgInfo.fromType !== PkgInfo.dir) {
     if (!fs.existsSync(repoPath)) {
       logger.info(`start download from ${pkgInfo.repoFrom}`);
-      await download(pkgInfo.repoFrom, repoPath);
+      await download(pkgInfo.repoFrom, pkgInfo.checkoutTag, repoPath);
     }
   } else {
     deleteDir(repoPath);
@@ -282,7 +268,7 @@ async function startInstall(
   }
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
-    await checkoutVersion(repoPath, pkgInfo.checkoutTag);
+    await checkoutVersion(repoPath, pkgInfo.checkoutTag, pkgInfo.lastCheckoutTag);
   }
 
   // deal dependencies
@@ -475,6 +461,9 @@ async function installPlugin(
           return;
         } else {
           updateFlag = true;
+          if (currentVersion) {
+            pkgInfo.lastCheckoutTag = currentVersion;
+          }
         }
       } catch (e) {}
     }
@@ -584,6 +573,7 @@ class PkgInfo {
   repoFrom: string;
   installVersion: string;
   checkoutTag: string;
+  lastCheckoutTag = '';
   fromType: number;
 
   constructor(
