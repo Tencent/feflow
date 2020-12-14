@@ -19,6 +19,7 @@ import {
   HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import { fileExit } from '../shared/file';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
@@ -32,6 +33,9 @@ import CommandPicker, {
 import { checkUpdate } from './resident';
 
 const pkg = require('../../package.json');
+
+// 日志文件
+const LOGGER_LOG_PATH = path.join(__dirname, '../logger.log');
 
 export default class Feflow {
   public args: any;
@@ -106,6 +110,8 @@ export default class Feflow {
       // make sure the command has at least one funtion, otherwise replace to help command
       picker.checkCommand();
     }
+    // 检查、创建日志文件
+    fileExit(LOGGER_LOG_PATH);
   }
 
   initClient() {

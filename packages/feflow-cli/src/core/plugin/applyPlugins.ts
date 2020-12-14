@@ -4,6 +4,7 @@ import osenv from 'osenv';
 import path from 'path';
 import { FEFLOW_ROOT } from '../../shared/constant';
 import { CommandPickConfig, COMMAND_TYPE } from '../command-picker';
+import logger from '../logger';
 
 export default function applyPlugins(plugins: any[]) {
   return (ctx: any) => {
@@ -19,7 +20,12 @@ export default function applyPlugins(plugins: any[]) {
 
       try {
         ctx.logger.debug('Plugin loaded: %s', chalk.magenta(name));
-        return require(pluginPath)(ctx);
+        const pluginLogger = logger({
+          debug: Boolean(ctx.args.debug),
+          silent: Boolean(ctx.args.silent),
+          name,
+        });
+        return require(pluginPath)(Object.assign({}, ctx, {logger: pluginLogger}));
       } catch (err) {
         ctx.logger.error(
           { err: err },
