@@ -1,15 +1,17 @@
 import bunyan from 'bunyan';
 import chalk from 'chalk';
 import { Writable } from 'stream';
-import loggerReport from './report';
-
+// import {timer} from './report';
+import path from 'path';
+import {spawn} from "child_process";
+const reportLog = path.join(__dirname, './report');
 const pkg = require('../../../package.json');
 const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
 const process = require('process');
-
+const { debug, silent } = process.env;
 // let timer:any;
 let logger:any;
-const report = new loggerReport();
+// const report = new loggerReport();
 interface IObject {
   [key: string]: string;
 }
@@ -70,7 +72,7 @@ class ConsoleStream extends Writable {
 
   async _write(data: any, enc: any, callback: any) {
     const level = data.level;
-    const loggerName = (logger.name && logger.name.split('/').pop()) || PLUGE_NAME;
+    const loggerName = data.name || (logger.name && logger.name.split('/').pop()) || PLUGE_NAME;
     let msg = '';
     if (this.debug) {
       msg += chalk.gray(data.time) + ' ';
@@ -83,7 +85,6 @@ class ConsoleStream extends Writable {
       if (err) msg += chalk.yellow(err) + '\n';
     }
     //每次触发logger进行存储 大于20条上报
-    console.log(11111111, loggerName, logger, data);
     // await report.init([{
     //   level: level,
     //   msg: `[Feflow ${levelNames[level]}][${loggerName}]${data.msg}`,
@@ -101,7 +102,32 @@ class ConsoleStream extends Writable {
     } else {
       process.stdout.write(msg);
     }
-    await report.send(logger);
+    const child = spawn(process.argv[0], [reportLog], {
+      detached: true, // 使子进程在父进程退出后继续运行
+      stdio: 'ignore', // 保持后台运行
+      env: {
+        ...process.env, // env 无法把 ctx 传进去，会自动 string 化
+        debug,
+        silent,
+      },
+      windowsHide: true
+    });
+
+    // child?.stdout?.on('data', (data) => {
+    //   console.log('======== data', data);
+    // });
+    // child.on('close', (code) => {
+    //   // this.steamWatcherClose();
+    //   console.log('========close', code);
+    //   console.log('======', process.argv[0], reportLog);
+    // });
+    // child.on('error', (err) => {
+    //   // steamWatcherClose();
+    //   console.log('========error', err);
+    // });
+
+    // 父进程不会等待子进程
+    child.unref();
     // clearTimeout(timer);
     // //单次logger上报间隔大于5s时自动进行一次上报
     // timer = setTimeout(async ()=>{

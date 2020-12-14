@@ -368,21 +368,23 @@ async function installPlugin(
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoName}] does not exist`;
   }
-
   // if the specified version is already installed, skip it
   if (
     universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)
   ) {
+    logger.info(`you have installed ${pkgInfo.repoName}`);
     return;
   }
-
   let updateFlag = false;
 
   const repoPath = path.join(universalModules, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
   if (pkgInfo.installVersion === LATEST_VERSION) {
     if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
       const currentVersion = await getCurrentTag(repoPath);
-      if (!currentVersion || pkgInfo.checkoutTag === currentVersion) {
+      if (!currentVersion) {
+        return;
+      } else if (pkgInfo.checkoutTag === currentVersion) {
+        logger.info(`you have installed ${pkgInfo.repoName}`);
         return;
       } else {
         updateFlag = true;

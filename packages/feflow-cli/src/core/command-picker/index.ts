@@ -413,7 +413,6 @@ export default class CommandPicker {
   pickCommand() {
     const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
     const { type } = tartgetCommand;
-    console.log(99999999, tartgetCommand);
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
       silent: Boolean(this.ctx.args.silent),
