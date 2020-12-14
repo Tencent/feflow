@@ -39,3 +39,12 @@ report.report()
 report.recallReport()
 ```
 
+#### 对外 API
+|api|参数|功能|
+|--|--|--|
+|init|cmd|组件初始化，添加 hooks|
+|report|cmd, params(optional)|发送上报请求|
+|reportInitResult|-|与init配合使用，发送上报数据|
+|reportCommandError|err|发送命令报错信息|
+|setCommandSource|commandSource|设置命令源|
+

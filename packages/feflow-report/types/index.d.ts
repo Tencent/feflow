@@ -1,6 +1,7 @@
 declare module 'request-promise';
 
 declare interface ReportContext {
+  root: string;
   log: any;
   logger: any;
   args: any;

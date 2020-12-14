@@ -1,53 +1,52 @@
-import ApiController from './api';
-import { getUserName, getSystemInfo, getProject } from './common/utils';
-import objectFactory from './common/objectFactory';
-import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_STATUS, REPORT_COMMAND_ERR } from './constants';
+import fs from 'fs';
+import path from 'path';
+import { spawn } from 'child_process';
+import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_JSON, REPORT_COMMAND_ERR } from './constants';
+import { getProject, getKeyFormFile, setKeyToFile } from './common/utils';
+
+const reportProcess = path.join(__dirname, './report');
 
 class Report {
   ctx: ReportContext;
-  costTime: number;
-  startTime: number;
-  userName: string;
-  systemInfo: string;
-  project: string;
-  reCallId: string;
   cmd: string;
   args: object;
-  isRecallActivating: boolean;
   commandSource: string;
-  generatorProject: string;
-  hasRecalled: boolean;
-  errMsg: string;
   lastCommand: string;
+  project: string;
+  generatorProject: string;
+  startTime: number;
+  costTime: number;
+  cachePath: string;
+  cacheData: string;
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
     this.cmd = cmd;
     this.args = args;
-    this.userName = getUserName();
-    this.systemInfo = getSystemInfo();
+    this.cachePath = path.join(this.ctx.root, REPORT_JSON);
     this.project = getProject(this.ctx);
     this.loadContextLogger();
   }
+
   // register before/after hook event
-  private registerHook() {
+  private registerHook(): any {
     this.ctx.hook.on(HOOK_TYPE_BEFORE, this.reportOnHookBefore);
     // report some performance data after command executed
     this.ctx.hook.on(HOOK_TYPE_AFTER, this.reportOnHookAfter);
   }
 
-  private loadContextLogger() {
+  private loadContextLogger(): any {
     this.ctx.log = this.ctx.log || this.ctx.logger;
     this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
   }
 
-  private reportOnHookBefore = () => {
+  private reportOnHookBefore = (): any => {
     const { cmd, args } = this;
     let commandWithoutVersion;
     try {
       commandWithoutVersion = cmd?.split('@')[0];
     } catch (error) {
-      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`)
+      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`);
       commandWithoutVersion = '';
     }
     const store = this.ctx.commander?.store[commandWithoutVersion] || this.ctx.commander?.store[cmd] || {};
@@ -60,113 +59,86 @@ class Report {
     this.report(cmd, args);
   };
 
-  private reportOnHookAfter = () => {
+  private reportOnHookAfter = (): any => {
     this.ctx.log.debug('HOOK_TYPE_AFTER');
     this.costTime = Date.now() - this.startTime;
-    this.recallReport();
+    this.report(this.cmd, this.args, true);
   };
 
-  private getReportBody(cmd, args): any {
-    return objectFactory
-      .create()
-      .load('command', cmd)
-      .load('last_command', this.lastCommand)
-      .load('feflow_version', this.ctx.version)
-      .load('command_source', this.commandSource)
-      .load('user_name', this.userName)
-      .load('params', args)
-      .load('err_message', this.errMsg)
-      .load('system_info', this.systemInfo)
-      .load('project', this.project)
-      .load('status', REPORT_STATUS.START)
-      .done();
-  }
-
-  private getRecallBody(): any {
-    return objectFactory
-      .create()
-      .load('command')
-      .load('generator_project', this.generatorProject)
-      .load('recall_id', this.reCallId)
-      .load('cost_time', this.costTime)
-      .load('err_message', this.errMsg)
-      .load('is_fail', false)
-      .load('status', REPORT_STATUS.COMPLETED)
-      .done();
-  }
-
-  private checkBeforeReport(cmd) {
+  private checkBeforeReport = (cmd: string): any => {
     if (this.cmd && this.cmd !== cmd) {
       this.lastCommand = this.cmd;
     }
     this.cmd = cmd;
     return !!cmd;
-  }
+  };
 
-  setCommandSource(commandSource: string) {
+  setCommandSource(commandSource: string): any {
     this.commandSource = commandSource;
   }
 
-  init(cmd: string) {
+  init(cmd: string): any {
     this.cmd = cmd;
     this.args = this.ctx.args;
     // hook is not supported in feflow 0.16.x
     if (this.ctx.hook) {
       this.registerHook();
     }
+
+    // 需要一个文件来存状态数据，init 的时候保证为空，存reCallId、hasRecalled、isRecallActivating、errMsg
+    if (this.cacheData && fs.existsSync(this.cachePath)) {
+      fs.writeFileSync(this.cachePath, '{}', 'utf-8');
+    }
+    // 文件不存在则创建
+    fs.open(this.cachePath, 'w+', err => {
+      if (err) return this.ctx.log.debug(`${this.cachePath} 打开失败 => ${err}`);
+      fs.writeFileSync(this.cachePath, '{}', 'utf-8');
+    });
   }
-  report(cmd, args?) {
+
+  report(cmd: string, args?, recall?): any {
     // args check
     if (!this.checkBeforeReport(cmd)) return;
-    try {
-      const reportBody: ReportBody = this.getReportBody(cmd, args);
-      this.ctx.log.debug('reportBody', JSON.stringify(reportBody));
-      const report = new ApiController(reportBody, this.ctx.log);
-      report.doReport(({ result }) => {
-        if (this.errMsg) return;
-        const { id } = result || {};
-        this.reCallId = id;
-        // hack async
-        if (this.isRecallActivating) {
-          this.recallReport();
-        }
-      });
-    } catch (error) {
-      this.ctx.log.debug('feflow report got error，please contact administractor to resolve ', error);
-    }
+
+    const child = spawn(process.argv[0], [reportProcess], {
+      detached: true,
+      stdio: 'ignore',
+      env: {
+        ...process.env,
+        cmd,
+        args: JSON.stringify(args),
+        commandSource: this.commandSource,
+        lastCommand: this.lastCommand,
+        project: this.project,
+        version: this.ctx.version,
+        cachePath: this.cachePath,
+        costTime: String(this.costTime),
+        recall,
+      },
+      windowsHide: true,
+    });
+
+    // 父进程不会等待子进程
+    child.unref();
   }
 
-  recallReport() {
-    this.isRecallActivating = true;
-    if (!this.reCallId) return;
-    try {
-      const reCallBody: RecallBody = this.getRecallBody();
-      this.ctx.log.debug('reCallBody', JSON.stringify(reCallBody));
-      const report = new ApiController(reCallBody, this.ctx.log);
-      report.doReport();
-      this.hasRecalled = true;
-    } catch (error) {
-      this.ctx.log.debug('feflow recallReport got error，please contact administractor to resolve ', error);
-    }
-  }
-
-  reportInitResult() {
+  reportInitResult(): any {
     const { cmd } = this;
     if (cmd !== 'init') {
       return;
     }
     this.costTime = Date.now() - this.startTime;
     this.generatorProject = getProject(this.ctx, true);
-    this.recallReport();
+    this.report(this.cmd, this.args, true);
   }
 
-  reportCommandError(err: Error) {
+  reportCommandError(err: Error): any {
     if (!err) {
       return;
     }
-    this.errMsg = err.message;
-    if (this.reCallId && !this.hasRecalled) {
-      this.recallReport();
+    setKeyToFile(this.cachePath, 'errMsg', err.message);
+    if (getKeyFormFile(this.cachePath, 'reCallId') && !getKeyFormFile(this.cachePath, 'hasRecalled')) {
+      this.report(this.cmd, this.args, true);
     } else {
       this.report(REPORT_COMMAND_ERR);
     }

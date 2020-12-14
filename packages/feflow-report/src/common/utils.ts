@@ -122,3 +122,24 @@ export const getProject = (ctx, local?: boolean): string => {
 
   return project;
 };
+
+export const getKeyFormFile = (file: string, key: string): any => {
+  try {
+    const jsonString = fs.readFileSync(file, 'utf-8');
+    const jsonData = JSON.parse(jsonString);
+    return jsonData[key];
+  } catch (e) {
+    console.log('getKeyFormCache error =>', e);
+  }
+};
+
+export const setKeyToFile = (file: string, key: string, value: any): any => {
+  try {
+    const jsonString = fs.readFileSync(file, 'utf-8');
+    const jsonData = JSON.parse(jsonString);
+    jsonData[key] = value;
+    fs.writeFileSync(file, JSON.stringify(jsonData, null, 4), 'utf-8');
+  } catch (e) {
+    console.log('setKeyToCache error =>', e);
+  }
+};
