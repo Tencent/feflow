@@ -20,8 +20,8 @@ interface IObject {
   if(!KYE_FILE['time'] || NOW_TIME - KYE_FILE['time'] > 5184e6){
     let {data:{result}} = await axios.get(`http://log.feflowjs.com/api/v1/summary/getskey?rtx=${USER_NAME}`);
     KYE_FILE = {
-      time:NOW_TIME,
-      skey:result.skey
+      time: NOW_TIME,
+      skey: result.skey
     }
     fs.writeFileSync(KEYS_FILE,JSON.stringify(KYE_FILE),'utf-8')
   }
@@ -58,8 +58,9 @@ async function send(logObj: any, readData: [any]) {
     plugin: loggerList[0]['name'],
     data: JSON.stringify(loggerList)
   },{
-    headers:{
-      skey:KYE_FILE['skey']
+    headers: {
+      skey: KYE_FILE['skey'],
+      rtx: USER_NAME
     }
   });
   if(response.status===204){
