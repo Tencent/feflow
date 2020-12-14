@@ -8,6 +8,7 @@ const USER_NAME  = os.hostname().split("-")[0];
 const NOW_TIME = new Date().getTime();
 const pkg = require('../../../package.json');
 const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
+const { hasTimer } = process.env;
 let KYE_FILE = {};
 interface IObject {
   [key: string]: string;
@@ -71,7 +72,8 @@ async function report(logObj?: any) {
     readData = readData.split('\n');
     // 数量太少暂时不上报
     if (readData.length < 20) {
-      if (!timer) {
+      // 如果有timer则不创新新的timer
+      if (!hasTimer) {
         timer = setTimeout(async () => {
           await send(logObj, readData);
           timer && clearTimeout(timer);
