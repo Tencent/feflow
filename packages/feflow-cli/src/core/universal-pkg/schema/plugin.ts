@@ -3,10 +3,11 @@ import { Dependencies } from './dependencies';
 import { platform } from './base';
 
 export class Plugin {
-
-  private ctx: any;
+  private readonly ctx: any;
 
   path: string;
+
+  name: string;
 
   desc: string;
 
@@ -14,7 +15,7 @@ export class Plugin {
 
   command: Command;
 
-  autoUpdate: boolean = true;
+  autoUpdate = true;
 
   test: Command;
 
@@ -37,7 +38,7 @@ export class Plugin {
   usage: any;
 
   // 是否属于语言运行时，语言运行时不需要经过feflow代理执行
-  langRuntime: boolean = false;
+  langRuntime = false;
 
   constructor(ctx: any, pluginPath: string, config: any) {
     if (!platform) {
@@ -45,6 +46,7 @@ export class Plugin {
     }
     this.ctx = ctx;
     this.path = pluginPath;
+    this.name = config?.name;
     this.desc = config?.desc;
     this.dep = new Dependencies(config?.dep);
     this.command = new Command(this.ctx, this.path, config?.command);
