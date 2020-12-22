@@ -3,7 +3,9 @@ import childProcess from 'child_process';
 import { promisify } from 'util';
 import versionImpl from '../dep/version';
 import {
-  transformUrl
+  transformUrl,
+  clearGitCert,
+  clearGitCertByPath
 } from '../../../shared/git';
 
 const execFile = promisify(childProcess.execFile);
@@ -13,16 +15,17 @@ export async function getTag(
   version?: string
 ): Promise<string | undefined> {
   const url = await transformUrl(repoUrl);
-  const { stdout } = await execFile('git', [
-    'ls-remote',
-    '--tags',
-    '--refs',
-    url
-  ], {
-    windowsHide: true
-  });
+  let ret: any;
+  try {
+    ret = await execFile('git', ['ls-remote', '--tags', '--refs', url], {
+      windowsHide: true
+    });
+  } catch (e) {
+    throw 'unable to access ' + repoUrl;
+  }
 
-  const tagListStr = stdout?.trim();
+  await clearGitCert(url);
+  const tagListStr = ret?.stdout?.trim();
   if (!tagListStr) {
     return;
   }
@@ -51,15 +54,56 @@ export async function getTag(
 export async function getCurrentTag(
   repoPath: string
 ): Promise<string | undefined> {
-  const tagsRsp = spawn.sync('git', ['-C', repoPath, 'tag', '-l'], { windowsHide: true });
-  let tags = tagsRsp?.stdout?.toString().trim().split('\n');
-  tags = tags.filter(v => versionImpl.check(v)).sort((a, b) => versionImpl.gt(a, b) ? -1 : 1);
-  return tags?.[0];
+  const { stdout } = spawn.sync('git', ['log', '--decorate', '-1'], {
+    windowsHide: true,
+    cwd: repoPath
+  });
+  const matches = /tag: (v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*))/.exec(
+    stdout?.toString()
+  );
+  if (matches && matches[1]) {
+    return matches[1];
+  }
 }
 
-export function checkoutVersion(repoPath: string, version: string) {
+export async function checkoutVersion(
+  repoPath: string,
+  version: string,
+  lastVersion?: string
+) {
   const command = 'git';
-  spawn.sync(command, ['-C', repoPath, 'fetch', '--tags', '-f'], { stdio: 'ignore', windowsHide: true });
-  const checkArgs = ['-C', repoPath, 'checkout', '-f', version];
-  return spawn.sync(command, checkArgs, { stdio: 'ignore', windowsHide: true });
+  spawn.sync(
+    command,
+    ['fetch', '-n', '-f', '--depth', '1', 'origin', 'tag', version],
+    {
+      stdio: 'ignore',
+      windowsHide: true,
+      cwd: repoPath
+    }
+  );
+  const checkArgs = ['checkout', '-f', version];
+  spawn.sync(command, checkArgs, {
+    stdio: 'ignore',
+    windowsHide: true,
+    cwd: repoPath
+  });
+  if (lastVersion) {
+    try {
+      spawn.sync(command, ['tag', '-d', lastVersion], {
+        stdio: 'ignore',
+        windowsHide: true,
+        cwd: repoPath
+      });
+      gitGC(repoPath);
+    } catch (e) {}
+  }
+  return clearGitCertByPath(repoPath);
+}
+
+function gitGC(repoPath: string) {
+  spawn.sync('git', ['gc', '--prune=all'], {
+    stdio: 'ignore',
+    windowsHide: true,
+    cwd: repoPath
+  });
 }

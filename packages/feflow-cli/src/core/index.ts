@@ -19,6 +19,7 @@ import {
   HOOK_TYPE_ON_COMMAND_REGISTERED
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import { setServerUrl } from '../shared/git';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
@@ -30,6 +31,12 @@ import CommandPicker, {
   LOAD_ALL
 } from './command-picker';
 import { checkUpdate } from './resident';
+import {
+  mkdirAsync,
+  statAsync,
+  unlinkAsync,
+  writeFileAsync
+} from '../shared/fs';
 
 const pkg = require('../../package.json');
 
@@ -68,6 +75,7 @@ export default class Feflow {
     this.args = args;
     this.version = pkg.version;
     this.config = parseYaml(configPath);
+    setServerUrl(this.config?.serverUrl);
     this.configPath = configPath;
     this.hook = new Hook();
     this.commander = new Commander((cmdName: string) => {
@@ -79,13 +87,16 @@ export default class Feflow {
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
-    this.initBinPath();
   }
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
 
-    await Promise.all([this.initClient(), this.initPackageManager()]);
+    await Promise.all([
+      this.initClient(),
+      this.initPackageManager(),
+      this.initBinPath()
+    ]);
 
     const disableCheck =
       this.args['disable-check'] ||
@@ -108,45 +119,45 @@ export default class Feflow {
     }
   }
 
-  initClient() {
+  async initClient() {
     const { root, rootPkg } = this;
 
-    return new Promise<any>((resolve, reject) => {
-      if (fs.existsSync(root) && fs.statSync(root).isFile()) {
-        fs.unlinkSync(root);
+    try {
+      const stats = await statAsync(root);
+      if (!stats.isDirectory()) {
+        await unlinkAsync(root);
       }
-
-      if (!fs.existsSync(root)) {
-        fs.mkdirSync(root);
-      }
-
-      if (!fs.existsSync(rootPkg)) {
-        fs.writeFileSync(
-          rootPkg,
-          JSON.stringify(
-            {
-              name: 'feflow-home',
-              version: '0.0.0',
-              private: true
-            },
-            null,
-            2
-          )
-        );
-      }
-      resolve();
-    });
-  }
-
-  private initBinPath() {
-    const { bin } = this;
-
-    if (fs.existsSync(bin) && fs.statSync(bin).isFile()) {
-      fs.unlinkSync(bin);
+    } catch (e) {
+      await mkdirAsync(root);
     }
 
-    if (!fs.existsSync(bin)) {
-      fs.mkdirSync(bin);
+    try {
+      await statAsync(rootPkg);
+    } catch (e) {
+      await writeFileAsync(
+        rootPkg,
+        JSON.stringify(
+          {
+            name: 'feflow-home',
+            version: '0.0.0',
+            private: true
+          },
+          null,
+          2
+        )
+      );
+    }
+  }
+
+  async initBinPath() {
+    const { bin } = this;
+    try {
+      const stats = await statAsync(bin);
+      if (!stats.isDirectory()) {
+        await unlinkAsync(bin);
+      }
+    } catch (e) {
+      await mkdirAsync(bin);
     }
     new Binp().register(bin);
   }
@@ -158,7 +169,10 @@ export default class Feflow {
       if (!this.config || !this.config.packageManager) {
         const isInstalled = (packageName: string) => {
           try {
-            const ret = spawn.sync(packageName, ['-v'], { stdio: 'ignore' });
+            const ret = spawn.sync(packageName, ['-v'], {
+              stdio: 'ignore',
+              windowsHide: true
+            });
             if (ret.status !== 0) {
               return false;
             }
@@ -201,10 +215,10 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter((file) => {
+        .filter(file => {
           return file.endsWith('.js');
         })
-        .map((file) => {
+        .map(file => {
           require(path.join(__dirname, './native', file))(this);
         });
       resolve();
@@ -254,7 +268,7 @@ export default class Feflow {
       this.logger.name = cmd.pluginName;
       await cmd.call(this, ctx);
     } else {
-      this.logger.debug('Command `' + name + '` has not been registered yet!')
+      this.logger.debug('Command `' + name + '` has not been registered yet!');
     }
   }
 
