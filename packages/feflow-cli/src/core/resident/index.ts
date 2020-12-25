@@ -191,8 +191,7 @@ export async function checkUpdate(ctx: any) {
       // 子进程心跳停止了
       if (cacheValidate) {
         // 读 db
-        const cliVersionData: any = updateData['latest_cli_version'];
-        latestVersion = cliVersionData && cliVersionData.value;
+        latestVersion = updateData['latest_cli_version'];
       } else {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
 
