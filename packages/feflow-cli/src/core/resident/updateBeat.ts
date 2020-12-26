@@ -8,6 +8,7 @@ import _ from 'lodash';
 import DBInstance from './db';
 import packageJson from '../../shared/packageJson';
 import { parseYaml } from '../../shared/yaml';
+import { setServerUrl } from '../../shared/git';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import {
   HEART_BEAT_COLLECTION,
@@ -122,6 +123,7 @@ const queryPluginsUpdate = async () => {
     plugins = plugins.filter((plugin: any) => {
       return plugin && plugin.name;
     });
+    logger.debug('tnpm plugins update infomation', plugins);
     if (plugins.length) {
       let updateData: any = await db.read('update_data');
       updateData = updateData?.['value'];
@@ -141,6 +143,7 @@ const queryUniversalPluginsUpdate = async () => {
   if (!config || !config['serverUrl']) {
     return;
   }
+  setServerUrl(config['serverUrl']);
 
   const universalPkg = new UniversalPkg(universalPkgPath);
   const latestUniversalPlugins: any[] = [];
@@ -160,6 +163,7 @@ const queryUniversalPluginsUpdate = async () => {
     }
   }
 
+  logger.debug('universal plugins update infomation', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
     let updateData: any = await db.read('update_data');
     updateData = updateData?.['value'];

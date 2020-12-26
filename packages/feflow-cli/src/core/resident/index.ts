@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import chalk from 'chalk';
@@ -24,9 +25,12 @@ const table = new Table();
 const uTable = new Table();
 
 function startUpdateBeat(ctx: any) {
+  // 子进程报错不会展示，添加 log 文件方便排查
+  const logfile = path.join(ctx.root, 'update-beat.log');
+  const log = fs.openSync(logfile, 'a');
   const child = spawn(process.argv[0], [updateBeatProcess], {
     detached: true, // 使子进程在父进程退出后继续运行
-    stdio: 'ignore', // 保持后台运行
+    stdio: ctx.args.debug ? [log, log, log] : 'ignore', // 保持后台运行
     env: {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
@@ -40,9 +44,12 @@ function startUpdateBeat(ctx: any) {
 }
 
 function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
+  // 子进程报错不会展示，添加 log 文件方便排查
+  const logfile = path.join(ctx.root, 'update.log');
+  const log = fs.openSync(logfile, 'a');
   const child = spawn(process.argv[0], [updateProcess], {
     detached: true,
-    stdio: 'ignore',
+    stdio: ctx.args.debug ? [log, log, log] : 'ignore',
     env: {
       ...process.env,
       debug: ctx.args.debug,
@@ -163,7 +170,7 @@ export async function checkUpdate(ctx: any) {
     ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
   const nowTime = new Date().getTime();
   let latestVersion: any = '';
-  let cacheValidate: boolean = false;
+  let cacheValidate = false;
 
   if (!db) {
     db = new DBInstance(dbFile);
@@ -179,7 +186,7 @@ export async function checkUpdate(ctx: any) {
   if (updateData) {
     // add lock to keep only one updating process is running
     const isLocked = await _checkLock(updateData);
-    if (isLocked) return;
+    if (isLocked) return ctx.logger.debug('one updating process is running');
 
     await _checkUpdateMsg(ctx, updateData);
 
@@ -188,18 +195,18 @@ export async function checkUpdate(ctx: any) {
       const lastBeatTime = parseInt(data['value'], 10);
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
+      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
       // 子进程心跳停止了
-      if (cacheValidate) {
-        // 读 db
-        latestVersion = updateData['latest_cli_version'];
-      } else {
+      if (!cacheValidate) {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
-
         startUpdateBeat(ctx);
       }
+      // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
+      latestVersion = updateData['latest_cli_version'];
     }
   } else {
     // init
+    ctx.logger.debug('init heart-beat for update detective');
     await Promise.all([
       // 初始化心跳数据
       heartDB.create('beat_time', String(nowTime)),
