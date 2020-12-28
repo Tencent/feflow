@@ -1,7 +1,7 @@
 import versionImpl from './version';
 
 export function toInstalled(oInstalled: any): Map<string, string> {
-  let installed = new Map<string, string>();
+  const installed = new Map<string, string>();
   if (!oInstalled) {
     return installed;
   }

@@ -7,7 +7,7 @@ import path from 'path';
 export class UniversalPkg {
   private pkgFile: string;
 
-  private version: string = '0.0.0';
+  private version = '0.0.0';
 
   // pkg: version
   private installed: Map<string, string> = new Map();
@@ -80,17 +80,17 @@ export class UniversalPkg {
     this.installed.set(pkg, version);
     let versionMap = this.dependencies.get(pkg);
     if (!versionMap) {
-        versionMap = new Map<string, PkgRelation>();
+      versionMap = new Map<string, PkgRelation>();
     }
     let r = versionMap.get(version);
     if (!r) {
-        r = new PkgRelation(null);
+      r = new PkgRelation(null);
     }
     versionMap.set(version, r);
     this.dependencies.set(pkg, versionMap);
   }
 
-  isDepdenedOnOther(pkg: string, version: string): boolean {
+  isDependedOnOnOther(pkg: string, version: string): boolean {
     const vRelation = this.dependencies.get(pkg);
     if (vRelation) {
       const r = vRelation.get(version);

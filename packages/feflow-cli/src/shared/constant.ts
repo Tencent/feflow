@@ -70,3 +70,11 @@ export const BEAT_GAP = 5000;
 export const LOG_REPORT_BEAT_GAP = 5000;
 
 export const CHECK_UPDATE_GAP = 1000 * 60 * 5;
+
+export const INVALID_VERSION = 'v0.0.0';
+
+export const FEFLOW_PLUGIN_LOCAL_PREFIX = 'feflow-plugin-local-';
+
+export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
+
+export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
