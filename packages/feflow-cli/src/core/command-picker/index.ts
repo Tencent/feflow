@@ -420,7 +420,7 @@ export default class CommandPicker {
     });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.SUPPORT_TYPE.includes(type)) {
-      return this.ctx.logger.error(
+      return this.ctx.logger.warn(
         `this kind of command is not supported in command picker, ${type}`
       );
     }

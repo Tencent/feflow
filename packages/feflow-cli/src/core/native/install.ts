@@ -540,7 +540,7 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      ctx.logger.error('cant found massage from Feflow Application market, please check if it exists');
+      ctx.logger.warn('cant found massage from Feflow Application market, please check if it exists');
       return;
     }
     repoFrom = repoInfo.repo;
