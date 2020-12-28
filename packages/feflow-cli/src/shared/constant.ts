@@ -78,3 +78,5 @@ export const FEFLOW_PLUGIN_LOCAL_PREFIX = 'feflow-plugin-local-';
 export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
 
 export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
+
+export const LOG_FILE = 'logger.log';

@@ -1,8 +1,10 @@
+import {FEFLOW_ROOT, LOG_FILE} from "../../shared/constant";
+import osenv from "osenv";
 const fs = require('fs');
 const axios = require('axios');
 const path = require('path');
 const os = require('os');
-const LOGGER_LOG_PATH = path.join(__dirname, '../../../logger.log');
+const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME  = os.hostname().split("-")[0];
 const NOW_TIME = new Date().getTime();

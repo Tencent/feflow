@@ -127,7 +127,7 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
           try {
             return await packageJson(dependency, registryUrl);
           } catch (err) {
-            ctx.logger.error(`${dependency} not found on ${packageManager}`);
+            ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
             process.exit(2);
           }
         })
@@ -540,7 +540,7 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      ctx.logger.error('cant found application');
+      ctx.logger.error('cant found massage from Feflow Application market, please check if it exists');
       return;
     }
     repoFrom = repoInfo.repo;

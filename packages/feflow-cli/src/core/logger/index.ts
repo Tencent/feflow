@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { Writable } from 'stream';
 import path from 'path';
 import {spawn} from "child_process";
-import {LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, HEART_BEAT_COLLECTION} from "../../shared/constant";
+import {LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, HEART_BEAT_COLLECTION, LOG_FILE} from "../../shared/constant";
 import DBInstance from "../resident/db";
 import osenv from "osenv";
 
@@ -149,7 +149,7 @@ export default function createLogger(options: any) {
   const streams: Array<Stream> = [];
 
   streams.push({
-    path: 'logger.log',
+    path: path.join(root, LOG_FILE),
   });
   if (!options.silent) {
     streams.push({
@@ -162,12 +162,12 @@ export default function createLogger(options: any) {
   if (options.debug) {
     streams.push({
       level: 'trace',
-      path: 'debug.log'
+      path: path.join(root, 'debug.log')
     });
   }
 
   logger = bunyan.createLogger({
-    name: options.name || 'feflow',
+    name: options.name || 'feflow-cli',
     streams: streams,
     serializers: {
       err: bunyan.stdSerializers.err,
