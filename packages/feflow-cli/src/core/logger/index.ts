@@ -138,7 +138,6 @@ class ConsoleStream extends Writable {
       this.report();
     }
 
-    // }
     callback();
   }
 }
