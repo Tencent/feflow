@@ -38,7 +38,7 @@ import {
   statAsync,
   unlinkAsync,
   writeFileAsync,
-  readdirAsync
+  readFileAsync
 } from '../shared/fs';
 
 const pkg = require('../../package.json');
@@ -115,9 +115,11 @@ export default class Feflow {
 
     if (picker.isAvailable()) {
       // should hit the cache in most cases
+      this.logger.debug('find cmd in cache');
       picker.pickCommand();
     } else {
       // if not, load plugin/devkit/native in need
+      this.logger.debug('not find cmd in cache');
       await this.loadCommands(picker.getLoadOrder());
       // make sure the command has at least one funtion, otherwise replace to help command
       picker.checkCommand();
@@ -138,23 +140,24 @@ export default class Feflow {
 
     try {
       await statAsync(rootPkg);
-      const pkgInfo = await readdirAsync(rootPkg);
+      const pkgInfo = await readFileAsync(rootPkg);
       // 检测package.json为空
       if (!pkgInfo) {
         await writeFileAsync(
-            rootPkg,
-            JSON.stringify(
-                {
-                  name: 'feflow-home',
-                  version: '0.0.0',
-                  private: true
-                },
-                null,
-                2
-            )
+          rootPkg,
+          JSON.stringify(
+            {
+              name: 'feflow-home',
+              version: '0.0.0',
+              private: true
+            },
+            null,
+            2
+          )
         );
       }
     } catch (e) {
+      this.logger.debug(`create package.json fail: ${e}`);
       await writeFileAsync(
         rootPkg,
         JSON.stringify(
