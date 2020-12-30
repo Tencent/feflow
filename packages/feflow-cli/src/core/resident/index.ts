@@ -163,7 +163,7 @@ export async function checkUpdate(ctx: any) {
     ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
   const nowTime = new Date().getTime();
   let latestVersion: any = '';
-  let cacheValidate: boolean = false;
+  let cacheValidate = false;
 
   if (!db) {
     db = new DBInstance(dbFile);
@@ -179,7 +179,7 @@ export async function checkUpdate(ctx: any) {
   if (updateData) {
     // add lock to keep only one updating process is running
     const isLocked = await _checkLock(updateData);
-    if (isLocked) return;
+    if (isLocked) return ctx.logger.debug('one updating process is running');
 
     await _checkUpdateMsg(ctx, updateData);
 
@@ -188,19 +188,18 @@ export async function checkUpdate(ctx: any) {
       const lastBeatTime = parseInt(data['value'], 10);
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
+      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
       // 子进程心跳停止了
-      if (cacheValidate) {
-        // 读 db
-        const cliVersionData: any = updateData['latest_cli_version'];
-        latestVersion = cliVersionData && cliVersionData.value;
-      } else {
+      if (!cacheValidate) {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
-
         startUpdateBeat(ctx);
       }
+      // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
+      latestVersion = updateData['latest_cli_version'];
     }
   } else {
     // init
+    ctx.logger.debug('init heart-beat for update detective');
     await Promise.all([
       // 初始化心跳数据
       heartDB.create('beat_time', String(nowTime)),

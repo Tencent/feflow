@@ -20,7 +20,6 @@ import {
   LOG_FILE
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
-import { fileExit } from '../shared/file';
 import { setServerUrl } from '../shared/git';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
@@ -40,6 +39,7 @@ import {
   writeFileAsync,
   readFileAsync
 } from '../shared/fs';
+import {fileExit} from "../shared/file";
 
 const pkg = require('../../package.json');
 
@@ -96,7 +96,6 @@ export default class Feflow {
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
-
     await Promise.all([
       this.initClient(),
       this.initPackageManager(),
@@ -127,16 +126,10 @@ export default class Feflow {
   }
 
   async initClient() {
-    const { root, rootPkg } = this;
+    const { rootPkg } = this;
 
-    try {
-      const stats = await statAsync(root);
-      if (!stats.isDirectory()) {
-        await unlinkAsync(root);
-      }
-    } catch (e) {
-      await mkdirAsync(root);
-    }
+    // 检查、创建日志文件
+    fileExit(this.loggerPath);
 
     try {
       await statAsync(rootPkg);
@@ -171,8 +164,6 @@ export default class Feflow {
         )
       );
     }
-    // 检查、创建日志文件
-    fileExit(this.loggerPath);
   }
 
   async initBinPath() {
