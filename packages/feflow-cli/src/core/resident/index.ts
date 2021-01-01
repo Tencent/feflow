@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 import Table from 'easy-table';
-import DBInstance from './db';
+import DBInstance from '../../shared/db';
 import {
   HEART_BEAT_COLLECTION,
   UPDATE_COLLECTION,

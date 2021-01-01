@@ -63,6 +63,8 @@ export const CACHE_FILE = ".feflowCache.yml";
 
 export const HEART_BEAT_COLLECTION = 'heart-beat.db';
 
+export const HEART_BEAT_COLLECTION_LOG = 'heart-beat-log.db';
+
 export const UPDATE_COLLECTION = 'update.db';
 
 export const BEAT_GAP = 5000;

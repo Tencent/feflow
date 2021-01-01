@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import { Writable } from 'stream';
 import path from 'path';
 import {spawn} from "child_process";
-import {LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, HEART_BEAT_COLLECTION, LOG_FILE} from "../../shared/constant";
-import DBInstance from "../resident/db";
+import {LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, HEART_BEAT_COLLECTION_LOG, LOG_FILE} from '../../shared/constant';
+import DBInstance from '../../shared/db';
 import osenv from "osenv";
 
 let heartDB: DBInstance;
@@ -93,8 +93,8 @@ class ConsoleStream extends Writable {
     if (this.debug) {
       msg += chalk.gray(data.time) + ' ';
     }
-    msg += chalk.keyword(levelColors[level])('[ Feflow' + ' ' + levelNames[level]+' ]');
-    msg += '[ '+(loggerName)+' ] ';
+    msg += chalk.keyword(levelColors[level])(`[ Feflow ${levelNames[level]} ]`);
+    msg += `[ ${loggerName} ] `;
     msg += data.msg + '\n';
     if (data.err) {
       const err = data.err.stack || data.err.message;
@@ -105,7 +105,7 @@ class ConsoleStream extends Writable {
       level: level,
       msg: `[Feflow ${levelNames[level]}][${loggerName}]${data.msg}`,
       date: new Date().getTime(),
-      name:loggerName
+      name: loggerName
     });
     if (level >= 40) {
       process.stderr.write(msg);
@@ -115,7 +115,7 @@ class ConsoleStream extends Writable {
 
     let cacheValidate: boolean = false;
     const nowTime = new Date().getTime();
-    const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
+    const heartDBFile = path.join(root, HEART_BEAT_COLLECTION_LOG);
     if (!heartDB) {
       heartDB = new DBInstance(heartDBFile);
     }
@@ -137,7 +137,6 @@ class ConsoleStream extends Writable {
       hasCreateHeart = false;
       this.report();
     }
-
     callback();
   }
 }
