@@ -6,8 +6,11 @@ import semver from 'semver';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
-  EVENT_COMMAND_BEGIN
+  EVENT_COMMAND_BEGIN, FEFLOW_ROOT
 } from '../shared/constant';
+import fs from 'fs';
+import path from "path";
+import osenv from "osenv";
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -69,7 +72,15 @@ export default function entry() {
 
   const requiredVersion = pkg.engines.node;
   checkNodeVersion(requiredVersion, '@feflow/cli');
-
+  const root = path.join(osenv.home(), FEFLOW_ROOT);
+  try {
+    const stats = fs.statSync(root);
+    if (!stats.isDirectory()) {
+       fs.unlinkSync(root);
+    }
+  } catch (e) {
+    fs.mkdirSync(root);
+  }
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
   let cmd: any = args._.shift();

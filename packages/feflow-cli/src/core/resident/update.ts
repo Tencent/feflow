@@ -14,6 +14,7 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB
 } from '../../shared/constant';
+import { setServerUrl } from '../../shared/git';
 import { parseYaml } from '../../shared/yaml';
 import loggerInstance from '../logger';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
@@ -176,6 +177,7 @@ function checkUniversalPluginsUpdate() {
       if (!serverUrl) {
         return;
       }
+      setServerUrl(serverUrl);
 
       // eslint-disable-next-line
       for (const [pkg, version] of universalPkg.getInstalled()) {
