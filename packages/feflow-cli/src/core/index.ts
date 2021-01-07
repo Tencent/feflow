@@ -128,29 +128,9 @@ export default class Feflow {
   async initClient() {
     const { rootPkg } = this;
 
-    // 检查、创建日志文件
-    fileExit(this.loggerPath);
-
     try {
       await statAsync(rootPkg);
-      const pkgInfo = await readFileAsync(rootPkg);
-      // 检测package.json为空
-      if (!pkgInfo) {
-        await writeFileAsync(
-          rootPkg,
-          JSON.stringify(
-            {
-              name: 'feflow-home',
-              version: '0.0.0',
-              private: true
-            },
-            null,
-            2
-          )
-        );
-      }
     } catch (e) {
-      this.logger.debug(`create package.json fail: ${e}`);
       await writeFileAsync(
         rootPkg,
         JSON.stringify(
