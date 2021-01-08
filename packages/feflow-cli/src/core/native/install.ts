@@ -246,7 +246,11 @@ async function startInstall(
   if (pkgInfo.fromType !== PkgInfo.dir) {
     if (!fs.existsSync(repoPath)) {
       logger.info(`start download from ${pkgInfo.repoFrom}`);
-      await download(pkgInfo.repoFrom, pkgInfo.checkoutTag, repoPath);
+      try {
+        await download(pkgInfo.repoFrom, pkgInfo.checkoutTag, repoPath);
+      } catch (e) {
+        logger.warn(`download warn with code ${e}`);
+      }
     }
   } else {
     deleteDir(repoPath);
