@@ -4,7 +4,7 @@ import semver from 'semver';
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
-import DBInstance from './db';
+import DBInstance from '../../shared/db';
 import { install } from '../../shared/npm';
 import {
   UPDATE_COLLECTION,

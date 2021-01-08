@@ -16,7 +16,8 @@ import {
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
   UNIVERSAL_MODULES,
-  HOOK_TYPE_ON_COMMAND_REGISTERED
+  HOOK_TYPE_ON_COMMAND_REGISTERED,
+  LOG_FILE
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import { setServerUrl } from '../shared/git';
@@ -35,7 +36,7 @@ import {
   mkdirAsync,
   statAsync,
   unlinkAsync,
-  writeFileAsync
+  writeFileAsync,
 } from '../shared/fs';
 
 const pkg = require('../../package.json');
@@ -47,6 +48,7 @@ export default class Feflow {
   public projectPath: any;
   public version: string;
   public logger: any;
+  public loggerPath: any;
   public commander: any;
   public hook: any;
   public root: any;
@@ -70,6 +72,7 @@ export default class Feflow {
     this.bin = bin;
     this.lib = lib;
     this.rootPkg = path.join(root, 'package.json');
+    this.loggerPath = path.join(root, LOG_FILE);
     this.universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
     this.universalModules = path.join(root, UNIVERSAL_MODULES);
     this.args = args;
@@ -91,7 +94,6 @@ export default class Feflow {
 
   async init(cmd: string) {
     this.reporter.init && this.reporter.init(cmd);
-
     await Promise.all([
       this.initClient(),
       this.initPackageManager(),
@@ -110,9 +112,11 @@ export default class Feflow {
 
     if (picker.isAvailable()) {
       // should hit the cache in most cases
+      this.logger.debug('find cmd in cache');
       picker.pickCommand();
     } else {
       // if not, load plugin/devkit/native in need
+      this.logger.debug('not find cmd in cache');
       await this.loadCommands(picker.getLoadOrder());
       // make sure the command has at least one funtion, otherwise replace to help command
       picker.checkCommand();
@@ -120,16 +124,7 @@ export default class Feflow {
   }
 
   async initClient() {
-    const { root, rootPkg } = this;
-
-    try {
-      const stats = await statAsync(root);
-      if (!stats.isDirectory()) {
-        await unlinkAsync(root);
-      }
-    } catch (e) {
-      await mkdirAsync(root);
-    }
+    const { rootPkg } = this;
 
     try {
       await statAsync(rootPkg);

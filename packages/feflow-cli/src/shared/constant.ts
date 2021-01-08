@@ -63,9 +63,13 @@ export const CACHE_FILE = ".feflowCache.yml";
 
 export const HEART_BEAT_COLLECTION = 'heart-beat.db';
 
+export const HEART_BEAT_COLLECTION_LOG = 'heart-beat-log.db';
+
 export const UPDATE_COLLECTION = 'update.db';
 
 export const BEAT_GAP = 5000;
+// 日志上报间隔
+export const LOG_REPORT_BEAT_GAP = 5000;
 
 export const CHECK_UPDATE_GAP = 1000 * 60 * 5;
 
@@ -76,3 +80,5 @@ export const FEFLOW_PLUGIN_LOCAL_PREFIX = 'feflow-plugin-local-';
 export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
 
 export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
+
+export const LOG_FILE = 'logger.log';

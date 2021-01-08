@@ -6,6 +6,7 @@ export const statAsync = util.promisify(fs.stat);
 export const copyFileAsync = util.promisify(fs.copyFile);
 export const mkdirAsync = util.promisify(fs.mkdir);
 export const readdirAsync = util.promisify(fs.readdir);
+export const readFileAsync = util.promisify(fs.readFile);
 export const unlinkAsync = util.promisify(fs.unlink);
 export const writeFileAsync = util.promisify(fs.writeFile);
 

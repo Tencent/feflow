@@ -78,7 +78,7 @@ module.exports = (ctx: any) => {
     const { store } = ctx.commander;
     let cmd = ctx.args['_'][0];
     cmd = cmd && String.prototype.toLowerCase.call(cmd);
-
+    console.log(9999999999, cmd, ctx.args);
     // fef help xxx 的 case
     if (cmd) {
       if (Object.prototype.hasOwnProperty.call(store, cmd)) {
@@ -87,7 +87,7 @@ module.exports = (ctx: any) => {
         // 优先展示组件注册信息
         if (commandInfo.options && commandInfo.options.length) {
           const universalUsage = commandInfo.options[0];
-          const { type, content } = universalUsage instanceof Function ? 
+          const { type, content } = universalUsage instanceof Function ?
               universalUsage() : universalUsage;
 
           // case 1: 多语言情况下 yml 有 usage 属性时，执行对应的内容

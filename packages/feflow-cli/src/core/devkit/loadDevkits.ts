@@ -2,6 +2,7 @@ import path from 'path';
 import Config from './config';
 import getCommandLine from './commandOptions';
 import { FEFLOW_ROOT } from '../../shared/constant';
+import logger from "../logger";
 
 const registerDevkitCommand = (
   command: any,
@@ -27,6 +28,11 @@ const registerDevkitCommand = (
       description,
       command
     );
+    const devkitLogger = logger({
+      debug: Boolean(ctx.args.debug),
+      silent: Boolean(ctx.args.silent),
+      name: packageName,
+    });
     if (Array.isArray(implementation)) {
       ctx.commander.register(
         command,
@@ -34,7 +40,7 @@ const registerDevkitCommand = (
         async () => {
           for (let i = 0; i < implementation.length; i++) {
             const action = path.join(pkgPath, implementation[i]);
-            await require(action)(ctx);
+            await require(action)(Object.assign({}, ctx, {logger: devkitLogger}));
           }
         },
         options,
@@ -46,7 +52,7 @@ const registerDevkitCommand = (
         command,
         description,
         () => {
-          require(action)(ctx);
+          require(action)(Object.assign({}, ctx, {logger: devkitLogger}));
         },
         options,
         packageName

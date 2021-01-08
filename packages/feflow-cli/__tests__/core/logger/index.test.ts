@@ -1,4 +1,12 @@
+import path from 'path';
 import logger from '../../../src/core/logger';
+import osenv from "osenv";
+import {FEFLOW_ROOT, LOG_FILE} from "../../../src/shared/constant";
+import fs from 'fs';
+
+const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
+// 确保log文件存在
+fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;

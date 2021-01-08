@@ -13,10 +13,6 @@ export function getRegistryUrl(packageManager: string) {
       output += data;
     });
 
-    child.stderr!.on('data', (data) => {
-      output += data;
-    });
-
     child.on('close', (code) => {
       if (code !== 0) {
         reject({

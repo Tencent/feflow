@@ -5,7 +5,7 @@ import semver from 'semver';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import _ from 'lodash';
-import DBInstance from './db';
+import DBInstance from '../../shared/db';
 import packageJson from '../../shared/packageJson';
 import { parseYaml } from '../../shared/yaml';
 import { setServerUrl } from '../../shared/git';

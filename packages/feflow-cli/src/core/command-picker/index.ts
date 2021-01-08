@@ -8,6 +8,7 @@ import { getPluginsList } from '../plugin/loadPlugins';
 import _ from 'lodash';
 import Feflow from '..';
 import { execPlugin } from '../plugin/loadUniversalPlugin';
+import logger from '../logger';
 
 const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool'
@@ -55,6 +56,7 @@ type Cache = {
 type TargetPlugin = {
   path: string;
   type: COMMAND_TYPE;
+  pkg?: string;
 };
 
 type TargetUniversalPlugin = {
@@ -336,6 +338,7 @@ export class CommandPickConfig {
             } else {
               (target as TargetPlugin).type = type;
               (target as TargetPlugin).path = (cmdPath || path) as string;
+              (target as TargetUniversalPlugin).pkg = plugin;
             }
           }
         });
@@ -410,17 +413,20 @@ export default class CommandPicker {
   pickCommand() {
     const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
     const { type } = tartgetCommand;
-
+    const pluginLogger = logger({
+      debug: Boolean(this.ctx.args.debug),
+      silent: Boolean(this.ctx.args.silent),
+      name: tartgetCommand.pkg,
+    });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.SUPPORT_TYPE.includes(type)) {
-      return this.ctx.logger.error(
+      return this.ctx.logger.warn(
         `this kind of command is not supported in command picker, ${type}`
       );
     }
-
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
-      execPlugin(this.ctx, pkg, version);
+      execPlugin(Object.assign({}, this.ctx, {logger: pluginLogger}), pkg, version);
     } else {
       const { path } = tartgetCommand as TargetPlugin;
       const commandSource =
@@ -430,7 +436,7 @@ export default class CommandPicker {
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
-        require(path)(this.ctx);
+        require(path)(Object.assign({}, this.ctx, {logger: pluginLogger}));
       } catch (error) {
         this.ctx.logger.error(
           { err: error },

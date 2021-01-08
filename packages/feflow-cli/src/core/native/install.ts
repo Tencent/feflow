@@ -121,17 +121,20 @@ function isGitRepo(url: string): boolean {
 async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   const packageManager = ctx?.config?.packageManager;
   const registryUrl = await getRegistryUrl(packageManager);
-  await Promise.all(
-    dependencies.map(async (dependency: string) => {
-      try {
-        return packageJson(dependency, registryUrl);
-      } catch (err) {
-        ctx.logger.error(`${dependency} not found on ${packageManager}`);
-        ctx.logger.error(`${dependency} not found on ${packageManager}`);
-        process.exit(2);
-      }
-    })
-  );
+  try {
+    await Promise.all(
+        dependencies.map(async (dependency: string) => {
+          try {
+            return await packageJson(dependency, registryUrl);
+          } catch (err) {
+            ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
+            process.exit(2);
+          }
+        })
+    );
+  } catch (e) {
+    ctx.logger.error(`get pkg info error ${JSON.stringify(e)}`);
+  }
 
   ctx.logger.info('Installing packages. This might take a couple of minutes.');
 
@@ -422,7 +425,7 @@ async function installPlugin(
 
   installPluginStr = installPluginStr.trim();
   if (!serverUrl) {
-    logger.debug('please configure the serverUrl');
+    logger.warn('please configure the serverUrl');
     return installJsPlugin(ctx, installPluginStr);
   }
   const pkgInfo = await getPkgInfo(ctx, installPluginStr);
@@ -432,7 +435,6 @@ async function installPlugin(
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoFrom}] does not exist`;
   }
-
   // if the specified version is already installed, skip it
   if (
     universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)
@@ -440,7 +442,6 @@ async function installPlugin(
     global && logger.info(`the current version is installed`);
     return;
   }
-
   let updateFlag = false;
 
   const repoPath = getRepoPath(
@@ -465,7 +466,9 @@ async function installPlugin(
             pkgInfo.lastCheckoutTag = currentVersion;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        logger.error(JSON.stringify(e));
+      }
     }
   }
   if (updateFlag) {
@@ -537,7 +540,7 @@ async function getPkgInfo(
     let [pluginName, pluginVersion] = installPlugin.split('@');
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      ctx.logger.error('cant found application');
+      ctx.logger.warn('cant found massage from Feflow Application market, please check if it exists');
       return;
     }
     repoFrom = repoInfo.repo;
