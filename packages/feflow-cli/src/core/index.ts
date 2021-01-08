@@ -37,9 +37,7 @@ import {
   statAsync,
   unlinkAsync,
   writeFileAsync,
-  readFileAsync
 } from '../shared/fs';
-import {fileExit} from "../shared/file";
 
 const pkg = require('../../package.json');
 
