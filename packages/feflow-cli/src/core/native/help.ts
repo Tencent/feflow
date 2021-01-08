@@ -78,7 +78,6 @@ module.exports = (ctx: any) => {
     const { store } = ctx.commander;
     let cmd = ctx.args['_'][0];
     cmd = cmd && String.prototype.toLowerCase.call(cmd);
-    console.log(9999999999, cmd, ctx.args);
     // fef help xxx 的 case
     if (cmd) {
       if (Object.prototype.hasOwnProperty.call(store, cmd)) {
