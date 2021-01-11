@@ -131,7 +131,7 @@ export default class Feflow {
       await statAsync(rootPkg);
       const pkgInfo = await readFileAsync(rootPkg);
       // 检测package.json为空
-      if (!pkgInfo) {
+      if (!pkgInfo.toString()) {
         await writeFileAsync(
             rootPkg,
             JSON.stringify(
