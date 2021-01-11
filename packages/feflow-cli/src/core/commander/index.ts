@@ -33,9 +33,9 @@ export default class Commander {
   register(name: string, desc: string | Function, fn: Function, options?: Array<object>, pluginName?: string) {
     const storeKey = name.toLowerCase();
     this.store[storeKey] = fn;
-    this.store[name.toLowerCase()].desc = desc;
-    this.store[name.toLowerCase()].options = options;
-    this.store[name.toLowerCase()].pluginName = pluginName;
+    this.store[storeKey].desc = desc;
+    this.store[storeKey].options = options;
+    this.store[storeKey].pluginName = pluginName;
     this.alias = abbrev(Object.keys(this.store));
     if (this.onRegistered) {
       this.onRegistered(storeKey);
@@ -43,8 +43,9 @@ export default class Commander {
   }
 
   registerInvisible(name: string, fn: Function, options?: Array<object>, pluginName?: string) {
-    this.invisibleStore[name.toLowerCase()] = fn;
-    this.invisibleStore[name.toLowerCase()].options = options;
-    this.invisibleStore[name.toLowerCase()].pluginName = pluginName;
+    const storeKey = name.toLowerCase();
+    this.invisibleStore[storeKey] = fn;
+    this.invisibleStore[storeKey].options = options;
+    this.invisibleStore[storeKey].pluginName = pluginName;
   }
 }
