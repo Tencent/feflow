@@ -37,6 +37,7 @@ import {
   statAsync,
   unlinkAsync,
   writeFileAsync,
+  readFileAsync,
 } from '../shared/fs';
 
 const pkg = require('../../package.json');
@@ -128,6 +129,22 @@ export default class Feflow {
 
     try {
       await statAsync(rootPkg);
+      const pkgInfo = await readFileAsync(rootPkg);
+      // 检测package.json为空
+      if (!pkgInfo.toString()) {
+        await writeFileAsync(
+            rootPkg,
+            JSON.stringify(
+                {
+                  name: 'feflow-home',
+                  version: '0.0.0',
+                  private: true
+                },
+                null,
+                2
+            )
+        );
+      }
     } catch (e) {
       await writeFileAsync(
         rootPkg,
