@@ -13,6 +13,7 @@ import {
   CHECK_UPDATE_GAP
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
+import ErrorInstance from './error';
 
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
@@ -22,6 +23,7 @@ let db: DBInstance;
 let heartDB: DBInstance;
 const table = new Table();
 const uTable = new Table();
+const errorStack = new ErrorInstance();
 
 function startUpdateBeat(ctx: any) {
   const child = spawn(process.argv[0], [updateBeatProcess], {
@@ -122,10 +124,28 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
+  const _showErrorM = (scope: string) => {
+    const errorMsg = errorStack.read(scope) || {};
+    const keys = Object.keys(errorMsg);
+
+    if (keys.length) {
+      ctx.logger.warn('Some problems occurred while auto-updating');
+      keys.forEach(key => {
+        ctx.logger.error(`${key}: ${errorMsg[key]}`);
+      });
+      ctx.logger.warn(
+        'These templates or plugins need to be updated manually util problems fixed'
+      );
+      errorStack.update(scope, undefined, {});
+    }
+  };
+
   // cli -> tnpm -> universal
   _showCliUpdateM();
   _showPluginsUpdateM();
   _showUniversalPluginsM();
+  _showErrorM('update');
+  _showErrorM('exception');
 
   await db.update('update_data', updateData);
 }

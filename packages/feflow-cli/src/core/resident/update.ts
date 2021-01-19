@@ -26,6 +26,7 @@ import {
   getUniversalPluginVersion,
   promisify
 } from './utils';
+import ErrorInstance from './error';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -55,6 +56,7 @@ const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const universalPkg = new UniversalPkg(universalPkgPath);
 const db = new DBInstance(dbFile);
+const errorStack = new ErrorInstance();
 
 const logger = loggerInstance({
   debug: Boolean(debug),
@@ -182,7 +184,11 @@ function checkUniversalPluginsUpdate() {
       // eslint-disable-next-line
       for (const [pkg, version] of universalPkg.getInstalled()) {
         // 记录更改项
-        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`);
+        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch(
+          (e: string) => {
+            errorStack.update('update', `${pkg}@${version}`, e);
+          }
+        );
         if (!pkgInfo) {
           continue;
         }
@@ -230,7 +236,11 @@ db.read('update_data')
       startUpdateCli(),
       checkPluginsUpdate(),
       checkUniversalPluginsUpdate()
-    ]);
+    ]).catch((e: string) => {
+      errorStack.update('exception', 'exception', e);
+
+      process.exit(1);
+    });
   })
   .then(() => {
     updateData['update_lock'] = '';
@@ -238,6 +248,7 @@ db.read('update_data')
   })
   .catch((reason: any) => {
     logger.debug(reason);
+    errorStack.update('exception', 'exception', reason);
     updateData['update_lock'] = '';
     db.update('update_data', updateData);
   });

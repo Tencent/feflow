@@ -82,3 +82,5 @@ export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
 export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
 
 export const LOG_FILE = 'logger.log';
+
+export const RESIDENT_ERROR_LOG = 'resident-error.json';

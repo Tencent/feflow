@@ -24,6 +24,7 @@ import {
   getLatestVersion,
   getUniversalPluginVersion
 } from './utils';
+import ErrorInstance from './error';
 
 const pkg = require('../../../package.json');
 const { getPkgInfo } = require('../native/install');
@@ -42,6 +43,7 @@ const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)
 });
+const errorStack = new ErrorInstance();
 
 // 设置特殊的静默进程名字
 process.title = 'feflow-update-beat-proccess';
@@ -153,7 +155,9 @@ const queryUniversalPluginsUpdate = async () => {
     const pkgInfo = await getPkgInfo(
       { root, config, logger },
       `${pkg}@${version}`
-    );
+    ).catch((e: string) => {
+      errorStack.update('update', `${pkg}@${version}`, e);
+    });
     if (!pkgInfo) {
       continue;
     }
@@ -183,10 +187,28 @@ const queryUniversalPluginsUpdate = async () => {
 setInterval(heartBeat, BEAT_GAP);
 
 // queryCliUpdate
-setInterval(queryCliUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryCliUpdate().catch((e: string) => {
+    errorStack.update('exception', 'exception', e);
+
+    process.exit(1);
+  });
+}, CHECK_UPDATE_GAP);
 
 // queryPluginsUpdate
-setInterval(queryPluginsUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryPluginsUpdate().catch((e: string) => {
+    errorStack.update('exception', 'exception', e);
+
+    process.exit(1);
+  });
+}, CHECK_UPDATE_GAP);
 
 // queryUniversalPluginsUpdate
-setInterval(queryUniversalPluginsUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryUniversalPluginsUpdate().catch((e: string) => {
+    errorStack.update('exception', 'exception', e);
+
+    process.exit(1);
+  });
+}, CHECK_UPDATE_GAP);
