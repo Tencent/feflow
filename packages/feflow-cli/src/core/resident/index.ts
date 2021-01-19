@@ -13,6 +13,7 @@ import {
   CHECK_UPDATE_GAP
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
+import ErrorInstance from './error';
 
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
@@ -22,6 +23,7 @@ let db: DBInstance;
 let heartDB: DBInstance;
 const table = new Table();
 const uTable = new Table();
+const errorStack = new ErrorInstance();
 
 function startUpdateBeat(ctx: any) {
   const child = spawn(process.argv[0], [updateBeatProcess], {
