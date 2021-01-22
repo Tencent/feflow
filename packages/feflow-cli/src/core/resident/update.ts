@@ -26,7 +26,6 @@ import {
   getUniversalPluginVersion,
   promisify
 } from './utils';
-import ErrorInstance from './error';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -37,6 +36,10 @@ interface VersionObj {
   latestVersion: any;
   repoPath: string;
   installVersion: any;
+}
+interface ErrorInstance {
+  name: string;
+  message: string;
 }
 
 const { updateCli } = require('../native/upgrade');
@@ -56,7 +59,6 @@ const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const universalPkg = new UniversalPkg(universalPkgPath);
 const db = new DBInstance(dbFile);
-const errorStack = new ErrorInstance();
 
 const logger = loggerInstance({
   debug: Boolean(debug),
@@ -78,6 +80,16 @@ const ctx = {
   config
 };
 let updateData: any;
+
+const handleException = (e: ErrorInstance): void => {
+  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+    process.exit(1);
+  });
+};
+
+(process as NodeJS.EventEmitter).on('uncaughtException', handleException);
+
+(process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 function startUpdateCli() {
   return new Promise(async resolve => {
@@ -186,7 +198,7 @@ function checkUniversalPluginsUpdate() {
         // 记录更改项
         const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch(
           (e: string) => {
-            errorStack.update('update', `${pkg}@${version}`, e);
+            db.insertOnce('update_error', `${pkg}@${version}`, e);
           }
         );
         if (!pkgInfo) {
@@ -236,19 +248,16 @@ db.read('update_data')
       startUpdateCli(),
       checkPluginsUpdate(),
       checkUniversalPluginsUpdate()
-    ]).catch((e: string) => {
-      errorStack.update('exception', 'exception', e);
-
-      process.exit(1);
-    });
+    ]).catch(handleException);
   })
   .then(() => {
     updateData['update_lock'] = '';
     db.update('update_data', updateData);
   })
   .catch((reason: any) => {
-    logger.debug(reason);
-    errorStack.update('exception', 'exception', reason);
     updateData['update_lock'] = '';
     db.update('update_data', updateData);
+
+    logger.debug(reason);
+    handleException(reason);
   });

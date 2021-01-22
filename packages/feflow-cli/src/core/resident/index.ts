@@ -13,7 +13,6 @@ import {
   CHECK_UPDATE_GAP
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
-import ErrorInstance from './error';
 
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
@@ -23,7 +22,6 @@ let db: DBInstance;
 let heartDB: DBInstance;
 const table = new Table();
 const uTable = new Table();
-const errorStack = new ErrorInstance();
 
 function startUpdateBeat(ctx: any) {
   const child = spawn(process.argv[0], [updateBeatProcess], {
@@ -60,6 +58,9 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
 }
 
 async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
+  const updateError = await db.read('update_error');
+  const exception = await db.read('exception');
+
   const _showCliUpdateM = () => {
     const updateMsg = updateData['cli_update_msg'];
     if (updateMsg) {
@@ -124,19 +125,25 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
-  const _showErrorM = (scope: string) => {
-    const errorMsg = errorStack.read(scope) || {};
-    const keys = Object.keys(errorMsg);
+  const _showErrorM = () => {
+    const errorMsg = updateError?.['value'] || {};
+    const errorKeys = Object.keys(errorMsg);
 
-    if (keys.length) {
+    if (errorKeys.length) {
       ctx.logger.warn('Some problems occurred while auto-updating');
-      keys.forEach(key => {
+      errorKeys.forEach(key => {
         ctx.logger.error(`${key}: ${errorMsg[key]}`);
       });
       ctx.logger.warn(
         'These templates or plugins need to be updated manually util problems fixed'
       );
-      errorStack.update(scope, undefined, {});
+    }
+
+    const exceptionMsg = exception?.['value'];
+    if (exceptionMsg) {
+      ctx.logger.error('Excetion exists in auto-updating:');
+      ctx.logger.error(exceptionMsg);
+      ctx.logger.warn('Auto-updating will not work util exception fixed');
     }
   };
 
@@ -144,10 +151,11 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
   _showCliUpdateM();
   _showPluginsUpdateM();
   _showUniversalPluginsM();
-  _showErrorM('update');
-  _showErrorM('exception');
+  _showErrorM();
 
   await db.update('update_data', updateData);
+  await db.update('update_error', '');
+  await db.update('exception', '');
 }
 
 async function _checkLock(updateData: any) {
@@ -237,7 +245,9 @@ export async function checkUpdate(ctx: any) {
           time: String(nowTime),
           pid: process.pid
         }
-      })
+      }),
+      db.create('update_error', ''),
+      db.create('exception', '')
     ]);
     startUpdateBeat(ctx);
   }

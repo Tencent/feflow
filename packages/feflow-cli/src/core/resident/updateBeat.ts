@@ -24,7 +24,10 @@ import {
   getLatestVersion,
   getUniversalPluginVersion
 } from './utils';
-import ErrorInstance from './error';
+interface ErrorInstance {
+  name: string;
+  message: string;
+}
 
 const pkg = require('../../../package.json');
 const { getPkgInfo } = require('../native/install');
@@ -43,10 +46,19 @@ const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)
 });
-const errorStack = new ErrorInstance();
 
 // 设置特殊的静默进程名字
 process.title = 'feflow-update-beat-proccess';
+
+const handleException = (e: ErrorInstance): void => {
+  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+    process.exit(1);
+  });
+};
+
+(process as NodeJS.EventEmitter).on('uncaughtException', handleException);
+
+(process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 const heartBeat = () => {
   heartDB.update('beat_time', String(new Date().getTime()));
@@ -156,7 +168,7 @@ const queryUniversalPluginsUpdate = async () => {
       { root, config, logger },
       `${pkg}@${version}`
     ).catch((e: string) => {
-      errorStack.update('update', `${pkg}@${version}`, e);
+      db.insertOnce('update_error', `${pkg}@${version}`, e);
     });
     if (!pkgInfo) {
       continue;
@@ -188,27 +200,15 @@ setInterval(heartBeat, BEAT_GAP);
 
 // queryCliUpdate
 setInterval(() => {
-  queryCliUpdate().catch((e: string) => {
-    errorStack.update('exception', 'exception', e);
-
-    process.exit(1);
-  });
+  queryCliUpdate().catch(handleException);
 }, CHECK_UPDATE_GAP);
 
 // queryPluginsUpdate
 setInterval(() => {
-  queryPluginsUpdate().catch((e: string) => {
-    errorStack.update('exception', 'exception', e);
-
-    process.exit(1);
-  });
+  queryPluginsUpdate().catch(handleException);
 }, CHECK_UPDATE_GAP);
 
 // queryUniversalPluginsUpdate
 setInterval(() => {
-  queryUniversalPluginsUpdate().catch((e: string) => {
-    errorStack.update('exception', 'exception', e);
-
-    process.exit(1);
-  });
+  queryUniversalPluginsUpdate().catch(handleException);
 }, CHECK_UPDATE_GAP);
