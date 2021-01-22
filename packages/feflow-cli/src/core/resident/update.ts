@@ -26,7 +26,6 @@ import {
   getUniversalPluginVersion,
   promisify
 } from './utils';
-import ErrorInstance from './error';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -60,7 +59,6 @@ const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const universalPkg = new UniversalPkg(universalPkgPath);
 const db = new DBInstance(dbFile);
-const errorStack = new ErrorInstance();
 
 const logger = loggerInstance({
   debug: Boolean(debug),

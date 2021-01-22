@@ -46,7 +46,6 @@ const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)
 });
-const errorStack = new ErrorInstance();
 
 // 设置特殊的静默进程名字
 process.title = 'feflow-update-beat-proccess';
