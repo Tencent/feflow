@@ -58,6 +58,9 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
 }
 
 async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
+  const updateError = await db.read('update_error');
+  const exception = await db.read('exception');
+
   const _showCliUpdateM = () => {
     const updateMsg = updateData['cli_update_msg'];
     if (updateMsg) {
@@ -122,12 +125,37 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
+  const _showErrorM = () => {
+    const errorMsg = updateError?.['value'] || {};
+    const errorKeys = Object.keys(errorMsg);
+
+    if (errorKeys.length) {
+      ctx.logger.warn('Some problems occurred while auto-updating');
+      errorKeys.forEach(key => {
+        ctx.logger.error(`${key}: ${errorMsg[key]}`);
+      });
+      ctx.logger.warn(
+        'These templates or plugins need to be updated manually util problems fixed'
+      );
+    }
+
+    const exceptionMsg = exception?.['value'];
+    if (exceptionMsg) {
+      ctx.logger.error('Excetion exists in auto-updating:');
+      ctx.logger.error(exceptionMsg);
+      ctx.logger.warn('Auto-updating will not work util exception fixed');
+    }
+  };
+
   // cli -> tnpm -> universal
   _showCliUpdateM();
   _showPluginsUpdateM();
   _showUniversalPluginsM();
+  _showErrorM();
 
   await db.update('update_data', updateData);
+  await db.update('update_error', '');
+  await db.update('exception', '');
 }
 
 async function _checkLock(updateData: any) {
@@ -217,7 +245,9 @@ export async function checkUpdate(ctx: any) {
           time: String(nowTime),
           pid: process.pid
         }
-      })
+      }),
+      db.create('update_error', ''),
+      db.create('exception', '')
     ]);
     startUpdateBeat(ctx);
   }

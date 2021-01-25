@@ -37,6 +37,10 @@ interface VersionObj {
   repoPath: string;
   installVersion: any;
 }
+interface ErrorInstance {
+  name: string;
+  message: string;
+}
 
 const { updateCli } = require('../native/upgrade');
 const pkg = require('../../../package.json');
@@ -76,6 +80,16 @@ const ctx = {
   config
 };
 let updateData: any;
+
+const handleException = (e: ErrorInstance): void => {
+  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+    process.exit(1);
+  });
+};
+
+(process as NodeJS.EventEmitter).on('uncaughtException', handleException);
+
+(process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 function startUpdateCli() {
   return new Promise(async resolve => {
@@ -182,7 +196,11 @@ function checkUniversalPluginsUpdate() {
       // eslint-disable-next-line
       for (const [pkg, version] of universalPkg.getInstalled()) {
         // 记录更改项
-        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`);
+        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch(
+          (e: string) => {
+            db.insertOnce('update_error', `${pkg}@${version}`, e);
+          }
+        );
         if (!pkgInfo) {
           continue;
         }
@@ -230,14 +248,16 @@ db.read('update_data')
       startUpdateCli(),
       checkPluginsUpdate(),
       checkUniversalPluginsUpdate()
-    ]);
+    ]).catch(handleException);
   })
   .then(() => {
     updateData['update_lock'] = '';
     db.update('update_data', updateData);
   })
   .catch((reason: any) => {
-    logger.debug(reason);
     updateData['update_lock'] = '';
     db.update('update_data', updateData);
+
+    logger.debug(reason);
+    handleException(reason);
   });

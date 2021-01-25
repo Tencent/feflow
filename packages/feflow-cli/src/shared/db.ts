@@ -8,7 +8,7 @@ export default class DBInstance {
     this.db.loadDatabase();
   }
 
-  setAutoCompact(interval: number) {
+  setAutoCompact(interval: number): void {
     this.db.persistence.setAutocompactionInterval(interval);
   }
 
@@ -23,7 +23,7 @@ export default class DBInstance {
           if (err) {
             return reject(err);
           } else {
-            resolve();
+            resolve(undefined);
           }
         }
       );
@@ -43,7 +43,7 @@ export default class DBInstance {
             if (docs) {
               resolve(docs);
             } else {
-              resolve();
+              resolve(undefined);
             }
           }
         }
@@ -69,7 +69,49 @@ export default class DBInstance {
           if (err) {
             reject(err);
           } else {
-            resolve();
+            resolve(undefined);
+          }
+        }
+      );
+    });
+  }
+
+  insertOnce(scope: string, key: string, value: any): Promise<undefined> {
+    return new Promise((resolve, reject) => {
+      this.db.findOne(
+        {
+          key: scope
+        },
+        (err, docs) => {
+          if (err) {
+            return reject(err);
+          } else {
+            const data = docs?.['value'] || {};
+            if (!Object.prototype.hasOwnProperty.call(data, key)) {
+              data[key] = value;
+              this.db.update(
+                {
+                  key: scope
+                },
+                {
+                  $set: {
+                    value: data
+                  }
+                },
+                {
+                  upsert: true
+                },
+                err => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    resolve(undefined);
+                  }
+                }
+              );
+            } else {
+              resolve(undefined);
+            }
           }
         }
       );
