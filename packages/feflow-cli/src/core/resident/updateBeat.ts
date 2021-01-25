@@ -24,6 +24,10 @@ import {
   getLatestVersion,
   getUniversalPluginVersion
 } from './utils';
+interface ErrorInstance {
+  name: string;
+  message: string;
+}
 
 const pkg = require('../../../package.json');
 const { getPkgInfo } = require('../native/install');
@@ -45,6 +49,16 @@ const logger = loggerInstance({
 
 // 设置特殊的静默进程名字
 process.title = 'feflow-update-beat-proccess';
+
+const handleException = (e: ErrorInstance): void => {
+  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+    process.exit(1);
+  });
+};
+
+(process as NodeJS.EventEmitter).on('uncaughtException', handleException);
+
+(process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 const heartBeat = () => {
   heartDB.update('beat_time', String(new Date().getTime()));
@@ -153,7 +167,9 @@ const queryUniversalPluginsUpdate = async () => {
     const pkgInfo = await getPkgInfo(
       { root, config, logger },
       `${pkg}@${version}`
-    );
+    ).catch((e: string) => {
+      db.insertOnce('update_error', `${pkg}@${version}`, e);
+    });
     if (!pkgInfo) {
       continue;
     }
@@ -183,10 +199,16 @@ const queryUniversalPluginsUpdate = async () => {
 setInterval(heartBeat, BEAT_GAP);
 
 // queryCliUpdate
-setInterval(queryCliUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryCliUpdate().catch(handleException);
+}, CHECK_UPDATE_GAP);
 
 // queryPluginsUpdate
-setInterval(queryPluginsUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryPluginsUpdate().catch(handleException);
+}, CHECK_UPDATE_GAP);
 
 // queryUniversalPluginsUpdate
-setInterval(queryUniversalPluginsUpdate, CHECK_UPDATE_GAP);
+setInterval(() => {
+  queryUniversalPluginsUpdate().catch(handleException);
+}, CHECK_UPDATE_GAP);
