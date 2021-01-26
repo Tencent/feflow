@@ -20,6 +20,7 @@ import {
   LOG_FILE
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import { FefError } from '../shared/fefError';
 import { setServerUrl } from '../shared/git';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
@@ -62,6 +63,8 @@ export default class Feflow {
   public lib: string;
   public universalPkg: UniversalPkg;
   public reporter: any;
+  public commandPick: CommandPicker | null;
+  public fefError: FefError
 
   constructor(args: any) {
     args = args || {};
@@ -91,6 +94,8 @@ export default class Feflow {
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
+    this.commandPick = null;
+    this.fefError = new FefError(this);
   }
 
   async init(cmd: string) {
@@ -109,18 +114,18 @@ export default class Feflow {
       checkUpdate(this);
     }
 
-    const picker = new CommandPicker(this, cmd);
+    this.commandPick = new CommandPicker(this, cmd);
 
-    if (picker.isAvailable()) {
+    if (this.commandPick.isAvailable()) {
       // should hit the cache in most cases
       this.logger.debug('find cmd in cache');
-      picker.pickCommand();
+      this.commandPick.pickCommand();
     } else {
       // if not, load plugin/devkit/native in need
       this.logger.debug('not find cmd in cache');
-      await this.loadCommands(picker.getLoadOrder());
+      await this.loadCommands(this.commandPick.getLoadOrder());
       // make sure the command has at least one funtion, otherwise replace to help command
-      picker.checkCommand();
+      this.commandPick.checkCommand();
     }
   }
 

@@ -99,8 +99,10 @@ export default function entry() {
   process.on('unhandledRejection', err => {
     logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
+    feflow.fefError?.printError(err, 'unhandledRejection: %s');
     handleError(err);
   });
+
   return feflow.init(cmd).then(() => {
     const isInvalidCmd = !(cmd && (args.h || args.help));
     if (!args.h && !args.help) {
@@ -117,19 +119,21 @@ export default function entry() {
     feflow.cmd = cmd;
 
     feflow.hook.emit(HOOK_TYPE_BEFORE);
-
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
       return feflow
         .call(cmd, feflow)
         .then(() => {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
+          throw new Error('trigger error');
         })
         .catch((err) => {
           logger.debug(err);
           feflow?.reporter?.reportCommandError(err);
+          feflow.fefError?.printError(err, '%s');
           handleError(err);
         });
     });
+
   });
 }
