@@ -30,11 +30,7 @@ export default function applyPlugins(plugins: any[]) {
         });
         return require(pluginPath)(Object.assign({}, ctx, {logger: pluginLogger}));
       } catch (err) {
-        ctx.logger.error(
-          { err: err },
-          'Plugin load failed: %s',
-          chalk.magenta(name)
-        );
+        ctx.fefError.printError({ error: err, msg: 'command load failed: %s', pluginPath });
       }
     });
 

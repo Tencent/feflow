@@ -38,7 +38,7 @@ import {
   statAsync,
   unlinkAsync,
   writeFileAsync,
-  readFileAsync,
+  readFileAsync
 } from '../shared/fs';
 
 const pkg = require('../../package.json');
@@ -64,7 +64,7 @@ export default class Feflow {
   public universalPkg: UniversalPkg;
   public reporter: any;
   public commandPick: CommandPicker | null;
-  public fefError: FefError
+  public fefError: FefError;
 
   constructor(args: any) {
     args = args || {};
@@ -138,16 +138,16 @@ export default class Feflow {
       // 检测package.json为空
       if (!pkgInfo.toString()) {
         await writeFileAsync(
-            rootPkg,
-            JSON.stringify(
-                {
-                  name: 'feflow-home',
-                  version: '0.0.0',
-                  private: true
-                },
-                null,
-                2
-            )
+          rootPkg,
+          JSON.stringify(
+            {
+              name: 'feflow-home',
+              version: '0.0.0',
+              private: true
+            },
+            null,
+            2
+          )
         );
       }
     } catch (e) {
@@ -202,7 +202,7 @@ export default class Feflow {
         const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
         const installedPackageManagers = packageManagers.filter(
-          packageManager => isInstalled(packageManager)
+          (packageManager) => isInstalled(packageManager)
         );
 
         if (installedPackageManagers.length === 0) {
@@ -232,10 +232,10 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter(file => {
+        .filter((file) => {
           return file.endsWith('.js');
         })
-        .map(file => {
+        .map((file) => {
           require(path.join(__dirname, './native', file))(this);
         });
       resolve();
@@ -270,11 +270,10 @@ export default class Feflow {
         this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
         return require(name)(this);
       } catch (err) {
-        this.logger.error(
-          { err: err },
-          'Plugin load failed: %s',
-          chalk.magenta(name)
-        );
+        this.fefError.printError({
+          error: err,
+          msg: 'internal plugin load failed: %s'
+        });
       }
     });
   }

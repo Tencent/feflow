@@ -6,11 +6,12 @@ import semver from 'semver';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
-  EVENT_COMMAND_BEGIN, FEFLOW_ROOT
+  EVENT_COMMAND_BEGIN,
+  FEFLOW_ROOT
 } from '../shared/constant';
 import fs from 'fs';
-import path from "path";
-import osenv from "osenv";
+import path from 'path';
+import osenv from 'osenv';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -76,7 +77,7 @@ export default function entry() {
   try {
     const stats = fs.statSync(root);
     if (!stats.isDirectory()) {
-       fs.unlinkSync(root);
+      fs.unlinkSync(root);
     }
   } catch (e) {
     fs.mkdirSync(root);
@@ -96,10 +97,10 @@ export default function entry() {
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', err => {
+  process.on('unhandledRejection', (err) => {
     logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
-    feflow.fefError?.printError(err, 'unhandledRejection: %s');
+    feflow.fefError?.printError({ error: err, msg: 'unhandledRejection: %s' });
     handleError(err);
   });
 
@@ -125,15 +126,16 @@ export default function entry() {
         .then(() => {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
-          throw new Error('trigger error');
         })
         .catch((err) => {
           logger.debug(err);
           feflow?.reporter?.reportCommandError(err);
-          feflow.fefError?.printError(err, '%s');
+          feflow.fefError.printError({
+            error: err,
+            msg: '%s'
+          });
           handleError(err);
         });
     });
-
   });
 }

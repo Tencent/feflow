@@ -4,15 +4,22 @@ import chalk from 'chalk';
 import { get } from 'lodash';
 
 import Feflow from '../core';
-import CommandPicker, { COMMAND_TYPE } from '../core/command-picker';
 import { Config } from '../shared/file';
+import CommandPicker, { COMMAND_TYPE } from '../core/command-picker';
+
+type PrintError = {
+  error: any | Error;
+  msg: string;
+  pluginPath?: string;
+};
 
 // 不用强制中断流程
 export class FefError {
   context: Feflow;
   picker: CommandPicker | null;
 
-  docsPath = ['docs', 'bugs.url', 'repository.url'];
+  defaultDocs = 'https://github.com/Tencent/feflow/issues';
+  docsPathList = ['docs', 'bugs.url', 'repository.url'];
   pluginFile = 'package.json';
   unversalpluginFile = ['plugin.yaml', 'plugin.yml'];
 
@@ -38,51 +45,61 @@ export class FefError {
     return !!this.picker;
   }
 
-  printError(error: any, msg?: string) {
-    if (!this.checkPick()) {
-      return this.context.logger.error(
-        { err: error },
-        msg || '插件或者内部发生异常',
-        chalk.magenta(error)
-      );
+  printError(obj: PrintError) {
+    let { pluginPath } = obj;
+    if (!pluginPath) {
+      if (!this.checkPick()) {
+        this.context.logger.debug('无法找到命令路径');
+      } else {
+        this.context.logger.debug('FefError command pick 初始化成功');
+      }
     }
 
-    msg = msg ? msg : error;
-    let errMsg = msg;
-    const docs = this.getDocPath();
-    if (docs) {
-      errMsg = `${msg} 
-      插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
-    }
-
-    this.context.logger.error({ err: error }, errMsg, chalk.magenta(error));
+    this.printErrorWithDocs(obj);
   }
 
-  getDocPath() {
+  printErrorWithDocs(obj: PrintError) {
+    let { error, msg, pluginPath } = obj;
+    const docs = this.getDocPath(pluginPath) || this.defaultDocs;
+    msg = `${msg || error} 
+      插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
+
+    this.context.logger.error({ err: error }, msg, chalk.magenta(error));
+  }
+
+  getDocPath(pluginPath?: string) {
     let docs = '';
     let configPath = '';
-    if (this.picker == null) return docs;
+    let type = COMMAND_TYPE.PLUGIN_TYPE;
+    if (!pluginPath) {
+      if (this.picker != null) {
+        const { path, type: cmdType } = this.picker.getCmdInfo();
+        pluginPath = path;
+        type = cmdType;
+      } else {
+        return docs;
+      }
+    }
 
-    const { path, type } = this.picker.getCmdInfo();
-    if (!existsSync(path)) {
+    if (!existsSync(pluginPath)) {
       return docs;
     }
     if (type === COMMAND_TYPE.PLUGIN_TYPE) {
-      configPath = join(path, this.pluginFile);
+      configPath = join(pluginPath, this.pluginFile);
     } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        let tmpPath = join(path, ext);
+        let tmpPath = join(pluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     }
     if (existsSync(configPath)) {
       const config = this.parseConfig(configPath);
-      this.docsPath.forEach((path) => {
+      this.docsPathList.forEach((docsPath) => {
         if (docs) return;
-        docs = get(config, path);
+        docs = get(config, docsPath);
       });
     } else {
-      this.context.logger.debug(`未找到插件配置文件: ${path}`);
+      this.context.logger.info(`未找到插件配置文件: ${pluginPath}`);
     }
 
     return docs;
