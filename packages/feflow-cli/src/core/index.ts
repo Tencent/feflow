@@ -115,6 +115,7 @@ export default class Feflow {
       // should hit the cache in most cases
       this.logger.debug('find cmd in cache');
       picker.pickCommand();
+      await this.loadCommands(LOAD_DEVKIT);
     } else {
       // if not, load plugin/devkit/native in need
       this.logger.debug('not find cmd in cache');
