@@ -100,7 +100,7 @@ export default function entry() {
   process.on('unhandledRejection', (err) => {
     logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
-    feflow.fefError?.printError({ error: err, msg: 'unhandledRejection: %s' });
+    feflow.fefError?.printError({ error: err, msg: '', hideError: true });
     handleError(err);
   });
 

@@ -11,6 +11,7 @@ type PrintError = {
   error: any | Error;
   msg: string;
   pluginPath?: string;
+  hideError?: boolean;
 };
 
 // 不用强制中断流程
@@ -19,7 +20,7 @@ export class FefError {
   picker: CommandPicker | null;
 
   defaultDocs = 'https://github.com/Tencent/feflow/issues';
-  docsPathList = ['docs', 'bugs.url', 'repository.url'];
+  docsPathList = ['docs', 'doc', 'bugs.url', 'repository.url'];
   pluginFile = 'package.json';
   unversalpluginFile = ['plugin.yaml', 'plugin.yml'];
 
@@ -55,16 +56,23 @@ export class FefError {
       }
     }
 
-    this.printErrorWithDocs(obj);
+    const docs = this.getDocPath(pluginPath);
+    if (docs) {
+      this.printErrorWithDocs(obj, docs);
+    }
   }
 
-  printErrorWithDocs(obj: PrintError) {
-    let { error, msg, pluginPath } = obj;
-    const docs = this.getDocPath(pluginPath) || this.defaultDocs;
-    msg = `${msg || error} 
+  printErrorWithDocs(obj: PrintError, docs: string) {
+    let { error, msg } = obj;
+    if (!obj.hideError) {
+      msg = `${msg || error} 
       插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
-
-    this.context.logger.error({ err: error }, msg, chalk.magenta(error));
+      this.context.logger.error({ err: error }, msg, chalk.magenta(error));
+    } else {
+      // 兼容多语言插件
+      msg = `${msg} 请查看文档获取更多内容：${chalk.green(docs)}`;
+      this.context.logger.info(msg);
+    }
   }
 
   getDocPath(pluginPath?: string) {
@@ -91,7 +99,10 @@ export class FefError {
         let tmpPath = join(pluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
+    } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
+      return this.defaultDocs;
     }
+
     if (existsSync(configPath)) {
       const config = this.parseConfig(configPath);
       this.docsPathList.forEach((docsPath) => {
