@@ -2,6 +2,7 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 import yeoman from 'yeoman-environment';
+import { install } from '../../shared/npm';
 
 const loadGenerator = (root: string, rootPkg: string) => {
     return new Promise<any>((resolve, reject) => {
@@ -37,7 +38,7 @@ const run = (ctx: any, name: string) => {
     let generatorEntry = path.join(root, 'node_modules', name, 'app/index.js');
 
     if (!fs.existsSync(generatorEntry)) {
-      generatorEntry = path.join(root, 'node_modules', name, 'generators', 'app/index.js');
+        generatorEntry = path.join(root, 'node_modules', name, 'generators', 'app/index.js');
     }
     yeomanEnv.register(require.resolve(generatorEntry), name);
     yeomanEnv.run(name, ctx, err => {
@@ -52,6 +53,36 @@ const run = (ctx: any, name: string) => {
 module.exports = (ctx: any) => {
     ctx.commander.register('init', 'Create a new project', () => {
         const { root, rootPkg } = ctx;
+        const name = ctx.args._.shift() || '';
+        if (name && /^generator-|^@[^/]+\/generator-/.test(name)) {
+            console.log('检测插件是否本地存在');
+            loadGenerator(root, rootPkg).then((generators: any) => {
+                const isGeneratorInstalled = generators.some((item: any) => {
+                    return item.name === name
+                });
+                // 如果本地已经安装插件则进入激活逻辑
+                if (generators.length && isGeneratorInstalled) {
+                    run(ctx, name);
+                    return;
+                } else {
+                    const packageManager = ctx.config && ctx.config.packageManager;
+                    install(
+                        packageManager,
+                        ctx.root,
+                        'install',
+                        name,
+                        false,
+                        true
+                    ).then(() => {
+                        ctx.logger.info('install success');
+                        run(ctx, name);
+                    });
+                    return;
+                }
+            });
+            return;
+        }
+
         loadGenerator(root, rootPkg).then((generators: any) => {
             const options = generators.map((item: any) => {
                 return item.desc
