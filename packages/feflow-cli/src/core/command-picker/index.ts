@@ -1,15 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
-// import chalk from 'chalk';
-import { parseYaml, safeDump } from '../../shared/yaml';
-import { CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
-import { getPluginsList } from '../plugin/loadPlugins';
 import _ from 'lodash';
+
 import Feflow from '..';
 import { execPlugin } from '../plugin/loadUniversalPlugin';
 import logger from '../logger';
-import { UNIVERSAL_MODULES } from '../../shared/constant';
+import { parseYaml, safeDump } from '../../shared/yaml';
+import { UNIVERSAL_MODULES, CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
+import { getPluginsList } from '../plugin/loadPlugins';
 
 const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool'
@@ -54,17 +53,30 @@ type Cache = {
   version: string;
 };
 
-type TargetPlugin = {
+
+class TargetPlugin {
   path: string;
   type: COMMAND_TYPE;
   pkg?: string;
-};
+  constructor(type: COMMAND_TYPE, path: string, pkg: string) {
+    this.type = type;
+    this.path = path;
+    this.pkg = pkg;
+  }
+}
 
-type TargetUniversalPlugin = {
+class NativePlugin extends TargetPlugin {}
+
+class TargetUniversalPlugin {
   type: COMMAND_TYPE;
   version: string;
   pkg: string;
-};
+  constructor(type: COMMAND_TYPE, version: string, pkg: string) {
+    this.type = type;
+    this.version = version;
+    this.pkg = pkg;
+  }
+}
 
 export class CommandPickConfig {
   ctx: Feflow;
@@ -318,12 +330,18 @@ export class CommandPickConfig {
 
   // 获取命令的缓存目录
   getCommandPath(cmd: string): TargetPlugin | TargetUniversalPlugin {
-    let target: TargetPlugin | TargetUniversalPlugin = {
-      type: COMMAND_TYPE.UNKNOWN_TYPE,
-      path: ''
-    };
-    if (!this.cache?.commandPickerMap) return target as TargetPlugin;
+    let target:
+      | TargetPlugin
+      | TargetUniversalPlugin = new TargetUniversalPlugin(
+      COMMAND_TYPE.UNKNOWN_TYPE,
+      '',
+      ''
+    );
+
+    if (!this.cache?.commandPickerMap) return target;
     const commandPickerMap = this.cache.commandPickerMap;
+
+    let cmdList: Array<TargetPlugin | TargetUniversalPlugin> = [];
 
     for (let type of this.PICK_ORDER) {
       const pluginsInType = commandPickerMap[type];
@@ -333,23 +351,44 @@ export class CommandPickConfig {
         commands?.forEach(({ name, path: cmdPath, version }) => {
           if (cmd === name) {
             if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-              (target as TargetUniversalPlugin).version = version as string;
-              (target as TargetUniversalPlugin).pkg = plugin;
-              (target as TargetUniversalPlugin).type = type;
+              target = new TargetUniversalPlugin(
+                type,
+                version as string,
+                plugin
+              );
+            } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
+              target = new NativePlugin(
+                type,
+                (cmdPath || path) as string,
+                COMMAND_TYPE.NATIVE_TYPE
+              );
             } else {
-              (target as TargetPlugin).type = type;
-              (target as TargetPlugin).path = (cmdPath || path) as string;
-              (target as TargetUniversalPlugin).pkg = plugin;
+              target = new TargetPlugin(
+                type,
+                (cmdPath || path) as string,
+                plugin
+              );
             }
+            cmdList.push(_.cloneDeep(target));
           }
         });
       }
+    }
 
-      if (target.type !== COMMAND_TYPE.UNKNOWN_TYPE) {
-        break;
+    const { args } = this.ctx;
+    if (cmdList.length >= 2) {
+      if (!args.pick) {
+        this.ctx.logger.debug(`
+        当前命令(${cmd})出现冲突, 如果如果想要执行其他插件，请使用--pick参数指明
+        例如: fef doctor --pick native 或者 fef doctor --pick @tencent/feflow-plugin-raft`);
+      } else {
+        cmdList = cmdList.filter(({ pkg }) => {
+          return pkg === args.pick;
+        });
       }
     }
-    return target;
+
+    return cmdList[0];
   }
 }
 
@@ -366,6 +405,8 @@ export default class CommandPicker {
     COMMAND_TYPE.INTERNAL_PLUGIN_TYPE
   ];
 
+  homeRunCmd = ['help', 'list'];
+
   constructor(ctx: any, cmd: string = 'help') {
     this.root = ctx.root;
     this.ctx = ctx;
@@ -381,7 +422,7 @@ export default class CommandPicker {
 
   isAvailable() {
     const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
-    const { type } = tartgetCommand;
+    const { type } = tartgetCommand || {};
 
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
@@ -393,6 +434,10 @@ export default class CommandPicker {
       const pathExists = fs.existsSync(path);
       const isCachType = this.SUPPORT_TYPE.includes(type);
       return !this.isHelp && !!pathExists && isCachType;
+    } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
+      if (!this.homeRunCmd.includes(this.cmd)) {
+        return true;
+      }
     }
 
     return false;
