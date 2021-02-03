@@ -27,6 +27,7 @@ import {
 interface ErrorInstance {
   name: string;
   message: string;
+  stack: string;
 }
 
 const pkg = require('../../../package.json');
@@ -51,7 +52,9 @@ const logger = loggerInstance({
 process.title = 'feflow-update-beat-proccess';
 
 const handleException = (e: ErrorInstance): void => {
-  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+  db.update('exception', {
+    [`${e.name}: ${e.message}`]: e.stack
+  }).then(() => {
     process.exit(1);
   });
 };

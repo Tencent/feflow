@@ -40,6 +40,7 @@ interface VersionObj {
 interface ErrorInstance {
   name: string;
   message: string;
+  stack: string;
 }
 
 const { updateCli } = require('../native/upgrade');
@@ -82,7 +83,9 @@ const ctx = {
 let updateData: any;
 
 const handleException = (e: ErrorInstance): void => {
-  db.update('exception', `${e.name}: ${e.message}`).then(() => {
+  db.update('exception', {
+    [`${e.name}: ${e.message}`]: e.stack
+  }).then(() => {
     process.exit(1);
   });
 };
@@ -240,6 +243,7 @@ function checkUniversalPluginsUpdate() {
     resolve();
   });
 }
+
 
 db.read('update_data')
   .then(data => {

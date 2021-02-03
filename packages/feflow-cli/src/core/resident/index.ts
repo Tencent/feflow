@@ -125,25 +125,17 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
-  const _showErrorM = () => {
+  const _reportErrorM = () => {
     const errorMsg = updateError?.['value'] || {};
     const errorKeys = Object.keys(errorMsg);
 
     if (errorKeys.length) {
-      ctx.logger.warn('Some problems occurred while auto-updating');
-      errorKeys.forEach(key => {
-        ctx.logger.error(`${key}: ${errorMsg[key]}`);
-      });
-      ctx.logger.warn(
-        'These templates or plugins need to be updated manually util problems fixed'
-      );
+      ctx.logger.warn('auto-update-error', errorMsg);
     }
 
     const exceptionMsg = exception?.['value'];
     if (exceptionMsg) {
-      ctx.logger.error('Excetion exists in auto-updating:');
-      ctx.logger.error(exceptionMsg);
-      ctx.logger.warn('Auto-updating will not work util exception fixed');
+      ctx.logger.warn('auto-update-exception', exceptionMsg);
     }
   };
 
@@ -151,7 +143,7 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
   _showCliUpdateM();
   _showPluginsUpdateM();
   _showUniversalPluginsM();
-  _showErrorM();
+  _reportErrorM();
 
   await db.update('update_data', updateData);
   await db.update('update_error', '');
