@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "beta": "lerna publish -c --skip-git",
-    "publish": "lerna publish --skip-git"
+    "publish": "lerna publish --skip-git",
+    "bootstrap": "rm -rf packages/*/package-lock.json && lerna bootstrap"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
