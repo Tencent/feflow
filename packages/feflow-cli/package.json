@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.22.3",
+  "version": "0.22.4",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
