@@ -23,7 +23,7 @@ const checkNodeVersion = (wanted: any, id: string) => {
           id +
           ' requires Node ' +
           wanted +
-          '.\nPlease upgrade your Node version.'
+          '.\nPlease upgrade your Node version。'
       )
     );
     process.exit(1);
