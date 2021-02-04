@@ -6,19 +6,42 @@
     "publish": "lerna publish --skip-git"
   },
   "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@oclif/dev-cli": "^1.22.2",
+    "@types/abbrev": "^1.1.0",
+    "@types/bunyan": "^1.8.6",
+    "@types/chai": "^4.2.5",
+    "@types/command-line-usage": "^5.0.1",
+    "@types/cross-spawn": "^6.0.0",
+    "@types/easy-table": "0.0.32",
+    "@types/figlet": "^1.2.0",
+    "@types/fs-extra": "^8.0.1",
+    "@types/inquirer": "^6.0.3",
+    "@types/js-yaml": "^3.12.1",
+    "@types/lodash": "^4.14.161",
+    "@types/minimist": "^1.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/nedb": "^1.8.10",
+    "@types/node": "^12.7.12",
+    "@types/osenv": "^0.1.0",
+    "@types/request-promise": "^4.1.45",
+    "@types/semver": "^6.0.1",
+    "@types/yeoman-environment": "^2.3.1",
+    "chai": "^4.2.0",
+    "conventional-changelog-cli": "^2.0.27",
+    "eslint": "^6.5.1",
     "lerna": "^3.13.1",
-    "typescript": "^3.7.2"
+    "mocha": "^6.2.2",
+    "nodemon": "^1.19.1",
+    "nyc": "^14.1.1",
+    "prettier": "2.0.5",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "@feflow/cli": "file:packages/feflow-cli",
     "@feflow/feflow-plugin-devtool": "file:packages/feflow-plugin-devtool",
     "@feflow/packager": "file:packages/feflow-packager",
-    "@feflow/report": "file:packages/feflow-report",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.19.1"
+    "@feflow/report": "file:packages/feflow-report"
   }
 }
