@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
-import chalk from 'chalk';
+// import chalk from 'chalk';
 import { parseYaml, safeDump } from '../../shared/yaml';
 import { CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
 import { getPluginsList } from '../plugin/loadPlugins';
@@ -9,6 +9,7 @@ import _ from 'lodash';
 import Feflow from '..';
 import { execPlugin } from '../plugin/loadUniversalPlugin';
 import logger from '../logger';
+import { UNIVERSAL_MODULES } from '../../shared/constant';
 
 const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool'
@@ -416,7 +417,7 @@ export default class CommandPicker {
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
       silent: Boolean(this.ctx.args.silent),
-      name: tartgetCommand.pkg,
+      name: tartgetCommand.pkg
     });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.SUPPORT_TYPE.includes(type)) {
@@ -426,7 +427,11 @@ export default class CommandPicker {
     }
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
-      execPlugin(Object.assign({}, this.ctx, {logger: pluginLogger}), pkg, version);
+      execPlugin(
+        Object.assign({}, this.ctx, { logger: pluginLogger }),
+        pkg,
+        version
+      );
     } else {
       const { path } = tartgetCommand as TargetPlugin;
       const commandSource =
@@ -436,15 +441,35 @@ export default class CommandPicker {
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
-        require(path)(Object.assign({}, this.ctx, {logger: pluginLogger}));
+        require(path)(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
-        this.ctx.logger.error(
-          { err: error },
-          'command load failed: %s',
-          chalk.magenta(error)
-        );
+        this.ctx.fefError.printError(error, 'command load failed: %s');
       }
     }
+  }
+
+  getCmdInfo(): { path: string; type: COMMAND_TYPE } {
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
+    const { type } = tartgetCommand;
+    const cmdInfo: { path: string; type: COMMAND_TYPE } = {
+      type,
+      path: ''
+    };
+
+    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
+      cmdInfo.path = (tartgetCommand as TargetPlugin).path;
+    } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+      const { pkg, version } = tartgetCommand as TargetUniversalPlugin;
+      cmdInfo.path = path.join(
+        this.ctx.root,
+        UNIVERSAL_MODULES,
+        `${pkg}@${version}`
+      );
+    } else {
+      cmdInfo.path = this.ctx.root;
+    }
+
+    return cmdInfo;
   }
 
   getLoadOrder() {

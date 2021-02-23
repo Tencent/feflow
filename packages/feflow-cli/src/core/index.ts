@@ -20,6 +20,7 @@ import {
   LOG_FILE
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
+import { FefError } from '../shared/fefError';
 import { setServerUrl } from '../shared/git';
 import chalk from 'chalk';
 import commandLineUsage from 'command-line-usage';
@@ -37,7 +38,7 @@ import {
   statAsync,
   unlinkAsync,
   writeFileAsync,
-  readFileAsync,
+  readFileAsync
 } from '../shared/fs';
 
 const pkg = require('../../package.json');
@@ -62,6 +63,8 @@ export default class Feflow {
   public lib: string;
   public universalPkg: UniversalPkg;
   public reporter: any;
+  public commandPick: CommandPicker | null;
+  public fefError: FefError;
 
   constructor(args: any) {
     args = args || {};
@@ -91,6 +94,8 @@ export default class Feflow {
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
+    this.commandPick = null;
+    this.fefError = new FefError(this);
   }
 
   async init(cmd: string) {
@@ -109,18 +114,18 @@ export default class Feflow {
       checkUpdate(this);
     }
 
-    const picker = new CommandPicker(this, cmd);
+    this.commandPick = new CommandPicker(this, cmd);
 
-    if (picker.isAvailable()) {
+    if (this.commandPick.isAvailable()) {
       // should hit the cache in most cases
       this.logger.debug('find cmd in cache');
-      picker.pickCommand();
+      this.commandPick.pickCommand();
     } else {
       // if not, load plugin/devkit/native in need
       this.logger.debug('not find cmd in cache');
-      await this.loadCommands(picker.getLoadOrder());
+      await this.loadCommands(this.commandPick.getLoadOrder());
       // make sure the command has at least one funtion, otherwise replace to help command
-      picker.checkCommand();
+      this.commandPick.checkCommand();
     }
   }
 
@@ -133,16 +138,16 @@ export default class Feflow {
       // 检测package.json为空
       if (!pkgInfo.toString()) {
         await writeFileAsync(
-            rootPkg,
-            JSON.stringify(
-                {
-                  name: 'feflow-home',
-                  version: '0.0.0',
-                  private: true
-                },
-                null,
-                2
-            )
+          rootPkg,
+          JSON.stringify(
+            {
+              name: 'feflow-home',
+              version: '0.0.0',
+              private: true
+            },
+            null,
+            2
+          )
         );
       }
     } catch (e) {
@@ -197,7 +202,7 @@ export default class Feflow {
         const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
 
         const installedPackageManagers = packageManagers.filter(
-          packageManager => isInstalled(packageManager)
+          (packageManager) => isInstalled(packageManager)
         );
 
         if (installedPackageManagers.length === 0) {
@@ -227,10 +232,10 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter(file => {
+        .filter((file) => {
           return file.endsWith('.js');
         })
-        .map(file => {
+        .map((file) => {
           require(path.join(__dirname, './native', file))(this);
         });
       resolve();
@@ -265,11 +270,10 @@ export default class Feflow {
         this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
         return require(name)(this);
       } catch (err) {
-        this.logger.error(
-          { err: err },
-          'Plugin load failed: %s',
-          chalk.magenta(name)
-        );
+        this.fefError.printError({
+          error: err,
+          msg: 'internal plugin load failed: %s'
+        });
       }
     });
   }
