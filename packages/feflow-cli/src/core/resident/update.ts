@@ -182,16 +182,16 @@ function checkPluginsUpdate() {
 function checkUniversalPluginsUpdate() {
   return new Promise(async resolve => {
     let updatePkg: any[] = [];
+    const { serverUrl } = config;
+    if (!serverUrl) {
+      return;
+    }
+    setServerUrl(serverUrl);
     if (String(cacheValidate) === 'true') {
       // 用缓存数据
       updatePkg = updateData['latest_universal_plugins'];
     } else {
       // 实时拉取最新更新
-      const { serverUrl } = config;
-      if (!serverUrl) {
-        return;
-      }
-      setServerUrl(serverUrl);
 
       // eslint-disable-next-line
       for (const [pkg, version] of universalPkg.getInstalled()) {

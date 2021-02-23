@@ -2,6 +2,7 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 import yeoman from 'yeoman-environment';
+import { install } from '../../shared/npm';
 
 const loadGenerator = (root: string, rootPkg: string) => {
   return new Promise<any>((resolve, reject) => {
@@ -67,21 +68,45 @@ module.exports = (ctx: any) => {
   ctx.commander.register('init', 'Create a new project', () => {
     const { root, rootPkg, args } = ctx;
     const { generator } = args;
-    const chooseGenerator = generator;
-    let isValidGenerator = false;
-
-    loadGenerator(root, rootPkg).then((generators: any) => {
-      const options = generators.map((item: any) => {
-        if (item.name === chooseGenerator) {
-          isValidGenerator = true;
+    loadGenerator(root, rootPkg).then(async (generators: any) => {
+      // feflow init 简化逻辑直接安装并使用脚手架
+      if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
+        const isGeneratorInstalled = generators.some((item: any) => {
+          return item.name === generator
+        });
+        if (generators.length && isGeneratorInstalled) {
+          run(ctx, generator);
+          return;
+        } else {
+          const askIfInstallGenerator = [
+            {
+              type: 'confirm',
+              name: 'ifInstall',
+              message: `You have not installed the generator ${generator}，if you want to install and use ?`,
+              default: true
+            }
+          ];
+          const answer = await inquirer.prompt(askIfInstallGenerator);
+          if (answer.ifInstall) {
+            const packageManager = ctx.config && ctx.config.packageManager;
+            install(
+              packageManager,
+              ctx.root,
+              'install',
+              generator,
+              false,
+              true
+            ).then(() => {
+              ctx.logger.info(`install success`);
+              run(ctx, generator);
+            });
+            return;
+          }
         }
+      }
+      const options = generators.map((item: any) => {
         return item.desc;
       });
-
-      if (isValidGenerator) {
-        return run(ctx, chooseGenerator);
-      }
-
       if (generators.length) {
         inquirer
           .prompt([
@@ -94,20 +119,18 @@ module.exports = (ctx: any) => {
           ])
           .then((answer: any) => {
             let name;
-
             generators.map((item: any) => {
               if (item.desc === answer.desc) {
                 name = item.name;
               }
             });
-
             ctx.reporter.report('init', name)
             name && run(ctx, name);
           });
       } else {
         ctx.logger.warn(
           'You have not installed a template yet, ' +
-            ' please use install command. Guide: https://github.com/Tencent/feflow'
+          ' please use install command. Guide: https://github.com/Tencent/feflow'
         );
       }
     });
