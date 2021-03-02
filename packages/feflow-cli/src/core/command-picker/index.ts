@@ -421,16 +421,16 @@ export default class CommandPicker {
   }
 
   isAvailable() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
-    const { type } = tartgetCommand || {};
+    const targetCommand = this.cacheController.getCommandPath(this.cmd);
+    const { type } = targetCommand || {};
 
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-      const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
+      const { version, pkg } = targetCommand as TargetUniversalPlugin;
       const pkgPath = path.join(this.ctx.universalModules, `${pkg}@${version}`);
       const pathExists = fs.existsSync(pkgPath);
       return !this.isHelp && pathExists && !!version;
     } else if (type === COMMAND_TYPE.PLUGIN_TYPE) {
-      const { path } = tartgetCommand as TargetPlugin;
+      const { path } = targetCommand as TargetPlugin;
       const pathExists = fs.existsSync(path);
       const isCachType = this.SUPPORT_TYPE.includes(type);
       return !this.isHelp && !!pathExists && isCachType;
@@ -457,12 +457,12 @@ export default class CommandPicker {
   }
 
   pickCommand() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
-    const { type } = tartgetCommand;
+    const targetCommand = this.cacheController.getCommandPath(this.cmd);
+    const { type } = targetCommand;
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
       silent: Boolean(this.ctx.args.silent),
-      name: tartgetCommand.pkg
+      name: targetCommand.pkg
     });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.SUPPORT_TYPE.includes(type)) {
@@ -471,14 +471,14 @@ export default class CommandPicker {
       );
     }
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-      const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
+      const { version, pkg } = targetCommand as TargetUniversalPlugin;
       execPlugin(
         Object.assign({}, this.ctx, { logger: pluginLogger }),
         pkg,
         version
       );
     } else {
-      const { path } = tartgetCommand as TargetPlugin;
+      const { path } = targetCommand as TargetPlugin;
       const commandSource =
         this.getCommandSource(path) || COMMAND_TYPE.NATIVE_TYPE;
       this.ctx.logger.debug('pick command path: ', path);
@@ -494,17 +494,20 @@ export default class CommandPicker {
   }
 
   getCmdInfo(): { path: string; type: COMMAND_TYPE } {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
-    const { type } = tartgetCommand;
     const cmdInfo: { path: string; type: COMMAND_TYPE } = {
-      type,
+      type: COMMAND_TYPE.NATIVE_TYPE,
       path: ''
     };
+    const targetCommand = this.cacheController.getCommandPath(this.cmd);
+    if (!targetCommand) {
+      return cmdInfo;
+    }
+    const { type } = targetCommand;
 
     if (type === COMMAND_TYPE.PLUGIN_TYPE) {
-      cmdInfo.path = (tartgetCommand as TargetPlugin).path;
+      cmdInfo.path = (targetCommand as TargetPlugin).path;
     } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-      const { pkg, version } = tartgetCommand as TargetUniversalPlugin;
+      const { pkg, version } = targetCommand as TargetUniversalPlugin;
       cmdInfo.path = path.join(
         this.ctx.root,
         UNIVERSAL_MODULES,

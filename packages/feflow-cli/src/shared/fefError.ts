@@ -89,7 +89,7 @@ export class FefError {
       }
     }
 
-    if (!existsSync(pluginPath)) {
+    if (!pluginPath || !existsSync(pluginPath)) {
       return docs;
     }
     if (type === COMMAND_TYPE.PLUGIN_TYPE) {
