@@ -421,8 +421,8 @@ export default class CommandPicker {
   }
 
   isAvailable() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
-    const { type } = tartgetCommand || {};
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
+    const { type } = tartgetCommand;
 
     if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
