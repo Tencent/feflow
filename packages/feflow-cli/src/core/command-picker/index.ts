@@ -109,7 +109,7 @@ export class CommandPickConfig {
     this.root = path.join(osenv.home(), FEFLOW_ROOT);
     // cache uses node version to distinguish
     const nodeVersion = process.version;
-    const cacheFileFolder = path.join(this.root, `cache_${nodeVersion}`);
+    const cacheFileFolder = path.join(this.root, `cache`, nodeVersion);
     if (!fs.existsSync(cacheFileFolder)) {
       fs.mkdirSync(cacheFileFolder, { recursive: true });
     }
