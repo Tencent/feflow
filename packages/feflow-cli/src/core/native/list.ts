@@ -157,10 +157,8 @@ module.exports = (ctx: any) => {
         const localPath = item.name
           .replace(FEFLOW_PLUGIN_LOCAL_PREFIX, '')
           .replace(/::/g, path.sep);
-        showPlugin(ctx, localPath,item);
+        showPlugin(ctx, localPath, item);
       });
     }
   });
 };
-
-

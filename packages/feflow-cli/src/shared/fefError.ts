@@ -47,7 +47,8 @@ export class FefError {
   }
 
   printError(obj: PrintError) {
-    let { pluginPath } = obj;
+    const { pluginPath } = obj;
+
     if (!pluginPath) {
       if (!this.checkPick()) {
         this.context.logger.debug('无法找到命令路径');
@@ -95,17 +96,16 @@ export class FefError {
     if (type === COMMAND_TYPE.PLUGIN_TYPE) {
       configPath = join(pluginPath, this.pluginFile);
     } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
-      this.unversalpluginFile.forEach((ext) => {
-        let tmpPath = join(pluginPath as string, ext);
+      this.unversalpluginFile.forEach(ext => {
+        const tmpPath = join(pluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
       return this.defaultDocs;
     }
-
     if (existsSync(configPath)) {
       const config = this.parseConfig(configPath);
-      this.docsPathList.forEach((docsPath) => {
+      this.docsPathList.forEach(docsPath => {
         if (docs) return;
         docs = get(config, docsPath);
       });

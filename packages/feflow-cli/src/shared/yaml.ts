@@ -28,6 +28,5 @@ export function safeDump(obj: object, path: any) {
   } catch (e) {
     throw new Error(e);
   }
-
   return fs.writeFileSync(path, doc, 'utf-8');
 }
