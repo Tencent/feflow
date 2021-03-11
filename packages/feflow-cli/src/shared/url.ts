@@ -1,5 +1,5 @@
 export function getURL(base: string, url: string): string {
-  if (!base.startsWith('http://') && !base.startsWith('https://')) {
+  if (!base?.startsWith('http://') && !base?.startsWith('https://')) {
     base = 'http://' + base;
   }
   try {

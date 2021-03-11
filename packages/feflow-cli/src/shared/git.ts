@@ -116,7 +116,10 @@ export async function download(
       if (doneFlag) {
         return;
       }
-      if (d.toString().startsWith('Note:')) {
+      if (
+        d?.toString()?.startsWith('Note:') ||
+        d?.toString()?.startsWith('注意')
+      ) {
         doneFlag = true;
         return;
       }
