@@ -432,7 +432,7 @@ async function installPlugin(
   }
   // if the specified version is already installed, skip it
   if (
-    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)
+    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.installVersion, !isGlobal)
   ) {
     global && logger.info(`the current version is installed`);
     return;
@@ -611,12 +611,12 @@ async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
     logger.error('this plugin is not currently installed');
     return;
   }
+  let plugin: Plugin | undefined;
   try {
     const repoPath = path.join(
       ctx.universalModules,
       `${pluginName}@${version}`
     );
-    let plugin: Plugin | undefined;
     try {
       plugin = resolvePlugin(ctx, repoPath);
     } catch (e) {
@@ -624,13 +624,13 @@ async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
     }
     plugin?.preUninstall?.run();
     universalPkg.uninstall(pluginName, version);
-    plugin?.postUninstall?.runLess();
   } catch (e) {
     logger.error(`uninstall failure, ${e}`);
     return;
   }
   try {
     removeInvalidPkg(ctx);
+    plugin?.postUninstall?.runLess();
     logger.info('uninstall success');
   } catch (e) {
     logger.info(`uninstall succeeded, but failed to clean the data, ${e}`);
