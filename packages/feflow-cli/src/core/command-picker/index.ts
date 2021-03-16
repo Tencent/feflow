@@ -457,7 +457,7 @@ export default class CommandPicker {
   }
 
   pickCommand() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
@@ -494,7 +494,7 @@ export default class CommandPicker {
   }
 
   getCmdInfo(): { path: string; type: COMMAND_TYPE } {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
     const cmdInfo: { path: string; type: COMMAND_TYPE } = {
       type,
