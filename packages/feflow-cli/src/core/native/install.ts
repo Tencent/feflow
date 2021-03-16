@@ -53,28 +53,19 @@ async function getRepoInfo(ctx: any, packageName: string) {
 // git@github.com:tencent/feflow.git
 // or http[s]://github.com/tencent/feflow.git or http[s]://user:pwd@github.com/tencent/feflow.git
 // to
-// github.com:tencent:feflow
+// encodeURIComponent("github.com/tencent/feflow.git")
 function getGitRepoName(repoUrl: string): string | undefined {
   const ret = /^((http:\/\/|https:\/\/)(.*?@)?|git@)/.exec(repoUrl);
   if (Array.isArray(ret) && ret.length > 0) {
     repoUrl = repoUrl.substring(ret[0].length);
   }
-  const end = '.git';
-  if (repoUrl.endsWith(end)) {
-    repoUrl = repoUrl.substring(0, repoUrl.length - end.length);
-  }
-  return FEFLOW_PLUGIN_GIT_PREFIX + repoUrl.split('/').join('::');
+  return encodeURIComponent(
+    FEFLOW_PLUGIN_GIT_PREFIX + repoUrl.split(':').join('/')
+  );
 }
 
 function getDirRepoName(dir: string): string {
-  return (
-    FEFLOW_PLUGIN_LOCAL_PREFIX +
-    dir
-      .toLowerCase()
-      .trim()
-      .split(path.sep)
-      .join('::')
-  );
+  return encodeURIComponent(FEFLOW_PLUGIN_LOCAL_PREFIX + dir.trim());
 }
 
 function deleteDir(dirPath: string) {
@@ -441,7 +432,7 @@ async function installPlugin(
   }
   // if the specified version is already installed, skip it
   if (
-    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)
+    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.installVersion, !isGlobal)
   ) {
     global && logger.info(`the current version is installed`);
     return;
@@ -460,7 +451,7 @@ async function installPlugin(
         if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
           if (global) {
             logger.info(
-              `the plugin version currently installed is the latest version: ${currentVersion}`
+              `[${pkgInfo.repoName}] the plugin version currently installed is the latest version: ${currentVersion}`
             );
           }
           return;
@@ -516,7 +507,7 @@ async function getPkgInfo(
   // install from git repo
   if (isGitRepo(installPlugin)) {
     fromType = PkgInfo.git;
-    if (installPlugin.indexOf('git@') != -1) {
+    if (installPlugin.indexOf('.git@') != -1) {
       const splits = installPlugin.split('@');
       const ver = splits.pop();
       repoFrom = splits.join('@');
@@ -620,12 +611,12 @@ async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
     logger.error('this plugin is not currently installed');
     return;
   }
+  let plugin: Plugin | undefined;
   try {
     const repoPath = path.join(
       ctx.universalModules,
       `${pluginName}@${version}`
     );
-    let plugin: Plugin | undefined;
     try {
       plugin = resolvePlugin(ctx, repoPath);
     } catch (e) {
@@ -633,13 +624,13 @@ async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
     }
     plugin?.preUninstall?.run();
     universalPkg.uninstall(pluginName, version);
-    plugin?.postUninstall?.runLess();
   } catch (e) {
     logger.error(`uninstall failure, ${e}`);
     return;
   }
   try {
     removeInvalidPkg(ctx);
+    plugin?.postUninstall?.runLess();
     logger.info('uninstall success');
   } catch (e) {
     logger.info(`uninstall succeeded, but failed to clean the data, ${e}`);

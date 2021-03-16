@@ -145,22 +145,20 @@ module.exports = (ctx: any) => {
     if (gitPlugins.length > 0) {
       console.log('git plugins');
       gitPlugins.forEach(item => {
-        const url = `http://${item.name
-          .replace(FEFLOW_PLUGIN_GIT_PREFIX, '')
-          .replace(/::/g, '/')}.git`;
+        const url =
+          'http://' +
+          decodeURIComponent(item.name.replace(FEFLOW_PLUGIN_GIT_PREFIX, ''));
         showPlugin(ctx, url, item);
       });
     }
     if (localPlugins.length > 0) {
       console.log('local plugins');
       localPlugins.forEach(item => {
-        const localPath = item.name
-          .replace(FEFLOW_PLUGIN_LOCAL_PREFIX, '')
-          .replace(/::/g, path.sep);
-        showPlugin(ctx, localPath,item);
+        const localPath = decodeURIComponent(
+          item.name.replace(FEFLOW_PLUGIN_LOCAL_PREFIX, '')
+        );
+        showPlugin(ctx, localPath, item);
       });
     }
   });
 };
-
-
