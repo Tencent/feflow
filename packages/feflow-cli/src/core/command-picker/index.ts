@@ -7,7 +7,11 @@ import Feflow from '..';
 import { execPlugin } from '../plugin/loadUniversalPlugin';
 import logger from '../logger';
 import { parseYaml, safeDump } from '../../shared/yaml';
-import { UNIVERSAL_MODULES, CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
+import {
+  UNIVERSAL_MODULES,
+  CACHE_FILE,
+  FEFLOW_ROOT
+} from '../../shared/constant';
 import { getPluginsList } from '../plugin/loadPlugins';
 
 const internalPlugins = {
@@ -52,7 +56,6 @@ type Cache = {
   commandPickerMap: PickMap;
   version: string;
 };
-
 
 class TargetPlugin {
   path: string;
@@ -135,7 +138,7 @@ export class CommandPickConfig {
       if (type == COMMAND_TYPE.PLUGIN_TYPE) {
         // 命令相同的场景，插件提供方变化后，依然可以探测到是新命令
         const commonCommands = Object.keys(store).filter(
-          (item) => !newCommands.includes(item)
+          item => !newCommands.includes(item)
         );
         for (const common of commonCommands) {
           if (!this.lastStore[common]) continue;
@@ -218,18 +221,22 @@ export class CommandPickConfig {
     const nativePath = path.join(__dirname, '../native');
     const nativeMap: PluginInfo = {};
     fs.readdirSync(nativePath)
-      .filter((file) => {
+      .filter(file => {
         return file.endsWith('.js');
       })
-      .forEach((file) => {
+      .forEach(file => {
         const command = file.split('.')[0];
+        // 通过缓存路径的方式并不是一个值得主张的方案，例如在我们使用webpack构建单文件时这个机制会成为束缚
+        // 缓存绝对路径更不提倡，当客户端node切换不同版本时，绝对路径将导致异常
+        // 此处将其变更为相对路径，暂时解决版本切换的问题
+        // 另外值得讨论的是，cache逻辑本身不应该阻塞正常业务流程，但目前cache带来的问题反而比主逻辑还多，这是很不健康的现象
         nativeMap[command] = {
           commands: [
             {
               name: command
             }
           ],
-          path: path.join(__dirname, '../native', file),
+          path: file,
           type: COMMAND_TYPE.NATIVE_TYPE
         };
       });
@@ -280,7 +287,7 @@ export class CommandPickConfig {
 
   getUniversalMap(): PluginInfo {
     const unversalPlugin: PluginInfo = {};
-    for (let pkg of Object.keys(this.subCommandMapWithVersion)) {
+    for (const pkg of Object.keys(this.subCommandMapWithVersion)) {
       if (!pkg) continue;
       const plugin = this.subCommandMapWithVersion[pkg];
       unversalPlugin[pkg] = {
@@ -307,10 +314,10 @@ export class CommandPickConfig {
     const commandPickerMap = this.cache.commandPickerMap;
     let targetPath = { type: '', plugin: '' };
 
-    for (let type of this.PICK_ORDER) {
+    for (const type of this.PICK_ORDER) {
       const pluginsInType = commandPickerMap[type];
       if (!pluginsInType) continue;
-      for (let plugin of Object.keys(pluginsInType as PluginInfo)) {
+      for (const plugin of Object.keys(pluginsInType as PluginInfo)) {
         if (name === plugin) {
           targetPath = {
             type,
@@ -343,10 +350,10 @@ export class CommandPickConfig {
 
     let cmdList: Array<TargetPlugin | TargetUniversalPlugin> = [];
 
-    for (let type of this.PICK_ORDER) {
+    for (const type of this.PICK_ORDER) {
       const pluginsInType = commandPickerMap[type];
       if (!pluginsInType) continue;
-      for (let plugin of Object.keys(pluginsInType as PluginInfo)) {
+      for (const plugin of Object.keys(pluginsInType as PluginInfo)) {
         const { commands, path, type } = pluginsInType[plugin] as PluginItem;
         commands?.forEach(({ name, path: cmdPath, version }) => {
           if (cmd === name) {
@@ -407,7 +414,7 @@ export default class CommandPicker {
 
   homeRunCmd = ['help', 'list'];
 
-  constructor(ctx: any, cmd: string = 'help') {
+  constructor(ctx: any, cmd = 'help') {
     this.root = ctx.root;
     this.ctx = ctx;
     this.cmd = cmd;
@@ -451,7 +458,7 @@ export default class CommandPicker {
   }
 
   getCommandSource(path: string): string {
-    let reg = /node_modules\/(.*)/;
+    const reg = /node_modules\/(.*)/;
     const commandSource = (reg.exec(path) || [])[1];
     return commandSource;
   }
@@ -478,15 +485,25 @@ export default class CommandPicker {
         version
       );
     } else {
-      const { path } = tartgetCommand as TargetPlugin;
+      let commandPath = '';
+      if (tartgetCommand instanceof TargetPlugin) {
+        commandPath = tartgetCommand.path;
+      }
+      // 兼容原来的绝对路径形式
+      if (path.isAbsolute(commandPath)) {
+        commandPath = path.basename(commandPath);
+      }
+      commandPath = path.join(__dirname, '../native', commandPath);
       const commandSource =
-        this.getCommandSource(path) || COMMAND_TYPE.NATIVE_TYPE;
-      this.ctx.logger.debug('pick command path: ', path);
+        this.getCommandSource(commandPath) || COMMAND_TYPE.NATIVE_TYPE;
+      this.ctx.logger.debug('pick command path: ', commandPath);
       this.ctx.logger.debug('pick command source: ', commandSource);
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
-        require(path)(Object.assign({}, this.ctx, { logger: pluginLogger }));
+        require(commandPath)(
+          Object.assign({}, this.ctx, { logger: pluginLogger })
+        );
       } catch (error) {
         this.ctx.fefError.printError(error, 'command load failed: %s');
       }
