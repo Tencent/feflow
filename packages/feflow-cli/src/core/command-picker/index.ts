@@ -489,11 +489,14 @@ export default class CommandPicker {
       if (tartgetCommand instanceof TargetPlugin) {
         commandPath = tartgetCommand.path;
       }
-      // 兼容原来的绝对路径形式
-      if (path.isAbsolute(commandPath)) {
-        commandPath = path.basename(commandPath);
+      // native命令跟node版本挂钩，需要解析到具体node版本下路径
+      if (type === 'native') {
+        // 兼容原来的绝对路径形式
+        if (path.isAbsolute(commandPath)) {
+          commandPath = path.basename(commandPath);
+        }
+        commandPath = path.join(__dirname, '../native', commandPath);
       }
-      commandPath = path.join(__dirname, '../native', commandPath);
       const commandSource =
         this.getCommandSource(commandPath) || COMMAND_TYPE.NATIVE_TYPE;
       this.ctx.logger.debug('pick command path: ', commandPath);
