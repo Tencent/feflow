@@ -59,6 +59,15 @@ export class FefError {
     const docs = this.getDocPath(pluginPath);
     if (docs) {
       this.printErrorWithDocs(obj, docs);
+    } else {
+      let { error, msg } = obj;
+      if (!obj.hideError) {
+        msg = `${msg || error}`;
+        this.context.logger.error({ err: error }, msg, chalk.magenta(error));
+      } else {
+        // 兼容多语言插件
+        this.context.logger.info(`${msg}`);
+      }
     }
   }
 

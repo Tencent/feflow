@@ -330,9 +330,10 @@ export class CommandPickConfig {
         break;
       }
     }
-
-    delete this.cache.commandPickerMap[targetPath.type][targetPath.plugin];
-    this.writeCache();
+    if (targetPath.type && targetPath.plugin) {
+      delete this.cache.commandPickerMap[targetPath.type][targetPath.plugin];
+      this.writeCache();
+    }
   }
 
   // 获取命令的缓存目录
