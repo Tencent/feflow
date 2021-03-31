@@ -15,6 +15,37 @@ export function fileExit(filePath: string) {
     fs.appendFileSync(filePath, '', 'utf-8');
   }
 }
+export const getKeyFormFile = function (file: string, key: string) {
+  try {
+    const jsonString = fs.readFileSync(file, 'utf-8');
+    if (jsonString) {
+      const jsonData = JSON.parse(jsonString);
+      return jsonData[key];
+    } else {
+      return '';
+    }
+  } catch (e) {
+    console.log('getKeyFormCache error =>', e);
+  }
+};
+export const setKeyToFile = (file: string, key: string, value: any): any => {
+  try {
+    const jsonString = fs.readFileSync(file, 'utf-8');
+    let jsonData;
+    if (jsonString) {
+      jsonData = JSON.parse(jsonString);
+      jsonData[key] = value;
+    } else {
+      jsonData = {
+        [key]: value
+      };
+    }
+    fs.writeFileSync(file, JSON.stringify(jsonData, null, 4), 'utf-8');
+  } catch (e) {
+    console.log('setKeyToCache error =>', e);
+  }
+};
+
 
 export class Config {
   static loadConfigFile(filePath: string) {

@@ -7,11 +7,13 @@ import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
-  FEFLOW_ROOT
+  FEFLOW_ROOT,
+  HEART_BEAT_COLLECTION_LOG,
 } from '../shared/constant';
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
+import {fileExit} from '../shared/file';
 const pkg = require('../../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
@@ -82,6 +84,7 @@ export default function entry() {
   } catch (e) {
     fs.mkdirSync(root);
   }
+  fileExit(path.join(root, HEART_BEAT_COLLECTION_LOG));
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
   let cmd: any = args._.shift();

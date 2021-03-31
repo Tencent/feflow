@@ -330,9 +330,10 @@ export class CommandPickConfig {
         break;
       }
     }
-
-    delete this.cache.commandPickerMap[targetPath.type][targetPath.plugin];
-    this.writeCache();
+    if (targetPath.type && targetPath.plugin) {
+      delete this.cache.commandPickerMap[targetPath.type][targetPath.plugin];
+      this.writeCache();
+    }
   }
 
   // 获取命令的缓存目录
@@ -464,7 +465,7 @@ export default class CommandPicker {
   }
 
   pickCommand() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
@@ -489,11 +490,14 @@ export default class CommandPicker {
       if (tartgetCommand instanceof TargetPlugin) {
         commandPath = tartgetCommand.path;
       }
-      // 兼容原来的绝对路径形式
-      if (path.isAbsolute(commandPath)) {
-        commandPath = path.basename(commandPath);
+      // native命令跟node版本挂钩，需要解析到具体node版本下路径
+      if (type === 'native') {
+        // 兼容原来的绝对路径形式
+        if (path.isAbsolute(commandPath)) {
+          commandPath = path.basename(commandPath);
+        }
+        commandPath = path.join(__dirname, '../native', commandPath);
       }
-      commandPath = path.join(__dirname, '../native', commandPath);
       const commandSource =
         this.getCommandSource(commandPath) || COMMAND_TYPE.NATIVE_TYPE;
       this.ctx.logger.debug('pick command path: ', commandPath);
@@ -511,7 +515,7 @@ export default class CommandPicker {
   }
 
   getCmdInfo(): { path: string; type: COMMAND_TYPE } {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd);
+    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
     const cmdInfo: { path: string; type: COMMAND_TYPE } = {
       type,
