@@ -432,7 +432,7 @@ async function installPlugin(
   }
   // if the specified version is already installed, skip it
   if (
-    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.installVersion, !isGlobal)
+    universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)
   ) {
     global && logger.info(`the current version is installed`);
     return;
