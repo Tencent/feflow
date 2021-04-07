@@ -16,7 +16,7 @@ export function fileExit(filePath: string) {
   }
 }
 // 文件中读取json对象的某个value
-export const getKeyFormFile = function (file: string, key: string) {
+export const getKeyFormFile = (file: string, key: string) => {
   try {
     const jsonString = fs.readFileSync(file, 'utf-8');
     if (jsonString) {

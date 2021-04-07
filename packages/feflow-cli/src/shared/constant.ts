@@ -59,11 +59,11 @@ export const NPM_PLUGIN_INFO_JSON = 'npm-plugin-info.json';
 
 export const UNIVERSAL_README_CONFIG = 'README.md';
 
-export const CACHE_FILE = ".feflowCache.yml";
+export const CACHE_FILE = '.feflowCache.yml';
 
 export const HEART_BEAT_COLLECTION = 'heart-beat.db';
 
-export const HEART_BEAT_COLLECTION_LOG = 'heart-beat-log.db';
+export const HEART_BEAT_COLLECTION_LOG = 'heart_beat-log.db';
 
 export const UPDATE_COLLECTION = 'update.db';
 
