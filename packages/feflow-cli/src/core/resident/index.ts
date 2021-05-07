@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 import Table from 'easy-table';
-import DBInstance from '../../shared/db';
+import LockFileInstance from '../../shared/lockFile';
 import {
   HEART_BEAT_COLLECTION,
   UPDATE_COLLECTION,
@@ -18,8 +18,8 @@ const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes('--slient');
 const disableCheck = process.argv.slice(3).includes('--disable-check');
-let db: DBInstance;
-let heartDB: DBInstance;
+let updateFile: LockFileInstance;
+let heartFile: LockFileInstance;
 const table = new Table();
 const uTable = new Table();
 
@@ -58,9 +58,6 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
 }
 
 async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
-  const updateError = await db.read('update_error');
-  const exception = await db.read('exception');
-
   const _showCliUpdateM = () => {
     const updateMsg = updateData['cli_update_msg'];
     if (updateMsg) {
@@ -125,29 +122,12 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
-  const _reportErrorM = () => {
-    const errorMsg = updateError?.['value'] || {};
-    const errorKeys = Object.keys(errorMsg);
-
-    if (errorKeys.length) {
-      ctx.logger.warn('auto-update-error', errorMsg);
-    }
-
-    const exceptionMsg = exception?.['value'];
-    if (exceptionMsg) {
-      ctx.logger.warn('auto-update-exception', exceptionMsg);
-    }
-  };
-
   // cli -> tnpm -> universal
   _showCliUpdateM();
   _showPluginsUpdateM();
   _showUniversalPluginsM();
-  _reportErrorM();
 
-  await db.update('update_data', updateData);
-  await db.update('update_error', '');
-  await db.update('exception', '');
+  updateFile.update('update_data', updateData);
 }
 
 async function _checkLock(updateData: any) {
@@ -164,11 +144,10 @@ async function _checkLock(updateData: any) {
       time: String(nowTime),
       pid: process.pid
     };
-    await db.update('update_data', updateData);
+    await updateFile.update('update_data', updateData);
 
     // Optimistic Concurrency Control
-    let nowUpdateData = await db.read('update_data');
-    nowUpdateData = nowUpdateData?.['value'];
+    const nowUpdateData = await updateFile.read('update_data');
     const nowUpdateLock = nowUpdateData?.['update_lock'];
     if (nowUpdateLock && nowUpdateLock['pid'] !== process.pid) {
       return true;
@@ -185,27 +164,33 @@ export async function checkUpdate(ctx: any) {
   let latestVersion: any = '';
   let cacheValidate = false;
 
-  if (!db) {
-    db = new DBInstance(dbFile);
+  if (!updateFile) {
+    updateFile = new LockFileInstance(dbFile, 'update.lock');
   }
 
   const heartDBFile = path.join(ctx.root, HEART_BEAT_COLLECTION);
-  if (!heartDB) {
-    heartDB = new DBInstance(heartDBFile);
+  if (!heartFile) {
+    heartFile = new LockFileInstance(heartDBFile, 'heart-beat.lock');
   }
 
-  let updateData = await db.read('update_data');
-  updateData = updateData?.['value'];
+  const updateData = await updateFile.read('update_data');
   if (updateData) {
     // add lock to keep only one updating process is running
     const isLocked = await _checkLock(updateData);
     if (isLocked) return ctx.logger.debug('one updating process is running');
 
-    await _checkUpdateMsg(ctx, updateData);
+    const {
+      cli_update_msg,
+      plugins_update_msg,
+      universal_plugins_update_msg
+    } = updateData;
+    if (cli_update_msg || plugins_update_msg || universal_plugins_update_msg) {
+      await _checkUpdateMsg(ctx, updateData);
+    }
 
-    const data = await heartDB.read('beat_time');
+    const data = await heartFile.read('beat_time');
     if (data) {
-      const lastBeatTime = parseInt(data['value'], 10);
+      const lastBeatTime = parseInt(data, 10);
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
       ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
@@ -222,8 +207,8 @@ export async function checkUpdate(ctx: any) {
     ctx.logger.debug('init heart-beat for update detective');
     await Promise.all([
       // 初始化心跳数据
-      heartDB.create('beat_time', String(nowTime)),
-      db.create('update_data', {
+      heartFile.update('beat_time', String(nowTime)),
+      updateFile.update('update_data', {
         // 初始化自动更新任务数据
         latest_cli_version: '',
         latest_plugins: '',
@@ -237,9 +222,7 @@ export async function checkUpdate(ctx: any) {
           time: String(nowTime),
           pid: process.pid
         }
-      }),
-      db.create('update_error', ''),
-      db.create('exception', '')
+      })
     ]);
     startUpdateBeat(ctx);
   }

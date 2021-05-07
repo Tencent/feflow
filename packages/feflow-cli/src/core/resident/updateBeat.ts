@@ -5,7 +5,7 @@ import semver from 'semver';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import _ from 'lodash';
-import DBInstance from '../../shared/db';
+import LockFileInstance from '../../shared/lockFile';
 import packageJson from '../../shared/packageJson';
 import { parseYaml } from '../../shared/yaml';
 import { setServerUrl } from '../../shared/git';
@@ -39,10 +39,9 @@ const root = path.join(osenv.home(), FEFLOW_ROOT);
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
 const dbFile = path.join(root, UPDATE_COLLECTION);
-const db = new DBInstance(dbFile);
+const updateFile = new LockFileInstance(dbFile, 'update.lock');
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
-const heartDB = new DBInstance(heartDBFile);
-heartDB.setAutoCompact(BEAT_GAP * 1000);
+const heartFile = new LockFileInstance(heartDBFile, 'heart-beat.lock');
 const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)
@@ -52,11 +51,7 @@ const logger = loggerInstance({
 process.title = 'feflow-update-beat-proccess';
 
 const handleException = (e: ErrorInstance): void => {
-  db.update('exception', {
-    [`${e.name}: ${e.message}`]: e.stack
-  }).then(() => {
-    process.exit(1);
-  });
+  logger.error(`update_beat_exception: ${e.name}: ${e.message} => ${e.stack}`);
 };
 
 (process as NodeJS.EventEmitter).on('uncaughtException', handleException);
@@ -64,7 +59,7 @@ const handleException = (e: ErrorInstance): void => {
 (process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 const heartBeat = () => {
-  heartDB.update('beat_time', String(new Date().getTime()));
+  heartFile.update('beat_time', String(new Date().getTime()));
 };
 
 const queryCliUpdate = async () => {
@@ -89,14 +84,13 @@ const queryCliUpdate = async () => {
     config['packageManager']
   );
   if (latestVersion && semver.gt(latestVersion, version)) {
-    let updateData: any = await db.read('update_data');
-    updateData = updateData?.['value'];
+    const updateData: any = await updateFile.read('update_data');
     if (updateData.latest_cli_version !== latestVersion) {
       const newUpdateData = {
         ...updateData,
         latest_cli_version: latestVersion
       };
-      await db.update('update_data', newUpdateData);
+      await updateFile.update('update_data', newUpdateData);
     }
   }
 };
@@ -142,14 +136,13 @@ const queryPluginsUpdate = async () => {
     });
     logger.debug('tnpm plugins update infomation', plugins);
     if (plugins.length) {
-      let updateData: any = await db.read('update_data');
-      updateData = updateData?.['value'];
+      const updateData: any = await updateFile.read('update_data');
       if (!_.isEqual(updateData.latest_plugins, plugins)) {
         const newUpdateData = {
           ...updateData,
           latest_plugins: plugins
         };
-        await db.update('update_data', newUpdateData);
+        await updateFile.update('update_data', newUpdateData);
       }
     }
   });
@@ -170,8 +163,8 @@ const queryUniversalPluginsUpdate = async () => {
     const pkgInfo = await getPkgInfo(
       { root, config, logger },
       `${pkg}@${version}`
-    ).catch((e: string) => {
-      db.insertOnce('update_error', `${pkg}@${version}`, e);
+    ).catch(async (e: string) => {
+      logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
     });
     if (!pkgInfo) {
       continue;
@@ -184,8 +177,7 @@ const queryUniversalPluginsUpdate = async () => {
 
   logger.debug('universal plugins update infomation', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
-    let updateData: any = await db.read('update_data');
-    updateData = updateData?.['value'];
+    const updateData: any = await updateFile.read('update_data');
     if (
       !_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)
     ) {
@@ -193,7 +185,7 @@ const queryUniversalPluginsUpdate = async () => {
         ...updateData,
         latest_universal_plugins: latestUniversalPlugins
       };
-      await db.update('update_data', newUpdateData);
+      await updateFile.update('update_data', newUpdateData);
     }
   }
 };

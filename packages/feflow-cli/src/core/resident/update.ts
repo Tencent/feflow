@@ -4,7 +4,7 @@ import semver from 'semver';
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
-import DBInstance from '../../shared/db';
+import LockFileInstance from '../../shared/lockFile';
 import { install } from '../../shared/npm';
 import {
   UPDATE_COLLECTION,
@@ -59,7 +59,7 @@ const bin = path.join(root, FEFLOW_BIN);
 const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const universalPkg = new UniversalPkg(universalPkgPath);
-const db = new DBInstance(dbFile);
+const updateFile = new LockFileInstance(dbFile, 'update.lock');
 
 const logger = loggerInstance({
   debug: Boolean(debug),
@@ -83,11 +83,7 @@ const ctx = {
 let updateData: any;
 
 const handleException = (e: ErrorInstance): void => {
-  db.update('exception', {
-    [`${e.name}: ${e.message}`]: e.stack
-  }).then(() => {
-    process.exit(1);
-  });
+  logger.error(`update_exception: ${e.name}: ${e.message} => ${e.stack}`);
 };
 
 (process as NodeJS.EventEmitter).on('uncaughtException', handleException);
@@ -105,7 +101,7 @@ function startUpdateCli() {
       };
       updateData['latest_cli_version'] = '';
     }
-    resolve();
+    resolve(undefined);
   });
 }
 
@@ -201,7 +197,9 @@ function checkUniversalPluginsUpdate() {
         // 记录更改项
         const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch(
           (e: string) => {
-            db.insertOnce('update_error', `${pkg}@${version}`, e);
+            logger.error(
+              `update_error => pkg: ${pkg}@${version} => error: ${e}`
+            );
           }
         );
         if (!pkgInfo) {
@@ -240,14 +238,14 @@ function checkUniversalPluginsUpdate() {
       updateData['universal_plugins_update_msg'] = updatePkg;
       updateData['latest_universal_plugins'] = '';
     }
-    resolve();
+    resolve(undefined);
   });
 }
 
-
-db.read('update_data')
+updateFile
+  .read('update_data')
   .then(data => {
-    updateData = data?.['value'];
+    updateData = data;
     return Promise.all([
       startUpdateCli(),
       checkPluginsUpdate(),
@@ -256,11 +254,11 @@ db.read('update_data')
   })
   .then(() => {
     updateData['update_lock'] = '';
-    db.update('update_data', updateData);
+    updateFile.update('update_data', updateData);
   })
   .catch((reason: any) => {
     updateData['update_lock'] = '';
-    db.update('update_data', updateData);
+    updateFile.update('update_data', updateData);
 
     logger.debug(reason);
     handleException(reason);

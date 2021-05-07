@@ -61,11 +61,11 @@ export const UNIVERSAL_README_CONFIG = 'README.md';
 
 export const CACHE_FILE = '.feflowCache.yml';
 
-export const HEART_BEAT_COLLECTION = 'heart-beat.db';
+export const HEART_BEAT_COLLECTION = 'heart-beat.json';
 
 export const HEART_BEAT_COLLECTION_LOG = 'heart_beat-log.db';
 
-export const UPDATE_COLLECTION = 'update.db';
+export const UPDATE_COLLECTION = 'update.json';
 
 export const BEAT_GAP = 5000;
 // 日志上报间隔
