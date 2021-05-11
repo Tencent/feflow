@@ -14,7 +14,6 @@ export default function packageJson(
       }`,
       method: 'GET'
     };
-    console.log(options);
 
     rp(options)
       .then((response: any) => {
