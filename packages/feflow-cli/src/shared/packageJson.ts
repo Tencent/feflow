@@ -1,23 +1,16 @@
-import rp from 'request-promise';
+import axios, { AxiosResponse } from 'axios';
 
 export default function packageJson(
   name: string,
   registry: string
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const options = {
-      url: `${registry}/${name}`,
-      method: 'GET'
-    };
-
-    rp(options)
-      .then((response: any) => {
-        const data = JSON.parse(response);
-        const version = data['dist-tags'].latest;
-        resolve(version);
-      })
-      .catch((err: object) => {
-        reject(err);
-      });
-  });
+  return axios.get(`${registry}/${name}`)
+    .then((response: AxiosResponse) => {
+      const { data } = response || { 'dist-tags': '' };
+      const version = data['dist-tags'].latest;
+      return version;
+    })
+    .catch((err: object) => {
+      return err;
+    });
 }
