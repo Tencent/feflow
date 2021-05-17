@@ -49,8 +49,8 @@ async function getRepoInfo(ctx: any, packageName: string) {
       const data = res.data || {};
       return data.data && data.data[0];
     })
-    .catch((err: any) => {
-      ctx.logger.debug('Get repo info error', err);
+    .catch((e: any) => {
+      ctx.logger.debug('Get repo info error', e);
     });
 }
 
@@ -123,9 +123,9 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
       dependencies.map(async (dependency: string) => {
         try {
           return await packageJson(dependency, registryUrl);
-        } catch (err) {
+        } catch (e) {
           ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
-          ctx.logger.debug(err);
+          ctx.logger.debug(e);
           process.exit(2);
         }
       })
@@ -136,8 +136,8 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
       try {
         const data = fs.readFileSync(ctx.rootPkg, 'utf-8');
         json = JSON.parse(data);
-      } catch (err) {
-        ctx.logger.error(`getCurversion error: ${err}`);
+      } catch (e) {
+        ctx.logger.error(`getCurversion error: ${JSON.stringify(e)}`);
       }
 
       if (!json.dependencies) {
@@ -228,7 +228,6 @@ async function installJsPlugin(ctx: any, installPlugin: string) {
   const isGlobal = ctx?.args['g'];
   // install js npm plugin
   await installNpmPlugin(ctx, installPlugin);
-
   // if install with option -g, register as global command
   if (
     isGlobal &&
@@ -798,7 +797,7 @@ module.exports = (ctx: any) => {
     try {
       await installPlugin(ctx, installPluginStr, true);
     } catch (e) {
-      ctx.logger.error(`install error: ${e}`);
+      ctx.logger.error(`install error: ${JSON.stringify(e)}`);
       process.exit(2);
     }
   });
