@@ -82,3 +82,11 @@ export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
 export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
 
 export const LOG_FILE = 'logger.log';
+
+export const BEAT_KEY = 'beat_time';
+
+export const BEAT_LOCK = 'heart-beat.lock';
+
+export const UPDATE_KEY = 'update_data';
+
+export const UPDATE_LOCK = 'update.lock';

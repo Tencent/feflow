@@ -16,7 +16,11 @@ import {
   BEAT_GAP,
   CHECK_UPDATE_GAP,
   FEFLOW_ROOT,
-  UNIVERSAL_PKG_JSON
+  UNIVERSAL_PKG_JSON,
+  BEAT_KEY,
+  BEAT_LOCK,
+  UPDATE_KEY,
+  UPDATE_LOCK
 } from '../../shared/constant';
 import loggerInstance from '../logger';
 import {
@@ -39,9 +43,9 @@ const root = path.join(osenv.home(), FEFLOW_ROOT);
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
 const dbFile = path.join(root, UPDATE_COLLECTION);
-const updateFile = new LockFileInstance(dbFile, 'update.lock');
+const updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
-const heartFile = new LockFileInstance(heartDBFile, 'heart-beat.lock');
+const heartFile = new LockFileInstance(heartDBFile, BEAT_LOCK);
 const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)
@@ -59,7 +63,7 @@ const handleException = (e: ErrorInstance): void => {
 (process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 const heartBeat = () => {
-  heartFile.update('beat_time', String(new Date().getTime()));
+  heartFile.update(BEAT_KEY, String(new Date().getTime()));
 };
 
 const queryCliUpdate = async () => {
@@ -84,13 +88,13 @@ const queryCliUpdate = async () => {
     config['packageManager']
   );
   if (latestVersion && semver.gt(latestVersion, version)) {
-    const updateData: any = await updateFile.read('update_data');
+    const updateData: any = await updateFile.read(UPDATE_KEY);
     if (updateData.latest_cli_version !== latestVersion) {
       const newUpdateData = {
         ...updateData,
         latest_cli_version: latestVersion
       };
-      await updateFile.update('update_data', newUpdateData);
+      await updateFile.update(UPDATE_KEY, newUpdateData);
     }
   }
 };
@@ -136,13 +140,13 @@ const queryPluginsUpdate = async () => {
     });
     logger.debug('tnpm plugins update infomation', plugins);
     if (plugins.length) {
-      const updateData: any = await updateFile.read('update_data');
+      const updateData: any = await updateFile.read(UPDATE_KEY);
       if (!_.isEqual(updateData.latest_plugins, plugins)) {
         const newUpdateData = {
           ...updateData,
           latest_plugins: plugins
         };
-        await updateFile.update('update_data', newUpdateData);
+        await updateFile.update(UPDATE_KEY, newUpdateData);
       }
     }
   });
@@ -177,7 +181,7 @@ const queryUniversalPluginsUpdate = async () => {
 
   logger.debug('universal plugins update infomation', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
-    const updateData: any = await updateFile.read('update_data');
+    const updateData: any = await updateFile.read(UPDATE_KEY);
     if (
       !_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)
     ) {
@@ -185,7 +189,7 @@ const queryUniversalPluginsUpdate = async () => {
         ...updateData,
         latest_universal_plugins: latestUniversalPlugins
       };
-      await updateFile.update('update_data', newUpdateData);
+      await updateFile.update(UPDATE_KEY, newUpdateData);
     }
   }
 };

@@ -10,7 +10,11 @@ import {
   HEART_BEAT_COLLECTION,
   UPDATE_COLLECTION,
   BEAT_GAP,
-  CHECK_UPDATE_GAP
+  CHECK_UPDATE_GAP,
+  BEAT_KEY,
+  UPDATE_KEY,
+  BEAT_LOCK,
+  UPDATE_LOCK
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
@@ -127,7 +131,7 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
   _showPluginsUpdateM();
   _showUniversalPluginsM();
 
-  updateFile.update('update_data', updateData);
+  updateFile.update(UPDATE_KEY, updateData);
 }
 
 async function _checkLock(updateData: any) {
@@ -144,10 +148,10 @@ async function _checkLock(updateData: any) {
       time: String(nowTime),
       pid: process.pid
     };
-    await updateFile.update('update_data', updateData);
+    await updateFile.update(UPDATE_KEY, updateData);
 
     // Optimistic Concurrency Control
-    const nowUpdateData = await updateFile.read('update_data');
+    const nowUpdateData = await updateFile.read(UPDATE_KEY);
     const nowUpdateLock = nowUpdateData?.['update_lock'];
     if (nowUpdateLock && nowUpdateLock['pid'] !== process.pid) {
       return true;
@@ -165,15 +169,15 @@ export async function checkUpdate(ctx: any) {
   let cacheValidate = false;
 
   if (!updateFile) {
-    updateFile = new LockFileInstance(dbFile, 'update.lock');
+    updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
   }
 
   const heartDBFile = path.join(ctx.root, HEART_BEAT_COLLECTION);
   if (!heartFile) {
-    heartFile = new LockFileInstance(heartDBFile, 'heart-beat.lock');
+    heartFile = new LockFileInstance(heartDBFile, BEAT_LOCK);
   }
 
-  const updateData = await updateFile.read('update_data');
+  const updateData = await updateFile.read(UPDATE_KEY);
   if (updateData) {
     // add lock to keep only one updating process is running
     const isLocked = await _checkLock(updateData);
@@ -188,7 +192,7 @@ export async function checkUpdate(ctx: any) {
       await _checkUpdateMsg(ctx, updateData);
     }
 
-    const data = await heartFile.read('beat_time');
+    const data = await heartFile.read(BEAT_KEY);
     if (data) {
       const lastBeatTime = parseInt(data, 10);
 
@@ -207,8 +211,8 @@ export async function checkUpdate(ctx: any) {
     ctx.logger.debug('init heart-beat for update detective');
     await Promise.all([
       // 初始化心跳数据
-      heartFile.update('beat_time', String(nowTime)),
-      updateFile.update('update_data', {
+      heartFile.update(BEAT_KEY, String(nowTime)),
+      updateFile.update(UPDATE_KEY, {
         // 初始化自动更新任务数据
         latest_cli_version: '',
         latest_plugins: '',

@@ -12,7 +12,9 @@ import {
   UNIVERSAL_PKG_JSON,
   UNIVERSAL_MODULES,
   FEFLOW_BIN,
-  FEFLOW_LIB
+  FEFLOW_LIB,
+  UPDATE_KEY,
+  UPDATE_LOCK
 } from '../../shared/constant';
 import { setServerUrl } from '../../shared/git';
 import { parseYaml } from '../../shared/yaml';
@@ -59,7 +61,7 @@ const bin = path.join(root, FEFLOW_BIN);
 const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const universalPkg = new UniversalPkg(universalPkgPath);
-const updateFile = new LockFileInstance(dbFile, 'update.lock');
+const updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
 
 const logger = loggerInstance({
   debug: Boolean(debug),
@@ -243,7 +245,7 @@ function checkUniversalPluginsUpdate() {
 }
 
 updateFile
-  .read('update_data')
+  .read(UPDATE_KEY)
   .then(data => {
     updateData = data;
     return Promise.all([
@@ -254,11 +256,11 @@ updateFile
   })
   .then(() => {
     updateData['update_lock'] = '';
-    updateFile.update('update_data', updateData);
+    updateFile.update(UPDATE_KEY, updateData);
   })
   .catch((reason: any) => {
     updateData['update_lock'] = '';
-    updateFile.update('update_data', updateData);
+    updateFile.update(UPDATE_KEY, updateData);
 
     logger.debug(reason);
     handleException(reason);
