@@ -14,14 +14,16 @@ import {
   BEAT_KEY,
   UPDATE_KEY,
   BEAT_LOCK,
-  UPDATE_LOCK
+  UPDATE_LOCK,
+  SILENT_ARG,
+  DISABLE_ARG
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
 const updateBeatProcess = path.join(__dirname, './updateBeat');
 const updateProcess = path.join(__dirname, './update');
-const isSilent = process.argv.slice(3).includes('--slient');
-const disableCheck = process.argv.slice(3).includes('--disable-check');
+const isSilent = process.argv.slice(3).includes(SILENT_ARG);
+const disableCheck = process.argv.slice(3).includes(DISABLE_ARG);
 let updateFile: LockFileInstance;
 let heartFile: LockFileInstance;
 const table = new Table();
@@ -90,8 +92,9 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
         table.newRow();
       });
 
+      console.log('');
       ctx.logger.info(
-        'Your local templates or plugins has been updated last time.'
+        'Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.'
       );
       if (!isSilent) console.log(table.toString());
 
@@ -117,8 +120,9 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
         uTable.newRow();
       });
 
+      console.log('');
       ctx.logger.info(
-        'Your local universal plugins has been updated last time.'
+        'Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.'
       );
       if (!isSilent) console.log(uTable.toString());
 

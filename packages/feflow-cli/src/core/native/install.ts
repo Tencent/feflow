@@ -18,7 +18,9 @@ import {
   INVALID_VERSION,
   FEFLOW_PLUGIN_GIT_PREFIX,
   FEFLOW_PLUGIN_PREFIX,
-  FEFLOW_PLUGIN_LOCAL_PREFIX
+  FEFLOW_PLUGIN_LOCAL_PREFIX,
+  SILENT_ARG,
+  DISABLE_ARG
 } from '../../shared/constant';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
@@ -114,14 +116,16 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   const registryUrl = await getRegistryUrl(packageManager);
   try {
     await Promise.all(
-        dependencies.map(async (dependency: string) => {
-          try {
-            return await packageJson(dependency, registryUrl);
-          } catch (err) {
-            ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
-            process.exit(2);
-          }
-        })
+      dependencies.map(async (dependency: string) => {
+        try {
+          return await packageJson(dependency, registryUrl);
+        } catch (err) {
+          ctx.logger.error(
+            `${dependency} not found on ${packageManager}, please check if it exists`
+          );
+          process.exit(2);
+        }
+      })
     );
   } catch (e) {
     ctx.logger.error(`get pkg info error ${JSON.stringify(e)}`);
@@ -266,7 +270,11 @@ async function startInstall(
   }
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
-    await checkoutVersion(repoPath, pkgInfo.checkoutTag, pkgInfo.lastCheckoutTag);
+    await checkoutVersion(
+      repoPath,
+      pkgInfo.checkoutTag,
+      pkgInfo.lastCheckoutTag
+    );
   }
 
   // deal dependencies
@@ -310,7 +318,10 @@ async function startInstall(
         curPkgInfo.repoName,
         curPkgInfo.installVersion
       );
-      const pluginPath = path.join(universalModules, `${curPkgInfo.repoName}@${curPkgInfo.installVersion}`);
+      const pluginPath = path.join(
+        universalModules,
+        `${curPkgInfo.repoName}@${curPkgInfo.installVersion}`
+      );
       const curPlugin = resolvePlugin(ctx, pluginPath);
       let useCommandName = commandName;
       // custom command name
@@ -325,7 +336,7 @@ async function startInstall(
         linker.register(
           pluginBin,
           pluginLib,
-          `${commandName}@${curPkgInfo.installVersion} --disable-check --slient`,
+          `${commandName}@${curPkgInfo.installVersion} ${DISABLE_ARG} ${SILENT_ARG}`,
           useCommandName
         );
       }

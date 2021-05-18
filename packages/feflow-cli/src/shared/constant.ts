@@ -90,3 +90,7 @@ export const BEAT_LOCK = 'heart-beat.lock';
 export const UPDATE_KEY = 'update_data';
 
 export const UPDATE_LOCK = 'update.lock';
+
+export const SILENT_ARG = '--slient';
+
+export const DISABLE_ARG = '--disable-check';
