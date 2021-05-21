@@ -12,7 +12,9 @@ export default function packageJson(
     isValidVersion ? `@${names[1]}/${names[2]}` : name
   }`;
   console.log('pkg url: ', url);
-  return axios.get(url)
+  return axios.get(url, {
+      proxy: false
+    })
     .then((response: AxiosResponse) => {
       const { data } = response || { 'dist-tags': {} };
       if (!isValidVersion) {
