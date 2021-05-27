@@ -1,6 +1,6 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
