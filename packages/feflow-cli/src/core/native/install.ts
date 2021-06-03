@@ -46,7 +46,9 @@ async function getRepoInfo(ctx: any, packageName: string) {
   if (!url) {
     return Promise.reject('the serverUrl is invalid: ' + serverUrl);
   }
-  return axios.get(url)
+  return axios.get(url, {
+      proxy: false
+    })
     .then(res => {
       const data = res.data || {};
       return data.data && data.data[0];
