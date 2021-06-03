@@ -43,9 +43,11 @@ const root = path.join(osenv.home(), FEFLOW_ROOT);
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
 const dbFile = path.join(root, UPDATE_COLLECTION);
-const updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
+const updateLock = path.join(root, UPDATE_LOCK);
+const updateFile = new LockFileInstance(dbFile, updateLock);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
-const heartFile = new LockFileInstance(heartDBFile, BEAT_LOCK);
+const beatLock = path.join(root, BEAT_LOCK);
+const heartFile = new LockFileInstance(heartDBFile, beatLock);
 const logger = loggerInstance({
   debug: Boolean(debug),
   silent: Boolean(silent)

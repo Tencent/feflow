@@ -27,22 +27,24 @@ export default class LockFileInstance {
   }
 
   checkIfCanRead(cb: any): void {
-    const status = lockFile.checkSync(this.lockKey);
-    if (status) {
-      // another writing is runing
-      if (this.tryCount >= this.tryMax) {
+    lockFile.check(this.lockKey, (err, status) => {
+      if (err) return this.logger.error(err);
+      if (status) {
+        // another writing is runing
+        if (this.tryCount >= this.tryMax) {
+          this.tryCount = 0;
+          return this.logger.error(`file read time out ${this.filePath}`);
+        }
+        this.tryCount++;
+        setTimeout(() => {
+          this.checkIfCanRead(cb);
+        }, this.tryGap);
+      } else {
+        // read immediatelly
         this.tryCount = 0;
-        throw new Error(`file read time out ${this.filePath}`);
+        cb && cb();
       }
-      this.tryCount++;
-      setTimeout(() => {
-        this.checkIfCanRead(cb);
-      }, this.tryGap);
-    } else {
-      // read immediatelly
-      this.tryCount = 0;
-      cb && cb();
-    }
+    });
   }
 
   read(key: string | undefined): Promise<any> {

@@ -173,12 +173,14 @@ export async function checkUpdate(ctx: any) {
   let cacheValidate = false;
 
   if (!updateFile) {
-    updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
+    const updateLock = path.join(ctx.root, UPDATE_LOCK);
+    updateFile = new LockFileInstance(dbFile, updateLock);
   }
 
   const heartDBFile = path.join(ctx.root, HEART_BEAT_COLLECTION);
   if (!heartFile) {
-    heartFile = new LockFileInstance(heartDBFile, BEAT_LOCK);
+    const beatLock = path.join(ctx.root, BEAT_LOCK);
+    heartFile = new LockFileInstance(heartDBFile, beatLock);
   }
 
   const updateData = await updateFile.read(UPDATE_KEY);
