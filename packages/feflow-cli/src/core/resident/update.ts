@@ -60,8 +60,9 @@ const config: any = parseYaml(configPath);
 const bin = path.join(root, FEFLOW_BIN);
 const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
+const updateLock = path.join(root, UPDATE_LOCK);
 const universalPkg = new UniversalPkg(universalPkgPath);
-const updateFile = new LockFileInstance(dbFile, UPDATE_LOCK);
+const updateFile = new LockFileInstance(dbFile, updateLock);
 
 const logger = loggerInstance({
   debug: Boolean(debug),
