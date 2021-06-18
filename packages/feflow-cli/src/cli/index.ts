@@ -4,7 +4,6 @@ import minimist from 'minimist';
 import semver from 'semver';
 import fs from 'fs';
 import path from 'path';
-import osenv from 'osenv';
 import stripComments from 'strip-json-comments';
 import Logger from '../core/logger';
 import {

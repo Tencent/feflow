@@ -3,7 +3,6 @@ import Hook from './hook';
 import Binp from './universal-pkg/binp';
 import fs from 'fs';
 import logger from './logger';
-import osenv from 'osenv';
 import path from 'path';
 import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
@@ -68,7 +67,7 @@ export default class Feflow {
 
   constructor(args: any) {
     args = args || {};
-    const configPath = path.join(root, '.feflowrc.yml');
+    const configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
     this.root = FEFLOW_HOME;
     this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);
     this.lib = path.join(FEFLOW_HOME, FEFLOW_LIB);
@@ -96,7 +95,7 @@ export default class Feflow {
   }
 
   async init(cmd: string | undefined) {
-    this.reporter.init && this.reporter.init(cmd);
+    this.reporter.init(cmd);
     await Promise.all([
       this.initClient(),
       this.initPackageManager(),
@@ -104,9 +103,7 @@ export default class Feflow {
     ]);
 
     const disableCheck =
-      this.args['disable-check'] ||
-      String(this.config?.disableCheck) === 'true';
-
+      this.args['disable-check'] || this.config?.disableCheck;
     if (!disableCheck) {
       checkUpdate(this);
     }
@@ -129,26 +126,12 @@ export default class Feflow {
 
   async initClient() {
     const { rootPkg } = this;
-
+    let pkgInfo = null;
     try {
       await statAsync(rootPkg);
-      const pkgInfo = await readFileAsync(rootPkg);
-      // 检测package.json为空
-      if (!pkgInfo.toString()) {
-        await writeFileAsync(
-          rootPkg,
-          JSON.stringify(
-            {
-              name: 'feflow-home',
-              version: '0.0.0',
-              private: true
-            },
-            null,
-            2
-          )
-        );
-      }
-    } catch (e) {
+      pkgInfo = await readFileAsync(rootPkg);
+    } catch (e) {}
+    if (!pkgInfo) {
       await writeFileAsync(
         rootPkg,
         JSON.stringify(
@@ -230,10 +213,10 @@ export default class Feflow {
     return new Promise<any>((resolve, reject) => {
       const nativePath = path.join(__dirname, './native');
       fs.readdirSync(nativePath)
-        .filter((file) => {
+        .filter((file: string) => {
           return file.endsWith('.js');
         })
-        .map((file) => {
+        .map((file: string) => {
           require(path.join(__dirname, './native', file))(this);
         });
       resolve();
