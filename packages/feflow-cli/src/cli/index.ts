@@ -1,43 +1,44 @@
-import chalk from 'chalk';
 import Feflow from '../core';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
+import fs from 'fs';
+import path from 'path';
+import osenv from 'osenv';
+import stripComments from 'strip-json-comments';
+import Logger from '../core/logger';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
-  FEFLOW_ROOT,
+  FEFLOW_HOME,
   HEART_BEAT_COLLECTION_LOG,
 } from '../shared/constant';
-import fs from 'fs';
-import path from 'path';
-import osenv from 'osenv';
-import {fileExit} from '../shared/file';
-const pkg = require('../../package.json');
+import { fileExit } from '../shared/file';
 
-const checkNodeVersion = (wanted: any, id: string) => {
-  if (!semver.satisfies(process.version, wanted)) {
-    console.log(
-      chalk.red(
-        'You are using Node ' +
-          process.version +
-          ', but this version of ' +
-          id +
-          ' requires Node ' +
-          wanted +
-          '.\nPlease upgrade your Node version.'
-      )
+const pkg = JSON.parse(
+  stripComments(
+    fs
+      .readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8')
+      .replace(/^\ufeff/u, '')
+  )
+);
+
+const logger = Logger({
+  debug: false,
+  silent: false
+});
+
+function ensureNodeVersion(requiredVersion: string, id: string): void {
+  if (!semver.satisfies(process.version, requiredVersion)) {
+    logger.error(
+      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`
     );
     process.exit(1);
   }
-};
+}
 
-const handleError = (err: any) => {
-  process.exit(err?.status || 2);
-};
-
-const printBanner = () => {
+function printBanner() {
   figlet.text(
     'feflow',
     {
@@ -45,83 +46,71 @@ const printBanner = () => {
       horizontalLayout: 'default',
       verticalLayout: 'default'
     },
-    function (err, data: any) {
+    (err, data) => {
       if (err) {
-        handleError(err);
+        logger.error(err);
+        process.exit(2);
       }
-
-      console.log(chalk.green(data));
-      console.log(
-        chalk.green(
-          ` Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow             `
-        )
+      logger.info(`\n${data}`);
+      logger.info(
+        `Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`
       );
-      console.log(
-        chalk.green(
-          ' (c) powered by Tencent, aims to improve front end workflow.                                       '
-        )
+      logger.info(
+        ' (c) powered by Tencent, aims to improve front end workflow.                                       '
       );
-      console.log(
-        chalk.green(
-          ' Run fef --help to see usage.                                                                      '
-        )
+      logger.info(
+        ' Run fef --help to see usage.                                     '
       );
     }
   );
-};
+}
 
 export default function entry() {
-  const args = minimist(process.argv.slice(2));
-
-  const requiredVersion = pkg.engines.node;
-  checkNodeVersion(requiredVersion, '@feflow/cli');
-  const root = path.join(osenv.home(), FEFLOW_ROOT);
+  const args = minimist(process.argv.slice(2), {
+    alias: {
+      h: 'help',
+      v: 'version',
+    }
+  });
+  // 检查node版本
+  ensureNodeVersion(pkg.engines.node, pkg.name);
   try {
-    const stats = fs.statSync(root);
+    const stats = fs.statSync(FEFLOW_HOME);
     if (!stats.isDirectory()) {
-      fs.unlinkSync(root);
+      fs.unlinkSync(FEFLOW_HOME);
     }
   } catch (e) {
-    fs.mkdirSync(root);
+    fs.mkdirSync(FEFLOW_HOME);
   }
-  fileExit(path.join(root, HEART_BEAT_COLLECTION_LOG));
+  fileExit(path.join(FEFLOW_HOME, HEART_BEAT_COLLECTION_LOG));
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
-  let cmd: any = args._.shift();
-
-  if (!cmd && (args.v || args.version)) {
+  let cmd: string | undefined = args._.shift();
+  if (!cmd && args.version) {
     feflow.reporter.report('version', args);
-    console.log(chalk.green(pkg.version));
+    logger.info(pkg.version);
     return;
   }
 
-  if (!cmd && !args.h && !args.help) {
+  if (!cmd && !args.help) {
     printBanner();
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', (err) => {
+  process.on('unhandledRejection', err => {
     logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
     feflow.fefError?.printError({ error: err, msg: '', hideError: true });
-    handleError(err);
   });
 
   return feflow.init(cmd).then(() => {
-    const isInvalidCmd = !(cmd && (args.h || args.help));
-    if (!args.h && !args.help) {
-      if (cmd) {
-        const c = commander.get(cmd);
-        if (!c) {
-          cmd = 'help';
-        }
-      }
-    } else if (isInvalidCmd) {
+    const localCmd = commander.get(cmd);
+    // 本地无法找到命令执行文件获取失败时转为help命令
+    if (!localCmd) {
+      logger.error(`Cant found cmd: ${cmd}`);
       cmd = 'help';
     }
-
     feflow.cmd = cmd;
-
     feflow.hook.emit(HOOK_TYPE_BEFORE);
     feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
       return feflow
@@ -130,14 +119,14 @@ export default function entry() {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
         })
-        .catch((err) => {
+        .catch(err => {
           logger.debug(err);
           feflow?.reporter?.reportCommandError(err);
           feflow.fefError.printError({
             error: err,
             msg: '%s'
           });
-          handleError(err);
+          process.exit(err.status || 2);
         });
     });
   });

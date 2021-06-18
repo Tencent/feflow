@@ -38,7 +38,7 @@
     "@types/command-line-usage": "^5.0.1",
     "@types/cross-spawn": "^6.0.0",
     "@types/easy-table": "0.0.32",
-    "@types/figlet": "^1.2.0",
+    "@types/figlet": "^1.5.1",
     "@types/inquirer": "^6.0.3",
     "@types/js-yaml": "^3.12.5",
     "@types/lockfile": "^1.0.1",

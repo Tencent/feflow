@@ -11,7 +11,7 @@ import loadUniversalPlugin from './plugin/loadUniversalPlugin';
 import loadDevkits from './devkit/loadDevkits';
 import getCommandLine from './devkit/commandOptions';
 import {
-  FEFLOW_ROOT,
+  FEFLOW_HOME,
   FEFLOW_BIN,
   FEFLOW_LIB,
   UNIVERSAL_PKG_JSON,
@@ -68,17 +68,14 @@ export default class Feflow {
 
   constructor(args: any) {
     args = args || {};
-    const root = path.join(osenv.home(), FEFLOW_ROOT);
     const configPath = path.join(root, '.feflowrc.yml');
-    this.root = root;
-    const bin = path.join(root, FEFLOW_BIN);
-    const lib = path.join(root, FEFLOW_LIB);
-    this.bin = bin;
-    this.lib = lib;
-    this.rootPkg = path.join(root, 'package.json');
-    this.loggerPath = path.join(root, LOG_FILE);
-    this.universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
-    this.universalModules = path.join(root, UNIVERSAL_MODULES);
+    this.root = FEFLOW_HOME;
+    this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);
+    this.lib = path.join(FEFLOW_HOME, FEFLOW_LIB);
+    this.rootPkg = path.join(FEFLOW_HOME, 'package.json');
+    this.loggerPath = path.join(FEFLOW_HOME, LOG_FILE);
+    this.universalPkgPath = path.join(FEFLOW_HOME, UNIVERSAL_PKG_JSON);
+    this.universalModules = path.join(FEFLOW_HOME, UNIVERSAL_MODULES);
     this.args = args;
     this.version = pkg.version;
     this.config = parseYaml(configPath);
@@ -98,7 +95,7 @@ export default class Feflow {
     this.fefError = new FefError(this);
   }
 
-  async init(cmd: string) {
+  async init(cmd: string | undefined) {
     this.reporter.init && this.reporter.init(cmd);
     await Promise.all([
       this.initClient(),

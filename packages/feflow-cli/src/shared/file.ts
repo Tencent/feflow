@@ -48,7 +48,6 @@ export const setKeyToFile = (file: string, key: string, value: any): any => {
   }
 };
 
-
 export class Config {
   static loadConfigFile(filePath: string) {
     switch (path.extname(filePath)) {
