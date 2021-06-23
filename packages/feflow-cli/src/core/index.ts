@@ -1,10 +1,12 @@
+import path from 'path';
+import glob from 'glob';
+import Report from '@feflow/report';
+import commandLineUsage from 'command-line-usage';
+
 import Commander from './commander';
 import Hook from './hook';
 import Binp from './universal-pkg/binp';
-import fs from 'fs';
 import logger from './logger';
-import path from 'path';
-import spawn from 'cross-spawn';
 import loadPlugins from './plugin/loadPlugins';
 import loadUniversalPlugin from './plugin/loadUniversalPlugin';
 import loadDevkits from './devkit/loadDevkits';
@@ -21,10 +23,7 @@ import {
 import { safeDump, parseYaml } from '../shared/yaml';
 import { FefError } from '../shared/fefError';
 import { setServerUrl } from '../shared/git';
-import chalk from 'chalk';
-import commandLineUsage from 'command-line-usage';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
-import Report from '@feflow/report';
 import CommandPicker, {
   LOAD_UNIVERSAL_PLUGIN,
   LOAD_PLUGIN,
@@ -39,6 +38,7 @@ import {
   writeFileAsync,
   readFileAsync
 } from '../shared/fs';
+import { isInstalledPM } from '../shared/npm';
 
 const pkg = require('../../package.json');
 
@@ -96,6 +96,7 @@ export default class Feflow {
 
   async init(cmd: string | undefined) {
     this.reporter.init(cmd);
+
     await Promise.all([
       this.initClient(),
       this.initPackageManager(),
@@ -162,46 +163,26 @@ export default class Feflow {
 
   initPackageManager() {
     const { root, logger } = this;
-
     return new Promise<any>((resolve, reject) => {
-      if (!this.config || !this.config.packageManager) {
-        const isInstalled = (packageName: string) => {
-          try {
-            const ret = spawn.sync(packageName, ['-v'], {
-              stdio: 'ignore',
-              windowsHide: true
-            });
-            if (ret.status !== 0) {
-              return false;
-            }
-            return true;
-          } catch (err) {
-            return false;
-          }
-        };
-
+      if (!this.config?.packageManager) {
         const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
-
-        const installedPackageManagers = packageManagers.filter(
-          (packageManager) => isInstalled(packageManager)
+        const defaultPackageManager = packageManagers.find(packageManager =>
+          isInstalledPM(packageManager)
         );
-
-        if (installedPackageManagers.length === 0) {
-          const notify = 'You must installed a package manager';
-          console.error(notify);
+        if (!defaultPackageManager) {
+          // 无包管理器直接结束
+          logger.error('You must installed a package manager');
+          return;
         } else {
-          const defaultPackageManager = installedPackageManagers[0];
           const configPath = path.join(root, '.feflowrc.yml');
           safeDump(
-            {
+            Object.assign({}, parseYaml(configPath), {
               packageManager: defaultPackageManager
-            },
+            }),
             configPath
           );
           this.config = parseYaml(configPath);
-          resolve();
         }
-        return;
       } else {
         logger.debug('Use packageManager is: ', this.config.packageManager);
       }
@@ -211,21 +192,18 @@ export default class Feflow {
 
   loadNative() {
     return new Promise<any>((resolve, reject) => {
-      const nativePath = path.join(__dirname, './native');
-      fs.readdirSync(nativePath)
-        .filter((file: string) => {
-          return file.endsWith('.js');
-        })
-        .map((file: string) => {
-          require(path.join(__dirname, './native', file))(this);
-        });
+      const nativePath = path.join(__dirname, './native/*.js');
+      // fs.readdirSync(nativePath)
+      glob.sync(nativePath).forEach((file: string) => {
+        require(file)(this);
+      });
       resolve();
     });
   }
 
-  async loadCommands(order: number) {
-    this.logger.debug('load order: ', order);
-    if ((order & LOAD_ALL) === LOAD_ALL) {
+  async loadCommands(orderType: number) {
+    this.logger.debug('load order: ', orderType);
+    if ((orderType & LOAD_ALL) === LOAD_ALL) {
       await Promise.all([
         this.loadNative(),
         loadUniversalPlugin(this),
@@ -234,29 +212,28 @@ export default class Feflow {
       ]);
       return;
     }
-    if ((order & LOAD_PLUGIN) === LOAD_PLUGIN) {
+    if ((orderType & LOAD_PLUGIN) === LOAD_PLUGIN) {
       await loadPlugins(this);
     }
-    if ((order & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
+    if ((orderType & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
       await loadUniversalPlugin(this);
     }
-    if ((order & LOAD_DEVKIT) === LOAD_DEVKIT) {
+    if ((orderType & LOAD_DEVKIT) === LOAD_DEVKIT) {
       await loadDevkits(this);
     }
   }
 
   loadInternalPlugins() {
-    ['@feflow/feflow-plugin-devtool'].map((name: string) => {
-      try {
-        this.logger.debug('Plugin loaded: %s', chalk.magenta(name));
-        return require(name)(this);
-      } catch (err) {
-        this.fefError.printError({
-          error: err,
-          msg: 'internal plugin load failed: %s'
-        });
-      }
-    });
+    const devToolPlugin = '@feflow/feflow-plugin-devtool';
+    try {
+      this.logger.debug('Plugin loaded: %s', devToolPlugin);
+      return require(devToolPlugin)(this);
+    } catch (err) {
+      this.fefError.printError({
+        error: err,
+        msg: 'internal plugin load failed: %s'
+      });
+    }
   }
 
   async call(name: any, ctx: any) {
@@ -265,24 +242,24 @@ export default class Feflow {
       this.logger.name = cmd.pluginName;
       await cmd.call(this, ctx);
     } else {
-      this.logger.debug('Command `' + name + '` has not been registered yet!');
+      this.logger.debug(`Command ' ${name} ' has not been registered yet!`);
     }
   }
 
   async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
-    const registriedCommand = ctx.commander.get(cmd);
+    const registeredCommand = ctx.commander.get(cmd);
     let commandLine: object[] = [];
 
-    if (registriedCommand && registriedCommand.options) {
+    if (registeredCommand && registeredCommand.options) {
       commandLine = getCommandLine(
-        registriedCommand.options,
-        registriedCommand.desc,
+        registeredCommand.options,
+        registeredCommand.desc,
         cmd
       );
     }
-
+    // 有副作用，暂无好方法改造
     if (cmd === 'help') {
-      registriedCommand.call(this, ctx);
+      registeredCommand.call(this, ctx);
       return true;
     }
     if (commandLine.length == 0) {
@@ -290,10 +267,8 @@ export default class Feflow {
     }
 
     const sections = [];
-
     sections.push(...commandLine);
     const usage = commandLineUsage(sections);
-
     console.log(usage);
     return true;
   }

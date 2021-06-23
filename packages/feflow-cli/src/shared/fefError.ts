@@ -47,7 +47,8 @@ export class FefError {
   }
 
   printError(obj: PrintError) {
-    let { pluginPath } = obj;
+    const { pluginPath } = obj;
+    console.log(999999, obj);
     if (!pluginPath) {
       if (!this.checkPick()) {
         this.context.logger.debug('无法找到命令路径');
@@ -74,7 +75,7 @@ export class FefError {
   printErrorWithDocs(obj: PrintError, docs: string) {
     let { error, msg } = obj;
     if (!obj.hideError) {
-      msg = `${msg || error} 
+      msg = `${msg || error}
       插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
       this.context.logger.error({ err: error }, msg, chalk.magenta(error));
     } else {
@@ -105,7 +106,7 @@ export class FefError {
       configPath = join(pluginPath, this.pluginFile);
     } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        let tmpPath = join(pluginPath as string, ext);
+        const tmpPath = join(pluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     } else if (type === COMMAND_TYPE.NATIVE_TYPE) {

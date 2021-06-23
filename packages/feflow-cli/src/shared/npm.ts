@@ -56,3 +56,15 @@ export function install(
     });
   });
 }
+
+export function isInstalledPM(packageName: string) {
+  try {
+    const ret = spawn.sync(packageName, ['-v'], {
+      stdio: 'ignore',
+      windowsHide: true
+    });
+    return ret.status === 0;
+  } catch (err) {
+    return false;
+  }
+}
