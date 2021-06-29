@@ -31,7 +31,7 @@ export const LOAD_DEVKIT = 1 << 1;
 export const LOAD_UNIVERSAL_PLUGIN = 1 << 2;
 export const LOAD_ALL = LOAD_PLUGIN | LOAD_DEVKIT | LOAD_UNIVERSAL_PLUGIN;
 
-type PluginItem = {
+interface PluginItem {
   commands: Array<{
     name: string;
     path?: string;
@@ -39,23 +39,29 @@ type PluginItem = {
   }>;
   path?: string;
   type: COMMAND_TYPE;
-};
+}
 
-type PluginInfo = {
+interface PluginInfo {
   [key: string]: PluginItem;
-};
+}
 
-type PickMap = {
+interface PickMap {
   [COMMAND_TYPE.PLUGIN_TYPE]?: PluginInfo;
   [COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE]?: PluginInfo;
   [COMMAND_TYPE.NATIVE_TYPE]: PluginInfo;
   [COMMAND_TYPE.INTERNAL_PLUGIN_TYPE]: PluginInfo;
-};
+}
 
-type Cache = {
+interface Cache {
   commandPickerMap: PickMap;
   version: string;
-};
+}
+
+interface CmdMap {
+  commands: Array<{
+    [key: string]: { name: string; version: string };
+  }>;
+}
 
 class TargetPlugin {
   path: string;
@@ -88,11 +94,7 @@ export class CommandPickConfig {
   lastVersion = '';
   lastStore: Record<string, { pluginName: string }> = {};
   subCommandMap: { [key: string]: string[] } = {};
-  subCommandMapWithVersion: {
-    commands: Array<{
-      [key: string]: { name: string; version: string };
-    }>;
-  } = { commands: [] };
+  subCommandMapWithVersion: CmdMap = { commands: [] };
   root: string;
   cacheFilePath: string;
   cacheVersion = '1.0.0';
