@@ -454,8 +454,8 @@ export default class CommandPicker {
   }
 
   checkCommand() {
-    const fn = this.ctx?.commander.get(this.cmd);
-    if (!fn) {
+    const cmdInfo = this.ctx?.commander.get(this.cmd);
+    if (!cmdInfo) {
       this.loadHelp();
     }
   }

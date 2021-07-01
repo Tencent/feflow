@@ -33,11 +33,11 @@ export default class Commander {
     }
 
     name = name.toLowerCase();
-    const invisibleCommand = this.invisibleStore[name]?.runFn;
+    const invisibleCommand = this.invisibleStore[name];
     if (invisibleCommand) {
       return invisibleCommand;
     }
-    return this.store[this.alias[name]]?.runFn;
+    return this.store[this.alias[name]];
   }
 
   list() {

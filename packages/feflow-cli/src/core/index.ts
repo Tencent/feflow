@@ -236,17 +236,20 @@ export default class Feflow {
     }
   }
 
-  async call(name: any, ctx: any) {
+  async call(name: string | undefined, ctx: any) {
+    if (this.args.help && name) {
+      await this.showCommandOptionDescription(name, ctx);
+    }
     const cmd = this.commander.get(name);
     if (cmd) {
       this.logger.name = cmd.pluginName;
-      await cmd.call(this, ctx);
+      await cmd.runFn.call(this, ctx);
     } else {
       this.logger.debug(`Command ' ${name} ' has not been registered yet!`);
     }
   }
 
-  async showCommandOptionDescription(cmd: any, ctx: any): Promise<any> {
+  async showCommandOptionDescription(cmd: string, ctx: any): Promise<any> {
     const registeredCommand = ctx.commander.get(cmd);
     let commandLine: object[] = [];
 
@@ -259,7 +262,7 @@ export default class Feflow {
     }
     // 有副作用，暂无好方法改造
     if (cmd === 'help') {
-      registeredCommand.call(this, ctx);
+      registeredCommand.runFn.call(this, ctx);
       return true;
     }
     if (commandLine.length == 0) {
