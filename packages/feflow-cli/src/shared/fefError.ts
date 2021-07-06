@@ -48,7 +48,6 @@ export class FefError {
 
   printError(obj: PrintError) {
     const { pluginPath } = obj;
-    console.log(999999, obj);
     if (!pluginPath) {
       if (!this.checkPick()) {
         this.context.logger.debug('无法找到命令路径');
@@ -120,7 +119,7 @@ export class FefError {
         docs = get(config, docsPath);
       });
     } else {
-      this.context.logger.info(`未找到插件配置文件: ${pluginPath}`);
+      this.context.logger.debug(`未找到插件配置文件: ${pluginPath}`);
     }
 
     return docs;

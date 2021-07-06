@@ -106,7 +106,7 @@ export default function entry() {
     const localCmd = commander.get(cmd);
     // 本地无法找到命令执行文件获取失败时转为help命令
     if (!localCmd) {
-      cmd && logger.error(`Cant found command: ${cmd}`);
+      cmd && logger.info(`Cant found command: ${cmd}`);
       cmd = 'help';
     }
     feflow.cmd = cmd;
