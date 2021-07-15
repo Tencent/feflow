@@ -31,7 +31,6 @@ export default class Commander {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }
-
     name = name.toLowerCase();
     const invisibleCommand = this.invisibleStore[name];
     if (invisibleCommand) {
@@ -60,7 +59,7 @@ export default class Commander {
 
   registerInvisible(name: string, fn: Function, options?: Array<object>, pluginName?: string) {
     const storeKey = name.toLowerCase();
-    this.store[storeKey] = {
+    this.invisibleStore[storeKey] = {
       runFn: fn,
       desc: '',
       options,

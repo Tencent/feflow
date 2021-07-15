@@ -5,15 +5,16 @@ import semver from 'semver';
 import fs from 'fs';
 import path from 'path';
 import stripComments from 'strip-json-comments';
-import Logger from '../core/logger';
 import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
   FEFLOW_HOME,
   HEART_BEAT_COLLECTION_LOG,
+  LOG_FILE,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
+import bunyan from "bunyan";
 
 const pkg = JSON.parse(
   stripComments(
@@ -23,21 +24,16 @@ const pkg = JSON.parse(
   )
 );
 
-const logger = Logger({
-  debug: false,
-  silent: false
-});
-
 function ensureNodeVersion(requiredVersion: string, id: string): void {
   if (!semver.satisfies(process.version, requiredVersion)) {
-    logger.error(
+    console.error(
       `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`
     );
     process.exit(1);
   }
 }
 
-function printBanner() {
+function printBanner(logger: bunyan) {
   figlet.text(
     'feflow',
     {
@@ -71,6 +67,7 @@ export default function entry() {
       v: 'version',
     }
   });
+
   // 检查node版本
   ensureNodeVersion(pkg.engines.node, pkg.name);
   try {
@@ -81,7 +78,10 @@ export default function entry() {
   } catch (e) {
     fs.mkdirSync(FEFLOW_HOME);
   }
+  // 确保日志相关本地文件存在，避免报错
   fileExit(path.join(FEFLOW_HOME, HEART_BEAT_COLLECTION_LOG));
+  fileExit(path.join(FEFLOW_HOME, LOG_FILE));
+
   const feflow = new Feflow(args);
   const { commander, logger } = feflow;
   let cmd: string | undefined = args._.shift();
@@ -92,7 +92,7 @@ export default function entry() {
   }
 
   if (!cmd && !args.help) {
-    printBanner();
+    printBanner(logger);
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
@@ -106,7 +106,7 @@ export default function entry() {
     const localCmd = commander.get(cmd);
     // 本地无法找到命令执行文件获取失败时转为help命令
     if (!localCmd) {
-      cmd && logger.info(`Cant found command: ${cmd}`);
+      cmd && logger.debug(`Cant found command: ${cmd}`);
       cmd = 'help';
     }
     feflow.cmd = cmd;
