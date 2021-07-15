@@ -11,7 +11,6 @@ export default function packageJson(
   const url = `${registry}/${
     isValidVersion ? `@${names[1]}/${names[2]}` : name
   }`;
-  console.log('pkg url: ', url);
   return axios
     .get(url, {
       proxy: false
