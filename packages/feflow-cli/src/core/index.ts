@@ -165,7 +165,7 @@ export default class Feflow {
     const { root, logger } = this;
     return new Promise<any>((resolve, reject) => {
       if (!this.config?.packageManager) {
-        const packageManagers = ['tnpm', 'cnpm', 'npm', 'yarn'];
+        const packageManagers = ['npm', 'tnpm', 'yarn', 'cnpm'];
         const defaultPackageManager = packageManagers.find(packageManager =>
           isInstalledPM(packageManager)
         );
