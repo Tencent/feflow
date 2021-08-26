@@ -22,9 +22,8 @@ export const getKeyFormFile = (file: string, key: string) => {
     if (jsonString) {
       const jsonData = JSON.parse(jsonString);
       return jsonData[key];
-    } else {
-      return '';
     }
+    return '';
   } catch (e) {
     console.log('getKeyFormCache error =>', e);
   }
@@ -39,7 +38,7 @@ export const setKeyToFile = (file: string, key: string, value: any): any => {
       jsonData[key] = value;
     } else {
       jsonData = {
-        [key]: value
+        [key]: value,
       };
     }
     fs.writeFileSync(file, JSON.stringify(jsonData, null, 4), 'utf-8');
@@ -80,7 +79,7 @@ export class Config {
 
   static loadPackageJSONConfigFile(filePath: string) {
     try {
-      return Config.loadJSONConfigFile(filePath);;
+      return Config.loadJSONConfigFile(filePath);
     } catch (e) {
       e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
       throw e;
@@ -95,7 +94,7 @@ export class Config {
       e.messageTemplate = 'failed-to-read-json';
       e.messageData = {
         path: filePath,
-        message: e.message
+        message: e.message,
       };
       throw e;
     }

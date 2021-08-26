@@ -1,6 +1,6 @@
 import chai from 'chai';
 import objectFactory from '../lib/common/objectFactory';
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - objectFactory', () => {
   beforeEach(() => {
@@ -14,8 +14,9 @@ describe('@feflow/report - objectFactory', () => {
     expect(obj).to.deep.eq({});
   });
 
-  it('objectFactory - load', function() {
-    const obj = objectFactory.create()
+  it('objectFactory - load', () => {
+    const obj = objectFactory
+      .create()
       .load('a', 123)
       .load('b', 321)
       .load('c', () => 'awosome objectFactory')
@@ -24,8 +25,9 @@ describe('@feflow/report - objectFactory', () => {
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
   });
 
-  it('objectFactory - done', function() {
-    const obj = objectFactory.create()
+  it('objectFactory - done', () => {
+    const obj = objectFactory
+      .create()
       .load('a', 123)
       .load('b', 321)
       .load('c', () => 'awosome objectFactory')

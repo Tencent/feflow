@@ -7,7 +7,7 @@ const platformMap = {
   openbsd: 'linux',
   sunos: 'linux',
   win32: 'windows',
-  darwin: 'macos'
+  darwin: 'macos',
 };
 
 const platform = os.platform();

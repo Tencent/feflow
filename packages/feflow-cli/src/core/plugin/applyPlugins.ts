@@ -28,7 +28,7 @@ export default function applyPlugins(plugins: any[]) {
           silent: Boolean(ctx.args.silent),
           name,
         });
-        return require(pluginPath)(Object.assign({}, ctx, {logger: pluginLogger}));
+        return require(pluginPath)(Object.assign({}, ctx, { logger: pluginLogger }));
       } catch (err) {
         ctx.fefError.printError({ error: err, msg: 'command load failed: %s', pluginPath });
       }
@@ -39,7 +39,6 @@ export default function applyPlugins(plugins: any[]) {
     pickConfig.updateCache(COMMAND_TYPE.PLUGIN_TYPE);
   };
 }
-
 
 export function resolvePlugin(ctx: any, repoPath: string): Plugin {
   const pluginFile = path.join(repoPath, UNIVERSAL_PLUGIN_CONFIG);

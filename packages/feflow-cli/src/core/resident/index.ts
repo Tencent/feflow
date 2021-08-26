@@ -16,7 +16,7 @@ import {
   BEAT_LOCK,
   UPDATE_LOCK,
   SILENT_ARG,
-  DISABLE_ARG
+  DISABLE_ARG,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
@@ -36,9 +36,9 @@ function startUpdateBeat(ctx: any) {
     env: {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
-      silent: ctx.args.silent
+      silent: ctx.args.silent,
     },
-    windowsHide: true
+    windowsHide: true,
   });
 
   // 父进程不会等待子进程
@@ -54,9 +54,9 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
       cacheValidate,
-      latestVersion
+      latestVersion,
     },
-    windowsHide: true
+    windowsHide: true,
   });
 
   // 父进程不会等待子进程
@@ -65,28 +65,21 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
 
 async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
   const _showCliUpdateM = () => {
-    const updateMsg = updateData['cli_update_msg'];
+    const updateMsg = updateData.cli_update_msg;
     if (updateMsg) {
       const { version, latestVersion } = updateMsg;
-      ctx.logger.info(
-        `@feflow/cil has been updated from ${version} to ${latestVersion}. Enjoy it.`
-      );
-      updateData['cli_update_msg'] = '';
+      ctx.logger.info(`@feflow/cil has been updated from ${version} to ${latestVersion}. Enjoy it.`);
+      updateData.cli_update_msg = '';
     }
   };
 
   const _showPluginsUpdateM = () => {
-    const updatePkg = updateData['plugins_update_msg'];
+    const updatePkg = updateData.plugins_update_msg;
     if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
         const { name, localVersion, latestVersion } = pkg;
         table.cell('Name', name);
-        table.cell(
-          'Version',
-          localVersion === latestVersion
-            ? localVersion
-            : localVersion + ' -> ' + latestVersion
-        );
+        table.cell('Version', localVersion === latestVersion ? localVersion : `${localVersion} -> ${latestVersion}`);
         table.cell('Tag', 'latest');
         table.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
         table.newRow();
@@ -94,27 +87,22 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
 
       console.log('');
       ctx.logger.info(
-        'Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.'
+        'Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
       );
       if (!isSilent) console.log(table.toString());
 
-      updateData['plugins_update_msg'] = '';
+      updateData.plugins_update_msg = '';
     }
   };
 
   const _showUniversalPluginsM = () => {
-    const updatePkg = updateData['universal_plugins_update_msg'];
+    const updatePkg = updateData.universal_plugins_update_msg;
 
     if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
         const { name, localVersion, latestVersion } = pkg;
         uTable.cell('Name', name);
-        uTable.cell(
-          'Version',
-          localVersion === latestVersion
-            ? localVersion
-            : localVersion + ' -> ' + latestVersion
-        );
+        uTable.cell('Version', localVersion === latestVersion ? localVersion : `${localVersion} -> ${latestVersion}`);
         uTable.cell('Tag', 'latest');
         uTable.cell('Update', localVersion === latestVersion ? 'N' : 'Y');
         uTable.newRow();
@@ -122,11 +110,11 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
 
       console.log('');
       ctx.logger.info(
-        'Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.'
+        'Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
       );
       if (!isSilent) console.log(uTable.toString());
 
-      updateData['universal_plugins_update_msg'] = '';
+      updateData.universal_plugins_update_msg = '';
     }
   };
 
@@ -139,35 +127,30 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
 }
 
 async function _checkLock(updateData: any) {
-  const updateLock = updateData?.['update_lock'];
+  const updateLock = updateData?.update_lock;
   const nowTime = new Date().getTime();
-  if (
-    updateLock &&
-    updateLock['time'] &&
-    nowTime - updateLock['time'] < CHECK_UPDATE_GAP
-  ) {
+  if (updateLock && updateLock.time && nowTime - updateLock.time < CHECK_UPDATE_GAP) {
     return true;
-  } else {
-    updateData['update_lock'] = {
-      time: String(nowTime),
-      pid: process.pid
-    };
-    await updateFile.update(UPDATE_KEY, updateData);
-
-    // Optimistic Concurrency Control
-    const nowUpdateData = await updateFile.read(UPDATE_KEY);
-    const nowUpdateLock = nowUpdateData?.['update_lock'];
-    if (nowUpdateLock && nowUpdateLock['pid'] !== process.pid) {
-      return true;
-    }
   }
+  updateData.update_lock = {
+    time: String(nowTime),
+    pid: process.pid,
+  };
+  await updateFile.update(UPDATE_KEY, updateData);
+
+  // Optimistic Concurrency Control
+  const nowUpdateData = await updateFile.read(UPDATE_KEY);
+  const nowUpdateLock = nowUpdateData?.update_lock;
+  if (nowUpdateLock && nowUpdateLock.pid !== process.pid) {
+    return true;
+  }
+
   return false;
 }
 
 export async function checkUpdate(ctx: any) {
   const dbFile = path.join(ctx.root, UPDATE_COLLECTION);
-  const autoUpdate =
-    ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
+  const autoUpdate = ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
   const nowTime = new Date().getTime();
   let latestVersion: any = '';
   let cacheValidate = false;
@@ -189,11 +172,7 @@ export async function checkUpdate(ctx: any) {
     const isLocked = await _checkLock(updateData);
     if (isLocked) return ctx.logger.debug('one updating process is running');
 
-    const {
-      cli_update_msg,
-      plugins_update_msg,
-      universal_plugins_update_msg
-    } = updateData;
+    const { cli_update_msg, plugins_update_msg, universal_plugins_update_msg } = updateData;
     if (cli_update_msg || plugins_update_msg || universal_plugins_update_msg) {
       await _checkUpdateMsg(ctx, updateData);
     }
@@ -210,7 +189,7 @@ export async function checkUpdate(ctx: any) {
         startUpdateBeat(ctx);
       }
       // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
-      latestVersion = updateData['latest_cli_version'];
+      latestVersion = updateData.latest_cli_version;
     }
   } else {
     // init
@@ -230,22 +209,18 @@ export async function checkUpdate(ctx: any) {
         // 初始化更新锁，保持只有一个进程在更新
         update_lock: {
           time: String(nowTime),
-          pid: process.pid
-        }
-      })
+          pid: process.pid,
+        },
+      }),
     ]);
     startUpdateBeat(ctx);
   }
 
   // 开启更新时
   if (!disableCheck && latestVersion && semver.gt(latestVersion, ctx.version)) {
-    ctx.logger.debug(
-      `Find new version, current version: ${ctx.version}, latest version: ${latestVersion}`
-    );
+    ctx.logger.debug(`Find new version, current version: ${ctx.version}, latest version: ${latestVersion}`);
     if (autoUpdate) {
-      ctx.logger.debug(
-        `Feflow will auto update version from ${ctx.version} to ${latestVersion}.`
-      );
+      ctx.logger.debug(`Feflow will auto update version from ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
       return startUpdate(ctx, cacheValidate, latestVersion);
     }
@@ -255,31 +230,26 @@ export async function checkUpdate(ctx: any) {
         type: 'confirm',
         name: 'ifUpdate',
         message: `${chalk.yellow(
-          `@feflow/cli's latest version is ${chalk.green(
-            `${latestVersion}`
-          )}, but your current version is ${chalk.red(
-            `${ctx.version}`
-          )}. Do you want to update it?`
+          `@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)}, but your current version is ${chalk.red(
+            `${ctx.version}`,
+          )}. Do you want to update it?`,
         )}`,
-        default: true
-      }
+        default: true,
+      },
     ];
     const answer = await inquirer.prompt(askIfUpdateCli);
     if (answer.ifUpdate) {
-      ctx.logger.debug(
-        `Feflow will update from version ${ctx.version} to ${latestVersion}.`
-      );
+      ctx.logger.debug(`Feflow will update from version ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
       return startUpdate(ctx, cacheValidate, latestVersion);
-    } else {
-      safeDump(
-        {
-          ...ctx.config,
-          lastUpdateCheck: +new Date()
-        },
-        ctx.configPath
-      );
     }
+    safeDump(
+      {
+        ...ctx.config,
+        lastUpdateCheck: +new Date(),
+      },
+      ctx.configPath,
+    );
   } else {
     ctx.logger.debug(`Current cli version is already latest.`);
     return startUpdate(ctx, cacheValidate, '');

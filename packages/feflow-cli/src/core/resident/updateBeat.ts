@@ -20,14 +20,10 @@ import {
   BEAT_KEY,
   BEAT_LOCK,
   UPDATE_KEY,
-  UPDATE_LOCK
+  UPDATE_LOCK,
 } from '../../shared/constant';
 import loggerInstance from '../logger';
-import {
-  getInstalledPlugins,
-  getLatestVersion,
-  getUniversalPluginVersion
-} from './utils';
+import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
 interface ErrorInstance {
   name: string;
   message: string;
@@ -36,7 +32,7 @@ interface ErrorInstance {
 
 const pkg = require('../../../package.json');
 const { getPkgInfo } = require('../native/install');
-const version = pkg.version;
+const { version } = pkg;
 
 const { debug, silent } = process.env;
 const root = path.join(osenv.home(), FEFLOW_ROOT);
@@ -50,7 +46,7 @@ const beatLock = path.join(root, BEAT_LOCK);
 const heartFile = new LockFileInstance(heartDBFile, beatLock);
 const logger = loggerInstance({
   debug: Boolean(debug),
-  silent: Boolean(silent)
+  silent: Boolean(silent),
 });
 
 // 设置特殊的静默进程名字
@@ -74,27 +70,21 @@ const queryCliUpdate = async () => {
   if (!config) {
     return;
   }
-  if (
-    config['lastUpdateCheck'] &&
-    +new Date() - parseInt(config['lastUpdateCheck'], 10) <= 1000 * 3600 * 24
-  ) {
+  if (config.lastUpdateCheck && +new Date() - parseInt(config.lastUpdateCheck, 10) <= 1000 * 3600 * 24) {
     return;
   }
 
-  if (config['autoUpdate'] !== 'true') {
+  if (config.autoUpdate !== 'true') {
     return;
   }
 
-  const latestVersion: any = await getLatestVersion(
-    '@feflow/cli',
-    config['packageManager']
-  );
+  const latestVersion: any = await getLatestVersion('@feflow/cli', config.packageManager);
   if (latestVersion && semver.gt(latestVersion, version)) {
     const updateData: any = await updateFile.read(UPDATE_KEY);
     if (updateData.latest_cli_version !== latestVersion) {
       const newUpdateData = {
         ...updateData,
-        latest_cli_version: latestVersion
+        latest_cli_version: latestVersion,
       };
       await updateFile.update(UPDATE_KEY, newUpdateData);
     }
@@ -114,39 +104,34 @@ const queryPluginsUpdate = async () => {
       const pkg: any = JSON.parse(content);
       const localVersion = pkg.version;
       const registryUrl = spawn
-        .sync(config['packageManager'], ['config', 'get', 'registry'], {
-          windowsHide: true
+        .sync(config.packageManager, ['config', 'get', 'registry'], {
+          windowsHide: true,
         })
         .stdout.toString()
         .replace(/\n/, '')
         .replace(/\/$/, '');
-      const latestVersion = await packageJson(name, registryUrl).catch(
-        (err: any) => {
-          logger.debug('Check plugin update error', err);
-        }
-      );
+      const latestVersion = await packageJson(name, registryUrl).catch((err: any) => {
+        logger.debug('Check plugin update error', err);
+      });
 
       if (latestVersion && semver.gt(latestVersion, localVersion)) {
         return {
           name,
           latestVersion,
-          localVersion
+          localVersion,
         };
-      } else {
-        logger.debug('All plugins is in latest version');
       }
-    })
+      logger.debug('All plugins is in latest version');
+    }),
   ).then(async (plugins: any) => {
-    plugins = plugins.filter((plugin: any) => {
-      return plugin && plugin.name;
-    });
+    plugins = plugins.filter((plugin: any) => plugin && plugin.name);
     logger.debug('tnpm plugins update infomation', plugins);
     if (plugins.length) {
       const updateData: any = await updateFile.read(UPDATE_KEY);
       if (!_.isEqual(updateData.latest_plugins, plugins)) {
         const newUpdateData = {
           ...updateData,
-          latest_plugins: plugins
+          latest_plugins: plugins,
         };
         await updateFile.update(UPDATE_KEY, newUpdateData);
       }
@@ -156,20 +141,17 @@ const queryPluginsUpdate = async () => {
 
 const queryUniversalPluginsUpdate = async () => {
   const config = parseYaml(configPath);
-  if (!config || !config['serverUrl']) {
+  if (!config || !config.serverUrl) {
     return;
   }
-  setServerUrl(config['serverUrl']);
+  setServerUrl(config.serverUrl);
 
   const universalPkg = new UniversalPkg(universalPkgPath);
   const latestUniversalPlugins: any[] = [];
 
   // eslint-disable-next-line
   for (const [pkg, version] of universalPkg.getInstalled()) {
-    const pkgInfo = await getPkgInfo(
-      { root, config, logger },
-      `${pkg}@${version}`
-    ).catch(async (e: string) => {
+    const pkgInfo = await getPkgInfo({ root, config, logger }, `${pkg}@${version}`).catch(async (e: string) => {
       logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
     });
     if (!pkgInfo) {
@@ -184,12 +166,10 @@ const queryUniversalPluginsUpdate = async () => {
   logger.debug('universal plugins update infomation', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
     const updateData: any = await updateFile.read(UPDATE_KEY);
-    if (
-      !_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)
-    ) {
+    if (!_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)) {
       const newUpdateData = {
         ...updateData,
-        latest_universal_plugins: latestUniversalPlugins
+        latest_universal_plugins: latestUniversalPlugins,
       };
       await updateFile.update(UPDATE_KEY, newUpdateData);
     }

@@ -4,11 +4,7 @@ import path from 'path';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import packageJson from '../../shared/packageJson';
-import {
-  FEFLOW_ROOT,
-  UNIVERSAL_MODULES,
-  LATEST_VERSION
-} from '../../shared/constant';
+import { FEFLOW_ROOT, UNIVERSAL_MODULES, LATEST_VERSION } from '../../shared/constant';
 import { getCurrentTag } from '../universal-pkg/repository/git';
 import loggerInstance from '../logger';
 import versionImpl from '../universal-pkg/dep/version';
@@ -28,7 +24,7 @@ const universalModulesPath = path.join(root, UNIVERSAL_MODULES);
 
 const logger = loggerInstance({
   debug: Boolean(debug),
-  silent: Boolean(silent)
+  silent: Boolean(silent),
 });
 
 export const getInstalledPlugins = () => {
@@ -53,11 +49,7 @@ export const getInstalledPlugins = () => {
     }
   }
   return plugins.filter((name: any) => {
-    if (
-      !/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(
-        name
-      )
-    ) {
+    if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)) {
       return false;
     }
     const pathFn = path.join(pluginDir, name);
@@ -65,23 +57,17 @@ export const getInstalledPlugins = () => {
   });
 };
 
-export const getNpmRegistryUrl = (packageManager: string) => {
-  return spawn
+export const getNpmRegistryUrl = (packageManager: string) =>
+  spawn
     .sync(packageManager, ['config', 'get', 'registry'], { windowsHide: true })
     .stdout.toString()
     .replace(/\n/, '')
     .replace(/\/$/, '');
-};
 
-export const getLatestVersion = async (
-  name: string,
-  packageManager: string
-) => {
+export const getLatestVersion = async (name: string, packageManager: string) => {
   const registryUrl = getNpmRegistryUrl(packageManager);
   return await packageJson(name, registryUrl).catch(() => {
-    logger.warn(
-      `Network error, can't reach ${registryUrl}, CLI give up verison check.`
-    );
+    logger.warn(`Network error, can't reach ${registryUrl}, CLI give up verison check.`);
   });
 };
 
@@ -95,17 +81,14 @@ export const updatePluginsVersion = (packagePath: string, plugins: any) => {
   fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
 };
 
-export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
-  return new Promise<VersionObj>(async resolve => {
-    const repoPath = path.join(
-      universalModulesPath,
-      `${pkgInfo.repoName}@${pkgInfo.installVersion}`
-    );
+export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) =>
+  new Promise<VersionObj>(async (resolve) => {
+    const repoPath = path.join(universalModulesPath, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
         const currentVersion = (await getCurrentTag(repoPath)) || '';
         logger.debug(
-          `repoPath => ${repoPath}; currentVersion => ${currentVersion}; checkoutTag=> ${pkgInfo.checkoutTag}`
+          `repoPath => ${repoPath}; currentVersion => ${currentVersion}; checkoutTag=> ${pkgInfo.checkoutTag}`,
         );
         if (versionImpl.gt(pkgInfo.checkoutTag, currentVersion)) {
           resolve({
@@ -113,7 +96,7 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
             localVersion: currentVersion,
             latestVersion: pkgInfo.checkoutTag,
             repoPath,
-            installVersion: pkgInfo.installVersion
+            installVersion: pkgInfo.installVersion,
           });
         }
       }
@@ -123,16 +106,14 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) => {
       localVersion: '',
       latestVersion: '',
       repoPath,
-      installVersion: pkgInfo.installVersion
+      installVersion: pkgInfo.installVersion,
     });
   });
-};
 
-export const promisify = (asyncFun: Function, ...args: any) => {
-  return () => {
-    return new Promise<undefined>(async resolve => {
+export const promisify =
+  (asyncFun: Function, ...args: any) =>
+  () =>
+    new Promise<undefined>(async (resolve) => {
       await asyncFun(...args);
       resolve();
     });
-  };
-};

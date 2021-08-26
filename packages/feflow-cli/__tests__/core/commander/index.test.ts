@@ -1,6 +1,6 @@
 import chai from 'chai';
 import Commander from '../../../src/core/commander';
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/core - Commander Unit Test', () => {
   it('register(name, desc, fn) - Register a command', () => {

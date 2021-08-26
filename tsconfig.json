@@ -14,5 +14,10 @@
     "strict": true,
     "pretty": true,
     "suppressImplicitAnyIndexErrors": true
-  }
+  },
+  "include": [
+    "packages/*/src/**/*",
+    "packages/*/__tests__/**/*",
+    "packages/*/types/**/*"
+  ]
 }

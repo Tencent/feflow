@@ -1,24 +1,22 @@
-import {
-    packCLI
-} from './tarball';
+import { packCLI } from './tarball';
 
 export default class Packager {
-    private cmd: any;
-    constructor(cmd: any) {
-        this.cmd = cmd;
-    }
+  private cmd: any;
+  constructor(cmd: any) {
+    this.cmd = cmd;
+  }
 
-    public pack() {
-        switch (this.cmd) {
-            case 'mac':
-                this.packMac();
-                break;
-        }
+  public pack() {
+    switch (this.cmd) {
+      case 'mac':
+        this.packMac();
+        break;
     }
+  }
 
-    private async packMac() {
-        const tarballPath = await packCLI();
+  private async packMac() {
+    const tarballPath = await packCLI();
 
-        console.log('tarballPath', tarballPath);
-    }
+    console.log('tarballPath', tarballPath);
+  }
 }

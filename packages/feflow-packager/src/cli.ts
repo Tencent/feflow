@@ -6,13 +6,14 @@ const pkg = require('../package.json');
 
 const checkNodeVersion = (wanted: any, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
-    console.log(chalk.red(
-      'You are using Node ' + process.version + ', but this version of ' + id +
-      ' requires Node ' + wanted + '.\nPlease upgrade your Node version.'
-    ));
+    console.log(
+      chalk.red(
+        `You are using Node ${process.version}, but this version of ${id} requires Node ${wanted}.\nPlease upgrade your Node version.`,
+      ),
+    );
     process.exit(1);
   }
-}
+};
 
 export default function entry() {
   const args = minimist(process.argv.slice(2));
@@ -22,5 +23,5 @@ export default function entry() {
 
   const cmd: any = args._.shift();
 
-  new Packager(cmd).pack()
+  new Packager(cmd).pack();
 }

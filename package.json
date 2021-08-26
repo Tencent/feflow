@@ -3,22 +3,21 @@
   "private": true,
   "scripts": {
     "beta": "lerna publish -c --skip-git",
-    "publish": "lerna publish --skip-git"
+    "publish": "lerna publish --skip-git",
+    "eslint": "eslint ./packages --ext .ts",
+    "eslint:fix": "eslint --fix ./packages --ext .ts"
   },
   "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-tencent": "^1.0.2",
     "lerna": "^3.13.1",
+    "prettier": "^2.3.2",
     "typescript": "^3.7.2"
   },
   "dependencies": {
     "@feflow/cli": "file:packages/feflow-cli",
     "@feflow/feflow-plugin-devtool": "file:packages/feflow-plugin-devtool",
     "@feflow/packager": "file:packages/feflow-packager",
-    "@feflow/report": "file:packages/feflow-report",
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.19.1"
+    "@feflow/report": "file:packages/feflow-report"
   }
 }

@@ -1,9 +1,4 @@
-import {
-  HOOK_TYPE_BEFORE,
-  HOOK_TYPE_AFTER,
-  EVENT_COMMAND_BEGIN,
-  EVENT_DONE
-} from '../../shared/constant';
+import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, EVENT_COMMAND_BEGIN, EVENT_DONE } from '../../shared/constant';
 
 export default class Hook {
   private listeners: any;
@@ -14,7 +9,7 @@ export default class Hook {
   }
 
   on(type: any, listener: any) {
-    const listeners = this.listeners;
+    const { listeners } = this;
     if (listeners[type] && listeners[type].length >= this.maxListener) {
       throw new Error(`Listener's maxCount is ${this.maxListener}, has exceed`);
     }
@@ -75,7 +70,7 @@ export default class Hook {
           },
           () => {
             throw new Error('Promise rejected with no or falsy reason');
-          }
+          },
         );
       } else {
         next(++i);
@@ -85,9 +80,8 @@ export default class Hook {
     process.nextTick(() => {
       if (!hooks) {
         return fn();
-      } else {
-        next(0);
       }
+      next(0);
     });
   }
 }

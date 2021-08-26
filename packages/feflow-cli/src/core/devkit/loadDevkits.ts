@@ -2,32 +2,18 @@ import path from 'path';
 import Config from './config';
 import getCommandLine from './commandOptions';
 import { FEFLOW_ROOT } from '../../shared/constant';
-import logger from "../logger";
+import logger from '../logger';
 
-const registerDevkitCommand = (
-  command: any,
-  commandConfig: any,
-  directoryPath: any,
-  ctx: any
-) => {
-  const builder = commandConfig.builder;
+const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
+  const { builder } = commandConfig;
   const [packageName] = builder.split(':', 2);
   const config = new Config(ctx);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
   try {
     const devkitConfig = config.loadDevkitConfig(pkgPath);
-    const {
-      implementation,
-      description,
-      optionsDescription,
-      usage = {}
-    } = devkitConfig.builders[command];
+    const { implementation, description, optionsDescription, usage = {} } = devkitConfig.builders[command];
 
-    const options = getCommandLine(
-      optionsDescription || usage,
-      description,
-      command
-    );
+    const options = getCommandLine(optionsDescription || usage, description, command);
     const devkitLogger = logger({
       debug: Boolean(ctx.args.debug),
       silent: Boolean(ctx.args.silent),
@@ -40,11 +26,11 @@ const registerDevkitCommand = (
         async () => {
           for (let i = 0; i < implementation.length; i++) {
             const action = path.join(pkgPath, implementation[i]);
-            await require(action)(Object.assign({}, ctx, {logger: devkitLogger}));
+            await require(action)(Object.assign({}, ctx, { logger: devkitLogger }));
           }
         },
         options,
-        packageName
+        packageName,
       );
     } else {
       const action = path.join(pkgPath, implementation);
@@ -52,10 +38,10 @@ const registerDevkitCommand = (
         command,
         description,
         () => {
-          require(action)(Object.assign({}, ctx, {logger: devkitLogger}));
+          require(action)(Object.assign({}, ctx, { logger: devkitLogger }));
         },
         options,
-        packageName
+        packageName,
       );
     }
   } catch (e) {
@@ -83,7 +69,7 @@ export default function loadDevkits(ctx: any): Promise<void> {
           ctx.logger.debug('Run commands in .fef root will not work.');
         } else {
           ctx.logger.error(
-            `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`
+            `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
           );
         }
       }
