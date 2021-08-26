@@ -12,7 +12,6 @@ type globalVal = {
 };
 
 export class Command {
-
   private val: globalVal = {} as globalVal;
 
   private ctx: any;
@@ -58,7 +57,7 @@ export class Command {
       }
       execSync(command, {
         stdio: 'inherit',
-        windowsHide: true
+        windowsHide: true,
       });
     }
   }
@@ -66,13 +65,13 @@ export class Command {
   // exception not thrown
   runLess() {
     const commands = this.getCommands();
-    for (let command of commands) {
+    for (const command of commands) {
       try {
         execSync(command, {
           stdio: 'inherit',
-          windowsHide: true
+          windowsHide: true,
         });
-      } catch(e) {
+      } catch (e) {
         this.ctx.logger.debug(e);
         this.ctx.logger.error(`[command interrupt] ${e}`);
         return;

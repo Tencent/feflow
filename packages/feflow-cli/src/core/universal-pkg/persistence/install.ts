@@ -7,12 +7,7 @@ export class Install {
 
   attributes: InstallAttribute;
 
-  constructor(
-    pkg: string,
-    iVersion: string,
-    cVersion: string,
-    attributes: InstallAttribute
-  ) {
+  constructor(pkg: string, iVersion: string, cVersion: string, attributes: InstallAttribute) {
     this.pkg = pkg;
     this.installVersion = iVersion;
     this.checkoutVersion = cVersion;

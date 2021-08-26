@@ -53,22 +53,14 @@ export class Plugin {
     this.autoUpdate = config['auto-update'] || false;
     this.test = new Command(this.ctx, this.path, config?.test);
     this.preInstall = new Command(this.ctx, this.path, config?.['pre-install']);
-    this.postInstall = new Command(
-      this.ctx,
-      this.path,
-      config?.['post-install']
-    );
+    this.postInstall = new Command(this.ctx, this.path, config?.['post-install']);
     this.preRun = new Command(this.ctx, this.path, config?.['pre-run']);
     this.postRun = new Command(this.ctx, this.path, config?.['post-run']);
     this.preUpgrade = new Command(this.ctx, this.path, config?.['pre-upgrade']);
-    this.postUpgrade = new Command(
-      this.ctx,
-      this.path,
-      config?.['post-upgrade']
-    );
+    this.postUpgrade = new Command(this.ctx, this.path, config?.['post-upgrade']);
     this.preUninstall = new Command(this.ctx, this.path, config?.['pre-uninstall']);
     this.postUninstall = new Command(this.ctx, this.path, config?.['post-uninstall']);
-    this.usage = config?.['usage'];
+    this.usage = config?.usage;
     this.langRuntime = config?.['lang-runtime'] || false;
   }
 

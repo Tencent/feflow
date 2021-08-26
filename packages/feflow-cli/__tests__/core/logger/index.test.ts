@@ -11,7 +11,7 @@ fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function(chunk: any, encoding: any, callback: any) {
+  stream.write = function (chunk: any, encoding: any, callback: any) {
     buf += chunk.toString();
     oldWrite.apply(stream, arguments);
   };
@@ -20,9 +20,7 @@ const captureStream = (stream: any) => {
     unhook: () => {
       stream.write = oldWrite;
     },
-    captured: () => {
-      return buf;
-    }
+    captured: () => buf,
   };
 };
 
@@ -40,7 +38,7 @@ describe('@feflow/core - Logger system', () => {
   it('test debug and silent', () => {
     const log = logger({
       debug: true,
-      silent: true
+      silent: true,
     });
     log.debug('hello feflow');
   });
@@ -53,7 +51,7 @@ describe('@feflow/core - Logger system', () => {
   it('test debug', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: false,
     });
     log.debug('hello feflow');
   });
@@ -61,7 +59,7 @@ describe('@feflow/core - Logger system', () => {
   it('test warn', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: false,
     });
     log.warn('hello feflow');
   });
@@ -69,7 +67,7 @@ describe('@feflow/core - Logger system', () => {
   it('test error', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: false,
     });
     log.error('hello feflow');
   });

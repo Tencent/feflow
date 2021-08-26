@@ -1,5 +1,5 @@
 import path from 'path';
-import osenv from "osenv";
+import osenv from 'osenv';
 export const FEFLOW_ROOT = '.fef';
 export const FEFLOW_BIN = 'bin';
 export const FEFLOW_LIB = 'lib';
@@ -15,17 +15,10 @@ export const PROJECT_CONFIG = [
   '.feflowrc.yml',
   '.feflowrc.json',
   '.feflowrc',
-  'package.json'
+  'package.json',
 ];
 
-export const DEVKIT_CONFIG = [
-  'devkit.js',
-  'devkit.yaml',
-  'devkit.yml',
-  'devkit.json',
-  'devkitrc',
-  'package.json'
-];
+export const DEVKIT_CONFIG = ['devkit.js', 'devkit.yaml', 'devkit.yml', 'devkit.json', 'devkitrc', 'package.json'];
 
 /**
  * Namespace for collection of "before" hooks

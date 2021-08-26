@@ -11,25 +11,16 @@ async function updateCli(packageManager: string) {
     const args =
       packageManager === 'yarn'
         ? ['global', 'add', '@feflow/cli@latest', '--extract']
-        : [
-            'install',
-            '@feflow/cli@latest',
-            '--color=always',
-            '--save',
-            '--save-exact',
-            '--loglevel',
-            'error',
-            '-g'
-          ];
+        : ['install', '@feflow/cli@latest', '--color=always', '--save', '--save-exact', '--loglevel', 'error', '-g'];
 
     const child = spawn(packageManager, args, {
       stdio: 'inherit',
-      windowsHide: true
+      windowsHide: true,
     });
-    child.on('close', code => {
+    child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${packageManager} ${args.join(' ')}`
+          command: `${packageManager} ${args.join(' ')}`,
         });
         return;
       }
@@ -40,15 +31,10 @@ async function updateCli(packageManager: string) {
 
 async function checkCliUpdate(ctx: any) {
   const { version, config, configPath } = ctx;
-  const packageManager = config.packageManager;
+  const { packageManager } = config;
   const registryUrl = await getRegistryUrl(packageManager);
-  const latestVersion: any = await packageJson(
-    '@feflow/cli',
-    registryUrl
-  ).catch(() => {
-    ctx.logger.warn(
-      `Network error, can't reach ${registryUrl}, CLI give up verison check.`
-    );
+  const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
+    ctx.logger.warn(`Network error, can't reach ${registryUrl}, CLI give up verison check.`);
   });
 
   if (latestVersion && semver.gt(latestVersion, version)) {
@@ -57,14 +43,12 @@ async function checkCliUpdate(ctx: any) {
         type: 'confirm',
         name: 'ifUpdate',
         message: `${chalk.yellow(
-          `@feflow/cli's latest version is ${chalk.green(
-            `${latestVersion}`
-          )}, but your version is ${chalk.red(
-            `${version}`
-          )}, Do you want to update it?`
+          `@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)}, but your version is ${chalk.red(
+            `${version}`,
+          )}, Do you want to update it?`,
         )}`,
-        default: true
-      }
+        default: true,
+      },
     ];
     const answer = await inquirer.prompt(askIfUpdateCli);
     if (answer.ifUpdate) {
@@ -73,9 +57,9 @@ async function checkCliUpdate(ctx: any) {
       safeDump(
         {
           ...config,
-          lastUpdateCheck: +new Date()
+          lastUpdateCheck: +new Date(),
         },
-        configPath
+        configPath,
       );
     }
   } else {

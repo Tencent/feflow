@@ -2,7 +2,7 @@ import chai from 'chai';
 import Report from '../lib/index';
 import { getUserName, httpRegex, sshRegex } from '../lib/common/utils';
 
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - report', () => {
   let report;

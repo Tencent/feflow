@@ -57,14 +57,16 @@ export class FefError {
     }
 
     const docs = this.getDocPath(pluginPath);
-    const { type: cmdType } = this.picker?.getCmdInfo() || {type: COMMAND_TYPE.PLUGIN_TYPE};
+    const { type: cmdType } = this.picker?.getCmdInfo() || { type: COMMAND_TYPE.PLUGIN_TYPE };
     if (docs) {
       this.printErrorWithDocs(obj, docs);
     } else {
       let { error, msg } = obj;
       if (!obj.hideError) {
         msg = `${msg || error}`;
-        this.context.logger[[COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, COMMAND_TYPE.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error']({ err: error }, msg, chalk.magenta(error));
+        this.context.logger[
+          [COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, COMMAND_TYPE.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error'
+        ]({ err: error }, msg, chalk.magenta(error));
       } else if (msg) {
         // 兼容多语言插件
         this.context.logger.info(`${msg}`);

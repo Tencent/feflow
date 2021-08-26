@@ -13,13 +13,13 @@ export const writeFileAsync = util.promisify(fs.writeFile);
 export async function copyDir(srcPath: string, tarPath: string) {
   const [srcStats, tarStats] = await Promise.all([
     statAsync(srcPath).catch(() => null),
-    statAsync(tarPath).catch(() => null)
+    statAsync(tarPath).catch(() => null),
   ]);
   if (!srcStats) {
-    throw 'the source path [' + srcPath + '] does not exist';
+    throw `the source path [${srcPath}] does not exist`;
   }
   if (!srcStats.isDirectory()) {
-    throw 'the source path [' + srcPath + '] is not a folder';
+    throw `the source path [${srcPath}] is not a folder`;
   }
   if (!tarStats) {
     await mkdirAsync(tarPath, { recursive: true });
@@ -30,7 +30,7 @@ export async function copyDir(srcPath: string, tarPath: string) {
 
 async function copyFiles(srcPath: string, tarPath: string, files: string[]) {
   return Promise.all(
-    files.map(async filename => {
+    files.map(async (filename) => {
       const fileDir = path.join(srcPath, filename);
       const stats = await statAsync(fileDir);
       const isFile = stats.isFile();
@@ -42,6 +42,6 @@ async function copyFiles(srcPath: string, tarPath: string, files: string[]) {
         await mkdirAsync(tarFileDir);
         await copyDir(fileDir, tarFileDir);
       }
-    })
+    }),
   );
 }

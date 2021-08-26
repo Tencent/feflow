@@ -16,7 +16,7 @@ export function getRegistryUrl(packageManager: string) {
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`
+          command: `${command} ${args.join(' ')}`,
         });
         return;
       }
@@ -32,13 +32,11 @@ export function install(
   cmd: any,
   dependencies: any,
   verbose: boolean,
-  isOnline: boolean
+  isOnline: boolean,
 ) {
   return new Promise((resolve, reject) => {
     const command = packageManager;
-    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(
-      dependencies
-    );
+    const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
 
     if (verbose) {
       args.push('--verbose');
@@ -48,7 +46,7 @@ export function install(
     child.on('close', (code) => {
       if (code !== 0) {
         reject({
-          command: `${command} ${args.join(' ')}`
+          command: `${command} ${args.join(' ')}`,
         });
         return;
       }
@@ -61,7 +59,7 @@ export function isInstalledPM(packageName: string) {
   try {
     const ret = spawn.sync(packageName, ['-v'], {
       stdio: 'ignore',
-      windowsHide: true
+      windowsHide: true,
     });
     return ret.status === 0;
   } catch (err) {

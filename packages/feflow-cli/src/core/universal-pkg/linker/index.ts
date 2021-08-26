@@ -8,7 +8,7 @@ import fs from 'fs';
 export default class Linker {
   private currentOs: NodeJS.Platform;
 
-  private startCommand: string = 'fef';
+  private startCommand = 'fef';
 
   private fileMode = 0o744;
 
@@ -81,12 +81,7 @@ export default class Linker {
     this.writeExecFile(file, template);
   }
 
-  private linkToUnixLike(
-    binPath: string,
-    libPath: string,
-    command: string,
-    name?: string
-  ) {
+  private linkToUnixLike(binPath: string, libPath: string, command: string, name?: string) {
     this.enableDir(binPath, libPath);
     const file = this.shellFile(libPath, name || command);
     const template = this.shellTemplate(command);
@@ -98,12 +93,7 @@ export default class Linker {
     fs.symlinkSync(file, commandLink);
   }
 
-  private linkCustomeToUnixLike(
-    binPath: string,
-    libPath: string,
-    commands: string[],
-    name: string
-  ) {
+  private linkCustomeToUnixLike(binPath: string, libPath: string, commands: string[], name: string) {
     this.enableDir(binPath, libPath);
     const file = this.shellFile(libPath, name);
     const template = this.customeShellTemplate(commands);
@@ -127,7 +117,7 @@ export default class Linker {
     fs.writeFileSync(file, content, {
       mode: this.fileMode,
       flag: 'w',
-      encoding: 'utf8'
+      encoding: 'utf8',
     });
   }
 
@@ -136,7 +126,7 @@ export default class Linker {
   }
 
   private customeShellTemplate(commands: string[]): string {
-    const commandStr = commands.map(cmd => cmd += ' "$@"').join('\n');
+    const commandStr = commands.map((cmd) => (cmd += ' "$@"')).join('\n');
     return `#!/bin/sh\n${commandStr}`;
   }
 
@@ -145,7 +135,7 @@ export default class Linker {
   }
 
   private customeCmdTemplate(commands: string[]): string {
-    const commandStr = commands.map(cmd => cmd += ' %*').join('\n');
+    const commandStr = commands.map((cmd) => (cmd += ' %*')).join('\n');
     return `@echo off\n${commandStr}`;
   }
 

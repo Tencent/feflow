@@ -14,20 +14,16 @@ import {
   LOG_FILE,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
-import bunyan from "bunyan";
+import bunyan from 'bunyan';
 
 const pkg = JSON.parse(
-  stripComments(
-    fs
-      .readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8')
-      .replace(/^\ufeff/u, '')
-  )
+  stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
 );
 
 function ensureNodeVersion(requiredVersion: string, id: string): void {
   if (!semver.satisfies(process.version, requiredVersion)) {
     console.error(
-      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`
+      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
     );
     process.exit(1);
   }
@@ -39,7 +35,7 @@ function printBanner(logger: bunyan) {
     {
       font: '3D-ASCII',
       horizontalLayout: 'default',
-      verticalLayout: 'default'
+      verticalLayout: 'default',
     },
     (err, data) => {
       if (err) {
@@ -47,16 +43,12 @@ function printBanner(logger: bunyan) {
         process.exit(2);
       }
       logger.info(`\n${data}`);
+      logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
       logger.info(
-        `Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`
+        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
       );
-      logger.info(
-        ' (c) powered by Tencent, aims to improve front end workflow.                                       '
-      );
-      logger.info(
-        ' Run fef --help to see usage.                                     '
-      );
-    }
+      logger.info(' Run fef --help to see usage.                                     ');
+    },
   );
 }
 
@@ -65,7 +57,7 @@ export default function entry() {
     alias: {
       h: 'help',
       v: 'version',
-    }
+    },
   });
 
   // 检查node版本
@@ -96,7 +88,7 @@ export default function entry() {
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', err => {
+  process.on('unhandledRejection', (err) => {
     logger.debug(err);
     feflow?.reporter?.reportCommandError(err);
     feflow.fefError?.printError({ error: err, msg: '', hideError: true });
@@ -111,22 +103,22 @@ export default function entry() {
     }
     feflow.cmd = cmd;
     feflow.hook.emit(HOOK_TYPE_BEFORE);
-    feflow.hook.on(EVENT_COMMAND_BEGIN, () => {
-      return feflow
+    feflow.hook.on(EVENT_COMMAND_BEGIN, () =>
+      feflow
         .call(cmd, feflow)
         .then(() => {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
         })
-        .catch(err => {
+        .catch((err) => {
           logger.debug(err);
           feflow?.reporter?.reportCommandError(err);
           feflow.fefError.printError({
             error: err,
-            msg: '%s'
+            msg: '%s',
           });
           process.exit(err.status || 2);
-        });
-    });
+        }),
+    );
   });
 }

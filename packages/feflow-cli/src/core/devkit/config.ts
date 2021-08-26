@@ -117,10 +117,9 @@ export default class Config {
       const packageData = this.loadJSONConfigFile(filePath);
 
       if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
-        throw Object.assign(
-          new Error("package.json file doesn't have 'feflowConfig' field."),
-          { code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND' }
-        );
+        throw Object.assign(new Error("package.json file doesn't have 'feflowConfig' field."), {
+          code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND',
+        });
       }
 
       return packageData.feflowConfig;
@@ -142,7 +141,7 @@ export default class Config {
       e.messageTemplate = 'failed-to-read-json';
       e.messageData = {
         path: filePath,
-        message: e.message
+        message: e.message,
       };
       throw e;
     }

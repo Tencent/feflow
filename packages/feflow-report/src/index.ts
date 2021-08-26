@@ -90,7 +90,7 @@ class Report {
       fs.writeFileSync(this.cachePath, '{}', 'utf-8');
     }
     // 文件不存在则创建
-    fs.open(this.cachePath, 'w+', err => {
+    fs.open(this.cachePath, 'w+', (err) => {
       if (err) return this.ctx.log.debug(`${this.cachePath} 打开失败 => ${err}`);
       fs.writeFileSync(this.cachePath, '{}', 'utf-8');
     });

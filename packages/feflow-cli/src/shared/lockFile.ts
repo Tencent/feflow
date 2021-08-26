@@ -15,7 +15,7 @@ export default class LockFileInstance {
     this.lockKey = lockKey;
     this.logger = logger({
       debug: false,
-      silent: true
+      silent: true,
     });
     this.tryMax = 50;
     this.tryGap = 100;
@@ -48,67 +48,56 @@ export default class LockFileInstance {
   }
 
   read(key: string | undefined): Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       try {
-        fs.stat(
-          this.filePath,
-          (err: Error | null, stats: { isFile: () => boolean }) => {
-            if (err) {
-              this.logger.error(err);
-              resolve(undefined);
-              return;
-            }
-            if (!stats) {
-              this.logger.error('no stats');
-              resolve(undefined);
-              return;
-            }
-            if (stats && !stats.isFile()) {
-              resolve(undefined);
-              return;
-            }
-
-            this.checkIfCanRead(() => {
-              fs.readFile(
-                this.filePath,
-                'utf8',
-                (err: Error | null, data: string) => {
-                  if (err) {
-                    this.logger.error(err);
-                    resolve(undefined);
-                    return;
-                  }
-
-                  if (!data) {
-                    // no data then turn it to {}
-                    this.clearFile();
-                    data = '{}';
-                  }
-
-                  this.logger.debug(
-                    `get file: ${this.filePath} => data: ${data}`
-                  );
-                  try {
-                    const jsonObj: object = JSON.parse(data);
-                    if (key && !jsonObj[key]) {
-                      this.logger.debug(
-                        `get key ${key} form data ${this.filePath} => no value find`
-                      );
-                      resolve(undefined);
-                      return;
-                    }
-                    resolve(key ? jsonObj[key] : jsonObj);
-                  } catch (e) {
-                    // 写入的文件数据有问题，清空文件，下次重新写入。
-                    this.clearFile();
-                    this.logger.error(e);
-                    resolve(undefined);
-                  }
-                }
-              );
-            });
+        fs.stat(this.filePath, (err: Error | null, stats: { isFile: () => boolean }) => {
+          if (err) {
+            this.logger.error(err);
+            resolve(undefined);
+            return;
           }
-        );
+          if (!stats) {
+            this.logger.error('no stats');
+            resolve(undefined);
+            return;
+          }
+          if (stats && !stats.isFile()) {
+            resolve(undefined);
+            return;
+          }
+
+          this.checkIfCanRead(() => {
+            fs.readFile(this.filePath, 'utf8', (err: Error | null, data: string) => {
+              if (err) {
+                this.logger.error(err);
+                resolve(undefined);
+                return;
+              }
+
+              if (!data) {
+                // no data then turn it to {}
+                this.clearFile();
+                data = '{}';
+              }
+
+              this.logger.debug(`get file: ${this.filePath} => data: ${data}`);
+              try {
+                const jsonObj: object = JSON.parse(data);
+                if (key && !jsonObj[key]) {
+                  this.logger.debug(`get key ${key} form data ${this.filePath} => no value find`);
+                  resolve(undefined);
+                  return;
+                }
+                resolve(key ? jsonObj[key] : jsonObj);
+              } catch (e) {
+                // 写入的文件数据有问题，清空文件，下次重新写入。
+                this.clearFile();
+                this.logger.error(e);
+                resolve(undefined);
+              }
+            });
+          });
+        });
       } catch (err) {
         this.logger.error(err);
         resolve(undefined);
@@ -121,9 +110,9 @@ export default class LockFileInstance {
       this.lockKey,
       {
         wait: this.tryGap,
-        retries: this.tryMax
+        retries: this.tryMax,
       },
-      err => {
+      (err) => {
         if (err) {
           this.logger.error(err);
           this.unlock();
@@ -132,18 +121,18 @@ export default class LockFileInstance {
         }
 
         cb && cb();
-      }
+      },
     );
   }
 
   unlock(): void {
-    lockFile.unlock(this.lockKey, er => {
+    lockFile.unlock(this.lockKey, (er) => {
       er && this.logger.error('er', er);
     });
   }
 
   update(key: string, value: any): Promise<object | undefined> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       try {
         if (!fs.existsSync(this.filePath)) {
           // 文件不存在则创建文件后插入
@@ -169,23 +158,17 @@ export default class LockFileInstance {
           }
           try {
             const jsonObj: object = JSON.parse(data);
-            this.logger.debug(
-              `write file ${this.filePath} key ${key} value ${value}`
-            );
+            this.logger.debug(`write file ${this.filePath} key ${key} value ${value}`);
             jsonObj[key] = value;
-            fs.writeFile(
-              this.filePath,
-              JSON.stringify(jsonObj, null, 2),
-              (err: Error | null) => {
-                this.unlock();
-                if (err) {
-                  this.logger.error(err);
-                  resolve(undefined);
-                  return;
-                }
-                resolve(jsonObj);
+            fs.writeFile(this.filePath, JSON.stringify(jsonObj, null, 2), (err: Error | null) => {
+              this.unlock();
+              if (err) {
+                this.logger.error(err);
+                resolve(undefined);
+                return;
               }
-            );
+              resolve(jsonObj);
+            });
           } catch (e) {
             // 文件数据有问题，清空文件，下次重新写入。
             this.clearFile();

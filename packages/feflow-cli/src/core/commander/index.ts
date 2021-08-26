@@ -49,7 +49,7 @@ export default class Commander {
       runFn: fn,
       desc,
       options,
-      pluginName
+      pluginName,
     };
     this.alias = abbrev(Object.keys(this.store));
     if (this.onRegistered) {
@@ -63,7 +63,7 @@ export default class Commander {
       runFn: fn,
       desc: '',
       options,
-      pluginName
+      pluginName,
     };
   }
 }
