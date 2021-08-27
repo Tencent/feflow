@@ -34,7 +34,7 @@ export default class Hook {
           this.emit(EVENT_DONE);
         });
         break;
-      default:
+      default: {
         const listeners = this.listeners[type];
         if (!listeners) {
           return;
@@ -43,6 +43,7 @@ export default class Hook {
           listener.apply(null, args);
         });
         break;
+      }
     }
   }
 
