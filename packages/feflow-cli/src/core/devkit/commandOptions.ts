@@ -36,11 +36,10 @@ const getOptionItem = (optionItemConfig: any, option: any): object => {
       description: optionItemConfig,
     };
   } else {
-    if (!optionItemConfig.name) {
-      optionItemConfig.name = option;
-    }
-
     optionDescritionItem = optionItemConfig;
+    if (!optionDescritionItem.name) {
+      optionDescritionItem.name = option;
+    }
     optionDescritionItem.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
   }
   return optionDescritionItem;

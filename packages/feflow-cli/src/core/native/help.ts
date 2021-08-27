@@ -8,14 +8,15 @@ import marked from 'marked';
 import { UNIVERSAL_README_CONFIG } from '../../shared/constant';
 
 const getCommands = (store: any) => {
-  const arr = [];
-  for (const name in store) {
-    const desc = store[name].desc || '';
+  const arr: any = [];
+  const storeKey = Object.keys(store);
+  storeKey.forEach((item: any) => {
+    const desc = store[item].desc || '';
     arr.push({
-      colA: name,
+      colA: item,
       colB: (desc instanceof Function ? desc() : desc).replace(/({|})/g, (val: string) => escape(val)),
     });
-  }
+  });
   return arr;
 };
 
@@ -84,7 +85,7 @@ module.exports = (ctx: any) => {
         const commandInfo = store[cmd];
 
         // 优先展示组件注册信息
-        if (commandInfo.options && commandInfo.options.length) {
+        if (commandInfo.options?.length) {
           const universalUsage = commandInfo.options[0];
           const { type, content } = universalUsage instanceof Function ? universalUsage() : universalUsage;
 

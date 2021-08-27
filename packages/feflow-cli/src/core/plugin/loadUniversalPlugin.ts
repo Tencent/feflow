@@ -1,7 +1,6 @@
 import path from 'path';
 import { parseYaml } from '../../shared/yaml';
 import { Plugin } from '../universal-pkg/schema/plugin';
-import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
@@ -11,8 +10,7 @@ import {
   DISABLE_ARG,
 } from '../../shared/constant';
 import Binp from '../universal-pkg/binp';
-import Commander from '../commander';
-import { CommandPickConfig, COMMAND_TYPE } from '../command-picker';
+import { CommandPickConfig, CommandType } from '../command-picker';
 import { escape } from '../../shared/args';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
@@ -96,7 +94,7 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
 
   const installed = universalPkg.getInstalled();
   for (const [pkg, version] of installed) {
-    pickConfig.registSubCommand(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store, pkg, version);
+    pickConfig.registSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store, pkg, version);
     register(ctx, pkg, version, true);
   }
 
@@ -107,6 +105,6 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
     }
   }
 
-  pickConfig.registSubCommand(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store);
-  pickConfig.updateCache(COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE);
+  pickConfig.registSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store);
+  pickConfig.updateCache(CommandType.UNIVERSAL_PLUGIN_TYPE);
 }

@@ -9,10 +9,15 @@ function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
   const extend = function (target: any, source: any) {
-    for (const obj in source) {
-      target[obj] = source[obj];
-    }
-    return target;
+    // for (const obj in source) {
+    //   target[obj] = source[obj];
+    // }
+    const newTarget = JSON.parse(JSON.stringify(target));
+    const sourceValue = Object.keys(source);
+    sourceValue.forEach((item) => {
+      newTarget[item] = source[item];
+    });
+    return newTarget;
   };
   if (fs.existsSync(packagePath)) {
     const content = fs.readFileSync(packagePath, 'utf8');
@@ -39,7 +44,7 @@ function getModuleVersion(dir: string, name: string): string {
   if (fs.existsSync(packagePath)) {
     const content = fs.readFileSync(packagePath, 'utf8');
     const json = JSON.parse(content);
-    return (json && json.version) || 'unknown';
+    return json?.version || 'unknown';
   }
   return 'unknown';
 }
@@ -90,7 +95,7 @@ module.exports = (ctx: any) => {
       }
     });
     console.log('templates');
-    if (templates.length == 0) {
+    if (templates.length === 0) {
       console.log(chalk.magenta('No templates have been installed'));
     } else {
       templates.forEach((item) => console.log(chalk.magenta(`${item.name}(${item.version})`)));
@@ -108,7 +113,7 @@ module.exports = (ctx: any) => {
       }
     });
     console.log('plugins');
-    if (storePlugins.length == 0 && gitPlugins.length == 0) {
+    if (storePlugins.length === 0 && gitPlugins.length === 0) {
       console.log(chalk.magenta('No plugins have been installed'));
     } else {
       storePlugins.forEach((item) => console.log(chalk.magenta(`${item.name}(${item.version})`)));

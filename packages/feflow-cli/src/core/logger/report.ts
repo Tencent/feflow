@@ -1,9 +1,11 @@
+/* eslint-disable import/no-mutable-exports */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { FEFLOW_ROOT, LOG_FILE } from '../../shared/constant';
 import osenv from 'osenv';
-const fs = require('fs');
-const axios = require('axios');
-const path = require('path');
-const os = require('os');
+import fs from 'fs';
+import axios from 'axios';
+import path from 'path';
+import os from 'os';
 const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME = os.hostname().split('-')[0];
@@ -11,7 +13,7 @@ const NOW_TIME = new Date().getTime();
 const pkg = require('../../../package.json');
 const PLUGE_NAME = `feflow-${pkg.name.split('/').pop()}`;
 const { hasTimer } = process.env;
-let KYE_FILE = {};
+let KYE_FILE: any = {};
 interface IObject {
   [key: string]: string;
 }
@@ -48,7 +50,7 @@ async function send(logObj: any, readData: [any]) {
     .map((data: string) => {
       const logger = JSON.parse(data);
       const { level } = logger;
-      const loggerName = logger.name || (logObj.name && logObj.name.split('/').pop()) || PLUGE_NAME;
+      const loggerName = logger.name || logObj?.name.split('/').pop() || PLUGE_NAME;
       return {
         level,
         msg: `[Feflow ${levelNames[level]}][${loggerName}]${logger.msg}`,
@@ -78,7 +80,7 @@ async function send(logObj: any, readData: [any]) {
   }
 }
 async function report(logObj?: any) {
-  let readData = fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
+  let readData: any = fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
   if (readData) {
     readData = readData.split('\n');
     // 数量太少暂时不上报

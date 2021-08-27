@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import compose from './compose';
 import chalk from 'chalk';
 import osenv from 'osenv';
 import path from 'path';
 import { FEFLOW_ROOT, UNIVERSAL_PLUGIN_CONFIG } from '../../shared/constant';
-import { CommandPickConfig, COMMAND_TYPE } from '../command-picker';
+import { CommandPickConfig, CommandType } from '../command-picker';
 import logger from '../logger';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import fs from 'fs';
@@ -19,7 +20,7 @@ export default function applyPlugins(plugins: any[]) {
     const chain = plugins.map((name: any) => {
       const home = path.join(osenv.home(), FEFLOW_ROOT);
       const pluginPath = path.join(home, 'node_modules', name);
-      pickConfig.registSubCommand(COMMAND_TYPE.PLUGIN_TYPE, ctx.commander.store, name);
+      pickConfig.registSubCommand(CommandType.PLUGIN_TYPE, ctx.commander.store, name);
 
       try {
         ctx.logger.debug('Plugin loaded: %s', chalk.magenta(name));
@@ -35,8 +36,8 @@ export default function applyPlugins(plugins: any[]) {
     });
 
     compose(...chain);
-    pickConfig.registSubCommand(COMMAND_TYPE.PLUGIN_TYPE, ctx.commander.store);
-    pickConfig.updateCache(COMMAND_TYPE.PLUGIN_TYPE);
+    pickConfig.registSubCommand(CommandType.PLUGIN_TYPE, ctx.commander.store);
+    pickConfig.updateCache(CommandType.PLUGIN_TYPE);
   };
 }
 

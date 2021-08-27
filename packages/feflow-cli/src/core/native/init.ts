@@ -43,7 +43,7 @@ const run = (ctx: any, name: string) => {
   }
   yeomanEnv.register(require.resolve(generatorEntry), name);
   yeomanEnv.run(name, ctx, (err) => {
-    ctx.reporter && ctx.reporter.reportInitResult();
+    ctx.reporter?.reportInitResult();
     if (err) {
       ctx.logger.error(err);
     } else {
@@ -74,7 +74,7 @@ module.exports = (ctx: any) => {
         ];
         const answer = await inquirer.prompt(askIfInstallGenerator);
         if (answer.ifInstall) {
-          const packageManager = ctx.config && ctx.config.packageManager;
+          const packageManager = ctx.config?.packageManager;
           install(packageManager, ctx.root, 'install', generator, false, true).then(() => {
             ctx.logger.info(`install success`);
             run(ctx, generator);
@@ -95,7 +95,7 @@ module.exports = (ctx: any) => {
           ])
           .then((answer: any) => {
             let name;
-            generators.map((item: any) => {
+            generators.forEach((item: any) => {
               if (item.desc === answer.desc) {
                 name = item.name;
               }
