@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import path from 'path';
 import logger from '../../../src/core/logger';
 import osenv from 'osenv';
@@ -11,9 +12,10 @@ fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function (chunk: any, encoding: any, callback: any) {
+  stream.write = function (...params: any[]) {
+    const [chunk] = params;
     buf += chunk.toString();
-    oldWrite.apply(stream, arguments);
+    oldWrite.apply(stream, params);
   };
 
   return {

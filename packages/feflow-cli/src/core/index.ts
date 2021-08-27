@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import glob from 'glob';
 import Report from '@feflow/report';
@@ -54,8 +55,7 @@ export default class Feflow {
   public commandPick: CommandPicker | null;
   public fefError: FefError;
 
-  constructor(args: any) {
-    args = args || {};
+  constructor(args: any = {}) {
     const configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
     this.root = FEFLOW_HOME;
     this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);
@@ -147,7 +147,7 @@ export default class Feflow {
 
   initPackageManager() {
     const { root, logger } = this;
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       if (!this.config?.packageManager) {
         const packageManagers = ['npm', 'tnpm', 'yarn', 'cnpm'];
         const defaultPackageManager = packageManagers.find((packageManager) => isInstalledPM(packageManager));
@@ -172,7 +172,7 @@ export default class Feflow {
   }
 
   loadNative() {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       const nativePath = path.join(__dirname, './native/*.js');
       // fs.readdirSync(nativePath)
       glob.sync(nativePath).forEach((file: string) => {
@@ -229,7 +229,7 @@ export default class Feflow {
     const registeredCommand = ctx.commander.get(cmd);
     let commandLine: object[] = [];
 
-    if (registeredCommand && registeredCommand.options) {
+    if (registeredCommand?.options) {
       commandLine = getCommandLine(registeredCommand.options, registeredCommand.desc, cmd);
     }
     // 有副作用，暂无好方法改造
@@ -237,7 +237,7 @@ export default class Feflow {
       registeredCommand.runFn.call(this, ctx);
       return true;
     }
-    if (commandLine.length == 0) {
+    if (commandLine.length === 0) {
       return false;
     }
 

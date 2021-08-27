@@ -16,13 +16,15 @@ module.exports = (ctx: any) => {
           config[key] = value;
           safeDump(config, configPath);
           break;
-        case 'list':
+        case 'list': {
           let str = '';
-          for (const prop in config) {
-            str += `${prop} = ${config[prop]}\n`;
-          }
+          const configKey = Object.keys(config);
+          configKey.forEach((item: any) => {
+            str += `${item} = ${config[item]}\n`;
+          });
           console.log(str.replace(/\s+$/g, ''));
           break;
+        }
         default:
           return null;
       }

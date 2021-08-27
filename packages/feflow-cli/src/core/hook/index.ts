@@ -34,7 +34,7 @@ export default class Hook {
           this.emit(EVENT_DONE);
         });
         break;
-      default:
+      default: {
         const listeners = this.listeners[type];
         if (!listeners) {
           return;
@@ -43,6 +43,7 @@ export default class Hook {
           listener.apply(null, args);
         });
         break;
+      }
     }
   }
 
@@ -66,14 +67,14 @@ export default class Hook {
       if (result && typeof result.then === 'function') {
         result.then(
           () => {
-            next(++i);
+            next(i + 1);
           },
           () => {
             throw new Error('Promise rejected with no or falsy reason');
           },
         );
       } else {
-        next(++i);
+        next(i + 1);
       }
     };
 

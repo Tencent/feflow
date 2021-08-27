@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import Config from './config';
 import getCommandLine from './commandOptions';
@@ -24,8 +25,8 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
         command,
         description,
         async () => {
-          for (let i = 0; i < implementation.length; i++) {
-            const action = path.join(pkgPath, implementation[i]);
+          for (const implementationItem of implementation) {
+            const action = path.join(pkgPath, implementationItem);
             await require(action)(Object.assign({}, ctx, { logger: devkitLogger }));
           }
         },
@@ -54,16 +55,17 @@ export default function loadDevkits(ctx: any): Promise<void> {
   const configData = config.loadProjectConfig();
   const directoryPath = config.getProjectDirectory();
 
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     if (configData) {
       ctx.projectPath = directoryPath;
       ctx.projectConfig = configData;
-      if (configData.devkit && configData.devkit.commands) {
+      if (configData.devkit?.commands) {
         const commandsConfig = configData.devkit.commands;
-        for (const command in commandsConfig) {
-          const commandConfig = commandsConfig[command];
-          registerDevkitCommand(command, commandConfig, directoryPath, ctx);
-        }
+        const commandsConfigKey = Object.keys(commandsConfig);
+        commandsConfigKey.forEach((item: any) => {
+          const commandConfig = commandsConfig[item];
+          registerDevkitCommand(item, commandConfig, directoryPath, ctx);
+        });
       } else {
         if (path.basename(directoryPath) === FEFLOW_ROOT) {
           ctx.logger.debug('Run commands in .fef root will not work.');

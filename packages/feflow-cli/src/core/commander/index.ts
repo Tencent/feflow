@@ -31,12 +31,12 @@ export default class Commander {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }
-    name = name.toLowerCase();
-    const invisibleCommand = this.invisibleStore[name];
+    const newName = name.toLowerCase();
+    const invisibleCommand = this.invisibleStore[newName];
     if (invisibleCommand) {
       return invisibleCommand;
     }
-    return this.store[this.alias[name]];
+    return this.store[this.alias[newName]];
   }
 
   list() {

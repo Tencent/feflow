@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
@@ -14,7 +15,7 @@ const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool',
 };
 
-export enum COMMAND_TYPE {
+export enum CommandType {
   NATIVE_TYPE = 'native',
   PLUGIN_TYPE = 'plugin',
   INTERNAL_PLUGIN_TYPE = 'devtool',
@@ -34,7 +35,7 @@ interface PluginItem {
     version?: string;
   }>;
   path?: string;
-  type: COMMAND_TYPE;
+  type: CommandType;
 }
 
 interface PluginInfo {
@@ -42,10 +43,10 @@ interface PluginInfo {
 }
 
 interface PickMap {
-  [COMMAND_TYPE.PLUGIN_TYPE]?: PluginInfo;
-  [COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE]?: PluginInfo;
-  [COMMAND_TYPE.NATIVE_TYPE]: PluginInfo;
-  [COMMAND_TYPE.INTERNAL_PLUGIN_TYPE]: PluginInfo;
+  [CommandType.PLUGIN_TYPE]?: PluginInfo;
+  [CommandType.UNIVERSAL_PLUGIN_TYPE]?: PluginInfo;
+  [CommandType.NATIVE_TYPE]: PluginInfo;
+  [CommandType.INTERNAL_PLUGIN_TYPE]: PluginInfo;
 }
 
 interface Cache {
@@ -61,9 +62,9 @@ interface CmdMap {
 
 class TargetPlugin {
   path: string;
-  type: COMMAND_TYPE;
+  type: CommandType;
   pkg?: string;
-  constructor(type: COMMAND_TYPE, path: string, pkg: string) {
+  constructor(type: CommandType, path: string, pkg: string) {
     this.type = type;
     this.path = path;
     this.pkg = pkg;
@@ -73,10 +74,10 @@ class TargetPlugin {
 class NativePlugin extends TargetPlugin {}
 
 class TargetUniversalPlugin {
-  type: COMMAND_TYPE;
+  type: CommandType;
   version: string;
   pkg: string;
-  constructor(type: COMMAND_TYPE, version: string, pkg: string) {
+  constructor(type: CommandType, version: string, pkg: string) {
     this.type = type;
     this.version = version;
     this.pkg = pkg;
@@ -95,11 +96,11 @@ export class CommandPickConfig {
   cacheFilePath: string;
   cacheVersion = '1.0.0';
 
-  PICK_ORDER = [
-    COMMAND_TYPE.PLUGIN_TYPE,
-    COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE,
-    COMMAND_TYPE.NATIVE_TYPE,
-    COMMAND_TYPE.INTERNAL_PLUGIN_TYPE,
+  pickOrder = [
+    CommandType.PLUGIN_TYPE,
+    CommandType.UNIVERSAL_PLUGIN_TYPE,
+    CommandType.NATIVE_TYPE,
+    CommandType.INTERNAL_PLUGIN_TYPE,
   ];
 
   constructor(ctx: Feflow) {
@@ -122,15 +123,15 @@ export class CommandPickConfig {
   }
 
   registSubCommand(
-    type: COMMAND_TYPE,
+    type: CommandType,
     store: Record<string, any>,
-    pluginName: string = COMMAND_TYPE.NATIVE_TYPE,
+    pluginName: string = CommandType.NATIVE_TYPE,
     version = 'latest',
   ) {
     const newCommands = _.difference(Object.keys(store), Object.keys(this.lastStore));
 
     if (!!this.lastCommand) {
-      if (type == COMMAND_TYPE.PLUGIN_TYPE) {
+      if (type === CommandType.PLUGIN_TYPE) {
         // 命令相同的场景，插件提供方变化后，依然可以探测到是新命令
         const commonCommands = Object.keys(store).filter((item) => !newCommands.includes(item));
         for (const common of commonCommands) {
@@ -176,15 +177,15 @@ export class CommandPickConfig {
     safeDump(this.cache as Cache, filePath);
   }
 
-  updateCache(type: COMMAND_TYPE) {
+  updateCache(type: CommandType) {
     if (!this.cache?.commandPickerMap) {
       this.initCacheFile();
       return;
     }
 
-    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
+    if (type === CommandType.PLUGIN_TYPE) {
       this.cache.commandPickerMap[type] = this.getPluginMap();
-    } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.cache.commandPickerMap[type] = this.getUniversalMap();
     }
 
@@ -196,12 +197,12 @@ export class CommandPickConfig {
 
   getAllCommandPickerMap(): Partial<PickMap> {
     const commandPickerMap: Partial<PickMap> = {};
-    commandPickerMap[COMMAND_TYPE.NATIVE_TYPE] = this.getNativeMap();
-    commandPickerMap[COMMAND_TYPE.PLUGIN_TYPE] = this.getPluginMap();
+    commandPickerMap[CommandType.NATIVE_TYPE] = this.getNativeMap();
+    commandPickerMap[CommandType.PLUGIN_TYPE] = this.getPluginMap();
 
-    commandPickerMap[COMMAND_TYPE.INTERNAL_PLUGIN_TYPE] = this.getInternalPluginMap();
+    commandPickerMap[CommandType.INTERNAL_PLUGIN_TYPE] = this.getInternalPluginMap();
 
-    commandPickerMap[COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE] = this.getUniversalMap();
+    commandPickerMap[CommandType.UNIVERSAL_PLUGIN_TYPE] = this.getUniversalMap();
 
     return commandPickerMap;
   }
@@ -224,7 +225,7 @@ export class CommandPickConfig {
             },
           ],
           path: file,
-          type: COMMAND_TYPE.NATIVE_TYPE,
+          type: CommandType.NATIVE_TYPE,
         };
       });
     return nativeMap;
@@ -235,7 +236,7 @@ export class CommandPickConfig {
     for (const command of Object.keys(internalPlugins)) {
       devtool[command] = {
         path: internalPlugins[command],
-        type: COMMAND_TYPE.INTERNAL_PLUGIN_TYPE,
+        type: CommandType.INTERNAL_PLUGIN_TYPE,
         commands: [{ name: 'devtool' }],
       };
     }
@@ -257,12 +258,10 @@ export class CommandPickConfig {
         // TODO
         // read plugin command from the key which from its package.json
         plugin[pluginNpm] = {
-          type: COMMAND_TYPE.PLUGIN_TYPE,
-          commands:
-            this.subCommandMap[pluginNpm] &&
-            this.subCommandMap[pluginNpm].map((cmd: string) => ({
-              name: cmd,
-            })),
+          type: CommandType.PLUGIN_TYPE,
+          commands: this.subCommandMap[pluginNpm]?.map((cmd: string) => ({
+            name: cmd,
+          })),
           path: pluginPath,
         };
       }
@@ -279,7 +278,7 @@ export class CommandPickConfig {
       const plugin = this.subCommandMapWithVersion[pkg];
       unversalPlugin[pkg] = {
         ...plugin,
-        type: COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE,
+        type: CommandType.UNIVERSAL_PLUGIN_TYPE,
       };
     }
     return unversalPlugin;
@@ -301,7 +300,7 @@ export class CommandPickConfig {
     const { commandPickerMap } = this.cache;
     let targetPath = { type: '', plugin: '' };
 
-    for (const type of this.PICK_ORDER) {
+    for (const type of this.pickOrder) {
       const pluginsInType = commandPickerMap[type];
       if (!pluginsInType) continue;
       for (const plugin of Object.keys(pluginsInType as PluginInfo)) {
@@ -325,24 +324,24 @@ export class CommandPickConfig {
 
   // 获取命令的缓存目录
   getCommandPath(cmd: string): TargetPlugin | TargetUniversalPlugin {
-    let target: TargetPlugin | TargetUniversalPlugin = new TargetUniversalPlugin(COMMAND_TYPE.UNKNOWN_TYPE, '', '');
+    let target: TargetPlugin | TargetUniversalPlugin = new TargetUniversalPlugin(CommandType.UNKNOWN_TYPE, '', '');
 
     if (!this.cache?.commandPickerMap) return target;
     const { commandPickerMap } = this.cache;
 
     let cmdList: Array<TargetPlugin | TargetUniversalPlugin> = [];
 
-    for (const type of this.PICK_ORDER) {
+    for (const type of this.pickOrder) {
       const pluginsInType = commandPickerMap[type];
       if (!pluginsInType) continue;
       for (const plugin of Object.keys(pluginsInType as PluginInfo)) {
         const { commands, path, type } = pluginsInType[plugin] as PluginItem;
         commands?.forEach(({ name, path: cmdPath, version }) => {
           if (cmd === name) {
-            if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+            if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
               target = new TargetUniversalPlugin(type, version as string, plugin);
-            } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
-              target = new NativePlugin(type, (cmdPath || path) as string, COMMAND_TYPE.NATIVE_TYPE);
+            } else if (type === CommandType.NATIVE_TYPE) {
+              target = new NativePlugin(type, (cmdPath || path) as string, CommandType.NATIVE_TYPE);
             } else {
               target = new TargetPlugin(type, (cmdPath || path) as string, plugin);
             }
@@ -373,11 +372,11 @@ export default class CommandPicker {
   ctx: any;
   isHelp: boolean;
   cacheController: CommandPickConfig;
-  SUPPORT_TYPE = [
-    COMMAND_TYPE.NATIVE_TYPE,
-    COMMAND_TYPE.PLUGIN_TYPE,
-    COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE,
-    COMMAND_TYPE.INTERNAL_PLUGIN_TYPE,
+  supportType = [
+    CommandType.NATIVE_TYPE,
+    CommandType.PLUGIN_TYPE,
+    CommandType.UNIVERSAL_PLUGIN_TYPE,
+    CommandType.INTERNAL_PLUGIN_TYPE,
   ];
 
   homeRunCmd = ['help', 'list'];
@@ -399,19 +398,19 @@ export default class CommandPicker {
     const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
 
-    if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
       const pkgPath = path.join(this.ctx.universalModules, `${pkg}@${version}`);
       const pathExists = fs.existsSync(pkgPath);
       return !this.isHelp && pathExists && !!version;
     }
-    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
+    if (type === CommandType.PLUGIN_TYPE) {
       const { path } = tartgetCommand as TargetPlugin;
       const pathExists = fs.existsSync(path);
-      const isCachType = this.SUPPORT_TYPE.includes(type);
+      const isCachType = this.supportType.includes(type);
       return !this.isHelp && !!pathExists && isCachType;
     }
-    if (type === COMMAND_TYPE.NATIVE_TYPE) {
+    if (type === CommandType.NATIVE_TYPE) {
       if (!this.homeRunCmd.includes(this.cmd)) {
         return true;
       }
@@ -442,10 +441,10 @@ export default class CommandPicker {
       name: tartgetCommand.pkg,
     });
     this.ctx.logger.debug('pick command type: ', type);
-    if (!this.SUPPORT_TYPE.includes(type)) {
+    if (!this.supportType.includes(type)) {
       return this.ctx.logger.warn(`this kind of command is not supported in command picker, ${type}`);
     }
-    if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
       execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
     } else {
@@ -461,7 +460,7 @@ export default class CommandPicker {
         }
         commandPath = path.join(__dirname, '../native', commandPath);
       }
-      const commandSource = this.getCommandSource(commandPath) || COMMAND_TYPE.NATIVE_TYPE;
+      const commandSource = this.getCommandSource(commandPath) || CommandType.NATIVE_TYPE;
       this.ctx.logger.debug('pick command path: ', commandPath);
       this.ctx.logger.debug('pick command source: ', commandSource);
 
@@ -474,17 +473,17 @@ export default class CommandPicker {
     }
   }
 
-  getCmdInfo(): { path: string; type: COMMAND_TYPE } {
+  getCmdInfo(): { path: string; type: CommandType } {
     const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = tartgetCommand;
-    const cmdInfo: { path: string; type: COMMAND_TYPE } = {
+    const cmdInfo: { path: string; type: CommandType } = {
       type,
       path: '',
     };
 
-    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
+    if (type === CommandType.PLUGIN_TYPE) {
       cmdInfo.path = (tartgetCommand as TargetPlugin).path;
-    } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { pkg, version } = tartgetCommand as TargetUniversalPlugin;
       cmdInfo.path = path.join(this.ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
     } else {

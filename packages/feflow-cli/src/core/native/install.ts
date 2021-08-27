@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { getRegistryUrl, install } from '../../shared/npm';
 import fs from 'fs';
 import path from 'path';
@@ -498,7 +499,8 @@ async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | un
     repoName = getDirRepoName(installPlugin);
   } else {
     fromType = PkgInfo.appStore;
-    let [pluginName, pluginVersion] = installPlugin.split('@');
+    const pluginName = installPlugin.split('@')[0];
+    let pluginVersion = installPlugin.split('@')[1];
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
       ctx.logger.warn(
@@ -548,7 +550,7 @@ class PkgInfo {
   }
 
   public showName(): string {
-    if (this.fromType != PkgInfo.appStore) {
+    if (this.fromType !== PkgInfo.appStore) {
       return this.repoFrom;
     }
     return this.repoName;

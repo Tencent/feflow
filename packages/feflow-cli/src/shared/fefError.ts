@@ -5,7 +5,7 @@ import { get } from 'lodash';
 
 import Feflow from '../core';
 import { Config } from '../shared/file';
-import CommandPicker, { COMMAND_TYPE } from '../core/command-picker';
+import CommandPicker, { CommandType } from '../core/command-picker';
 
 type PrintError = {
   error: any | Error;
@@ -57,7 +57,7 @@ export class FefError {
     }
 
     const docs = this.getDocPath(pluginPath);
-    const { type: cmdType } = this.picker?.getCmdInfo() || { type: COMMAND_TYPE.PLUGIN_TYPE };
+    const { type: cmdType } = this.picker?.getCmdInfo() || { type: CommandType.PLUGIN_TYPE };
     if (docs) {
       this.printErrorWithDocs(obj, docs);
     } else {
@@ -65,7 +65,7 @@ export class FefError {
       if (!obj.hideError) {
         msg = `${msg || error}`;
         this.context.logger[
-          [COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, COMMAND_TYPE.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error'
+          [CommandType.UNIVERSAL_PLUGIN_TYPE, CommandType.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error'
         ]({ err: error }, msg, chalk.magenta(error));
       } else if (msg) {
         // 兼容多语言插件
@@ -90,7 +90,7 @@ export class FefError {
   getDocPath(pluginPath?: string) {
     let docs = '';
     let configPath = '';
-    let type = COMMAND_TYPE.PLUGIN_TYPE;
+    let type = CommandType.PLUGIN_TYPE;
     if (!pluginPath) {
       if (this.picker != null) {
         const { path, type: cmdType } = this.picker.getCmdInfo();
@@ -104,14 +104,14 @@ export class FefError {
     if (!existsSync(pluginPath)) {
       return docs;
     }
-    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
+    if (type === CommandType.PLUGIN_TYPE) {
       configPath = join(pluginPath, this.pluginFile);
-    } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
         const tmpPath = join(pluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
-    } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
+    } else if (type === CommandType.NATIVE_TYPE) {
       return this.defaultDocs;
     }
 

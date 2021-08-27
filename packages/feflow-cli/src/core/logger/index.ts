@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import bunyan from 'bunyan';
 import chalk from 'chalk';
 import { Writable } from 'stream';
@@ -105,9 +106,9 @@ class ConsoleStream extends Writable {
     }
   }
 
-  async _write(data: any, enc: any, callback: any) {
+  async newWrite(data: any, enc: any, callback: any) {
     const { level } = data;
-    const loggerName = data.name || (logger.name && logger.name.split('/').pop()) || PLUGE_NAME;
+    const loggerName = data.name || logger?.name.split('/').pop() || PLUGE_NAME;
     let msg = '';
     if (this.debug) {
       msg += `${chalk.gray(data.time)} `;
@@ -135,8 +136,7 @@ class ConsoleStream extends Writable {
   }
 }
 
-export default function createLogger(options: any) {
-  options = options || {};
+export default function createLogger(options: any = {}) {
   const streams: Array<Stream> = [];
 
   streams.push({
