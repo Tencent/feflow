@@ -12,7 +12,6 @@ enum DEVTOOL_TYPE {
 module.exports = (ctx: any) => {
   const { args, commander, logger, root, rootPkg } = ctx;
   const [action] = args._;
-
   let templatePath: string;
 
   commander.register('devtool', 'Feflow devtool for better develop a devkit or plugin', async () => {

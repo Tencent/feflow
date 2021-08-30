@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { safeDump } from '../../shared/yaml';
 
-async function updateCli(packageManager: string) {
+export async function updateCli(packageManager: string) {
   return new Promise((resolve, reject) => {
     const args =
       packageManager === 'yarn'
@@ -73,5 +73,4 @@ module.exports = (ctx: any) => {
   });
 };
 
-module.exports.updateCli = updateCli;
 module.exports.checkCliUpdate = checkCliUpdate;

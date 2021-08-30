@@ -33,6 +33,7 @@ export default function applyPlugins(plugins: any[]) {
       } catch (err) {
         ctx.fefError.printError({ error: err, msg: 'command load failed: %s', pluginPath });
       }
+      return [];
     });
 
     compose(...chain);

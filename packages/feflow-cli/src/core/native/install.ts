@@ -49,7 +49,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
     })
     .then((res) => {
       const data = res.data || {};
-      return data.data && data.data[0];
+      return (data.data && data.data.length > 0 && data.data[0]) || [];
     })
     .catch((e: any) => {
       ctx.logger.debug('Get repo info error', e);
@@ -62,10 +62,11 @@ async function getRepoInfo(ctx: any, packageName: string) {
 // encodeURIComponent("github.com/tencent/feflow.git")
 function getGitRepoName(repoUrl: string): string | undefined {
   const ret = /^((http:\/\/|https:\/\/)(.*?@)?|git@)/.exec(repoUrl);
+  let newRepoUrl: String = '';
   if (Array.isArray(ret) && ret.length > 0) {
-    repoUrl = repoUrl.substring(ret[0].length);
+    newRepoUrl = repoUrl.substring(ret[0].length);
   }
-  return encodeURIComponent(FEFLOW_PLUGIN_GIT_PREFIX + repoUrl.split(':').join('/'));
+  return encodeURIComponent(FEFLOW_PLUGIN_GIT_PREFIX + newRepoUrl.split(':').join('/'));
 }
 
 function getDirRepoName(dir: string): string {
@@ -161,6 +162,7 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
         return dep;
       }
       ctx.logger.info(`[${dep}] has installed the latest version: ${hasInstallDep[depName]}`);
+      return [];
     });
   } catch (err) {
     ctx.logger.error(`get pkg info error ${JSON.stringify(err)}`);
@@ -400,14 +402,14 @@ async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boole
   } = ctx;
   const serverUrl = ctx.config?.serverUrl;
 
-  installPluginStr = installPluginStr.trim();
+  const newInstallPluginStr = installPluginStr.trim();
   if (!serverUrl) {
     logger.warn('please configure the serverUrl');
-    return installJsPlugin(ctx, installPluginStr);
+    return installJsPlugin(ctx, newInstallPluginStr);
   }
-  const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+  const pkgInfo = await getPkgInfo(ctx, newInstallPluginStr);
   if (!pkgInfo) {
-    return installJsPlugin(ctx, installPluginStr);
+    return installJsPlugin(ctx, newInstallPluginStr);
   }
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoFrom}] does not exist`;
@@ -466,7 +468,7 @@ function isDir(installPluginDir: string): boolean {
 }
 
 // when you install a universal package, return PkgInfo, otherwise return undefined
-async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {
+export async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {
   let installVersion;
   let checkoutTag;
   let repoFrom;
@@ -475,7 +477,7 @@ async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | un
   // install from git repo
   if (isGitRepo(installPlugin)) {
     fromType = PkgInfo.git;
-    if (installPlugin.indexOf('.git@') != -1) {
+    if (installPlugin.indexOf('.git@') !== -1) {
       const splits = installPlugin.split('@');
       const ver = splits.pop();
       repoFrom = splits.join('@');
@@ -663,7 +665,7 @@ function removeInvalidPkg(ctx: any) {
 }
 
 // update only the plugins installed globally
-async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+export async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
   const universalPkg = ctx.universalPkg as UniversalPkg;
   const dependedOn = universalPkg.getDepended(pkg, version);
   // update parent
@@ -729,6 +731,4 @@ module.exports = (ctx: any) => {
 };
 
 module.exports.installPlugin = installPlugin;
-module.exports.updateUniversalPlugin = updateUniversalPlugin;
 module.exports.getRepoInfo = getRepoInfo;
-module.exports.getPkgInfo = getPkgInfo;

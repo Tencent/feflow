@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 // 更新依赖
 import semver from 'semver';
 import fs from 'fs';
@@ -28,6 +27,8 @@ import {
   getUniversalPluginVersion,
   promisify,
 } from './utils';
+import { updateCli } from '../native/upgrade';
+import { getPkgInfo, updateUniversalPlugin } from '../native/install';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -45,9 +46,8 @@ interface ErrorInstance {
   stack: string;
 }
 
-const { updateCli } = require('../native/upgrade');
 const pkg = require('../../../package.json');
-const { getPkgInfo, updateUniversalPlugin } = require('../native/install');
+// import { getPkgInfo, updateUniversalPlugin } from '../native/install';
 const { version } = pkg;
 
 const { cacheValidate, debug, silent, latestVersion } = process.env;
@@ -163,9 +163,9 @@ function checkPluginsUpdate() {
           }
         }),
       ).then(async (plugins: any) => {
-        plugins = plugins.filter((plugin: any) => plugin && plugin.name);
-        if (plugins.length) {
-          await startPluginsUpdate(plugins);
+        const newPlugins = plugins.filter((plugin: any) => plugin?.name);
+        if (newPlugins.length) {
+          await startPluginsUpdate(newPlugins);
         }
         resolve();
       });

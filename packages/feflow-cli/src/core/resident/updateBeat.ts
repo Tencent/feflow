@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
@@ -24,6 +23,7 @@ import {
 } from '../../shared/constant';
 import loggerInstance from '../logger';
 import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
+import { getPkgInfo } from '../native/install';
 interface ErrorInstance {
   name: string;
   message: string;
@@ -31,7 +31,7 @@ interface ErrorInstance {
 }
 
 const pkg = require('../../../package.json');
-const { getPkgInfo } = require('../native/install');
+// import { getPkgInfo } from '../native/install';
 const { version } = pkg;
 
 const { debug, silent } = process.env;
@@ -65,7 +65,7 @@ const heartBeat = () => {
 };
 
 const queryCliUpdate = async () => {
-  const config = parseYaml(configPath);
+  const config: any = parseYaml(configPath);
 
   if (!config) {
     return;
@@ -92,7 +92,7 @@ const queryCliUpdate = async () => {
 };
 
 const queryPluginsUpdate = async () => {
-  const config = parseYaml(configPath);
+  const config: any = parseYaml(configPath);
   if (!config) {
     return;
   }
@@ -124,14 +124,14 @@ const queryPluginsUpdate = async () => {
       logger.debug('All plugins is in latest version');
     }),
   ).then(async (plugins: any) => {
-    plugins = plugins.filter((plugin: any) => plugin && plugin.name);
-    logger.debug('tnpm plugins update infomation', plugins);
-    if (plugins.length) {
+    const newPlugins = plugins.filter((plugin: any) => plugin?.name);
+    logger.debug('tnpm plugins update infomation', newPlugins);
+    if (newPlugins.length) {
       const updateData: any = await updateFile.read(UPDATE_KEY);
-      if (!_.isEqual(updateData.latest_plugins, plugins)) {
+      if (!_.isEqual(updateData.latest_plugins, newPlugins)) {
         const newUpdateData = {
           ...updateData,
-          latest_plugins: plugins,
+          latest_plugins: newPlugins,
         };
         await updateFile.update(UPDATE_KEY, newUpdateData);
       }
@@ -140,7 +140,7 @@ const queryPluginsUpdate = async () => {
 };
 
 const queryUniversalPluginsUpdate = async () => {
-  const config = parseYaml(configPath);
+  const config: any = parseYaml(configPath);
   if (!config || !config.serverUrl) {
     return;
   }
