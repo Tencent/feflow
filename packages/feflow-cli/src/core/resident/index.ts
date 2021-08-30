@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import path from 'path';
 import { spawn } from 'child_process';
 import chalk from 'chalk';
@@ -63,8 +62,8 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
   child.unref();
 }
 
-async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
-  const _showCliUpdateM = () => {
+async function checkUpdateMsg(ctx: any, updateData: any = {}) {
+  const showCliUpdateM = () => {
     const updateMsg = updateData.cli_update_msg;
     if (updateMsg) {
       const { version, latestVersion } = updateMsg;
@@ -73,7 +72,7 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
-  const _showPluginsUpdateM = () => {
+  const showPluginsUpdateM = () => {
     const updatePkg = updateData.plugins_update_msg;
     if (updatePkg) {
       updatePkg.forEach((pkg: any) => {
@@ -95,7 +94,7 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
     }
   };
 
-  const _showUniversalPluginsM = () => {
+  const showUniversalPluginsM = () => {
     const updatePkg = updateData.universal_plugins_update_msg;
 
     if (updatePkg) {
@@ -119,17 +118,17 @@ async function _checkUpdateMsg(ctx: any, updateData: any = {}) {
   };
 
   // cli -> tnpm -> universal
-  _showCliUpdateM();
-  _showPluginsUpdateM();
-  _showUniversalPluginsM();
+  showCliUpdateM();
+  showPluginsUpdateM();
+  showUniversalPluginsM();
 
   updateFile.update(UPDATE_KEY, updateData);
 }
 
-async function _checkLock(updateData: any) {
+async function checkLock(updateData: any) {
   const updateLock = updateData?.update_lock;
   const nowTime = new Date().getTime();
-  if (updateLock && updateLock.time && nowTime - updateLock.time < CHECK_UPDATE_GAP) {
+  if (updateLock?.time && nowTime - updateLock.time < CHECK_UPDATE_GAP) {
     return true;
   }
   updateData.update_lock = {
@@ -169,12 +168,12 @@ export async function checkUpdate(ctx: any) {
   const updateData = await updateFile.read(UPDATE_KEY);
   if (updateData) {
     // add lock to keep only one updating process is running
-    const isLocked = await _checkLock(updateData);
+    const isLocked = await checkLock(updateData);
     if (isLocked) return ctx.logger.debug('one updating process is running');
 
-    const { cli_update_msg, plugins_update_msg, universal_plugins_update_msg } = updateData;
-    if (cli_update_msg || plugins_update_msg || universal_plugins_update_msg) {
-      await _checkUpdateMsg(ctx, updateData);
+    const { cliUpdateMsg, pluginsUpdateMsg, universalPluginsUpdateMsg } = updateData;
+    if (cliUpdateMsg || pluginsUpdateMsg || universalPluginsUpdateMsg) {
+      await checkUpdateMsg(ctx, updateData);
     }
 
     const data = await heartFile.read(BEAT_KEY);

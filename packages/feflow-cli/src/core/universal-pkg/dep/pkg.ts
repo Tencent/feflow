@@ -36,13 +36,15 @@ export class UniversalPkg {
     if (!oDependencies) {
       return dependencies;
     }
-    for (const pkg in oDependencies) {
+    const oDependenciesKey = Object.keys(oDependencies);
+    for (const pkg of oDependenciesKey) {
       const versionRelationMap = oDependencies[pkg];
       if (!versionRelationMap) {
         continue;
       }
       const pkgRelation = new Map<string, PkgRelation>();
-      for (const version in versionRelationMap) {
+      const versionRelationMapKey = Object.keys(versionRelationMap);
+      for (const version of versionRelationMapKey) {
         const oVersionRelation = versionRelationMap[version];
         if (versionImpl.check(version)) {
           pkgRelation.set(version, new PkgRelation(oVersionRelation));
@@ -273,10 +275,11 @@ export class UniversalPkg {
         newObj[k] = v;
       }
     } else {
-      for (const k in obj) {
-        let v = obj[k];
+      const objKeyArr = Object.keys(obj);
+      for (const item of objKeyArr) {
+        let v = obj[item];
         v = typeof v === 'object' ? this.toObject(v) : v;
-        newObj[k] = v;
+        newObj[item] = v;
       }
     }
     return newObj;

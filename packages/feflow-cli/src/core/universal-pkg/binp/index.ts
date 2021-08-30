@@ -121,24 +121,24 @@ export default class Binp {
       return [undefined, undefined];
     }
     const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    let shellType = '';
+    // let shellType = '';
     if (Array.isArray(shellMatch) && shellMatch.length > 0) {
-      shellType = shellMatch[0];
-    }
-    switch (shellType) {
-      case 'zsh':
-        return [this.detectZshProfile(home), toPath];
-      case 'bash':
-      case 'sh':
-        return [this.detectBashProfile(home), toPath];
-      case 'zcsh':
-      case 'csh':
-        if (prior) {
-          toPath = `set path = (${binPath} $path)`;
-        } else {
-          toPath = `set path = ($path ${binPath})`;
-        }
-        return [this.detectCshProfile(home), toPath];
+      const shellType = shellMatch[0];
+      switch (shellType) {
+        case 'zsh':
+          return [this.detectZshProfile(home), toPath];
+        case 'bash':
+        case 'sh':
+          return [this.detectBashProfile(home), toPath];
+        case 'zcsh':
+        case 'csh':
+          if (prior) {
+            toPath = `set path = (${binPath} $path)`;
+          } else {
+            toPath = `set path = ($path ${binPath})`;
+          }
+          return [this.detectCshProfile(home), toPath];
+      }
     }
     return [undefined, undefined];
   }
