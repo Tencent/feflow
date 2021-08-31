@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // 更新依赖
 import semver from 'semver';
 import fs from 'fs';
@@ -116,23 +117,18 @@ async function startPluginsUpdate(plugins: string[]) {
     needUpdatePlugins.push(plugin.name);
   });
 
-  return install(
-    packageManager,
-    root,
-    packageManager === 'yarn' ? 'add' : 'install',
-    needUpdatePlugins,
-    false,
-    true,
-  ).then(() => {
-    updateData.plugins_update_msg = plugins;
-    updateData.latest_plugins = '';
+  return install(packageManager, root, packageManager === 'yarn' ? 'add' : 'install', needUpdatePlugins, false).then(
+    () => {
+      updateData.plugins_update_msg = plugins;
+      updateData.latest_plugins = '';
 
-    logger.info('Plugin update success');
-  });
+      logger.info('Plugin update success');
+    },
+  );
 }
 
 function checkPluginsUpdate() {
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     if (String(cacheValidate) === 'true') {
       // 用缓存数据
       const updatePkg = updateData.latest_plugins;

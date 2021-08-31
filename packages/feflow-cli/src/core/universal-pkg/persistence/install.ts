@@ -1,4 +1,15 @@
 export class Install {
+  static from(obj: any) {
+    const pkg = obj?.pkg;
+    const installVersion = obj?.installVersion;
+    const checkoutVersion = obj?.checkoutVersion;
+    const attributes = InstallAttribute.from(obj?.attributes);
+    return new Install(pkg, installVersion, checkoutVersion, attributes);
+  }
+
+  static query(pkg: string, iversion: string) {
+    return { pkg, installVersion: iversion };
+  }
   pkg: string;
 
   installVersion: string;
@@ -13,21 +24,15 @@ export class Install {
     this.checkoutVersion = cVersion;
     this.attributes = attributes;
   }
-
-  static from(obj: any) {
-    const pkg = obj?.pkg;
-    const installVersion = obj?.installVersion;
-    const checkoutVersion = obj?.checkoutVersion;
-    const attributes = InstallAttribute.from(obj?.attributes);
-    return new Install(pkg, installVersion, checkoutVersion, attributes);
-  }
-
-  static query(pkg: string, iversion: string) {
-    return { pkg, installVersion: iversion };
-  }
 }
 
 export class InstallAttribute {
+  static from(obj: any): InstallAttribute {
+    const attribute = new InstallAttribute();
+    attribute.upgradeTime = obj?.upgradeTime;
+    attribute.createTime = obj?.createTime;
+    return attribute;
+  }
   upgradeTime: number | undefined;
 
   createTime: number | undefined;
@@ -41,12 +46,5 @@ export class InstallAttribute {
     if (obj?.upgradeTime) {
       this.upgradeTime = obj?.upgradeTime;
     }
-  }
-
-  static from(obj: any): InstallAttribute {
-    const attribute = new InstallAttribute();
-    attribute.upgradeTime = obj?.upgradeTime;
-    attribute.createTime = obj?.createTime;
-    return attribute;
   }
 }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-useless-escape */
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -35,7 +37,7 @@ const isGitAvailable = getGitStatus();
 
 const getUserNameFromHostName = () => {
   const hostname = os.hostname();
-  const [upperUserName, ...device] = hostname.split('-');
+  const [upperUserName] = hostname.split('-');
   if (upperUserName === 'MacBook') return '';
   return upperUserName.toLowerCase();
 };
@@ -87,7 +89,8 @@ export const getProjectByGit = (url?: string) => {
   }
   if (!urlRegex) return '';
 
-  const [_, group, path] = urlRegex.exec(gitRemoteUrl) || [];
+  const [notUse, group, path] = urlRegex.exec(gitRemoteUrl) || [];
+  console.log(notUse);
   project = group ? `${group}/${path}` : '';
 
   return project;

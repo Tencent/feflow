@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import chalk from 'chalk';
 import minimist from 'minimist';
 import semver from 'semver';

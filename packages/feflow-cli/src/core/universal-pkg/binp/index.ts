@@ -39,6 +39,15 @@ export default class Binp {
     }
   }
 
+  addToPath(file: string, content: string) {
+    try {
+      fs.appendFileSync(file, `\n${content}\n`);
+    } catch (e) {
+      console.error(e);
+      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+    }
+  }
+
   private isRegisted(binPath: string): boolean {
     const pathStr = process.env.PATH;
     let pathList: string[] = [];
@@ -156,14 +165,5 @@ export default class Binp {
 
   private detectZshProfile(home: string): string {
     return path.join(home, '.zshrc');
-  }
-
-  addToPath(file: string, content: string) {
-    try {
-      fs.appendFileSync(file, `\n${content}\n`);
-    } catch (e) {
-      console.error(e);
-      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
-    }
   }
 }

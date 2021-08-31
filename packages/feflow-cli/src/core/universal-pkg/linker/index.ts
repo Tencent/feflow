@@ -126,7 +126,12 @@ export default class Linker {
   }
 
   private customeShellTemplate(commands: string[]): string {
-    const commandStr = commands.map((cmd) => (cmd += ' "$@"')).join('\n');
+    const commandStr = commands
+      .map((cmd) => {
+        let newCmd = cmd;
+        return (newCmd += ' "$@"');
+      })
+      .join('\n');
     return `#!/bin/sh\n${commandStr}`;
   }
 
@@ -135,7 +140,12 @@ export default class Linker {
   }
 
   private customeCmdTemplate(commands: string[]): string {
-    const commandStr = commands.map((cmd) => (cmd += ' %*')).join('\n');
+    const commandStr = commands
+      .map((cmd) => {
+        let newCmd = cmd;
+        return (newCmd += ' %*');
+      })
+      .join('\n');
     return `@echo off\n${commandStr}`;
   }
 

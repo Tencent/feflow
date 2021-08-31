@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import path from 'path';
 import { spawn } from 'child_process';
 import chalk from 'chalk';

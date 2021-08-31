@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 
-enum DEVTOOL_TYPE {
+enum DevtoolType {
   SCAFFLOAD = '脚手架',
   DEVKIT = '开发套件',
   PLUGIN = '插件',
@@ -16,29 +17,29 @@ module.exports = (ctx: any) => {
 
   commander.register('devtool', 'Feflow devtool for better develop a devkit or plugin', async () => {
     switch (action) {
-      case 'init':
+      case 'init': {
         logger.debug('devtool init');
         const { type } = await inquirer.prompt([
           {
             type: 'list',
             name: 'type',
             message: '选择你要接入的类型?',
-            choices: [DEVTOOL_TYPE.SCAFFLOAD, DEVTOOL_TYPE.DEVKIT, DEVTOOL_TYPE.PLUGIN],
+            choices: [DevtoolType.SCAFFLOAD, DevtoolType.DEVKIT, DevtoolType.PLUGIN],
           },
         ]);
 
         let message;
 
         switch (type) {
-          case DEVTOOL_TYPE.SCAFFLOAD:
+          case DevtoolType.SCAFFLOAD:
             message = '以 generator- 开头';
             templatePath = path.join(__dirname, './templates/generator-template');
             break;
-          case DEVTOOL_TYPE.DEVKIT:
+          case DevtoolType.DEVKIT:
             message = '以 feflow-devkit- 开头';
             templatePath = path.join(__dirname, './templates/devkit-template');
             break;
-          case DEVTOOL_TYPE.PLUGIN:
+          case DevtoolType.PLUGIN:
             message = '以 feflow-plugin- 开头';
             templatePath = path.join(__dirname, './templates/plugin-template');
             break;
@@ -49,14 +50,14 @@ module.exports = (ctx: any) => {
             type: 'input',
             name: 'name',
             message: `请输入项目名称(${message})`,
-            choices: [DEVTOOL_TYPE.SCAFFLOAD, DEVTOOL_TYPE.DEVKIT, DEVTOOL_TYPE.PLUGIN],
+            choices: [DevtoolType.SCAFFLOAD, DevtoolType.DEVKIT, DevtoolType.PLUGIN],
             validate: (name) => {
               switch (type) {
-                case DEVTOOL_TYPE.SCAFFLOAD:
+                case DevtoolType.SCAFFLOAD:
                   return /^generator-/.test(name);
-                case DEVTOOL_TYPE.DEVKIT:
+                case DevtoolType.DEVKIT:
                   return /^feflow-devkit-/.test(name);
-                case DEVTOOL_TYPE.PLUGIN:
+                case DevtoolType.PLUGIN:
                   return /^feflow-plugin-/.test(name);
               }
               return false;
@@ -74,7 +75,8 @@ module.exports = (ctx: any) => {
         console.log();
         console.log('Happy coding!');
         break;
-      case 'dev':
+      }
+      case 'dev': {
         logger.info('Start dev');
         const pkgJson = require(path.join(process.cwd(), 'package.json'));
         const rootPkgJson = require(rootPkg);
@@ -92,6 +94,7 @@ module.exports = (ctx: any) => {
 
         logger.info('End dev, run feflow commands now!');
         break;
+      }
       default:
         return null;
     }

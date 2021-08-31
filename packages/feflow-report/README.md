@@ -48,3 +48,9 @@ report.recallReport()
 |reportCommandError|err|发送命令报错信息|
 |setCommandSource|commandSource|设置命令源|
 
+### 单元测试TEST
+执行前请将每个*.spec.ts文件中的src改成lib
+```
+npm test
+```
+

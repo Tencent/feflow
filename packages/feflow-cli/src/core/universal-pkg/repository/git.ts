@@ -50,7 +50,7 @@ export async function getCurrentTag(repoPath: string): Promise<string | undefine
     cwd: repoPath,
   });
   const matches = /tag: (v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*))/.exec(stdout?.toString());
-  if (matches && matches[1]) {
+  if (matches?.[1]) {
     return matches[1];
   }
 }

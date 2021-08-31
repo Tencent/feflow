@@ -37,7 +37,7 @@ async function prepareAccount() {
         gitAccount = data.account;
       }
     })
-    .catch((err: any) => {});
+    .catch(() => {});
 }
 
 export async function transformUrl(url: string, account?: any): Promise<any> {
@@ -65,15 +65,16 @@ export async function clearGitCert(url: string) {
   if (!username) {
     return;
   }
+  let newUrl: any = '';
   if (!/https?:\/\/(.*?(:.*?)?@)/.test(url)) {
-    url = await transformUrl(url);
+    newUrl = await transformUrl(url);
   }
   return new Promise((resolve) => {
     const child = spawn('git', ['credential', 'reject'], {
       windowsHide: true,
       timeout: 60 * 1000 * 1,
     });
-    child.stdin?.write(`url=${url}`);
+    child.stdin?.write(`url=${newUrl}`);
     child.stdin?.end();
     child.on('close', (code) => {
       resolve(code);

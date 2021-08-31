@@ -1,5 +1,5 @@
 import chai from 'chai';
-import objectFactory from '../lib/common/objectFactory';
+import objectFactory from '../src/common/objectFactory'; // to-do: 把src改成lib后执行
 const { expect } = chai;
 
 describe('@feflow/report - objectFactory', () => {
@@ -10,7 +10,7 @@ describe('@feflow/report - objectFactory', () => {
   it('objectFactory - create', () => {
     const obj = objectFactory.create().done();
 
-    expect(obj).to.empty;
+    expect(JSON.stringify(obj)).to.be.equal(JSON.stringify({}));
     expect(obj).to.deep.eq({});
   });
 
@@ -21,7 +21,7 @@ describe('@feflow/report - objectFactory', () => {
       .load('b', 321)
       .load('c', () => 'awosome objectFactory')
       .done();
-    expect(obj).to.not.empty;
+    expect(obj).to.be.not.equal(null);
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
   });
 
@@ -33,11 +33,11 @@ describe('@feflow/report - objectFactory', () => {
       .load('c', () => 'awosome objectFactory')
       .done();
 
-    expect(obj).to.not.empty;
+    expect(obj).to.be.not.equal(null);
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
 
-    const _obj = objectFactory.create().done();
+    const newObj = objectFactory.create().done();
 
-    expect(_obj).to.empty;
+    expect(JSON.stringify(newObj)).to.be.equal(JSON.stringify({}));
   });
 });

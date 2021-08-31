@@ -26,14 +26,7 @@ export function getRegistryUrl(packageManager: string) {
   });
 }
 
-export function install(
-  packageManager: string,
-  root: any,
-  cmd: any,
-  dependencies: any,
-  verbose: boolean,
-  isOnline: boolean,
-) {
+export function install(packageManager: string, root: any, cmd: any, dependencies: any, verbose: boolean) {
   return new Promise((resolve, reject) => {
     const command = packageManager;
     const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);

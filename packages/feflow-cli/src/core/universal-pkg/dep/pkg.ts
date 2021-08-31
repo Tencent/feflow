@@ -31,34 +31,28 @@ export class UniversalPkg {
     }
   }
 
-  private toDependencies(oDependencies: any): Map<string, Map<string, PkgRelation>> {
-    const dependencies = new Map<string, Map<string, PkgRelation>>();
-    if (!oDependencies) {
-      return dependencies;
-    }
-    const oDependenciesKey = Object.keys(oDependencies);
-    for (const pkg of oDependenciesKey) {
-      const versionRelationMap = oDependencies[pkg];
-      if (!versionRelationMap) {
-        continue;
-      }
-      const pkgRelation = new Map<string, PkgRelation>();
-      const versionRelationMapKey = Object.keys(versionRelationMap);
-      for (const version of versionRelationMapKey) {
-        const oVersionRelation = versionRelationMap[version];
-        if (versionImpl.check(version)) {
-          pkgRelation.set(version, new PkgRelation(oVersionRelation));
-        }
-      }
-      if (pkgRelation.size > 0) {
-        dependencies.set(pkg, pkgRelation);
-      }
-    }
-    return dependencies;
-  }
-
   getInstalled(): Map<string, string> {
     return this.installed;
+  }
+
+  getAllDependencies(): Map<string, Map<string, PkgRelation>> {
+    return this.dependencies;
+  }
+
+  getDepended(pkg: string, version: string): Map<string, string> | undefined {
+    const r = this.getPkgRelation(pkg, version);
+    if (!r) {
+      return;
+    }
+    return r.dependedOn;
+  }
+
+  getDependencies(pkg: string, version: string): Map<string, string> | undefined {
+    const r = this.getPkgRelation(pkg, version);
+    if (!r) {
+      return;
+    }
+    return r.dependencies;
   }
 
   isInstalled(pkg: string, version?: string, includeDep?: boolean): boolean {
@@ -72,7 +66,6 @@ export class UniversalPkg {
     if (v && version === v) {
       return true;
     }
-
     return false;
   }
 
@@ -138,22 +131,6 @@ export class UniversalPkg {
     return invalidDep;
   }
 
-  private isValid(pkg: string, version: string): boolean {
-    if (this.isInstalled(pkg, version)) {
-      return true;
-    }
-    const depended = this.getDepended(pkg, version);
-    if (!depended || depended.size === 0) {
-      return false;
-    }
-    for (const [dependedPkg, dependedVersion] of depended) {
-      if (this.isValid(dependedPkg, dependedVersion)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   removeDepend(pkg: string, version: string, dependPkg: string, dependPkgVersion: string) {
     const dependencies = this.getDependencies(pkg, version);
     if (dependencies) {
@@ -164,20 +141,6 @@ export class UniversalPkg {
       depended.delete(pkg);
     }
     return depended ? depended.size : 0;
-  }
-
-  private dependedOn(pkg: string, version: string, dependedOnPkg: string, dependedOnPkgVersion: string) {
-    let versionMap = this.dependencies.get(pkg);
-    if (!versionMap) {
-      versionMap = new Map<string, PkgRelation>();
-    }
-    let r = versionMap.get(version);
-    if (!r) {
-      r = new PkgRelation(null);
-    }
-    r.dependedOn.set(dependedOnPkg, dependedOnPkgVersion);
-    versionMap.set(version, r);
-    this.dependencies.set(pkg, versionMap);
   }
 
   uninstall(pkg: string, version: string, isDep?: boolean) {
@@ -213,32 +176,12 @@ export class UniversalPkg {
     }
   }
 
-  getDepended(pkg: string, version: string): Map<string, string> | undefined {
-    const r = this.getPkgRelation(pkg, version);
-    if (!r) {
-      return;
-    }
-    return r.dependedOn;
-  }
-
-  getDependencies(pkg: string, version: string): Map<string, string> | undefined {
-    const r = this.getPkgRelation(pkg, version);
-    if (!r) {
-      return;
-    }
-    return r.dependencies;
-  }
-
   getPkgRelation(pkg: string, version: string): PkgRelation | undefined {
     const versionRelation = this.dependencies.get(pkg);
     if (!versionRelation) {
       return;
     }
     return versionRelation.get(version);
-  }
-
-  getAllDependencies(): Map<string, Map<string, PkgRelation>> {
-    return this.dependencies;
   }
 
   saveChange() {
@@ -264,13 +207,71 @@ export class UniversalPkg {
     );
   }
 
+  private isValid(pkg: string, version: string): boolean {
+    if (this.isInstalled(pkg, version)) {
+      return true;
+    }
+    const depended = this.getDepended(pkg, version);
+    if (!depended || depended.size === 0) {
+      return false;
+    }
+    for (const [dependedPkg, dependedVersion] of depended) {
+      if (this.isValid(dependedPkg, dependedVersion)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private toDependencies(oDependencies: any): Map<string, Map<string, PkgRelation>> {
+    const dependencies = new Map<string, Map<string, PkgRelation>>();
+    if (!oDependencies) {
+      return dependencies;
+    }
+    const oDependenciesKey = Object.keys(oDependencies);
+    for (const pkg of oDependenciesKey) {
+      const versionRelationMap = oDependencies[pkg];
+      if (!versionRelationMap) {
+        continue;
+      }
+      const pkgRelation = new Map<string, PkgRelation>();
+      const versionRelationMapKey = Object.keys(versionRelationMap);
+      for (const version of versionRelationMapKey) {
+        const oVersionRelation = versionRelationMap[version];
+        if (versionImpl.check(version)) {
+          pkgRelation.set(version, new PkgRelation(oVersionRelation));
+        }
+      }
+      if (pkgRelation.size > 0) {
+        dependencies.set(pkg, pkgRelation);
+      }
+    }
+    return dependencies;
+  }
+
+  private dependedOn(pkg: string, version: string, dependedOnPkg: string, dependedOnPkgVersion: string) {
+    let versionMap = this.dependencies.get(pkg);
+    if (!versionMap) {
+      versionMap = new Map<string, PkgRelation>();
+    }
+    let r = versionMap.get(version);
+    if (!r) {
+      r = new PkgRelation(null);
+    }
+    r.dependedOn.set(dependedOnPkg, dependedOnPkgVersion);
+    versionMap.set(version, r);
+    this.dependencies.set(pkg, versionMap);
+  }
+
   private toObject(obj: any): object {
     if (!obj || typeof obj !== 'object') {
       return obj;
     }
     const newObj = Object.create(null);
     if (obj instanceof Map) {
-      for (let [k, v] of obj) {
+      for (const item of obj) {
+        const [k] = item;
+        let v = item[1];
         v = typeof v === 'object' ? this.toObject(v) : v;
         newObj[k] = v;
       }

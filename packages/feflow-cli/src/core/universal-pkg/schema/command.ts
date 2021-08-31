@@ -7,12 +7,12 @@ function getVal(symbol: string): string {
   return symbol.substring('${var:'.length, symbol.length - 1);
 }
 
-type globalVal = {
-  pd: string | undefined;
+type GlobalVal = {
+  pd?: string | undefined;
 };
 
 export class Command {
-  private val: globalVal = {} as globalVal;
+  private val: GlobalVal = {};
 
   private ctx: any;
 

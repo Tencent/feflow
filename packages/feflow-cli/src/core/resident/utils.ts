@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // 更新依赖
 import fs from 'fs';
 import path from 'path';
@@ -74,7 +75,7 @@ export const getLatestVersion = async (name: string, packageManager: string) => 
 export const updatePluginsVersion = (packagePath: string, plugins: any) => {
   const obj = require(packagePath);
 
-  plugins.map((plugin: any) => {
+  plugins.forEach((plugin: any) => {
     obj.dependencies[plugin.name] = plugin.latestVersion;
   });
 
@@ -113,7 +114,7 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) =>
 export const promisify =
   (asyncFun: Function, ...args: any) =>
   () =>
-    new Promise<undefined>(async (resolve) => {
+    new Promise<void>(async (resolve) => {
       await asyncFun(...args);
       resolve();
     });
