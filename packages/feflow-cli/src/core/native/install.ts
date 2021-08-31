@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { getRegistryUrl, install } from '../../shared/npm';
 import fs from 'fs';
@@ -171,16 +172,11 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
     return Promise.resolve();
   }
   ctx.logger.info('Installing packages. This might take a couple of minutes.');
-  return install(
-    packageManager,
-    ctx.root,
-    packageManager === 'yarn' ? 'add' : 'install',
-    needInstall,
-    false,
-    true,
-  ).then(() => {
-    ctx.logger.info('install success');
-  });
+  return install(packageManager, ctx.root, packageManager === 'yarn' ? 'add' : 'install', needInstall, false).then(
+    () => {
+      ctx.logger.info('install success');
+    },
+  );
 }
 
 function updateNpmPluginInfo(ctx: any, pluginName: string, options: any) {
@@ -630,7 +626,6 @@ async function uninstallNpmPlugin(ctx: any, dependencies: []) {
     ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
     dependencies,
     false,
-    true,
   ).then(() => {
     ctx.logger.info('uninstall success');
   });

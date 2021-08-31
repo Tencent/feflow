@@ -28,51 +28,6 @@ class Report {
     this.loadContextLogger();
   }
 
-  // register before/after hook event
-  private registerHook(): any {
-    this.ctx.hook.on(HOOK_TYPE_BEFORE, this.reportOnHookBefore);
-    // report some performance data after command executed
-    this.ctx.hook.on(HOOK_TYPE_AFTER, this.reportOnHookAfter);
-  }
-
-  private loadContextLogger(): any {
-    this.ctx.log = this.ctx.log || this.ctx.logger;
-    this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
-  }
-
-  private reportOnHookBefore = (): any => {
-    const { cmd, args } = this;
-    let commandWithoutVersion;
-    try {
-      commandWithoutVersion = cmd?.split('@')[0];
-    } catch (error) {
-      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`);
-      commandWithoutVersion = '';
-    }
-    const store = this.ctx.commander?.store[commandWithoutVersion] || this.ctx.commander?.store[cmd] || {};
-    this.commandSource = store?.pluginName || this.commandSource;
-    if (!this.commandSource && typeof store.options === 'string') {
-      this.commandSource = store.options;
-    }
-    this.ctx.log.debug('HOOK_TYPE_BEFORE');
-    this.startTime = Date.now();
-    this.report(cmd, args);
-  };
-
-  private reportOnHookAfter = (): any => {
-    this.ctx.log.debug('HOOK_TYPE_AFTER');
-    this.costTime = Date.now() - this.startTime;
-    this.report(this.cmd, this.args, true);
-  };
-
-  private checkBeforeReport = (cmd: string): any => {
-    if (this.cmd && this.cmd !== cmd) {
-      this.lastCommand = this.cmd;
-    }
-    this.cmd = cmd;
-    return !!cmd;
-  };
-
   setCommandSource(commandSource: string): any {
     this.commandSource = commandSource;
   }
@@ -143,6 +98,51 @@ class Report {
       this.report(REPORT_COMMAND_ERR);
     }
   }
+
+  // register before/after hook event
+  private registerHook(): any {
+    this.ctx.hook.on(HOOK_TYPE_BEFORE, this.reportOnHookBefore);
+    // report some performance data after command executed
+    this.ctx.hook.on(HOOK_TYPE_AFTER, this.reportOnHookAfter);
+  }
+
+  private loadContextLogger(): any {
+    this.ctx.log = this.ctx.log || this.ctx.logger;
+    this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
+  }
+
+  private reportOnHookBefore = (): any => {
+    const { cmd, args } = this;
+    let commandWithoutVersion;
+    try {
+      commandWithoutVersion = cmd?.split('@')[0];
+    } catch (error) {
+      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`);
+      commandWithoutVersion = '';
+    }
+    const store = this.ctx.commander?.store[commandWithoutVersion] || this.ctx.commander?.store[cmd] || {};
+    this.commandSource = store?.pluginName || this.commandSource;
+    if (!this.commandSource && typeof store.options === 'string') {
+      this.commandSource = store.options;
+    }
+    this.ctx.log.debug('HOOK_TYPE_BEFORE');
+    this.startTime = Date.now();
+    this.report(cmd, args);
+  };
+
+  private reportOnHookAfter = (): any => {
+    this.ctx.log.debug('HOOK_TYPE_AFTER');
+    this.costTime = Date.now() - this.startTime;
+    this.report(this.cmd, this.args, true);
+  };
+
+  private checkBeforeReport = (cmd: string): any => {
+    if (this.cmd && this.cmd !== cmd) {
+      this.lastCommand = this.cmd;
+    }
+    this.cmd = cmd;
+    return !!cmd;
+  };
 }
 
 module.exports = Report;

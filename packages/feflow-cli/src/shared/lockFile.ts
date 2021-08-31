@@ -35,14 +35,14 @@ export default class LockFileInstance {
           this.tryCount = 0;
           return this.logger.error(`file read time out ${this.filePath}`);
         }
-        this.tryCount++;
+        this.tryCount += 1;
         setTimeout(() => {
           this.checkIfCanRead(cb);
         }, this.tryGap);
       } else {
         // read immediatelly
         this.tryCount = 0;
-        cb && cb();
+        cb?.();
       }
     });
   }
@@ -74,15 +74,16 @@ export default class LockFileInstance {
                 return;
               }
 
+              let newData: any = '';
               if (!data) {
                 // no data then turn it to {}
                 this.clearFile();
-                data = '{}';
+                newData = '{}';
               }
 
-              this.logger.debug(`get file: ${this.filePath} => data: ${data}`);
+              this.logger.debug(`get file: ${this.filePath} => data: ${newData}`);
               try {
-                const jsonObj: object = JSON.parse(data);
+                const jsonObj: object = JSON.parse(newData);
                 if (key && !jsonObj[key]) {
                   this.logger.debug(`get key ${key} form data ${this.filePath} => no value find`);
                   resolve(undefined);
@@ -116,11 +117,11 @@ export default class LockFileInstance {
         if (err) {
           this.logger.error(err);
           this.unlock();
-          cb && cb(err);
+          cb?.(err);
           return;
         }
 
-        cb && cb();
+        cb?.();
       },
     );
   }

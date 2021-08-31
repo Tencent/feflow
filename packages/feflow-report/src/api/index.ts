@@ -5,10 +5,10 @@ import { REPORT_URL, REPORT_PROXY, TIMEOUT } from '../constants';
 let isNeedProxyLocal = true;
 
 export default class ApiController {
+  public log: any;
   private retryCount: number;
   private isNeedProxy: boolean;
   private rpOption: any;
-  public log: any;
 
   constructor(param, log) {
     this.retryCount = 0;
@@ -24,26 +24,8 @@ export default class ApiController {
 
     this.loadProxy();
   }
-
-  private loadProxy() {
-    if (this.isNeedProxy) {
-      this.log.debug('feflow report with proxy.');
-      this.rpOption.proxy = REPORT_PROXY;
-    } else {
-      this.log.debug('feflow report without proxy.');
-      delete this.rpOption.proxy;
-    }
-  }
-
-  private retryReport(cb) {
-    this.retryCount++;
-    this.log.debug('feflow report timeout, and retry. ', this.retryCount);
-    this.isNeedProxy = !this.isNeedProxy;
-    this.loadProxy();
-    this.doReport(cb);
-  }
-
-  public doReport(cb = (res) => {}) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public doReport(cb = (response: any) => {}) {
     this.log.debug('feflow report start.');
     rp(this.rpOption)
       .then((response) => {
@@ -59,5 +41,23 @@ export default class ApiController {
           this.retryReport(cb);
         }
       });
+  }
+
+  private loadProxy() {
+    if (this.isNeedProxy) {
+      this.log.debug('feflow report with proxy.');
+      this.rpOption.proxy = REPORT_PROXY;
+    } else {
+      this.log.debug('feflow report without proxy.');
+      delete this.rpOption.proxy;
+    }
+  }
+
+  private retryReport(cb) {
+    this.retryCount += 1;
+    this.log.debug('feflow report timeout, and retry. ', this.retryCount);
+    this.isNeedProxy = !this.isNeedProxy;
+    this.loadProxy();
+    this.doReport(cb);
   }
 }

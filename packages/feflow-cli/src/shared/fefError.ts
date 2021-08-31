@@ -61,7 +61,8 @@ export class FefError {
     if (docs) {
       this.printErrorWithDocs(obj, docs);
     } else {
-      let { error, msg } = obj;
+      const { error } = obj;
+      let { msg } = obj;
       if (!obj.hideError) {
         msg = `${msg || error}`;
         this.context.logger[
@@ -75,7 +76,8 @@ export class FefError {
   }
 
   printErrorWithDocs(obj: PrintError, docs: string) {
-    let { error, msg } = obj;
+    const { error } = obj;
+    let { msg } = obj;
     if (!obj.hideError) {
       msg = `${msg || error}
       插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
@@ -91,24 +93,26 @@ export class FefError {
     let docs = '';
     let configPath = '';
     let type = CommandType.PLUGIN_TYPE;
+    let newPluginPath: any = '';
     if (!pluginPath) {
-      if (this.picker != null) {
+      if (this.picker !== null) {
         const { path, type: cmdType } = this.picker.getCmdInfo();
-        pluginPath = path;
+        newPluginPath = path;
+        // pluginPath = path;
         type = cmdType;
       } else {
         return docs;
       }
     }
 
-    if (!existsSync(pluginPath)) {
+    if (!existsSync(newPluginPath)) {
       return docs;
     }
     if (type === CommandType.PLUGIN_TYPE) {
-      configPath = join(pluginPath, this.pluginFile);
+      configPath = join(newPluginPath, this.pluginFile);
     } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        const tmpPath = join(pluginPath as string, ext);
+        const tmpPath = join(newPluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     } else if (type === CommandType.NATIVE_TYPE) {
@@ -122,7 +126,7 @@ export class FefError {
         docs = get(config, docsPath);
       });
     } else {
-      this.context.logger.debug(`未找到插件配置文件: ${pluginPath}`);
+      this.context.logger.debug(`未找到插件配置文件: ${newPluginPath}`);
     }
 
     return docs;

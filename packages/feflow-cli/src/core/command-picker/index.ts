@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import fs from 'fs';
 import path from 'path';
@@ -50,7 +51,7 @@ interface PickMap {
 }
 
 interface Cache {
-  commandPickerMap: PickMap;
+  commandPickerMap?: PickMap;
   version: string;
 }
 
@@ -116,7 +117,7 @@ export class CommandPickConfig {
         this.ctx.logger.debug('fef cache is expried, clear invalid cache.');
         this.cache = {
           version: this.cacheVersion,
-        } as Cache;
+        };
         this.writeCache();
       }
     }
@@ -297,7 +298,7 @@ export class CommandPickConfig {
 
   removeCache(name: string) {
     if (!this.cache) return;
-    const { commandPickerMap } = this.cache;
+    const { commandPickerMap = {} } = this.cache;
     let targetPath = { type: '', plugin: '' };
 
     for (const type of this.pickOrder) {
@@ -316,7 +317,7 @@ export class CommandPickConfig {
         break;
       }
     }
-    if (targetPath.type && targetPath.plugin) {
+    if (targetPath.type && targetPath.plugin && this.cache.commandPickerMap) {
       delete this.cache.commandPickerMap[targetPath.type][targetPath.plugin];
       this.writeCache();
     }
