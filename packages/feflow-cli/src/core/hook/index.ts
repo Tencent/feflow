@@ -40,7 +40,7 @@ export default class Hook {
           return;
         }
         this.listeners[type].forEach((listener: any) => {
-          listener.apply(null, args);
+          listener.apply(...args);
         });
         break;
       }
