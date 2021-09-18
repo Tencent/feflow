@@ -44,7 +44,7 @@ const levelNames: IObject = {
 
 export let timer: NodeJS.Timeout | null = null;
 
-async function send(logObj: any, readData: [any]) {
+async function send(logObj: any, readData: any[]) {
   const loggerList = readData
     .filter((data: string) => data)
     .map((data: string) => {
@@ -80,9 +80,9 @@ async function send(logObj: any, readData: [any]) {
   }
 }
 async function report(logObj?: any) {
-  let readData: any = fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
-  if (readData) {
-    readData = readData.split('\n');
+  const readStr: string = fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
+  if (readStr) {
+    const readData: string[] = readStr.split('\n');
     // 数量太少暂时不上报
     if (readData.length < 20) {
       // 如果有timer则不创新新的timer

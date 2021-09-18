@@ -50,7 +50,8 @@ async function getRepoInfo(ctx: any, packageName: string) {
     })
     .then((res) => {
       const data = res.data || {};
-      return (data.data && data.data.length > 0 && data.data[0]) || [];
+      return data.data && data.data?.[0];
+      // return (data.data && data.data.length > 0 && data.data[0]) || [];
     })
     .catch((e: any) => {
       ctx.logger.debug('Get repo info error', e);
@@ -63,11 +64,11 @@ async function getRepoInfo(ctx: any, packageName: string) {
 // encodeURIComponent("github.com/tencent/feflow.git")
 function getGitRepoName(repoUrl: string): string | undefined {
   const ret = /^((http:\/\/|https:\/\/)(.*?@)?|git@)/.exec(repoUrl);
-  let newRepoUrl: String = '';
+  let repurl: String = '';
   if (Array.isArray(ret) && ret.length > 0) {
-    newRepoUrl = repoUrl.substring(ret[0].length);
+    repurl = repoUrl.substring(ret[0].length);
   }
-  return encodeURIComponent(FEFLOW_PLUGIN_GIT_PREFIX + newRepoUrl.split(':').join('/'));
+  return encodeURIComponent(FEFLOW_PLUGIN_GIT_PREFIX + repurl.split(':').join('/'));
 }
 
 function getDirRepoName(dir: string): string {
@@ -163,7 +164,6 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
         return dep;
       }
       ctx.logger.info(`[${dep}] has installed the latest version: ${hasInstallDep[depName]}`);
-      return [];
     });
   } catch (err) {
     ctx.logger.error(`get pkg info error ${JSON.stringify(err)}`);
@@ -726,4 +726,5 @@ module.exports = (ctx: any) => {
 };
 
 module.exports.installPlugin = installPlugin;
+module.exports.updateUniversalPlugin = updateUniversalPlugin;
 module.exports.getRepoInfo = getRepoInfo;

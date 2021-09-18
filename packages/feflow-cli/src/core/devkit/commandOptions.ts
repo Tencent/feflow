@@ -36,7 +36,7 @@ const getOptionItem = (optionItemConfig: any, option: any): object => {
       description: optionItemConfig,
     };
   } else {
-    optionDescritionItem = optionItemConfig;
+    optionDescritionItem = JSON.parse(JSON.stringify(optionItemConfig));
     if (!optionDescritionItem.name) {
       optionDescritionItem.name = option;
     }

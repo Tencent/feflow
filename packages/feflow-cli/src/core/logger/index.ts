@@ -106,7 +106,7 @@ class ConsoleStream extends Writable {
     }
   }
 
-  async newWrite(data: any, enc: any, callback: any) {
+  async writeDown(data: any, enc: any, callback: any) {
     const { level } = data;
     const loggerName = data.name || logger?.name.split('/').pop() || PLUGE_NAME;
     let msg = '';

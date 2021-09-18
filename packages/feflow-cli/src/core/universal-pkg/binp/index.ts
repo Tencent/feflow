@@ -130,7 +130,6 @@ export default class Binp {
       return [undefined, undefined];
     }
     const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    // let shellType = '';
     if (Array.isArray(shellMatch) && shellMatch.length > 0) {
       const shellType = shellMatch[0];
       switch (shellType) {
