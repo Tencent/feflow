@@ -32,7 +32,6 @@ interface ErrorInstance {
 }
 
 const pkg = require('../../../package.json');
-// import { getPkgInfo } from '../native/install';
 const { version } = pkg;
 
 const { debug, silent } = process.env;
@@ -125,14 +124,14 @@ const queryPluginsUpdate = async () => {
       logger.debug('All plugins is in latest version');
     }),
   ).then(async (plugins: any) => {
-    const newPlugins = plugins.filter((plugin: any) => plugin?.name);
-    logger.debug('tnpm plugins update infomation', newPlugins);
-    if (newPlugins.length) {
+    const pluginsWithName = plugins.filter((plugin: any) => plugin?.name);
+    logger.debug('tnpm plugins update infomation', pluginsWithName);
+    if (pluginsWithName.length) {
       const updateData: any = await updateFile.read(UPDATE_KEY);
-      if (!_.isEqual(updateData.latest_plugins, newPlugins)) {
+      if (!_.isEqual(updateData.latest_plugins, pluginsWithName)) {
         const newUpdateData = {
           ...updateData,
-          latest_plugins: newPlugins,
+          latest_plugins: pluginsWithName,
         };
         await updateFile.update(UPDATE_KEY, newUpdateData);
       }

@@ -34,16 +34,15 @@ export default class Hook {
           this.emit(EVENT_DONE);
         });
         break;
-      default: {
+      default:
         const listeners = this.listeners[type];
         if (!listeners) {
           return;
         }
         this.listeners[type].forEach((listener: any) => {
-          listener.apply(...args);
+          listener.apply(null,args);
         });
         break;
-      }
     }
   }
 

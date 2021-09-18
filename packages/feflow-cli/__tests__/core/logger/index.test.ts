@@ -12,10 +12,9 @@ fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function (...params: any[]) {
-    const [chunk] = params;
+  stream.write = function (chunk: any, encoding: any, callback: any) {
     buf += chunk.toString();
-    oldWrite.apply(stream, params);
+    oldWrite.apply(stream, chunk, encoding, callback);
   };
 
   return {

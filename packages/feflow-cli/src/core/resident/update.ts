@@ -48,7 +48,6 @@ interface ErrorInstance {
 }
 
 const pkg = require('../../../package.json');
-// import { getPkgInfo, updateUniversalPlugin } from '../native/install';
 const { version } = pkg;
 
 const { cacheValidate, debug, silent, latestVersion } = process.env;
