@@ -9,53 +9,53 @@ const remoteUrlMap = {
 };
 
 describe('@feflow/report - utils', () => {
-  it('httpRegex valid', () => {
-    expect(httpRegex.test(remoteUrlMap.http.valid)).to.be.equal(true);
+  it('httpRegex valid', function() {
+    expect(httpRegex.test(remoteUrlMap.http.valid)).to.equal(true);
   });
 
-  it('getSystemInfo() - get system info, and is not empty', () => {
+  it('getSystemInfo() - get system info, and is not empty', function() {
     const systemInfoStr = getSystemInfo();
     const info = JSON.parse(systemInfoStr);
-    expect(systemInfoStr).to.be.not.equal(null);
-    expect(info).to.be.not.equal(null);
-    expect(info.hostname).to.be.not.equal(null);
-    expect(info.type).to.be.not.equal(null);
-    expect(info.platform).to.be.not.equal(null);
-    expect(info.arch).to.be.not.equal(null);
-    expect(info.release).to.be.not.equal(null);
+    expect(systemInfoStr).to.not.empty;
+    expect(info).to.not.empty;
+    expect(info.hostname).to.not.empty;
+    expect(info.type).to.not.empty;
+    expect(info.platform).to.not.empty;
+    expect(info.arch).to.not.empty;
+    expect(info.release).to.not.empty;
   });
 
-  it('httpRegex invalid', () => {
-    expect(httpRegex.test(remoteUrlMap.http.invalid)).to.be.equal(false);
-    expect(httpRegex.test(remoteUrlMap.ssh.invalid)).to.be.equal(false);
+  it('httpRegex invalid', function() {
+    expect(httpRegex.test(remoteUrlMap.http.invalid)).to.equal(false);
+    expect(httpRegex.test(remoteUrlMap.ssh.invalid)).to.equal(false);
   });
 
-  it('sshRegex valid', () => {
-    expect(sshRegex.test(remoteUrlMap.ssh.valid)).to.be.equal(true);
+  it('sshRegex valid', function() {
+    expect(sshRegex.test(remoteUrlMap.ssh.valid)).to.equal(true);
   });
 
-  it('sshRegex invalid', () => {
-    expect(sshRegex.test(remoteUrlMap.ssh.invalid)).to.be.equal(false);
-    expect(sshRegex.test(remoteUrlMap.http.invalid)).to.be.equal(false);
+  it('sshRegex invalid', function() {
+    expect(sshRegex.test(remoteUrlMap.ssh.invalid)).to.equal(false);
+    expect(sshRegex.test(remoteUrlMap.http.invalid)).to.equal(false);
   });
 
-  it('getGitStatus work', () => {
-    expect(getGitStatus()).to.be.equal(false);
+  it('getGitStatus work', function() {
+    expect(getGitStatus()).to.equal(false);
   });
 
-  it('getProjectByGit http valid', () => {
+  it('getProjectByGit http valid', function() {
     expect(getProjectByGit(remoteUrlMap.http.valid)).to.be.equal('Tencent/feflow');
   });
 
-  it('getProjectByGit ssh valid', () => {
+  it('getProjectByGit ssh valid', function() {
     expect(getProjectByGit(remoteUrlMap.ssh.valid)).to.be.equal('Tencent/feflow');
   });
 
-  it('when given invalid http url, then getProjectByGit should be ""', () => {
+  it('when given invalid http url, then getProjectByGit should be ""', function() {
     expect(getProjectByGit(remoteUrlMap.http.invalid)).to.be.equal('');
   });
 
-  it('when given invalid ssh url, then getProjectByGit should be ""', () => {
+  it('when given invalid ssh url, then getProjectByGit should be ""', function() {
     expect(getProjectByGit(remoteUrlMap.ssh.invalid)).to.be.equal('');
   });
 });

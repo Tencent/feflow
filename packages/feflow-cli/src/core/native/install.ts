@@ -64,7 +64,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
 // encodeURIComponent("github.com/tencent/feflow.git")
 function getGitRepoName(repoUrl: string): string | undefined {
   const ret = /^((http:\/\/|https:\/\/)(.*?@)?|git@)/.exec(repoUrl);
-  let repurl: String = '';
+  let repurl: string = '';
   if (Array.isArray(ret) && ret.length > 0) {
     repurl = repoUrl.substring(ret[0].length);
   }

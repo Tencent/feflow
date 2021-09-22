@@ -62,9 +62,9 @@ export default function loadDevkits(ctx: any): Promise<void> {
       if (configData.devkit?.commands) {
         const commandsConfig = configData.devkit.commands;
         const commandsConfigArr = Object.entries(commandsConfig);
-        commandsConfigArr.forEach((item: any[], index: number) => {
-          const commandConfig = commandsConfig[item[index]];
-          registerDevkitCommand(item[index], commandConfig, directoryPath, ctx);
+        commandsConfigArr.forEach((item: any[]) => {
+          const commandConfig = commandsConfig[item[0]];
+          registerDevkitCommand(item[0], commandConfig, directoryPath, ctx);
         });
       } else {
         if (path.basename(directoryPath) === FEFLOW_ROOT) {

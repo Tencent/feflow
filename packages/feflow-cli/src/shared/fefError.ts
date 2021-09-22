@@ -93,26 +93,25 @@ export class FefError {
     let docs = '';
     let configPath = '';
     let type = CommandType.PLUGIN_TYPE;
-    let newPluginPath: any = '';
+    let finalPluginPath: string = '';
     if (!pluginPath) {
       if (this.picker !== null) {
         const { path, type: cmdType } = this.picker.getCmdInfo();
-        newPluginPath = path;
-        // pluginPath = path;
+        finalPluginPath = path;
         type = cmdType;
       } else {
         return docs;
       }
     }
 
-    if (!existsSync(newPluginPath)) {
+    if (!existsSync(finalPluginPath)) {
       return docs;
     }
     if (type === CommandType.PLUGIN_TYPE) {
-      configPath = join(newPluginPath, this.pluginFile);
+      configPath = join(finalPluginPath, this.pluginFile);
     } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        const tmpPath = join(newPluginPath as string, ext);
+        const tmpPath = join(finalPluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     } else if (type === CommandType.NATIVE_TYPE) {
@@ -126,7 +125,7 @@ export class FefError {
         docs = get(config, docsPath);
       });
     } else {
-      this.context.logger.debug(`未找到插件配置文件: ${newPluginPath}`);
+      this.context.logger.debug(`未找到插件配置文件: ${finalPluginPath}`);
     }
 
     return docs;
