@@ -158,9 +158,9 @@ function checkPluginsUpdate() {
           }
         }),
       ).then(async (plugins: any) => {
-        const newPlugins = plugins.filter((plugin: any) => plugin?.name);
-        if (newPlugins.length) {
-          await startPluginsUpdate(newPlugins);
+        const pluginsWithName = plugins.filter((plugin: any) => plugin?.name);
+        if (pluginsWithName.length) {
+          await startPluginsUpdate(pluginsWithName);
         }
         resolve();
       });

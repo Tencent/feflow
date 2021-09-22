@@ -10,8 +10,7 @@ function loadModuleList(ctx: any) {
   const pluginDir = path.join(ctx.root, 'node_modules');
   const extend = function (target: any, source: any) {
     const newTarget = target;
-    const sourceArr = Object.entries(source);
-    sourceArr.forEach((item: any) => {
+    Object.entries(source).forEach((item: any) => {
       newTarget[item[0]] = item[1];
     });
     return newTarget;

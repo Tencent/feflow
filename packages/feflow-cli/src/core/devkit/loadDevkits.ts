@@ -61,8 +61,7 @@ export default function loadDevkits(ctx: any): Promise<void> {
       ctx.projectConfig = configData;
       if (configData.devkit?.commands) {
         const commandsConfig = configData.devkit.commands;
-        const commandsConfigArr = Object.entries(commandsConfig);
-        commandsConfigArr.forEach((item: any[]) => {
+        Object.entries(commandsConfig).forEach((item: any[]) => {
           const commandConfig = commandsConfig[item[0]];
           registerDevkitCommand(item[0], commandConfig, directoryPath, ctx);
         });
