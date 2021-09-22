@@ -17,6 +17,7 @@ const exec = (command: string) => {
   try {
     result = execSync(command, {
       windowsHide: true,
+      stdio: 'pipe',
     })
       .toString()
       .replace(/\n/, '');
