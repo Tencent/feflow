@@ -9,11 +9,9 @@ import { UNIVERSAL_README_CONFIG } from '../../shared/constant';
 
 const getCommands = (store: any) => {
   const arr: any = [];
-  const storeArr = Object.entries(store);
-  storeArr.forEach((item: any) => {
-    const desc = store[item[0]].desc || '';
+  Object.entries(store).forEach(([colA, { desc = '' }]: any) => {
     arr.push({
-      colA: item[0],
+      colA,
       colB: (desc instanceof Function ? desc() : desc).replace(/({|})/g, (val: string) => escape(val)),
     });
   });

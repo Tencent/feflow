@@ -18,6 +18,7 @@
   "include": [
     "packages/*/src/**/*",
     "packages/*/__tests__/**/*",
-    "packages/*/types/**/*"
+    "packages/*/types/**/*",
+    "types/**/*"
   ]
 }

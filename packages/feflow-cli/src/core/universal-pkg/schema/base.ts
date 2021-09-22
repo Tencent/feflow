@@ -23,4 +23,4 @@ function toArray(v: any, field: string, defaultV?: string[]): string[] {
   return v || defaultV || [];
 }
 
-export { platform as platform, platformType, toArray };
+export { platform, platformType, toArray };

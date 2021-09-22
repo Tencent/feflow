@@ -276,8 +276,7 @@ export class UniversalPkg {
         newObj[k] = v;
       }
     } else {
-      const objKeyArr = Object.entries(obj);
-      objKeyArr.forEach((item:any[])=>{
+      Object.entries(obj).forEach((item:any[])=>{
         let v = item[1];
         v = typeof v === 'object' ? this.toObject(v) : v;
         newObj[item[0]] = v;

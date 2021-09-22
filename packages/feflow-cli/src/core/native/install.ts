@@ -728,3 +728,4 @@ module.exports = (ctx: any) => {
 module.exports.installPlugin = installPlugin;
 module.exports.updateUniversalPlugin = updateUniversalPlugin;
 module.exports.getRepoInfo = getRepoInfo;
+module.exports.getPkgInfo = getPkgInfo;

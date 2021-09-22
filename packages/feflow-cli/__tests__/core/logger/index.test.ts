@@ -12,7 +12,7 @@ fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function (chunk: any, encoding: any, callback: any) {
+  stream.write = function (chunk: Uint8Array | string, encoding?: string, callback?: (err?: Error) => void) {
     buf += chunk.toString();
     oldWrite.apply(stream, chunk, encoding, callback);
   };
