@@ -13,10 +13,10 @@ describe('@feflow/report - report', () => {
     report = new Report({ root: '/' });
   });
 
-  it('getUserName() - username is not empty', () => {
+  it('getUserName() - username is not empty', function() {
     const username = getUserName();
 
-    expect(username).to.be.not.equal(null);
+    expect(username).to.not.empty;
   });
 
   after(() => {

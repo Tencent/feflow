@@ -90,8 +90,7 @@ export const getProjectByGit = (url?: string) => {
   }
   if (!urlRegex) return '';
 
-  const [notUse, group, path] = urlRegex.exec(gitRemoteUrl) || [];
-  console.log(notUse);
+  const [, group, path] = urlRegex.exec(gitRemoteUrl) || [];
   project = group ? `${group}/${path}` : '';
 
   return project;

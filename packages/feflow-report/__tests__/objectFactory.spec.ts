@@ -7,25 +7,25 @@ describe('@feflow/report - objectFactory', () => {
     objectFactory.done();
   });
 
-  it('objectFactory - create', () => {
+  it('objectFactory - create', function() {
     const obj = objectFactory.create().done();
 
-    expect(JSON.stringify(obj)).to.be.equal(JSON.stringify({}));
+    expect(obj).to.empty;
     expect(obj).to.deep.eq({});
   });
 
-  it('objectFactory - load', () => {
+  it('objectFactory - load', function () {
     const obj = objectFactory
       .create()
       .load('a', 123)
       .load('b', 321)
       .load('c', () => 'awosome objectFactory')
       .done();
-    expect(obj).to.be.not.equal(null);
+      expect(obj).to.not.empty;
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
   });
 
-  it('objectFactory - done', () => {
+  it('objectFactory - done', function () {
     const obj = objectFactory
       .create()
       .load('a', 123)
@@ -33,11 +33,11 @@ describe('@feflow/report - objectFactory', () => {
       .load('c', () => 'awosome objectFactory')
       .done();
 
-    expect(obj).to.be.not.equal(null);
+      expect(obj).to.not.empty;
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
 
-    const newObj = objectFactory.create().done();
+    const _obj = objectFactory.create().done();
 
-    expect(JSON.stringify(newObj)).to.be.equal(JSON.stringify({}));
+    expect(_obj).to.empty;
   });
 });

@@ -10,8 +10,8 @@ const platformMap = {
   darwin: 'macos',
 };
 
-const PLATFORM = os.platform();
-const platformType = platformMap[PLATFORM];
+const platform = os.platform();
+const platformType = platformMap[platform];
 
 function toArray(v: any, field: string, defaultV?: string[]): string[] {
   if (v && !Array.isArray(v)) {
@@ -23,4 +23,4 @@ function toArray(v: any, field: string, defaultV?: string[]): string[] {
   return v || defaultV || [];
 }
 
-export { PLATFORM as platform, platformType, toArray };
+export { platform as platform, platformType, toArray };

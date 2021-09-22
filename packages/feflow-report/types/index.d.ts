@@ -17,6 +17,11 @@ declare interface ReportContext {
   version: string;
 }
 
+/* 其他全局变量 */
+declare interface AnyObject extends Object {
+  [propName: string]: any;
+}
+
 declare interface ReportBody {
   command: string;
   last_command: string;

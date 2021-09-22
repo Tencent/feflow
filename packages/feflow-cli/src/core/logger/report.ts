@@ -13,7 +13,7 @@ const NOW_TIME = new Date().getTime();
 const pkg = require('../../../package.json');
 const PLUGE_NAME = `feflow-${pkg.name.split('/').pop()}`;
 const { hasTimer } = process.env;
-let KYE_FILE: any = {};
+let KYE_FILE: AnyObject = {};
 interface IObject {
   [key: string]: string;
 }

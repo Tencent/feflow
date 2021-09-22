@@ -29,20 +29,20 @@ const getCommandLine = (optionsDescription: any, description: any, cmd: any): Ob
 };
 
 const getOptionItem = (optionItemConfig: any, option: any): object => {
-  let optionDescritionItem: any = {};
+  let optionItemConfigCopy: any = {};
   if (typeof optionItemConfig === 'string') {
-    optionDescritionItem = {
+    optionItemConfigCopy = {
       name: option,
       description: optionItemConfig,
     };
   } else {
-    optionDescritionItem = JSON.parse(JSON.stringify(optionItemConfig));
-    if (!optionDescritionItem.name) {
-      optionDescritionItem.name = option;
+    optionItemConfigCopy = {...optionItemConfig};
+    if (!optionItemConfigCopy.name) {
+      optionItemConfigCopy.name = option;
     }
-    optionDescritionItem.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
+    optionItemConfigCopy.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
   }
-  return optionDescritionItem;
+  return optionItemConfigCopy;
 };
 
 export default getCommandLine;

@@ -11,8 +11,8 @@ function loadModuleList(ctx: any) {
   const extend = function (target: any, source: any) {
     const newTarget = target;
     const sourceArr = Object.entries(source);
-    sourceArr.forEach((item: any, index: number) => {
-      newTarget[item[index]] = source[item[index]];
+    sourceArr.forEach((item: any) => {
+      newTarget[item[0]] = item[1];
     });
     return newTarget;
   };
