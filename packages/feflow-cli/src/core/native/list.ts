@@ -9,11 +9,11 @@ function loadModuleList(ctx: any) {
   const packagePath = ctx.rootPkg;
   const pluginDir = path.join(ctx.root, 'node_modules');
   const extend = function (target: any, source: any) {
-    const newTarget = target;
+    const targetOpey = { ...target };
     Object.entries(source).forEach(([key, value]) => {
-      newTarget[key] = value;
+      targetOpey[key] = value;
     });
-    return newTarget;
+    return targetOpey;
   };
   if (fs.existsSync(packagePath)) {
     const content = fs.readFileSync(packagePath, 'utf8');

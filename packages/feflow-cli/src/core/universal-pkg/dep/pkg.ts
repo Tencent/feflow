@@ -269,17 +269,12 @@ export class UniversalPkg {
     }
     const newObj = Object.create(null);
     if (obj instanceof Map) {
-      for (const item of obj) {
-        const [k] = item;
-        let v = item[1];
-        v = typeof v === 'object' ? this.toObject(v) : v;
-        newObj[k] = v;
+      for (const [k, v] of obj) {
+        newObj[k] = typeof v === 'object' ? this.toObject(v) : v;
       }
     } else {
-      Object.entries(obj).forEach(([key, value])=>{
-        let v = value;
-        v = typeof v === 'object' ? this.toObject(v) : v;
-        newObj[key] = v;
+      Object.entries(obj).forEach(([key, v]) => {
+        newObj[key] = typeof v === 'object' ? this.toObject(v) : v;
       })
     }
     return newObj;

@@ -110,7 +110,7 @@ function isGitRepo(url: string): boolean {
     ).test(url) ||
     new RegExp(
       '^http(s)?://([a-zA-Z0-9._-]*?(:[a-zA-Z0-9._-]*)?@)?[a-zA-Z0-9._-]+' +
-        '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
+      '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
     ).test(url)
   );
 }
@@ -273,7 +273,7 @@ async function startInstall(ctx: any, pkgInfo: PkgInfo, repoPath: string, update
       if (oldPlugin.name) {
         lastRepoName = oldPlugin.name;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
@@ -397,14 +397,14 @@ async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boole
   } = ctx;
   const serverUrl = ctx.config?.serverUrl;
 
-  const newInstallPluginStr = installPluginStr.trim();
+  const finalInstallPluginStr = installPluginStr.trim();
   if (!serverUrl) {
     logger.warn('please configure the serverUrl');
-    return installJsPlugin(ctx, newInstallPluginStr);
+    return installJsPlugin(ctx, finalInstallPluginStr);
   }
-  const pkgInfo = await getPkgInfo(ctx, newInstallPluginStr);
+  const pkgInfo = await getPkgInfo(ctx, finalInstallPluginStr);
   if (!pkgInfo) {
-    return installJsPlugin(ctx, newInstallPluginStr);
+    return installJsPlugin(ctx, finalInstallPluginStr);
   }
   if (!pkgInfo.repoName) {
     throw `plugin [${pkgInfo.repoFrom}] does not exist`;
@@ -442,7 +442,7 @@ async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boole
     logger.info(`[${pkgInfo.showName()}] update the plugin to version ${pkgInfo.checkoutTag}`);
     try {
       resolvePlugin(ctx, repoPath).preUpgrade.runLess();
-    } catch (e) {}
+    } catch (e) { }
   } else {
     logger.info(`[${pkgInfo.showName()}] installing plugin`);
   }
