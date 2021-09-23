@@ -10,7 +10,7 @@ class Report {
   ctx: ReportContext;
   cmd: string;
   args: object;
-  commandSource: string;
+  commandSource: string | undefined;
   lastCommand: string;
   project: string;
   generatorProject: string;
@@ -21,9 +21,15 @@ class Report {
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
-    this.cmd = cmd;
+    this.cmd = cmd!;
     this.args = args;
+    this.commandSource = '';
+    this.lastCommand = '';
+    this.generatorProject = '';
+    this.startTime = 0;
+    this.costTime = 0;
     this.cachePath = path.join(this.ctx.root, REPORT_JSON);
+    this.cacheData = '';
     this.project = getProject(this.ctx);
     this.loadContextLogger();
   }
@@ -51,7 +57,7 @@ class Report {
     });
   }
 
-  report(cmd: string, args?, recall?): any {
+  report(cmd: string, args?: object, recall?: any): any {
     // args check
     if (!this.checkBeforeReport(cmd)) return;
 

@@ -10,7 +10,7 @@ export default class ApiController {
   private isNeedProxy: boolean;
   private rpOption: any;
 
-  constructor(param, log) {
+  constructor(param: any, log: object) {
     this.retryCount = 0;
     this.log = log;
     this.isNeedProxy = isNeedProxyLocal;
@@ -25,15 +25,15 @@ export default class ApiController {
     this.loadProxy();
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public doReport(cb = (response: any) => {}) {
+  public doReport(cb = (response: any) => { }) {
     this.log.debug('feflow report start.');
     rp(this.rpOption)
-      .then((response) => {
+      .then((response: any) => {
         isNeedProxyLocal = this.isNeedProxy;
         this.log.debug('feflow report success.');
         cb(response || {});
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         this.log.debug('feflow report fail. ', e.message);
         // timeout retry
         if (/ETIMEDOUT|ECONNREFUSED|ESOCKETTIMEDOUT/.test(e.message || '')) {
@@ -53,7 +53,7 @@ export default class ApiController {
     }
   }
 
-  private retryReport(cb) {
+  private retryReport(cb: any) {
     this.retryCount += 1;
     this.log.debug('feflow report timeout, and retry. ', this.retryCount);
     this.isNeedProxy = !this.isNeedProxy;
