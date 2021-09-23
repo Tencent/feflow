@@ -273,8 +273,8 @@ export class UniversalPkg {
         newObj[k] = typeof v === 'object' ? this.toObject(v) : v;
       }
     } else {
-      Object.entries(obj).forEach(([key, v]) => {
-        newObj[key] = typeof v === 'object' ? this.toObject(v) : v;
+      Object.entries(obj).forEach(([key, value]) => {
+        newObj[key] = typeof value === 'object' ? this.toObject(value) : value;
       })
     }
     return newObj;
