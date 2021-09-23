@@ -86,7 +86,7 @@ module.exports = (ctx: any) => {
   }
 
   function executeSync(command: string): string {
-    let resultBuf: Buffer;
+    let resultBuf;
     try {
       resultBuf = execSync(command, { windowsHide: true });
     } catch (e) {
