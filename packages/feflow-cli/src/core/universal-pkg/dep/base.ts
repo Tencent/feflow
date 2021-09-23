@@ -5,10 +5,10 @@ export function toInstalled(oInstalled: any): Map<string, string> {
   if (!oInstalled) {
     return installed;
   }
-  Object.entries(oInstalled).forEach((item: any[]) => {
-    const version = item[1];
+  Object.entries(oInstalled).forEach(([key, value]) => {
+    const version:any = value;
     if (versionImpl.check(version)) {
-      installed.set(item[0], version);
+      installed.set(key, version);
     }
   })
   return installed;

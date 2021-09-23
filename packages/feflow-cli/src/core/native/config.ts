@@ -18,8 +18,8 @@ module.exports = (ctx: any) => {
           break;
         case 'list': {
           let str = '';
-          Object.entries(config).forEach((item: any[]) => {
-            str += `${item[0]} = ${item[1]}\n`;
+          Object.entries(config).forEach(([key, value]) => {
+            str += `${key} = ${value}\n`;
           });
           console.log(str.replace(/\s+$/g, ''));
           break;

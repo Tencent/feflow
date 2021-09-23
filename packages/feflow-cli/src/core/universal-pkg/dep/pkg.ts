@@ -276,10 +276,10 @@ export class UniversalPkg {
         newObj[k] = v;
       }
     } else {
-      Object.entries(obj).forEach((item:any[])=>{
-        let v = item[1];
+      Object.entries(obj).forEach(([key, value])=>{
+        let v = value;
         v = typeof v === 'object' ? this.toObject(v) : v;
-        newObj[item[0]] = v;
+        newObj[key] = v;
       })
     }
     return newObj;
