@@ -50,8 +50,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
     })
     .then((res) => {
       const data = res.data || {};
-      return data.data && data.data?.[0];
-      // return (data.data && data.data.length > 0 && data.data[0]) || [];
+      return (data.data?.length > 0 && data.data[0]) || [];
     })
     .catch((e: any) => {
       ctx.logger.debug('Get repo info error', e);
