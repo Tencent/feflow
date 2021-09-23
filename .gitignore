@@ -10,3 +10,4 @@ tmp
 dist
 packages/feflow-cli/bin/run
 tnpm
+packages/*/package-lock.json

@@ -11,11 +11,14 @@
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/sinon-chai": "^3.2.3",
+    "@typescript-eslint/eslint-plugin": "4.27",
+    "@typescript-eslint/parser": "4.27",
     "chai": "^4.2.0",
     "eslint": "^7.32.0",
     "eslint-config-tencent": "^1.0.2",
     "eslint-plugin-chai-friendly": "^0.6.0",
     "eslint-plugin-mocha": "^8.1.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "lerna": "^3.13.1",
     "mocha": "^8.1.3",
     "mocha-junit-reporter": "^1.23.3",
@@ -25,11 +28,5 @@
     "sinon-chai": "^3.5.0",
     "ts-mocha": "^7.0.0",
     "typescript": "^3.7.2"
-  },
-  "dependencies": {
-    "@feflow/cli": "file:packages/feflow-cli",
-    "@feflow/feflow-plugin-devtool": "file:packages/feflow-plugin-devtool",
-    "@feflow/packager": "file:packages/feflow-packager",
-    "@feflow/report": "file:packages/feflow-report"
   }
 }

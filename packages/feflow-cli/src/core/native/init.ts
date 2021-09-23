@@ -75,8 +75,8 @@ module.exports = (ctx: any) => {
         const answer = await inquirer.prompt(askIfInstallGenerator);
         if (answer.ifInstall) {
           const packageManager = ctx.config?.packageManager;
-          install(packageManager, ctx.root, 'install', generator, false, true).then(() => {
-            ctx.logger.info(`install success`);
+          install(packageManager, ctx.root, 'install', generator, false).then(() => {
+            ctx.logger.info('install success');
             run(ctx, generator);
           });
           return;

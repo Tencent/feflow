@@ -18,7 +18,7 @@ describe('@feflow/core - Commander Unit Test', () => {
   it('get(name) - Get a command not a string', () => {
     const command = new Commander();
     command.register('test', 'test description', () => {});
-    expect(command.get(1)).to.be.an('undefined');
+    expect(command.get('1')).to.be.an('undefined');
   });
 
   it('list() - List all command', () => {

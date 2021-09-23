@@ -9,6 +9,6 @@ export function toInstalled(oInstalled: any): Map<string, string> {
     if (versionImpl.check(version)) {
       installed.set(key, version);
     }
-  })
+  });
   return installed;
 }
