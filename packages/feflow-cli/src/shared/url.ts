@@ -1,9 +1,10 @@
 export function getURL(base: string, url: string): string {
+  let finalBase: string = '';
   if (!base?.startsWith('http://') && !base?.startsWith('https://')) {
-    base = 'http://' + base;
+    finalBase = `http://${base}`;
   }
   try {
-    return new URL(url, base).href;
+    return new URL(url, finalBase).href;
   } catch (e) {
     console.debug(e);
     return '';

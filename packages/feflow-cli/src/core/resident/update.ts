@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/no-require-imports */
 // 更新依赖
 import semver from 'semver';
 import fs from 'fs';
@@ -14,7 +14,7 @@ import {
   FEFLOW_BIN,
   FEFLOW_LIB,
   UPDATE_KEY,
-  UPDATE_LOCK
+  UPDATE_LOCK,
 } from '../../shared/constant';
 import { setServerUrl } from '../../shared/git';
 import { parseYaml } from '../../shared/yaml';
@@ -26,8 +26,10 @@ import {
   getLatestVersion,
   updatePluginsVersion,
   getUniversalPluginVersion,
-  promisify
+  promisify,
 } from './utils';
+import { updateCli } from '../native/upgrade';
+import { getPkgInfo, updateUniversalPlugin } from '../native/install';
 
 // 设置特殊的进程名字
 process.title = 'feflow-update-proccess';
@@ -45,10 +47,8 @@ interface ErrorInstance {
   stack: string;
 }
 
-const { updateCli } = require('../native/upgrade');
 const pkg = require('../../../package.json');
-const { getPkgInfo, updateUniversalPlugin } = require('../native/install');
-const version = pkg.version;
+const { version } = pkg;
 
 const { cacheValidate, debug, silent, latestVersion } = process.env;
 const root = path.join(osenv.home(), FEFLOW_ROOT);
@@ -66,14 +66,14 @@ const updateFile = new LockFileInstance(dbFile, updateLock);
 
 const logger = loggerInstance({
   debug: Boolean(debug),
-  silent: Boolean(silent)
+  silent: Boolean(silent),
 });
 
 if (!config) {
   process.exit();
 }
 
-const packageManager = config.packageManager;
+const { packageManager } = config;
 const ctx = {
   root,
   universalPkg,
@@ -81,7 +81,7 @@ const ctx = {
   universalModules,
   bin,
   lib,
-  config
+  config,
 };
 let updateData: any;
 
@@ -94,15 +94,15 @@ const handleException = (e: ErrorInstance): void => {
 (process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
 
 function startUpdateCli() {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     if (latestVersion) {
       await updateCli(packageManager);
 
-      updateData['cli_update_msg'] = {
+      updateData.cli_update_msg = {
         version,
-        latestVersion
+        latestVersion,
       };
-      updateData['latest_cli_version'] = '';
+      updateData.latest_cli_version = '';
     }
     resolve(undefined);
   });
@@ -116,26 +116,21 @@ async function startPluginsUpdate(plugins: string[]) {
     needUpdatePlugins.push(plugin.name);
   });
 
-  return install(
-    packageManager,
-    root,
-    packageManager === 'yarn' ? 'add' : 'install',
-    needUpdatePlugins,
-    false,
-    true
-  ).then(() => {
-    updateData['plugins_update_msg'] = plugins;
-    updateData['latest_plugins'] = '';
+  return install(packageManager, root, packageManager === 'yarn' ? 'add' : 'install', needUpdatePlugins, false).then(
+    () => {
+      updateData.plugins_update_msg = plugins;
+      updateData.latest_plugins = '';
 
-    logger.info('Plugin update success');
-  });
+      logger.info('Plugin update success');
+    },
+  );
 }
 
 function checkPluginsUpdate() {
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     if (String(cacheValidate) === 'true') {
       // 用缓存数据
-      const updatePkg = updateData['latest_plugins'];
+      const updatePkg = updateData.latest_plugins;
       if (updatePkg.length) {
         await startPluginsUpdate(updatePkg);
       }
@@ -145,12 +140,7 @@ function checkPluginsUpdate() {
       Promise.all(
         getInstalledPlugins().map(async (name: any) => {
           try {
-            const pluginPath = path.join(
-              root,
-              'node_modules',
-              name,
-              'package.json'
-            );
+            const pluginPath = path.join(root, 'node_modules', name, 'package.json');
             const content: any = fs.readFileSync(pluginPath);
             const pkg: any = JSON.parse(content);
             const localVersion = pkg.version;
@@ -158,22 +148,19 @@ function checkPluginsUpdate() {
             if (latestVersion && semver.gt(latestVersion, localVersion)) {
               return {
                 name,
-                latestVersion
+                latestVersion,
               };
-            } else {
-              logger.debug('All plugins is in latest version');
             }
+            logger.debug('All plugins is in latest version');
           } catch (e) {
             logger.debug(e);
             reject(e);
           }
-        })
+        }),
       ).then(async (plugins: any) => {
-        plugins = plugins.filter((plugin: any) => {
-          return plugin && plugin.name;
-        });
-        if (plugins.length) {
-          await startPluginsUpdate(plugins);
+        const pluginsWithName = plugins.filter((plugin: any) => plugin?.name);
+        if (pluginsWithName.length) {
+          await startPluginsUpdate(pluginsWithName);
         }
         resolve();
       });
@@ -182,7 +169,7 @@ function checkPluginsUpdate() {
 }
 
 function checkUniversalPluginsUpdate() {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     let updatePkg: any[] = [];
     const { serverUrl } = config;
     if (!serverUrl) {
@@ -191,27 +178,20 @@ function checkUniversalPluginsUpdate() {
     setServerUrl(serverUrl);
     if (String(cacheValidate) === 'true') {
       // 用缓存数据
-      updatePkg = updateData['latest_universal_plugins'];
+      updatePkg = updateData.latest_universal_plugins;
     } else {
       // 实时拉取最新更新
 
       // eslint-disable-next-line
       for (const [pkg, version] of universalPkg.getInstalled()) {
         // 记录更改项
-        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch(
-          (e: string) => {
-            logger.error(
-              `update_error => pkg: ${pkg}@${version} => error: ${e}`
-            );
-          }
-        );
+        const pkgInfo = await getPkgInfo(ctx, `${pkg}@${version}`).catch((e: string) => {
+          logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
+        });
         if (!pkgInfo) {
           continue;
         }
-        const versionObj = await getUniversalPluginVersion(
-          pkgInfo,
-          universalPkg
-        );
+        const versionObj = await getUniversalPluginVersion(pkgInfo, universalPkg);
         if (versionObj.latestVersion) {
           updatePkg.push(versionObj);
         }
@@ -223,23 +203,19 @@ function checkUniversalPluginsUpdate() {
         const { name, installVersion } = item;
         // 使用之前的方法进行更新，后续修改
         const plugin = loadPlugin(ctx, name, installVersion);
-        return promisify(
-          updateUniversalPlugin,
-          ctx,
-          name,
-          installVersion,
-          plugin
-        );
+        return promisify(updateUniversalPlugin, ctx, name, installVersion, plugin);
       });
 
       // 顺序执行多语言插件的更新来保证依赖的插件不会同时更新而冲突
       // eslint-disable-next-line
       for (const updateTask of updateTasks) {
-        await (await updateTask)();
+        await (
+          await updateTask
+        )();
       }
 
-      updateData['universal_plugins_update_msg'] = updatePkg;
-      updateData['latest_universal_plugins'] = '';
+      updateData.universal_plugins_update_msg = updatePkg;
+      updateData.latest_universal_plugins = '';
     }
     resolve(undefined);
   });
@@ -247,20 +223,16 @@ function checkUniversalPluginsUpdate() {
 
 updateFile
   .read(UPDATE_KEY)
-  .then(data => {
+  .then((data) => {
     updateData = data;
-    return Promise.all([
-      startUpdateCli(),
-      checkPluginsUpdate(),
-      checkUniversalPluginsUpdate()
-    ]).catch(handleException);
+    return Promise.all([startUpdateCli(), checkPluginsUpdate(), checkUniversalPluginsUpdate()]).catch(handleException);
   })
   .then(() => {
-    updateData['update_lock'] = '';
+    updateData.update_lock = '';
     updateFile.update(UPDATE_KEY, updateData);
   })
   .catch((reason: any) => {
-    updateData['update_lock'] = '';
+    updateData.update_lock = '';
     updateFile.update(UPDATE_KEY, updateData);
 
     logger.debug(reason);

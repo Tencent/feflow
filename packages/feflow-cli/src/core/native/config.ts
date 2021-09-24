@@ -2,7 +2,7 @@ import { safeDump } from '../../shared/yaml';
 
 module.exports = (ctx: any) => {
   const { args, config = {}, configPath } = ctx;
-  const [action, key, value] = args['_'];
+  const [action, key, value] = args._;
 
   ctx.commander.register(
     'config',
@@ -16,13 +16,14 @@ module.exports = (ctx: any) => {
           config[key] = value;
           safeDump(config, configPath);
           break;
-        case 'list':
+        case 'list': {
           let str = '';
-          for (let prop in config) {
-            str += prop + ' = ' + config[prop] + '\n';
-          }
+          Object.entries(config).forEach(([key, value]) => {
+            str += `${key} = ${value}\n`;
+          });
           console.log(str.replace(/\s+$/g, ''));
           break;
+        }
         default:
           return null;
       }
@@ -33,8 +34,8 @@ module.exports = (ctx: any) => {
         content: [
           'fef config list                         list all configs',
           'fef config set <key> <value>            set key value',
-          'fef config get <key>                    get key value'
-        ]
+          'fef config get <key>                    get key value',
+        ],
       },
       {
         header: `Example`,
@@ -42,9 +43,9 @@ module.exports = (ctx: any) => {
           'fef config set packageManager npm       set package manager',
           'fef config set disableCheck true        disable check when has new version',
           'fef config set autoUpdate true          autoupdate when has new version',
-          'fef config get <key>                    get key config'
-        ]
-      }
-    ]
+          'fef config get <key>                    get key config',
+        ],
+      },
+    ],
   );
 };

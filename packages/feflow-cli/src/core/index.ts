@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import glob from 'glob';
 import Report from '@feflow/report';
@@ -18,26 +19,15 @@ import {
   UNIVERSAL_PKG_JSON,
   UNIVERSAL_MODULES,
   HOOK_TYPE_ON_COMMAND_REGISTERED,
-  LOG_FILE
+  LOG_FILE,
 } from '../shared/constant';
 import { safeDump, parseYaml } from '../shared/yaml';
 import { FefError } from '../shared/fefError';
 import { setServerUrl } from '../shared/git';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
-import CommandPicker, {
-  LOAD_UNIVERSAL_PLUGIN,
-  LOAD_PLUGIN,
-  LOAD_DEVKIT,
-  LOAD_ALL
-} from './command-picker';
+import CommandPicker, { LOAD_UNIVERSAL_PLUGIN, LOAD_PLUGIN, LOAD_DEVKIT, LOAD_ALL } from './command-picker';
 import { checkUpdate } from './resident';
-import {
-  mkdirAsync,
-  statAsync,
-  unlinkAsync,
-  writeFileAsync,
-  readFileAsync
-} from '../shared/fs';
+import { mkdirAsync, statAsync, unlinkAsync, writeFileAsync, readFileAsync } from '../shared/fs';
 import { isInstalledPM } from '../shared/npm';
 
 const pkg = require('../../package.json');
@@ -65,8 +55,7 @@ export default class Feflow {
   public commandPick: CommandPicker | null;
   public fefError: FefError;
 
-  constructor(args: any) {
-    args = args || {};
+  constructor(args: any = {}) {
     const configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
     this.root = FEFLOW_HOME;
     this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);
@@ -86,7 +75,7 @@ export default class Feflow {
     });
     this.logger = logger({
       debug: Boolean(args.debug),
-      silent: Boolean(args.silent)
+      silent: Boolean(args.silent),
     });
     this.reporter = new Report(this);
     this.universalPkg = new UniversalPkg(this.universalPkgPath);
@@ -97,14 +86,9 @@ export default class Feflow {
   async init(cmd: string | undefined) {
     this.reporter.init(cmd);
 
-    await Promise.all([
-      this.initClient(),
-      this.initPackageManager(),
-      this.initBinPath()
-    ]);
+    await Promise.all([this.initClient(), this.initPackageManager(), this.initBinPath()]);
 
-    const disableCheck =
-      this.args['disable-check'] || this.config?.disableCheck;
+    const disableCheck = this.args['disable-check'] || this.config?.disableCheck;
     if (!disableCheck) {
       checkUpdate(this);
     }
@@ -139,11 +123,11 @@ export default class Feflow {
           {
             name: 'feflow-home',
             version: '0.0.0',
-            private: true
+            private: true,
           },
           null,
-          2
-        )
+          2,
+        ),
       );
     }
   }
@@ -163,26 +147,23 @@ export default class Feflow {
 
   initPackageManager() {
     const { root, logger } = this;
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       if (!this.config?.packageManager) {
         const packageManagers = ['npm', 'tnpm', 'yarn', 'cnpm'];
-        const defaultPackageManager = packageManagers.find(packageManager =>
-          isInstalledPM(packageManager)
-        );
+        const defaultPackageManager = packageManagers.find((packageManager) => isInstalledPM(packageManager));
         if (!defaultPackageManager) {
           // 无包管理器直接结束
           logger.error('You must installed a package manager');
           return;
-        } else {
-          const configPath = path.join(root, '.feflowrc.yml');
-          safeDump(
-            Object.assign({}, parseYaml(configPath), {
-              packageManager: defaultPackageManager
-            }),
-            configPath
-          );
-          this.config = parseYaml(configPath);
         }
+        const configPath = path.join(root, '.feflowrc.yml');
+        safeDump(
+          Object.assign({}, parseYaml(configPath), {
+            packageManager: defaultPackageManager,
+          }),
+          configPath,
+        );
+        this.config = parseYaml(configPath);
       } else {
         logger.debug('Use packageManager is: ', this.config.packageManager);
       }
@@ -191,7 +172,7 @@ export default class Feflow {
   }
 
   loadNative() {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       const nativePath = path.join(__dirname, './native/*.js');
       // fs.readdirSync(nativePath)
       glob.sync(nativePath).forEach((file: string) => {
@@ -204,12 +185,7 @@ export default class Feflow {
   async loadCommands(orderType: number) {
     this.logger.debug('load order: ', orderType);
     if ((orderType & LOAD_ALL) === LOAD_ALL) {
-      await Promise.all([
-        this.loadNative(),
-        loadUniversalPlugin(this),
-        loadPlugins(this),
-        loadDevkits(this)
-      ]);
+      await Promise.all([this.loadNative(), loadUniversalPlugin(this), loadPlugins(this), loadDevkits(this)]);
       return;
     }
     if ((orderType & LOAD_PLUGIN) === LOAD_PLUGIN) {
@@ -231,7 +207,7 @@ export default class Feflow {
     } catch (err) {
       this.fefError.printError({
         error: err,
-        msg: 'internal plugin load failed: %s'
+        msg: 'internal plugin load failed: %s',
       });
     }
   }
@@ -253,19 +229,15 @@ export default class Feflow {
     const registeredCommand = ctx.commander.get(cmd);
     let commandLine: object[] = [];
 
-    if (registeredCommand && registeredCommand.options) {
-      commandLine = getCommandLine(
-        registeredCommand.options,
-        registeredCommand.desc,
-        cmd
-      );
+    if (registeredCommand?.options) {
+      commandLine = getCommandLine(registeredCommand.options, registeredCommand.desc, cmd);
     }
     // 有副作用，暂无好方法改造
     if (cmd === 'help') {
       registeredCommand.runFn.call(this, ctx);
       return true;
     }
-    if (commandLine.length == 0) {
+    if (commandLine.length === 0) {
       return false;
     }
 

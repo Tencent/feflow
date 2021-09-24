@@ -1,24 +1,4 @@
 export class Install {
-  pkg: string;
-
-  installVersion: string;
-
-  checkoutVersion: string;
-
-  attributes: InstallAttribute;
-
-  constructor(
-    pkg: string,
-    iVersion: string,
-    cVersion: string,
-    attributes: InstallAttribute
-  ) {
-    this.pkg = pkg;
-    this.installVersion = iVersion;
-    this.checkoutVersion = cVersion;
-    this.attributes = attributes;
-  }
-
   static from(obj: any) {
     const pkg = obj?.pkg;
     const installVersion = obj?.installVersion;
@@ -30,9 +10,29 @@ export class Install {
   static query(pkg: string, iversion: string) {
     return { pkg, installVersion: iversion };
   }
+  pkg: string;
+
+  installVersion: string;
+
+  checkoutVersion: string;
+
+  attributes: InstallAttribute;
+
+  constructor(pkg: string, iVersion: string, cVersion: string, attributes: InstallAttribute) {
+    this.pkg = pkg;
+    this.installVersion = iVersion;
+    this.checkoutVersion = cVersion;
+    this.attributes = attributes;
+  }
 }
 
 export class InstallAttribute {
+  static from(obj: any): InstallAttribute {
+    const attribute = new InstallAttribute();
+    attribute.upgradeTime = obj?.upgradeTime;
+    attribute.createTime = obj?.createTime;
+    return attribute;
+  }
   upgradeTime: number | undefined;
 
   createTime: number | undefined;
@@ -46,12 +46,5 @@ export class InstallAttribute {
     if (obj?.upgradeTime) {
       this.upgradeTime = obj?.upgradeTime;
     }
-  }
-
-  static from(obj: any): InstallAttribute {
-    const attribute = new InstallAttribute();
-    attribute.upgradeTime = obj?.upgradeTime;
-    attribute.createTime = obj?.createTime;
-    return attribute;
   }
 }

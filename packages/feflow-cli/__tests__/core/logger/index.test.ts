@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import path from 'path';
 import logger from '../../../src/core/logger';
 import osenv from 'osenv';
@@ -11,18 +12,16 @@ fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 const captureStream = (stream: any) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function(chunk: any, encoding: any, callback: any) {
+  stream.write = function (chunk: Uint8Array | string, encoding?: string, callback?: (err?: Error) => void) {
     buf += chunk.toString();
-    oldWrite.apply(stream, arguments);
+    oldWrite.apply(stream, chunk, encoding, callback);
   };
 
   return {
     unhook: () => {
       stream.write = oldWrite;
     },
-    captured: () => {
-      return buf;
-    }
+    captured: () => buf,
   };
 };
 
@@ -40,20 +39,23 @@ describe('@feflow/core - Logger system', () => {
   it('test debug and silent', () => {
     const log = logger({
       debug: true,
-      silent: true
+      silent: true,
     });
     log.debug('hello feflow');
   });
 
   it('test no debug and silent', () => {
-    const log = logger({});
+    const log = logger({
+      debug: true,
+      silent: true,
+    });
     log.info('hello feflow');
   });
 
   it('test debug', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: true,
     });
     log.debug('hello feflow');
   });
@@ -61,7 +63,7 @@ describe('@feflow/core - Logger system', () => {
   it('test warn', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: true,
     });
     log.warn('hello feflow');
   });
@@ -69,7 +71,7 @@ describe('@feflow/core - Logger system', () => {
   it('test error', () => {
     const log = logger({
       debug: true,
-      silent: false
+      silent: true,
     });
     log.error('hello feflow');
   });

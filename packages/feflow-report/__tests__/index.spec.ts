@@ -1,23 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import chai from 'chai';
-import Report from '../lib/index';
-import { getUserName, httpRegex, sshRegex } from '../lib/common/utils';
+import { getUserName } from '../src/common/utils'; // to-do: 把src改成lib后执行
 
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/report - report', () => {
-  let report;
-
-  before(() => {
-    report = new Report({ root: '/' });
-  });
-
-  it('getUserName() - username is not empty', () => {
+  it('getUserName() - username is not empty', function () {
     const username = getUserName();
 
     expect(username).to.not.empty;
-  });
-
-  after(() => {
-    report = null;
   });
 });

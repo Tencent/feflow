@@ -4,7 +4,7 @@
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "npx mocha -r ts-node/register __tests__/*.spec.ts",
+    "test": "npm run build && npx mocha -r ts-node/register __tests__/*.spec.ts",
     "build": "tsc",
     "dev": "npm run build && node ./lib/dev.js",
     "prepublish": "npm run build"
@@ -21,7 +21,7 @@
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
     "ts-node": "^8.5.2",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.10"
   },
   "files": [
     "lib",

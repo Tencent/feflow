@@ -1,15 +1,13 @@
-module.exports =  {
-  parser:  '@typescript-eslint/parser',
-  extends:  [
-    'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended',
+module.exports = {
+  extends: ['eslint-config-tencent', 'eslint-config-tencent/prettier'],
+  parserOptions: {
+    project: './tsconfig.eslint.json',
+  },
+  rules: {},
+  overrides: [
+    {
+      files: ['*.ts'],
+      extends: ['eslint-config-tencent/ts'],
+    },
   ],
- parserOptions:  {
-    ecmaVersion:  2018,
-    sourceType:  'module',
-  },
-  rules:  {
-
-  },
 };

@@ -5,7 +5,7 @@ import { get } from 'lodash';
 
 import Feflow from '../core';
 import { Config } from '../shared/file';
-import CommandPicker, { COMMAND_TYPE } from '../core/command-picker';
+import CommandPicker, { CommandType } from '../core/command-picker';
 
 type PrintError = {
   error: any | Error;
@@ -57,14 +57,17 @@ export class FefError {
     }
 
     const docs = this.getDocPath(pluginPath);
-    const { type: cmdType } = this.picker?.getCmdInfo() || {type: COMMAND_TYPE.PLUGIN_TYPE};
+    const { type: cmdType } = this.picker?.getCmdInfo() || { type: CommandType.PLUGIN_TYPE };
     if (docs) {
       this.printErrorWithDocs(obj, docs);
     } else {
-      let { error, msg } = obj;
+      const { error } = obj;
+      let { msg } = obj;
       if (!obj.hideError) {
         msg = `${msg || error}`;
-        this.context.logger[[COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE, COMMAND_TYPE.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error']({ err: error }, msg, chalk.magenta(error));
+        this.context.logger[
+          [CommandType.UNIVERSAL_PLUGIN_TYPE, CommandType.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error'
+        ]({ err: error }, msg, chalk.magenta(error));
       } else if (msg) {
         // 兼容多语言插件
         this.context.logger.info(`${msg}`);
@@ -73,7 +76,8 @@ export class FefError {
   }
 
   printErrorWithDocs(obj: PrintError, docs: string) {
-    let { error, msg } = obj;
+    const { error } = obj;
+    let { msg } = obj;
     if (!obj.hideError) {
       msg = `${msg || error}
       插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
@@ -88,28 +92,29 @@ export class FefError {
   getDocPath(pluginPath?: string) {
     let docs = '';
     let configPath = '';
-    let type = COMMAND_TYPE.PLUGIN_TYPE;
+    let type = CommandType.PLUGIN_TYPE;
+    let finalPluginPath: string = '';
     if (!pluginPath) {
-      if (this.picker != null) {
+      if (this.picker !== null) {
         const { path, type: cmdType } = this.picker.getCmdInfo();
-        pluginPath = path;
+        finalPluginPath = path;
         type = cmdType;
       } else {
         return docs;
       }
     }
 
-    if (!existsSync(pluginPath)) {
+    if (!existsSync(finalPluginPath)) {
       return docs;
     }
-    if (type === COMMAND_TYPE.PLUGIN_TYPE) {
-      configPath = join(pluginPath, this.pluginFile);
-    } else if (type === COMMAND_TYPE.UNIVERSAL_PLUGIN_TYPE) {
+    if (type === CommandType.PLUGIN_TYPE) {
+      configPath = join(finalPluginPath, this.pluginFile);
+    } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        const tmpPath = join(pluginPath as string, ext);
+        const tmpPath = join(finalPluginPath as string, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
-    } else if (type === COMMAND_TYPE.NATIVE_TYPE) {
+    } else if (type === CommandType.NATIVE_TYPE) {
       return this.defaultDocs;
     }
 
@@ -120,7 +125,7 @@ export class FefError {
         docs = get(config, docsPath);
       });
     } else {
-      this.context.logger.debug(`未找到插件配置文件: ${pluginPath}`);
+      this.context.logger.debug(`未找到插件配置文件: ${finalPluginPath}`);
     }
 
     return docs;

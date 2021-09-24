@@ -21,11 +21,11 @@ export default class Binp {
     if (temporary) {
       let newPath: string;
       if (prior) {
-        newPath = `${binPath}${path.delimiter}${process.env['PATH']}`;
+        newPath = `${binPath}${path.delimiter}${process.env.PATH}`;
       } else {
-        newPath = `${process.env['PATH']}${path.delimiter}${binPath}`;
+        newPath = `${process.env.PATH}${path.delimiter}${binPath}`;
       }
-      process.env['PATH'] = newPath;
+      process.env.PATH = newPath;
       return;
     }
     if (this.currentOs === 'win32') {
@@ -39,8 +39,17 @@ export default class Binp {
     }
   }
 
+  addToPath(file: string, content: string) {
+    try {
+      fs.appendFileSync(file, `\n${content}\n`);
+    } catch (e) {
+      console.error(e);
+      console.warn(`registration path to ${file} failed. If the file does not exist, you can try to create it`);
+    }
+  }
+
   private isRegisted(binPath: string): boolean {
-    const pathStr = process.env['PATH'];
+    const pathStr = process.env.PATH;
     let pathList: string[] = [];
     if (pathStr) {
       pathList = pathStr.split(path.delimiter);
@@ -49,7 +58,7 @@ export default class Binp {
   }
 
   private registerToWin32(binPath: string, prior: boolean) {
-    const pathStr = process.env['PATH'];
+    const pathStr = process.env.PATH;
     let toPath: string;
     if (prior) {
       toPath = `${binPath};${pathStr}`;
@@ -58,7 +67,7 @@ export default class Binp {
     }
     spawn.sync('setx', ['path', toPath, '/m'], {
       stdio: 'ignore',
-      windowsHide: true
+      windowsHide: true,
     });
   }
 
@@ -102,18 +111,15 @@ export default class Binp {
   private handleUnsupportedTerminal(profile: string) {
     console.error(
       'the current terminal cannot use feflow normally, ' +
-        'please open a new terminal or execute the following statement:'
+        'please open a new terminal or execute the following statement:',
     );
     console.error(`source ${profile}`);
     process.exit(1);
   }
 
-  private detectProfile(
-    binPath: string,
-    prior: boolean
-  ): [string | undefined, string | undefined] {
+  private detectProfile(binPath: string, prior: boolean): [string | undefined, string | undefined] {
     const home = osenv.home();
-    const shell = process.env['SHELL'];
+    const shell = process.env.SHELL;
     let toPath: string;
     if (prior) {
       toPath = `export PATH=${binPath}:$PATH`;
@@ -124,24 +130,23 @@ export default class Binp {
       return [undefined, undefined];
     }
     const shellMatch = shell.match(/(zsh|bash|sh|zcsh|csh)/);
-    let shellType = '';
     if (Array.isArray(shellMatch) && shellMatch.length > 0) {
-      shellType = shellMatch[0];
-    }
-    switch (shellType) {
-      case 'zsh':
-        return [this.detectZshProfile(home), toPath];
-      case 'bash':
-      case 'sh':
-        return [this.detectBashProfile(home), toPath];
-      case 'zcsh':
-      case 'csh':
-        if (prior) {
-          toPath = `set path = (${binPath} $path)`;
-        } else {
-          toPath = `set path = ($path ${binPath})`;
-        }
-        return [this.detectCshProfile(home), toPath];
+      const shellType = shellMatch[0];
+      switch (shellType) {
+        case 'zsh':
+          return [this.detectZshProfile(home), toPath];
+        case 'bash':
+        case 'sh':
+          return [this.detectBashProfile(home), toPath];
+        case 'zcsh':
+        case 'csh':
+          if (prior) {
+            toPath = `set path = (${binPath} $path)`;
+          } else {
+            toPath = `set path = ($path ${binPath})`;
+          }
+          return [this.detectCshProfile(home), toPath];
+      }
     }
     return [undefined, undefined];
   }
@@ -159,16 +164,5 @@ export default class Binp {
 
   private detectZshProfile(home: string): string {
     return path.join(home, '.zshrc');
-  }
-
-  addToPath(file: string, content: string) {
-    try {
-      fs.appendFileSync(file, `\n${content}\n`);
-    } catch (e) {
-      console.error(e);
-      console.warn(
-        `registration path to ${file} failed. If the file does not exist, you can try to create it`
-      );
-    }
   }
 }

@@ -1,22 +1,23 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import bunyan from 'bunyan';
 import chalk from 'chalk';
 import { Writable } from 'stream';
 import path from 'path';
-import {LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG} from '../../shared/constant';
+import { LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG } from '../../shared/constant';
 import osenv from 'osenv';
-import {spawn} from "child_process";
+import { spawn } from 'child_process';
 import { getKeyFormFile, setKeyToFile } from '../../shared/file';
 
 const root = path.join(osenv.home(), FEFLOW_ROOT);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION_LOG);
 let logReportProcess: any = null;
 const reportLog = path.join(__dirname, './report');
-let hasCreateHeart: boolean = false;
+let hasCreateHeart = false;
 const logReportDbKey = 'log_report_beat_time';
 const { debug, silent } = process.env;
 const pkg = require('../../../package.json');
-const PLUGE_NAME = 'feflow-' + pkg.name.split('/').pop();
-let logger:any;
+const PLUGE_NAME = `feflow-${pkg.name.split('/').pop()}`;
+let logger: any;
 interface IObject {
   [key: string]: string;
 }
@@ -46,7 +47,7 @@ const levelNames: IObject = {
   30: 'Info',
   40: 'Warn',
   50: 'Error',
-  60: 'Fatal'
+  60: 'Fatal',
 };
 
 const levelColors: IObject = {
@@ -55,7 +56,7 @@ const levelColors: IObject = {
   30: 'green',
   40: 'orange',
   50: 'red',
-  60: 'red'
+  60: 'red',
 };
 
 class ConsoleStream extends Writable {
@@ -63,7 +64,7 @@ class ConsoleStream extends Writable {
 
   constructor(args: Args) {
     super({
-      objectMode: true
+      objectMode: true,
     });
     this.debug = Boolean(args.debug);
   }
@@ -79,12 +80,12 @@ class ConsoleStream extends Writable {
           debug,
           silent,
         },
-        windowsHide: true
+        windowsHide: true,
       });
       // 父进程不会等待子进程
       logReportProcess.unref();
-    }
-    let cacheValidate: boolean = false;
+    };
+    let cacheValidate = false;
     const nowTime = new Date().getTime();
     const lastBeatTime = getKeyFormFile(heartDBFile, logReportDbKey);
     if (lastBeatTime) {
@@ -105,25 +106,25 @@ class ConsoleStream extends Writable {
     }
   }
 
-  async _write(data: any, enc: any, callback: any) {
-    const level = data.level;
-    const loggerName = data.name || (logger.name && logger.name.split('/').pop()) || PLUGE_NAME;
+  async writeDown(data: any, enc: any, callback: any) {
+    const { level } = data;
+    const loggerName = data.name || logger?.name.split('/').pop() || PLUGE_NAME;
     let msg = '';
     if (this.debug) {
-      msg += chalk.gray(data.time) + ' ';
+      msg += `${chalk.gray(data.time)} `;
     }
     msg += chalk.keyword(levelColors[level])(`[ Feflow ${levelNames[level]} ]`);
     msg += `[ ${loggerName} ] `;
-    msg += data.msg + '\n';
+    msg += `${data.msg}\n`;
     if (data.err) {
       const err = data.err.stack || data.err.message;
-      if (err) msg += chalk.yellow(err) + '\n';
+      if (err) msg += `${chalk.yellow(err)}\n`;
     }
     Object.assign(data, {
-      level: level,
+      level,
       msg: `[Feflow ${levelNames[level]}][${loggerName}]${data.msg}`,
       date: new Date().getTime(),
-      name: loggerName
+      name: loggerName,
     });
     if (level >= 40) {
       process.stderr.write(msg);
@@ -135,8 +136,7 @@ class ConsoleStream extends Writable {
   }
 }
 
-export default function createLogger(options: any) {
-  options = options || {};
+export default function createLogger(options: any = {}) {
   const streams: Array<Stream> = [];
 
   streams.push({
@@ -158,16 +158,16 @@ export default function createLogger(options: any) {
   if (options.debug) {
     streams.push({
       level: 'trace',
-      path: path.join(root, 'debug.log')
+      path: path.join(root, 'debug.log'),
     });
   }
 
   logger = bunyan.createLogger({
     name: options.name || 'feflow-cli',
-    streams: streams,
+    streams,
     serializers: {
       err: bunyan.stdSerializers.err,
-    }
+    },
   });
   return logger;
 }

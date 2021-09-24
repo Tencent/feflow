@@ -18,9 +18,5 @@
     "experimentalDecorators": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-    "types"
-  ],
   "experimentalDecorators": true
 }

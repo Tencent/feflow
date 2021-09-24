@@ -1,5 +1,5 @@
 import chai from 'chai';
-const expect = chai.expect;
+const { expect } = chai;
 
 describe('@feflow/packager', () => {
   it('default', () => {

@@ -33,7 +33,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@types/abbrev": "^1.1.0",
-    "@types/bunyan": "^1.8.6",
+    "@types/bunyan": "^1.8.7",
     "@types/chai": "^4.2.12",
     "@types/command-line-usage": "^5.0.1",
     "@types/cross-spawn": "^6.0.0",

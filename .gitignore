@@ -2,7 +2,6 @@
 .DS_Store
 node_modules
 *.log
-*-lock.json
 coverage/
 packages/*/lib
 .vscode
@@ -11,3 +10,4 @@ tmp
 dist
 packages/feflow-cli/bin/run
 tnpm
+packages/*/package-lock.json

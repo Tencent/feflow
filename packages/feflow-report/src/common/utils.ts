@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-useless-escape */
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -21,7 +23,7 @@ const exec = (command: string) => {
     })
       .toString()
       .replace(/\n/, '');
-  } catch (err) {}
+  } catch (err) { }
   return result;
 };
 
@@ -29,14 +31,14 @@ export const getGitStatus = (): boolean => {
   const command = isWin ? 'where git' : 'which git';
   const hasGitCommand = exec(command);
   const hasGitDir = fs.existsSync(path.join(cwd, '.git'));
-  return hasGitCommand && hasGitDir;
+  return Boolean(hasGitCommand && hasGitDir);
 };
 
 const isGitAvailable = getGitStatus();
 
 const getUserNameFromHostName = () => {
   const hostname = os.hostname();
-  const [upperUserName, ...device] = hostname.split('-');
+  const [upperUserName] = hostname.split('-');
   if (upperUserName === 'MacBook') return '';
   return upperUserName.toLowerCase();
 };
@@ -79,7 +81,7 @@ export const getProjectByPackage = () => {
 export const getProjectByGit = (url?: string) => {
   let project = '';
   const gitRemoteUrl = url || exec('git remote get-url origin');
-  let urlRegex: RegExp;
+  let urlRegex: RegExp | null = null;
 
   if (httpRegex.test(gitRemoteUrl)) {
     urlRegex = httpRegex;
@@ -88,7 +90,7 @@ export const getProjectByGit = (url?: string) => {
   }
   if (!urlRegex) return '';
 
-  const [_, group, path] = urlRegex.exec(gitRemoteUrl) || [];
+  const [, group, path] = urlRegex.exec(gitRemoteUrl) || [];
   project = group ? `${group}/${path}` : '';
 
   return project;
@@ -106,7 +108,7 @@ export const getSystemInfo = () => {
   return JSON.stringify(systemDetailInfo);
 };
 
-export const getProject = (ctx, local?: boolean): string => {
+export const getProject = (ctx: any, local?: boolean): string => {
   const pkgConfig: any = ctx.pkgConfig || {};
   let project = '';
   if (pkgConfig.name && !local) {
@@ -119,7 +121,7 @@ export const getProject = (ctx, local?: boolean): string => {
       if (!project && isGitAvailable) {
         project = getProjectByGit();
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   return project;

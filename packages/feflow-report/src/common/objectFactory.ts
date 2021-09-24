@@ -1,5 +1,5 @@
 interface ObjectFactory {
-  obj: object;
+  obj: object | null;
   create: () => ObjectFactory;
   load: (key: string, value?: string | number | boolean | Function) => ObjectFactory;
   done: () => object;
@@ -15,7 +15,7 @@ const objectFactory: ObjectFactory = {
   },
   load(key, value): ObjectFactory {
     let objValue = '';
-    if (typeof value == 'function') {
+    if (typeof value === 'function') {
       objValue = value();
     } else {
       objValue = value === undefined ? cache[key] : value;
@@ -23,9 +23,10 @@ const objectFactory: ObjectFactory = {
     if (!objValue) {
       return this;
     }
-
-    this.obj[key] = objValue;
-    if (cache[key] === undefined) {
+    if (this.obj){
+      this.obj[key] = objValue;
+    }
+    if (cache[key] === undefined && this.obj) {
       cache[key] = this.obj[key];
     }
     return this;

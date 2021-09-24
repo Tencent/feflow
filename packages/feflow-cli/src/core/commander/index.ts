@@ -31,12 +31,12 @@ export default class Commander {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }
-    name = name.toLowerCase();
-    const invisibleCommand = this.invisibleStore[name];
+    const finalName = name.toLowerCase();
+    const invisibleCommand = this.invisibleStore[finalName];
     if (invisibleCommand) {
       return invisibleCommand;
     }
-    return this.store[this.alias[name]];
+    return this.store[this.alias[finalName]];
   }
 
   list() {
@@ -49,7 +49,7 @@ export default class Commander {
       runFn: fn,
       desc,
       options,
-      pluginName
+      pluginName,
     };
     this.alias = abbrev(Object.keys(this.store));
     if (this.onRegistered) {
@@ -63,7 +63,7 @@ export default class Commander {
       runFn: fn,
       desc: '',
       options,
-      pluginName
+      pluginName,
     };
   }
 }

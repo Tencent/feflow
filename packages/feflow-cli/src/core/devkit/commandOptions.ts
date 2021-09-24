@@ -1,8 +1,4 @@
-const getCommandLine = (
-  optionsDescription: any,
-  description: any,
-  cmd: any
-): Object[] => {
+const getCommandLine = (optionsDescription: any, description: any, cmd: any): Object[] => {
   if (Array.isArray(optionsDescription)) return optionsDescription;
 
   const options: Object[] = [];
@@ -11,7 +7,7 @@ const getCommandLine = (
   if (!optionDescritions.length) return options;
 
   optionDescritions.forEach((option) => {
-    let optionItemConfig = optionsDescription[option];
+    const optionItemConfig = optionsDescription[option];
     const optionDescritionItem = getOptionItem(optionItemConfig, option);
     options.push(optionDescritionItem);
   });
@@ -19,38 +15,34 @@ const getCommandLine = (
   return [
     {
       header: `fef ${cmd}`,
-      content: description
+      content: description,
     },
     {
       header: 'Usage',
-      content: `$ fef ${cmd} [options]`
+      content: `$ fef ${cmd} [options]`,
     },
     {
       header: 'Options',
-      optionList: options
-    }
+      optionList: options,
+    },
   ];
 };
 
 const getOptionItem = (optionItemConfig: any, option: any): object => {
-  let optionDescritionItem: any = {};
-  if (typeof optionItemConfig == 'string') {
-    optionDescritionItem = {
+  let optionItemConfigCopy: any = {};
+  if (typeof optionItemConfig === 'string') {
+    optionItemConfigCopy = {
       name: option,
-      description: optionItemConfig
+      description: optionItemConfig,
     };
   } else {
-    if (!optionItemConfig.name) {
-      optionItemConfig.name = option;
+    optionItemConfigCopy = {...optionItemConfig};
+    if (!optionItemConfigCopy.name) {
+      optionItemConfigCopy.name = option;
     }
-
-    optionDescritionItem = optionItemConfig;
-    optionDescritionItem.type =
-      typeof optionItemConfig.type === 'function'
-        ? optionItemConfig.type
-        : String;
+    optionItemConfigCopy.type = typeof optionItemConfig.type === 'function' ? optionItemConfig.type : String;
   }
-  return optionDescritionItem;
+  return optionItemConfigCopy;
 };
 
 export default getCommandLine;
