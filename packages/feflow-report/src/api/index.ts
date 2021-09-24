@@ -25,7 +25,7 @@ export default class ApiController {
     this.loadProxy();
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public doReport(cb = (response: any) => { }) {
+  public doReport(cb = (response: any) => {}) {
     this.log.debug('feflow report start.');
     rp(this.rpOption)
       .then((response: any) => {
