@@ -8,7 +8,7 @@ const reportProcess = path.join(__dirname, './report');
 
 class Report {
   ctx: ReportContext;
-  cmd: string;
+  cmd?: string;
   args: object;
   commandSource?: string;
   lastCommand: string;
@@ -21,7 +21,7 @@ class Report {
 
   constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
     this.ctx = feflowContext;
-    this.cmd = cmd || '';
+    this.cmd = cmd;
     this.args = args;
     this.commandSource = '';
     this.lastCommand = '';
