@@ -45,14 +45,17 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test no debug and silent', () => {
-    const log = logger({});
+    const log = logger({
+      debug: true,
+      silent: true,
+    });
     log.info('hello feflow');
   });
 
   it('test debug', () => {
     const log = logger({
       debug: true,
-      silent: false,
+      silent: true,
     });
     log.debug('hello feflow');
   });
@@ -60,7 +63,7 @@ describe('@feflow/core - Logger system', () => {
   it('test warn', () => {
     const log = logger({
       debug: true,
-      silent: false,
+      silent: true,
     });
     log.warn('hello feflow');
   });
@@ -68,7 +71,7 @@ describe('@feflow/core - Logger system', () => {
   it('test error', () => {
     const log = logger({
       debug: true,
-      silent: false,
+      silent: true,
     });
     log.error('hello feflow');
   });
