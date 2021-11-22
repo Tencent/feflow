@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
+import Feflow from '@feflow/cli';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_JSON, REPORT_COMMAND_ERR } from './constants';
 import { getProject, getKeyFormFile, setKeyToFile } from './common/utils';
 
 const reportProcess = path.join(__dirname, './report');
 
 class Report {
-  ctx: ReportContext;
+  ctx: Feflow;
   cmd?: string;
   args: object;
   commandSource?: string;
@@ -19,7 +20,7 @@ class Report {
   cachePath: string;
   cacheData: string;
 
-  constructor(feflowContext: ReportContext, cmd?: string, args?: any) {
+  constructor(feflowContext: Feflow, cmd?: string, args?: any) {
     this.ctx = feflowContext;
     this.cmd = cmd;
     this.args = args;
@@ -31,14 +32,13 @@ class Report {
     this.cachePath = path.join(this.ctx.root, REPORT_JSON);
     this.cacheData = '';
     this.project = getProject(this.ctx);
-    this.loadContextLogger();
   }
 
-  setCommandSource(commandSource: string): any {
+  setCommandSource(commandSource: string) {
     this.commandSource = commandSource;
   }
 
-  init(cmd: string): any {
+  init(cmd?: string) {
     this.cmd = cmd;
     this.args = this.ctx.args;
     // hook is not supported in feflow 0.16.x
@@ -52,12 +52,12 @@ class Report {
     }
     // 文件不存在则创建
     fs.open(this.cachePath, 'w+', (err) => {
-      if (err) return this.ctx.log.debug(`${this.cachePath} 打开失败 => ${err}`);
+      if (err) return this.ctx.logger.debug(`${this.cachePath} 打开失败 => ${err}`);
       fs.writeFileSync(this.cachePath, '{}', 'utf-8');
     });
   }
 
-  report(cmd: string, args?: object, recall?: any): any {
+  report(cmd?: string, args?: object, recall?: boolean) {
     // args check
     if (!this.checkBeforeReport(cmd)) return;
 
@@ -74,7 +74,7 @@ class Report {
         version: this.ctx.version,
         cachePath: this.cachePath,
         costTime: String(this.costTime),
-        recall,
+        recall: String(recall),
       },
       windowsHide: true,
     });
@@ -83,7 +83,7 @@ class Report {
     child.unref();
   }
 
-  reportInitResult(): any {
+  reportInitResult() {
     const { cmd } = this;
     if (cmd !== 'init') {
       return;
@@ -93,7 +93,7 @@ class Report {
     this.report(this.cmd, this.args, true);
   }
 
-  reportCommandError(err: Error): any {
+  reportCommandError(err: Error) {
     if (!err) {
       return;
     }
@@ -106,24 +106,19 @@ class Report {
   }
 
   // register before/after hook event
-  private registerHook(): any {
+  private registerHook() {
     this.ctx.hook.on(HOOK_TYPE_BEFORE, this.reportOnHookBefore);
     // report some performance data after command executed
     this.ctx.hook.on(HOOK_TYPE_AFTER, this.reportOnHookAfter);
   }
 
-  private loadContextLogger(): any {
-    this.ctx.log = this.ctx.log || this.ctx.logger;
-    this.ctx.log = this.ctx.log ? this.ctx.log : { info: console.log, debug: console.log };
-  }
-
-  private reportOnHookBefore = (): any => {
-    const { cmd, args } = this;
-    let commandWithoutVersion;
+  private reportOnHookBefore = () => {
+    const { cmd = '', args } = this;
+    let commandWithoutVersion: string;
     try {
-      commandWithoutVersion = cmd?.split('@')[0];
+      [commandWithoutVersion] = cmd.split('@');
     } catch (error) {
-      this.ctx.log.debug(`reportOnHookBefore: command parse error: ${error}`);
+      this.ctx.logger.debug(`reportOnHookBefore: command parse error: ${error}`);
       commandWithoutVersion = '';
     }
     const store = this.ctx.commander?.store[commandWithoutVersion] || this.ctx.commander?.store[cmd] || {};
@@ -131,18 +126,18 @@ class Report {
     if (!this.commandSource && typeof store.options === 'string') {
       this.commandSource = store.options;
     }
-    this.ctx.log.debug('HOOK_TYPE_BEFORE');
+    this.ctx.logger.debug('HOOK_TYPE_BEFORE');
     this.startTime = Date.now();
     this.report(cmd, args);
   };
 
-  private reportOnHookAfter = (): any => {
-    this.ctx.log.debug('HOOK_TYPE_AFTER');
+  private reportOnHookAfter = () => {
+    this.ctx.logger.debug('HOOK_TYPE_AFTER');
     this.costTime = Date.now() - this.startTime;
     this.report(this.cmd, this.args, true);
   };
 
-  private checkBeforeReport = (cmd: string): any => {
+  private checkBeforeReport = (cmd?: string) => {
     if (this.cmd && this.cmd !== cmd) {
       this.lastCommand = this.cmd;
     }
@@ -151,4 +146,4 @@ class Report {
   };
 }
 
-module.exports = Report;
+export default Report;

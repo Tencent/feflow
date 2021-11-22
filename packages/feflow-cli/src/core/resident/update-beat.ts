@@ -5,8 +5,9 @@ import semver from 'semver';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import _ from 'lodash';
-import LockFileInstance from '../../shared/lockFile';
-import packageJson from '../../shared/packageJson';
+import { UpdateData, UniversalPluginUpdateMsg } from './';
+import LockFile from '../../shared/lock-file';
+import packageJson from '../../shared/package-json';
 import { parseYaml } from '../../shared/yaml';
 import { setServerUrl } from '../../shared/git';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
@@ -22,9 +23,11 @@ import {
   UPDATE_KEY,
   UPDATE_LOCK,
 } from '../../shared/constant';
-import loggerInstance from '../logger';
+import createLogger from '../logger';
 import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
 import { getPkgInfo } from '../native/install';
+import Feflow from '../index';
+import { isValidConfig } from '../../shared/type-predicates';
 interface ErrorInstance {
   name: string;
   message: string;
@@ -40,17 +43,18 @@ const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const updateLock = path.join(root, UPDATE_LOCK);
-const updateFile = new LockFileInstance(dbFile, updateLock);
+const updateFile = new LockFile(dbFile, updateLock);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
 const beatLock = path.join(root, BEAT_LOCK);
-const heartFile = new LockFileInstance(heartDBFile, beatLock);
-const logger = loggerInstance({
+const heartFile = new LockFile(heartDBFile, beatLock);
+const logger = createLogger({
+  name: 'feflow-update-beat-process',
   debug: Boolean(debug),
   silent: Boolean(silent),
 });
 
 // 设置特殊的静默进程名字
-process.title = 'feflow-update-beat-proccess';
+process.title = 'feflow-update-beat-process';
 
 const handleException = (e: ErrorInstance): void => {
   logger.error(`update_beat_exception: ${e.name}: ${e.message} => ${e.stack}`);
@@ -65,9 +69,9 @@ const heartBeat = () => {
 };
 
 const queryCliUpdate = async () => {
-  const config: any = parseYaml(configPath);
+  const config = parseYaml(configPath);
 
-  if (!config) {
+  if (!config || !isValidConfig(config)) {
     return;
   }
   if (config.lastUpdateCheck && +new Date() - parseInt(config.lastUpdateCheck, 10) <= 1000 * 3600 * 24) {
@@ -78,10 +82,10 @@ const queryCliUpdate = async () => {
     return;
   }
 
-  const latestVersion: any = await getLatestVersion('@feflow/cli', config.packageManager);
+  const latestVersion = await getLatestVersion('@feflow/cli', config.packageManager);
   if (latestVersion && semver.gt(latestVersion, version)) {
-    const updateData: any = await updateFile.read(UPDATE_KEY);
-    if (updateData.latest_cli_version !== latestVersion) {
+    const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
+    if (updateData?.latest_cli_version !== latestVersion) {
       const newUpdateData = {
         ...updateData,
         latest_cli_version: latestVersion,
@@ -92,17 +96,19 @@ const queryCliUpdate = async () => {
 };
 
 const queryPluginsUpdate = async () => {
-  const config: any = parseYaml(configPath);
-  if (!config) {
+  const config = parseYaml(configPath);
+  if (!config || !isValidConfig(config)) {
     return;
   }
 
   Promise.all(
-    getInstalledPlugins().map(async (name: any) => {
-      const pluginPath = path.join(root, 'node_modules', name, 'package.json');
-      const content: any = fs.readFileSync(pluginPath);
-      const pkg: any = JSON.parse(content);
-      const localVersion = pkg.version;
+    getInstalledPlugins().map(async (name: string) => {
+      const pluginPkgJsonPath = path.join(root, 'node_modules', name, 'package.json');
+      const pkgJsonStr = fs.readFileSync(pluginPkgJsonPath, {
+        encoding: 'utf8',
+      });
+      const pkgJson = JSON.parse(pkgJsonStr);
+      const localVersion = pkgJson.version;
       const registryUrl = spawn
         .sync(config.packageManager, ['config', 'get', 'registry'], {
           windowsHide: true,
@@ -110,7 +116,7 @@ const queryPluginsUpdate = async () => {
         .stdout.toString()
         .replace(/\n/, '')
         .replace(/\/$/, '');
-      const latestVersion = await packageJson(name, registryUrl).catch((err: any) => {
+      const latestVersion = await packageJson(name, registryUrl).catch((err) => {
         logger.debug('Check plugin update error', err);
       });
 
@@ -123,11 +129,11 @@ const queryPluginsUpdate = async () => {
       }
       logger.debug('All plugins is in latest version');
     }),
-  ).then(async (plugins: any) => {
-    const pluginsWithName = plugins.filter((plugin: any) => plugin?.name);
-    logger.debug('tnpm plugins update infomation', pluginsWithName);
+  ).then(async (plugins) => {
+    const pluginsWithName = plugins.filter((plugin) => plugin?.name);
+    logger.debug('tnpm plugins update information', pluginsWithName);
     if (pluginsWithName.length) {
-      const updateData: any = await updateFile.read(UPDATE_KEY);
+      const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
       if (!_.isEqual(updateData.latest_plugins, pluginsWithName)) {
         const newUpdateData = {
           ...updateData,
@@ -140,20 +146,22 @@ const queryPluginsUpdate = async () => {
 };
 
 const queryUniversalPluginsUpdate = async () => {
-  const config: any = parseYaml(configPath);
-  if (!config || !config.serverUrl) {
+  const config = parseYaml(configPath);
+  if (!config || !isValidConfig(config)) {
     return;
   }
   setServerUrl(config.serverUrl);
 
   const universalPkg = new UniversalPkg(universalPkgPath);
-  const latestUniversalPlugins: any[] = [];
+  const latestUniversalPlugins: UniversalPluginUpdateMsg[] = [];
 
-  // eslint-disable-next-line
   for (const [pkg, version] of universalPkg.getInstalled()) {
-    const pkgInfo = await getPkgInfo({ root, config, logger }, `${pkg}@${version}`).catch(async (e: string) => {
-      logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
-    });
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const pkgInfo = await getPkgInfo({ root, config, logger } as Feflow, `${pkg}@${version}`).catch(
+      async (e: unknown) => {
+        logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
+      },
+    );
     if (!pkgInfo) {
       continue;
     }
@@ -163,9 +171,9 @@ const queryUniversalPluginsUpdate = async () => {
     }
   }
 
-  logger.debug('universal plugins update infomation', latestUniversalPlugins);
+  logger.debug('universal plugins update information', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
-    const updateData: any = await updateFile.read(UPDATE_KEY);
+    const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
     if (!_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)) {
       const newUpdateData = {
         ...updateData,

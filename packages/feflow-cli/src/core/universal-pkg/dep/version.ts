@@ -1,7 +1,7 @@
 import semver from 'semver';
 
 interface Version {
-  check(version: any): boolean;
+  check(version: unknown): boolean;
   valid(version: string): string;
   satisfies(version: string, range: string): boolean;
   gt(v1: string, v2: string): boolean;
@@ -10,7 +10,7 @@ interface Version {
 class SemverVersion implements Version {
   latestVersion = 'latest';
 
-  check(version: any): boolean {
+  check(version: unknown): boolean {
     if (typeof version !== 'string') {
       return false;
     }

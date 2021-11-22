@@ -1,9 +1,10 @@
-import commandLineUsage from 'command-line-usage';
 import { execSync } from 'child_process';
-import { getRegistryUrl } from '../../shared/npm';
 import axios from 'axios';
+import commandLineUsage from 'command-line-usage';
+import Feflow from '@/core';
+import { getRegistryUrl } from '@/shared/npm';
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   async function showToolVersion() {
     const sections = [
       {
@@ -81,8 +82,7 @@ module.exports = (ctx: any) => {
         ],
       },
     ];
-    const result = commandLineUsage(sections);
-    return result;
+    return commandLineUsage(sections);
   }
 
   function executeSync(command: string): string {
@@ -90,17 +90,15 @@ module.exports = (ctx: any) => {
     try {
       resultBuf = execSync(command, { windowsHide: true });
     } catch (e) {
-      return e.message;
+      return e instanceof Error ? e.message : JSON.stringify(e);
     }
 
-    const result = resultBuf.toString('utf8').trim();
-    return result;
+    return resultBuf.toString('utf8').trim();
   }
 
   async function accessTnpmRegistry() {
     let tnpmRegistry = await getRegistryUrl('tnpm');
-    tnpmRegistry = tnpmRegistry.trim().split('\n');
-    tnpmRegistry = tnpmRegistry[tnpmRegistry.length - 1];
+    tnpmRegistry = tnpmRegistry.trim().split('\n').pop() || '';
 
     try {
       const response = await axios.get(tnpmRegistry);

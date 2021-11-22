@@ -1,15 +1,21 @@
-import commandLineUsage from 'command-line-usage';
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import spawn from 'cross-spawn';
 import cliMd from 'cli-html-c';
+import commandLineUsage from 'command-line-usage';
 import marked from 'marked';
-import { UNIVERSAL_README_CONFIG } from '../../shared/constant';
 
-const getCommands = (store: any) => {
-  const arr: any = [];
-  Object.entries(store).forEach(([colA, { desc = '' }]: any) => {
+import Feflow from '@/core';
+import { UNIVERSAL_README_CONFIG } from '@/shared/constant';
+import { Store } from '../commander';
+
+const getCommands = (store: Store) => {
+  const arr: {
+    colA: string;
+    colB: string;
+  }[] = [];
+  Object.entries(store).forEach(([colA, { desc }]) => {
     arr.push({
       colA,
       colB: (desc instanceof Function ? desc() : desc).replace(/({|})/g, (val: string) => escape(val)),
@@ -18,7 +24,7 @@ const getCommands = (store: any) => {
   return arr;
 };
 
-const showHelp = (commands: Array<Record<string, any>>) => {
+const showHelp = (commands: ReturnType<typeof getCommands>) => {
   const sections = [
     {
       header: 'Usage',
@@ -55,24 +61,19 @@ const showHelp = (commands: Array<Record<string, any>>) => {
       ],
     },
   ];
-  const usage = commandLineUsage(sections);
 
-  return usage;
+  return commandLineUsage(sections);
 };
 
-const parseReadme = (path: any) => {
-  let readmeText;
+const parseReadme = (path: string) => {
+  let readmeText = '';
   if (fs.existsSync(path)) {
-    try {
-      readmeText = fs.readFileSync(path, 'utf8');
-    } catch (e) {
-      throw new Error(e);
-    }
+    readmeText = fs.readFileSync(path, 'utf8');
   }
   return cliMd(marked(readmeText));
 };
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   ctx.commander.register('help', 'Help messages', () => {
     const { store } = ctx.commander;
     let cmd = ctx.args._[0];
@@ -124,13 +125,12 @@ module.exports = (ctx: any) => {
       }
 
       console.log(chalk.yellow(`Command '${cmd}' not found in feflow. You need to install it first.`));
-      console.log(`Below is the usage of feflow.`);
+      console.log('Below is the usage of feflow.');
     }
 
     // 打印 fef 的 usage
     const commands = getCommands(ctx.commander.store);
     const usage = showHelp(commands);
     console.log(usage);
-    return;
   });
 };

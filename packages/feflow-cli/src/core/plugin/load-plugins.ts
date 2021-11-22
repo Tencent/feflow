@@ -1,12 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import applyPlugins from './applyPlugins';
+import Feflow from '@/core';
+import applyPlugins from './apply-plugins';
 
-export const getPluginsList = (ctx: any): [Error, Array<string>] => {
+export const getPluginsList = (ctx: Feflow): [unknown | Error, Array<string>] => {
   const { root, rootPkg } = ctx;
-  let pluginList: any = [];
+  let pluginList: string[] = [];
   let err = null;
-  let json: any = {};
+  let json: {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  } = {};
   try {
     const data = fs.readFileSync(rootPkg, 'utf-8');
     json = JSON.parse(data);
@@ -19,7 +23,7 @@ export const getPluginsList = (ctx: any): [Error, Array<string>] => {
   }
 
   const deps = json.dependencies || json.devDependencies || {};
-  const plugins = Object.keys(deps).filter((name) => {
+  pluginList = Object.keys(deps).filter((name) => {
     if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(name)) {
       return false;
     }
@@ -27,13 +31,11 @@ export const getPluginsList = (ctx: any): [Error, Array<string>] => {
     return fs.existsSync(pluginPath);
   });
 
-  pluginList = plugins;
-
   return [err, pluginList];
 };
 
-export default function loadPlugins(ctx: any): Promise<void> {
-  return new Promise<any>((resolve, reject) => {
+export default function loadPlugins(ctx: Feflow): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     const [err, plugins] = getPluginsList(ctx);
     if (err) {
       reject(err);

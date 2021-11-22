@@ -1,28 +1,30 @@
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, EVENT_COMMAND_BEGIN, EVENT_DONE } from '../../shared/constant';
 
 export default class Hook {
-  private listeners: any;
-  private maxListener: any;
+  private readonly listeners: {
+    [type: string]: Function[];
+  };
+  private readonly maxListener: number;
   constructor() {
-    this.listeners = [];
+    this.listeners = {};
     this.maxListener = 100;
   }
 
-  on(type: any, listener: any) {
+  on(type: string, listener: Function) {
     const { listeners } = this;
     if (listeners[type] && listeners[type].length >= this.maxListener) {
       throw new Error(`Listener's maxCount is ${this.maxListener}, has exceed`);
     }
-    if (listeners[type] instanceof Array) {
+    if (Array.isArray(listeners[type])) {
       if (listeners[type].indexOf(listener) === -1) {
         listeners[type].push(listener);
       }
     } else {
-      listeners[type] = [].concat(listener);
+      listeners[type] = [listener];
     }
   }
 
-  emit(type: any, ...args: []) {
+  emit(type: string, ...args: any[]) {
     switch (type) {
       case HOOK_TYPE_BEFORE:
         this.hook(HOOK_TYPE_BEFORE, () => {
@@ -35,12 +37,8 @@ export default class Hook {
         });
         break;
       default: {
-        const listeners = this.listeners[type];
-        if (!listeners) {
-          return;
-        }
-        this.listeners[type].forEach((listener: any) => {
-          listener.apply(...args);
+        this.listeners[type]?.forEach((listener: Function) => {
+          listener(args);
         });
         break;
       }
@@ -54,16 +52,16 @@ export default class Hook {
    * @param {string} type
    * @param {Function} fn
    */
-  hook(type: any, fn: any) {
+  hook(type: string, fn: Function) {
     const hooks = this.listeners[type];
 
-    const next = (i: any) => {
+    const next = (i: number) => {
       const hook = hooks[i];
       if (!hook) {
         return fn();
       }
 
-      const result = hook.call();
+      const result = hook();
       if (result && typeof result.then === 'function') {
         result.then(
           () => {

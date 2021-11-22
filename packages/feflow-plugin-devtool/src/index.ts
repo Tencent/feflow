@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
+import Feflow from '@feflow/cli';
 
 enum DevtoolType {
   SCAFFLOAD = '脚手架',
@@ -10,7 +10,7 @@ enum DevtoolType {
   PLUGIN = '插件',
 }
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   const { args, commander, logger, root, rootPkg } = ctx;
   const [action] = args._;
   let templatePath: string;
@@ -78,7 +78,9 @@ module.exports = (ctx: any) => {
       }
       case 'dev': {
         logger.info('Start dev');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const pkgJson = require(path.join(process.cwd(), 'package.json'));
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const rootPkgJson = require(rootPkg);
         const rootDependenciesPath = path.join(root, 'node_modules');
         const pkgName = pkgJson.name;

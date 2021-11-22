@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "packages/*/src/**/*",
-    "packages/*/__tests__/**/*",
-    "packages/*/types/**/*",
+    "./packages/*/src/**/*",
+    "./packages/*/__tests__/**/*",
+    "./packages/*/types/**/*",
+    "./types/**/*",
     ".eslintrc.js"
   ]
 }

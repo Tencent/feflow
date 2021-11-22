@@ -1,15 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["es6", "es2015", "dom"],
-    "declaration": true,
+    "baseUrl": ".",
     "outDir": "lib",
-    "strict": true,
-    "types": ["node", "mocha"],
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "typeRoots": ["node_modules/@types", "./types"],
   }
 }

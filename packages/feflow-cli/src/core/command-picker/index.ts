@@ -6,11 +6,11 @@ import osenv from 'osenv';
 import _ from 'lodash';
 
 import Feflow from '..';
-import { execPlugin } from '../plugin/loadUniversalPlugin';
+import { execPlugin } from '../plugin/load-universal-plugin';
 import logger from '../logger';
 import { parseYaml, safeDump } from '../../shared/yaml';
 import { UNIVERSAL_MODULES, CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
-import { getPluginsList } from '../plugin/loadPlugins';
+import { getPluginsList } from '../plugin/load-plugins';
 
 const internalPlugins = {
   devtool: '@feflow/feflow-plugin-devtool',
@@ -123,7 +123,7 @@ export class CommandPickConfig {
     }
   }
 
-  registSubCommand(
+  registerSubCommand(
     type: CommandType,
     store: Record<string, any>,
     pluginName: string = CommandType.NATIVE_TYPE,
@@ -370,7 +370,7 @@ export class CommandPickConfig {
 export default class CommandPicker {
   root: string;
   cmd: string;
-  ctx: any;
+  ctx: Feflow;
   isHelp: boolean;
   cacheController: CommandPickConfig;
   supportType = [
@@ -382,7 +382,7 @@ export default class CommandPicker {
 
   homeRunCmd = ['help', 'list'];
 
-  constructor(ctx: any, cmd = 'help') {
+  constructor(ctx: Feflow, cmd = 'help') {
     this.root = ctx.root;
     this.ctx = ctx;
     this.cmd = cmd;
@@ -409,7 +409,7 @@ export default class CommandPicker {
       const { path } = tartgetCommand as TargetPlugin;
       const pathExists = fs.existsSync(path);
       const isCachType = this.supportType.includes(type);
-      return !this.isHelp && !!pathExists && isCachType;
+      return !this.isHelp && pathExists && isCachType;
     }
     if (type === CommandType.NATIVE_TYPE) {
       if (!this.homeRunCmd.includes(this.cmd)) {
@@ -429,29 +429,29 @@ export default class CommandPicker {
 
   getCommandSource(path: string): string {
     const reg = /node_modules\/(.*)/;
-    const commandSource = (reg.exec(path) || [])[1];
+    const [, commandSource] = reg.exec(path) || [];
     return commandSource;
   }
 
   pickCommand() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
-    const { type } = tartgetCommand;
+    const targetCommand = this.cacheController.getCommandPath(this.cmd) || {};
+    const { type } = targetCommand;
     const pluginLogger = logger({
       debug: Boolean(this.ctx.args.debug),
       silent: Boolean(this.ctx.args.silent),
-      name: tartgetCommand.pkg,
+      name: targetCommand.pkg,
     });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.supportType.includes(type)) {
       return this.ctx.logger.warn(`this kind of command is not supported in command picker, ${type}`);
     }
     if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
-      const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
+      const { version, pkg } = targetCommand as TargetUniversalPlugin;
       execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
     } else {
       let commandPath = '';
-      if (tartgetCommand instanceof TargetPlugin) {
-        commandPath = tartgetCommand.path;
+      if (targetCommand instanceof TargetPlugin) {
+        commandPath = targetCommand.path;
       }
       // native命令跟node版本挂钩，需要解析到具体node版本下路径
       if (type === 'native') {
@@ -469,7 +469,9 @@ export default class CommandPicker {
         this.ctx?.reporter?.setCommandSource(commandSource);
         require(commandPath)(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
-        this.ctx.fefError.printError(error, 'command load failed: %s');
+        this.ctx.fefError.printError({
+          error,
+        });
       }
     }
   }

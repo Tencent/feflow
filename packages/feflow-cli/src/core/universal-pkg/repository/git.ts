@@ -8,13 +8,13 @@ const execFile = promisify(childProcess.execFile);
 
 export async function getTag(repoUrl: string, version?: string): Promise<string | undefined> {
   const url = await transformUrl(repoUrl);
-  let ret: any;
+  let ret;
   try {
     ret = await execFile('git', ['ls-remote', '--tags', '--refs', url], {
       windowsHide: true,
     });
   } catch (e) {
-    throw `unable to access ${repoUrl}`;
+    throw new Error(`unable to access ${repoUrl}`);
   }
 
   await clearGitCert(url);

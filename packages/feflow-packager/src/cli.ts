@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import chalk from 'chalk';
 import minimist from 'minimist';
 import semver from 'semver';
 import Packager from './index';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pkg = require('../package.json');
 
-const checkNodeVersion = (wanted: any, id: string) => {
+const checkNodeVersion = (wanted: string, id: string) => {
   if (!semver.satisfies(process.version, wanted)) {
     console.log(
       chalk.red(
@@ -22,7 +22,6 @@ export default function entry() {
   const requiredVersion = pkg.engines.node;
   checkNodeVersion(requiredVersion, '@feflow/packager');
 
-  const cmd: any = args._.shift();
-
-  new Packager(cmd).pack();
+  const cmd = args._.shift();
+  cmd && new Packager(cmd).pack();
 }

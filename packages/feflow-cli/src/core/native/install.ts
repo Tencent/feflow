@@ -1,12 +1,18 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable @typescript-eslint/no-require-imports */
-import { getRegistryUrl, install } from '../../shared/npm';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
-import packageJson from '../../shared/packageJson';
-import { getTag, checkoutVersion, getCurrentTag } from '../universal-pkg/repository/git';
-import { download } from '../../shared/git';
+
+import Feflow from '@/core';
+import { getTag, checkoutVersion, getCurrentTag } from '@/core/universal-pkg/repository/git';
+import { Plugin } from '@/core/universal-pkg/schema/plugin';
+import Linker from '@/core/universal-pkg/linker';
+import { UniversalPkg } from '@/core/universal-pkg/dep/pkg';
+import versionImpl from '@/core/universal-pkg/dep/version';
+import applyPlugins, { resolvePlugin } from '../plugin/apply-plugins';
+import { CommandPickConfig } from '../command-picker';
+
+import packageJson from '@/shared/package-json';
+import { download } from '@/shared/git';
 import {
   HOOK_TYPE_ON_COMMAND_REGISTERED,
   LATEST_VERSION,
@@ -19,16 +25,11 @@ import {
   FEFLOW_PLUGIN_LOCAL_PREFIX,
   SILENT_ARG,
   DISABLE_ARG,
-} from '../../shared/constant';
-import { Plugin } from '../universal-pkg/schema/plugin';
-import Linker from '../universal-pkg/linker';
-import { UniversalPkg } from '../universal-pkg/dep/pkg';
-import versionImpl from '../universal-pkg/dep/version';
-import applyPlugins, { resolvePlugin } from '../plugin/applyPlugins';
-import { CommandPickConfig } from '../command-picker';
-import { getURL } from '../../shared/url';
-import { copyDir } from '../../shared/fs';
-// import loggerReport from '../logger/report';
+} from '@/shared/constant';
+import { getRegistryUrl, install } from '@/shared/npm';
+import { getURL } from '@/shared/url';
+import { copyDir } from '@/shared/fs';
+
 interface PkgJson {
   dependencies?: {
     [key: string]: string;
@@ -38,8 +39,11 @@ interface PkgJson {
   };
 }
 
-async function getRepoInfo(ctx: any, packageName: string) {
+async function getRepoInfo(ctx: Feflow, packageName: string) {
   const serverUrl = ctx.config?.serverUrl;
+  if (!serverUrl) {
+    return Promise.reject(`cannot find 'serverUrl' from config file`);
+  }
   const url = getURL(serverUrl, `apply/getlist?name=${packageName}`);
   if (!url) {
     return Promise.reject(`the serverUrl is invalid: ${serverUrl}`);
@@ -52,7 +56,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
       const data = res.data || {};
       return (data.data?.length > 0 && data.data[0]) || [];
     })
-    .catch((e: any) => {
+    .catch((e: unknown) => {
       ctx.logger.debug('Get repo info error', e);
     });
 }
@@ -63,7 +67,7 @@ async function getRepoInfo(ctx: any, packageName: string) {
 // encodeURIComponent("github.com/tencent/feflow.git")
 function getGitRepoName(repoUrl: string): string | undefined {
   const ret = /^((http:\/\/|https:\/\/)(.*?@)?|git@)/.exec(repoUrl);
-  let repurl: string = '';
+  let repurl = '';
   if (Array.isArray(ret) && ret.length > 0) {
     repurl = repoUrl.substring(ret[0].length);
   }
@@ -75,7 +79,7 @@ function getDirRepoName(dir: string): string {
 }
 
 function deleteDir(dirPath: string) {
-  let files: any = [];
+  let files: string[] = [];
   try {
     const dirStats = fs.statSync(dirPath);
     if (!dirStats.isDirectory()) {
@@ -110,13 +114,17 @@ function isGitRepo(url: string): boolean {
     ).test(url) ||
     new RegExp(
       '^http(s)?://([a-zA-Z0-9._-]*?(:[a-zA-Z0-9._-]*)?@)?[a-zA-Z0-9._-]+' +
-      '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
+        '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
     ).test(url)
   );
 }
 
-async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
-  const packageManager = ctx?.config?.packageManager;
+async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
+  const packageManager = ctx.config?.packageManager;
+  if (!packageManager) {
+    ctx.logger.error(`cannot find 'packageManager' in config file.`);
+    return;
+  }
   const registryUrl = await getRegistryUrl(packageManager);
   let versionList: string[];
   let needInstall: string[] = [];
@@ -163,6 +171,7 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
         return dep;
       }
       ctx.logger.info(`[${dep}] has installed the latest version: ${hasInstallDep[depName]}`);
+      return '';
     });
   } catch (err) {
     ctx.logger.error(`get pkg info error ${JSON.stringify(err)}`);
@@ -178,13 +187,14 @@ async function installNpmPlugin(ctx: any, ...dependencies: string[]) {
   );
 }
 
-function updateNpmPluginInfo(ctx: any, pluginName: string, options: any) {
+function updateNpmPluginInfo(ctx: Feflow, pluginName: string, options: any) {
   const {
     root,
   }: {
     root: string;
   } = ctx;
   const configPath = path.join(root, NPM_PLUGIN_INFO_JSON);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const npmPluginInfoJson = fs.existsSync(configPath) ? require(configPath) : {};
   if (options === false) {
     delete npmPluginInfoJson[pluginName];
@@ -203,7 +213,7 @@ function updateNpmPluginInfo(ctx: any, pluginName: string, options: any) {
   fs.writeFileSync(configPath, JSON.stringify(npmPluginInfoJson, null, 4));
 }
 
-async function installJsPlugin(ctx: any, installPlugin: string) {
+async function installJsPlugin(ctx: Feflow, installPlugin: string) {
   const {
     bin,
     lib,
@@ -232,7 +242,7 @@ async function installJsPlugin(ctx: any, installPlugin: string) {
   }
 }
 
-async function startInstall(ctx: any, pkgInfo: PkgInfo, repoPath: string, updateFlag: boolean, isGlobal: boolean) {
+async function startInstall(ctx: Feflow, pkgInfo: PkgInfo, repoPath: string, updateFlag: boolean, isGlobal: boolean) {
   const {
     logger,
     universalPkg,
@@ -273,7 +283,7 @@ async function startInstall(ctx: any, pkgInfo: PkgInfo, repoPath: string, update
       if (oldPlugin.name) {
         lastRepoName = oldPlugin.name;
       }
-    } catch (e) { }
+    } catch (e) {}
   }
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
@@ -303,7 +313,7 @@ async function startInstall(ctx: any, pkgInfo: PkgInfo, repoPath: string, update
     try {
       const curPkgInfo = await getPkgInfo(ctx, depPlugin);
       if (!curPkgInfo) {
-        throw `the dependent plugin ${depPlugin} does not belong to the universal packge`;
+        throw new Error(`the dependent plugin ${depPlugin} does not belong to the universal packge`);
       }
       await installPlugin(ctx, depPlugin, false);
       const commandName = toSimpleCommand(curPkgInfo.repoName);
@@ -385,7 +395,7 @@ function getRepoPath(universalModules: string, repoName: string, installVersion:
   return path.join(universalModules, `${repoName}@${installVersion}`);
 }
 
-async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boolean) {
+async function installPlugin(ctx: Feflow, installPluginStr: string, isGlobal: boolean) {
   const {
     logger,
     universalPkg,
@@ -407,11 +417,11 @@ async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boole
     return installJsPlugin(ctx, finalInstallPluginStr);
   }
   if (!pkgInfo.repoName) {
-    throw `plugin [${pkgInfo.repoFrom}] does not exist`;
+    throw new Error(`plugin [${pkgInfo.repoFrom}] does not exist`);
   }
   // if the specified version is already installed, skip it
   if (universalPkg.isInstalled(pkgInfo.repoName, pkgInfo.checkoutTag, !isGlobal)) {
-    global && logger.info(`the current version is installed`);
+    global && logger.info('the current version is installed');
     return;
   }
   let updateFlag = false;
@@ -442,7 +452,7 @@ async function installPlugin(ctx: any, installPluginStr: string, isGlobal: boole
     logger.info(`[${pkgInfo.showName()}] update the plugin to version ${pkgInfo.checkoutTag}`);
     try {
       resolvePlugin(ctx, repoPath).preUpgrade.runLess();
-    } catch (e) { }
+    } catch (e) {}
   } else {
     logger.info(`[${pkgInfo.showName()}] installing plugin`);
   }
@@ -463,7 +473,7 @@ function isDir(installPluginDir: string): boolean {
 }
 
 // when you install a universal package, return PkgInfo, otherwise return undefined
-export async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgInfo | undefined> {
+export async function getPkgInfo(ctx: Feflow, installPlugin: string): Promise<PkgInfo | undefined> {
   let installVersion;
   let checkoutTag;
   let repoFrom;
@@ -488,7 +498,7 @@ export async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgIn
     fromType = PkgInfo.dir;
     const plugin = resolvePlugin(ctx, installPlugin);
     if (!plugin.name) {
-      throw 'the [name] field must be specified in plugin.yml';
+      throw new Error('the [name] field must be specified in plugin.yml');
     }
     installVersion = LATEST_VERSION;
     checkoutTag = INVALID_VERSION;
@@ -511,7 +521,7 @@ export async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgIn
       if (pluginVersion) {
         pluginVersion = versionImpl.toFull(pluginVersion);
         if (!versionImpl.check(pluginVersion)) {
-          throw `invalid version: ${pluginVersion} for ${pluginName}`;
+          throw new Error(`invalid version: ${pluginVersion} for ${pluginName}`);
         }
       }
       installVersion = pluginVersion || LATEST_VERSION;
@@ -521,12 +531,12 @@ export async function getPkgInfo(ctx: any, installPlugin: string): Promise<PkgIn
     }
   }
   if (!checkoutTag) {
-    throw `the version [${installVersion}] was not found`;
+    throw new Error(`the version [${installVersion}] was not found`);
   }
   return new PkgInfo(repoName, repoFrom, installVersion, checkoutTag, fromType);
 }
 
-class PkgInfo {
+export class PkgInfo {
   public static git = 1;
   public static appStore = 2;
   public static dir = 3;
@@ -554,7 +564,7 @@ class PkgInfo {
   }
 }
 
-async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
+async function uninstallUniversalPlugin(ctx: Feflow, pluginName: string) {
   const {
     logger,
     universalPkg,
@@ -592,22 +602,13 @@ async function uninstallUniversalPlugin(ctx: any, pluginName: string) {
   }
 }
 
-async function uninstallNpmPlugin(ctx: any, dependencies: []) {
-  const {
-    logger,
-    root,
-    bin,
-    lib,
-  }: {
-    logger: any;
-    root: string;
-    bin: string;
-    lib: string;
-  } = ctx;
+async function uninstallNpmPlugin(ctx: Feflow, dependencies: string[]) {
+  const { logger, root, bin, lib } = ctx;
   dependencies.forEach((pkg: string) => {
     const npmPluginInfoPath = path.join(root, NPM_PLUGIN_INFO_JSON);
     try {
       if (fs.existsSync(npmPluginInfoPath)) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const npmPluginInfo = require(npmPluginInfoPath);
         const pluginGlobalCmd = npmPluginInfo?.[pkg]?.globalCmd || [];
         pluginGlobalCmd.forEach((cmd: string) => {
@@ -619,18 +620,23 @@ async function uninstallNpmPlugin(ctx: any, dependencies: []) {
       logger.debug(`remove plugin registered cmd link failure, ${e}`);
     }
   });
+  const { packageManager } = ctx.config || {};
+  if (!packageManager) {
+    logger.error(`cannot find 'packageManager' in config file`);
+    return;
+  }
   return install(
-    ctx?.config?.packageManager,
+    packageManager,
     ctx.root,
-    ctx?.config?.packageManager === 'yarn' ? 'remove' : 'uninstall',
+    packageManager === 'yarn' ? 'remove' : 'uninstall',
     dependencies,
     false,
   ).then(() => {
-    ctx.logger.info('uninstall success');
+    logger.info('uninstall success');
   });
 }
 
-function removePkg(ctx: any, pkg: string, version: string) {
+function removePkg(ctx: Feflow, pkg: string, version: string) {
   const { bin, lib, universalPkg }: { universalPkg: UniversalPkg; bin: string; lib: string } = ctx;
   const pluginPath = path.join(ctx.universalModules, `${pkg}@${version}`);
   if (fs.existsSync(pluginPath)) {
@@ -650,7 +656,7 @@ function removePkg(ctx: any, pkg: string, version: string) {
   }
 }
 
-function removeInvalidPkg(ctx: any) {
+function removeInvalidPkg(ctx: Feflow) {
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   const invalidDep = universalPkg.removeInvalidDependencies();
   for (const [invalidPkg, invalidVersion] of invalidDep) {
@@ -659,7 +665,7 @@ function removeInvalidPkg(ctx: any) {
 }
 
 // update only the plugins installed globally
-export async function updateUniversalPlugin(ctx: any, pkg: string, version: string, plugin: Plugin) {
+export async function updateUniversalPlugin(ctx: Feflow, pkg: string, version: string, plugin: Plugin) {
   const universalPkg = ctx.universalPkg as UniversalPkg;
   const dependedOn = universalPkg.getDepended(pkg, version);
   // update parent
@@ -677,7 +683,7 @@ export async function updateUniversalPlugin(ctx: any, pkg: string, version: stri
   }
 }
 
-async function updatePlugin(ctx: any, pkg: string, version: string) {
+async function updatePlugin(ctx: Feflow, pkg: string, version: string) {
   const { universalPkg }: { universalPkg: UniversalPkg } = ctx;
   const isGlobal = universalPkg.isInstalled(pkg, version);
   try {
@@ -687,7 +693,7 @@ async function updatePlugin(ctx: any, pkg: string, version: string) {
   }
 }
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   ctx.commander.register('install', 'Install a devkit or plugin', async () => {
     const dependencies = ctx.args._;
     const installPluginStr = dependencies[0];

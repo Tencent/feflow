@@ -3,61 +3,67 @@ import path from 'path';
 import glob from 'glob';
 import Report from '@feflow/report';
 import commandLineUsage from 'command-line-usage';
+import minimist from 'minimist';
+
+import {
+  FEFLOW_BIN,
+  FEFLOW_HOME,
+  FEFLOW_LIB,
+  HOOK_TYPE_ON_COMMAND_REGISTERED,
+  LOG_FILE,
+  UNIVERSAL_MODULES,
+  UNIVERSAL_PKG_JSON,
+} from '@/shared/constant';
+import { parseYaml, safeDump } from '@/shared/yaml';
+import { FefError } from '@/shared/fef-error';
+import { setServerUrl } from '@/shared/git';
+import { mkdirAsync, readFileAsync, statAsync, unlinkAsync, writeFileAsync } from '@/shared/fs';
+import { isInstalledPM } from '@/shared/npm';
+import { FeflowConfig, isValidConfig } from '@/shared/type-predicates';
 
 import Commander from './commander';
 import Hook from './hook';
-import Binp from './universal-pkg/binp';
-import logger from './logger';
-import loadPlugins from './plugin/loadPlugins';
-import loadUniversalPlugin from './plugin/loadUniversalPlugin';
-import loadDevkits from './devkit/loadDevkits';
-import getCommandLine from './devkit/commandOptions';
-import {
-  FEFLOW_HOME,
-  FEFLOW_BIN,
-  FEFLOW_LIB,
-  UNIVERSAL_PKG_JSON,
-  UNIVERSAL_MODULES,
-  HOOK_TYPE_ON_COMMAND_REGISTERED,
-  LOG_FILE,
-} from '../shared/constant';
-import { safeDump, parseYaml } from '../shared/yaml';
-import { FefError } from '../shared/fefError';
-import { setServerUrl } from '../shared/git';
-import { UniversalPkg } from './universal-pkg/dep/pkg';
-import CommandPicker, { LOAD_UNIVERSAL_PLUGIN, LOAD_PLUGIN, LOAD_DEVKIT, LOAD_ALL } from './command-picker';
+import createLogger, { Logger } from './logger';
+import CommandPicker, { LOAD_ALL, LOAD_DEVKIT, LOAD_PLUGIN, LOAD_UNIVERSAL_PLUGIN } from './command-picker';
 import { checkUpdate } from './resident';
-import { mkdirAsync, statAsync, unlinkAsync, writeFileAsync, readFileAsync } from '../shared/fs';
-import { isInstalledPM } from '../shared/npm';
+import loadPlugins from './plugin/load-plugins';
+import loadUniversalPlugin from './plugin/load-universal-plugin';
+import loadDevkits from './devkit/load-devkits';
+import getCommandLine from './devkit/command-options';
+import Binp from './universal-pkg/binp';
+import { UniversalPkg } from './universal-pkg/dep/pkg';
 
 const pkg = require('../../package.json');
 
 export default class Feflow {
-  public args: any;
-  public cmd: any;
-  public projectConfig: any;
-  public projectPath: any;
-  public version: string;
-  public logger: any;
-  public loggerPath: any;
-  public commander: any;
-  public hook: any;
-  public root: any;
-  public rootPkg: any;
-  public universalPkgPath: string;
-  public universalModules: string;
-  public config: any;
-  public configPath: any;
+  public args: minimist.ParsedArgs;
+  public root: string;
+  public rootPkg: string;
+  public configPath: string;
   public bin: string;
   public lib: string;
+  public loggerPath: string;
+  public universalPkgPath: string;
+  public universalModules: string;
+  public version: string;
+  public logger: Logger;
+  public commander: Commander;
+  public hook: Hook;
+  public config?: Partial<FeflowConfig>;
   public universalPkg: UniversalPkg;
-  public reporter: any;
+  public reporter: Report;
   public commandPick: CommandPicker | null;
   public fefError: FefError;
+  public cmd?: string;
+  public projectPath?: string;
+  public projectConfig?: object;
+  public pkgConfig?: {
+    name: string;
+  };
 
-  constructor(args: any = {}) {
-    const configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
+  constructor(args: minimist.ParsedArgs) {
     this.root = FEFLOW_HOME;
+    this.configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
     this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);
     this.lib = path.join(FEFLOW_HOME, FEFLOW_LIB);
     this.rootPkg = path.join(FEFLOW_HOME, 'package.json');
@@ -66,14 +72,14 @@ export default class Feflow {
     this.universalModules = path.join(FEFLOW_HOME, UNIVERSAL_MODULES);
     this.args = args;
     this.version = pkg.version;
-    this.config = parseYaml(configPath);
-    setServerUrl(this.config?.serverUrl);
-    this.configPath = configPath;
+    const config = parseYaml(this.configPath);
+    isValidConfig(config) && (this.config = config) && setServerUrl(config.serverUrl);
     this.hook = new Hook();
     this.commander = new Commander((cmdName: string) => {
       this.hook.emit(HOOK_TYPE_ON_COMMAND_REGISTERED, cmdName);
     });
-    this.logger = logger({
+    this.logger = createLogger({
+      name: 'feflow-cli',
       debug: Boolean(args.debug),
       silent: Boolean(args.silent),
     });
@@ -83,14 +89,14 @@ export default class Feflow {
     this.fefError = new FefError(this);
   }
 
-  async init(cmd: string | undefined) {
+  async init(cmd?: string) {
     this.reporter.init(cmd);
 
     await Promise.all([this.initClient(), this.initPackageManager(), this.initBinPath()]);
 
     const disableCheck = this.args['disable-check'] || this.config?.disableCheck;
     if (!disableCheck) {
-      checkUpdate(this);
+      await checkUpdate(this);
     }
 
     this.commandPick = new CommandPicker(this, cmd);
@@ -104,7 +110,7 @@ export default class Feflow {
       // if not, load plugin/devkit/native in need
       this.logger.debug('not find cmd in cache');
       await this.loadCommands(this.commandPick.getLoadOrder());
-      // make sure the command has at least one funtion, otherwise replace to help command
+      // make sure the command has at least one function, otherwise replace to help command
       this.commandPick.checkCommand();
     }
   }
@@ -157,13 +163,11 @@ export default class Feflow {
           return;
         }
         const configPath = path.join(root, '.feflowrc.yml');
-        safeDump(
-          Object.assign({}, parseYaml(configPath), {
-            packageManager: defaultPackageManager,
-          }),
-          configPath,
-        );
-        this.config = parseYaml(configPath);
+        const config = Object.assign({}, parseYaml(configPath), {
+          packageManager: defaultPackageManager,
+        });
+        safeDump(config, configPath);
+        this.config = config;
       } else {
         logger.debug('Use packageManager is: ', this.config.packageManager);
       }
@@ -172,30 +176,29 @@ export default class Feflow {
   }
 
   loadNative() {
-    return new Promise<void>((resolve) => {
-      const nativePath = path.join(__dirname, './native/*.js');
-      // fs.readdirSync(nativePath)
-      glob.sync(nativePath).forEach((file: string) => {
-        require(file)(this);
-      });
-      resolve();
+    const nativePath = path.join(__dirname, './native/*.js');
+    glob.sync(nativePath).forEach((file: string) => {
+      require(file)(this);
     });
   }
 
   async loadCommands(orderType: number) {
     this.logger.debug('load order: ', orderType);
     if ((orderType & LOAD_ALL) === LOAD_ALL) {
-      await Promise.all([this.loadNative(), loadUniversalPlugin(this), loadPlugins(this), loadDevkits(this)]);
+      this.loadNative();
+      loadUniversalPlugin(this);
+      await loadPlugins(this);
+      loadDevkits(this);
       return;
     }
     if ((orderType & LOAD_PLUGIN) === LOAD_PLUGIN) {
       await loadPlugins(this);
     }
     if ((orderType & LOAD_UNIVERSAL_PLUGIN) === LOAD_UNIVERSAL_PLUGIN) {
-      await loadUniversalPlugin(this);
+      loadUniversalPlugin(this);
     }
     if ((orderType & LOAD_DEVKIT) === LOAD_DEVKIT) {
-      await loadDevkits(this);
+      loadDevkits(this);
     }
   }
 
@@ -212,7 +215,7 @@ export default class Feflow {
     }
   }
 
-  async call(name: string | undefined, ctx: any) {
+  async invoke(name: string | undefined, ctx: Feflow) {
     if (this.args.help && name) {
       await this.showCommandOptionDescription(name, ctx);
     }
@@ -225,7 +228,7 @@ export default class Feflow {
     }
   }
 
-  async showCommandOptionDescription(cmd: string, ctx: any): Promise<any> {
+  async showCommandOptionDescription(cmd: string, ctx: Feflow) {
     const registeredCommand = ctx.commander.get(cmd);
     let commandLine: object[] = [];
 
@@ -233,7 +236,7 @@ export default class Feflow {
       commandLine = getCommandLine(registeredCommand.options, registeredCommand.desc, cmd);
     }
     // 有副作用，暂无好方法改造
-    if (cmd === 'help') {
+    if (cmd === 'help' && registeredCommand) {
       registeredCommand.runFn.call(this, ctx);
       return true;
     }

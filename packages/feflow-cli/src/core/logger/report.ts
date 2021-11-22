@@ -6,6 +6,7 @@ import fs from 'fs';
 import axios from 'axios';
 import path from 'path';
 import os from 'os';
+
 const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME = os.hostname().split('-')[0];
@@ -17,6 +18,10 @@ let KYE_FILE: AnyObject = {};
 interface IObject {
   [key: string]: string;
 }
+interface LogObj {
+  name: string;
+}
+
 (async () => {
   try {
     KYE_FILE = JSON.parse(fs.readFileSync(KEYS_FILE, 'utf-8'));
@@ -44,7 +49,7 @@ const levelNames: IObject = {
 
 export let timer: NodeJS.Timeout | null = null;
 
-async function send(logObj: any, readData: any[]) {
+async function send(logObj: LogObj | undefined, readData: string[]) {
   const loggerList = readData
     .filter((data: string) => data)
     .map((data: string) => {
@@ -59,9 +64,7 @@ async function send(logObj: any, readData: any[]) {
       };
     });
   // 清除数据
-  fs.writeFile(LOGGER_LOG_PATH, '', 'utf8', () => {
-    // resolve();
-  });
+  fs.writeFile(LOGGER_LOG_PATH, '', 'utf8', () => {});
   const response = await axios.post(
     'http://log.feflowjs.com/api/v1/log/save',
     {
@@ -79,7 +82,7 @@ async function send(logObj: any, readData: any[]) {
     console.log('send success');
   }
 }
-async function report(logObj?: any) {
+async function report(logObj?: LogObj) {
   const readStr: string = fs.readFileSync(LOGGER_LOG_PATH, 'utf-8');
   if (readStr) {
     const readData: string[] = readStr.split('\n');

@@ -88,10 +88,10 @@ export default function entry() {
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', (err) => {
-    logger.debug(err);
-    feflow?.reporter?.reportCommandError(err);
-    feflow.fefError?.printError({ error: err, msg: '', hideError: true });
+  process.on('unhandledRejection', (reason) => {
+    logger.debug(reason);
+    feflow?.reporter?.reportCommandError(new Error(String(reason)));
+    feflow.fefError?.printError({ error: reason, msg: '', hideError: true });
   });
 
   return feflow.init(cmd).then(() => {
@@ -105,7 +105,7 @@ export default function entry() {
     feflow.hook.emit(HOOK_TYPE_BEFORE);
     feflow.hook.on(EVENT_COMMAND_BEGIN, () =>
       feflow
-        .call(cmd, feflow)
+        .invoke(cmd, feflow)
         .then(() => {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
