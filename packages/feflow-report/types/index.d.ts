@@ -1,22 +1,3 @@
-declare module 'request-promise';
-
-declare interface ReportContext {
-  root: string;
-  log: any;
-  logger: any;
-  args: any;
-  pkgConfig: {
-    name: string;
-  };
-  commander: {
-    store: {};
-  };
-  hook: {
-    on(eventName: string, listener: any): void;
-  };
-  version: string;
-}
-
 declare interface ReportBody {
   command: string;
   last_command: string;

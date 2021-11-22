@@ -16,6 +16,7 @@
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.12",
+    "@types/request-promise": "^4.1.48",
     "chai": "^4.2.0",
     "eslint": "^6.5.1",
     "mocha": "^6.2.2",

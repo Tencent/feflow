@@ -72,7 +72,7 @@ export class Config {
     try {
       return importFresh(filePath);
     } catch (e) {
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -81,7 +81,7 @@ export class Config {
     try {
       return Config.loadJSONConfigFile(filePath);
     } catch (e) {
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -90,12 +90,7 @@ export class Config {
     try {
       return JSON.parse(stripComments(Config.readFile(filePath)));
     } catch (e) {
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
-      e.messageTemplate = 'failed-to-read-json';
-      e.messageData = {
-        path: filePath,
-        message: e.message,
-      };
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -108,7 +103,7 @@ export class Config {
     try {
       return yaml.safeLoad(Config.readFile(filePath)) || {};
     } catch (e) {
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -117,7 +112,7 @@ export class Config {
     try {
       return yaml.safeLoad(stripComments(this.readFile(filePath))) || {};
     } catch (e) {
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }

@@ -1,8 +1,8 @@
 import { packCLI } from './tarball';
 
 export default class Packager {
-  private cmd: any;
-  constructor(cmd: any) {
+  private cmd: string;
+  constructor(cmd: string) {
     this.cmd = cmd;
   }
 

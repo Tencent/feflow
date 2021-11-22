@@ -1,9 +1,9 @@
-export default function compose(...funcs: any) {
+export default function compose(...funcs: Function[]) {
   if (funcs.length === 1) {
     return funcs[0];
   }
   return funcs.reduce(
-    (a: any, b: any) =>
+    (a, b) =>
       (...args: any) =>
         a(b(...args)),
   );

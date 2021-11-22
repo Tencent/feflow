@@ -27,7 +27,7 @@ export class Dependencies {
       return;
     }
     if (!this.os.includes(platformType)) {
-      throw `the plugin does not support the ${platformType} operating system`;
+      throw new Error(`the plugin does not support the ${platformType} operating system`);
     }
   }
 
@@ -36,7 +36,7 @@ export class Dependencies {
       try {
         await lookpath(command);
       } catch (e) {
-        throw `${command} command does not exist in the system, please check before installing this plugin`;
+        throw new Error(`${command} command does not exist in the system, please check before installing this plugin`);
       }
     }
   }

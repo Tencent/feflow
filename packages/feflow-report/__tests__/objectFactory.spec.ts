@@ -2,12 +2,12 @@ import chai from 'chai';
 import objectFactory from '../src/common/objectFactory'; // to-do: 把src改成lib后执行
 const { expect } = chai;
 
-describe('@feflow/report - objectFactory', () => {
-  beforeEach(() => {
+describe('@feflow/report - objectFactory', function () {
+  beforeEach(function () {
     objectFactory.done();
   });
 
-  it('objectFactory - create', function() {
+  it('objectFactory - create', function () {
     const obj = objectFactory.create().done();
 
     expect(obj).to.empty;
@@ -21,7 +21,7 @@ describe('@feflow/report - objectFactory', () => {
       .load('b', 321)
       .load('c', () => 'awosome objectFactory')
       .done();
-      expect(obj).to.not.empty;
+    expect(obj).to.not.empty;
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
   });
 
@@ -33,11 +33,11 @@ describe('@feflow/report - objectFactory', () => {
       .load('c', () => 'awosome objectFactory')
       .done();
 
-      expect(obj).to.not.empty;
+    expect(obj).to.not.empty;
     expect(obj).to.deep.eq({ a: 123, b: 321, c: 'awosome objectFactory' });
 
-    const _obj = objectFactory.create().done();
+    const obj2 = objectFactory.create().done();
 
-    expect(_obj).to.empty;
+    expect(obj2).to.empty;
   });
 });

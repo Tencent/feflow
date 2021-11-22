@@ -1,20 +1,22 @@
 /* eslint-disable no-param-reassign */
 import path from 'path';
-import logger from '../../../src/core/logger';
-import osenv from 'osenv';
-import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
 import fs from 'fs';
+import osenv from 'osenv';
+
+import logger from '@/core/logger';
+import { FEFLOW_ROOT, LOG_FILE } from '@/shared/constant';
 
 const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
 // 确保log文件存在
 fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 
-const captureStream = (stream: any) => {
+const captureStream = (stream: NodeJS.WriteStream) => {
   const oldWrite = stream.write;
   let buf = '';
-  stream.write = function (chunk: Uint8Array | string, encoding?: string, callback?: (err?: Error) => void) {
+  // @ts-ignore
+  stream.write = function (chunk, encoding, callback) {
     buf += chunk.toString();
-    oldWrite.apply(stream, chunk, encoding, callback);
+    return oldWrite.call(stream, chunk, encoding, callback);
   };
 
   return {
@@ -26,7 +28,7 @@ const captureStream = (stream: any) => {
 };
 
 describe('@feflow/core - Logger system', () => {
-  let hook: any;
+  let hook: ReturnType<typeof captureStream>;
 
   beforeEach(() => {
     hook = captureStream(process.stderr);

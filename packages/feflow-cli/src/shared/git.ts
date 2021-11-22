@@ -2,7 +2,10 @@ import spawn from 'cross-spawn';
 import rp from 'request-promise';
 import { getURL } from './url';
 
-let gitAccount: any;
+let gitAccount: {
+  username: string;
+  password: string;
+};
 let serverUrl: string;
 
 export function setServerUrl(url: string) {
@@ -11,11 +14,11 @@ export function setServerUrl(url: string) {
 
 function getHostname(url: string): string {
   if (/https?/.test(url)) {
-    const match: any = url.match(/^http(s)?:\/\/(.*?)\//);
-    return match[2].split('@').pop();
+    const [, , match = ''] = url.match(/^http(s)?:\/\/(.*?)\//) || [];
+    return match.split('@').pop() || '';
   }
-  const match: any = url.match(/@(.*):/);
-  return match[1];
+  const [, hostname = ''] = url.match(/@(.*):/) || [];
+  return hostname;
 }
 
 async function prepareAccount() {
@@ -31,7 +34,7 @@ async function prepareAccount() {
     method: 'GET',
   };
   return rp(options)
-    .then((response: any) => {
+    .then((response: string) => {
       const data = JSON.parse(response);
       if (data.account) {
         gitAccount = data.account;
@@ -65,7 +68,7 @@ export async function clearGitCert(url: string) {
   if (!username) {
     return;
   }
-  let finalUrl: string = '';
+  let finalUrl = '';
   if (!/https?:\/\/(.*?(:.*?)?@)/.test(url)) {
     finalUrl = await transformUrl(url);
   }
