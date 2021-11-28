@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import Feflow from '@/core';
 import applyPlugins from './apply-plugins';
+import Feflow from '../';
 
 export const getPluginsList = (ctx: Feflow): [unknown | Error, Array<string>] => {
   const { root, rootPkg } = ctx;

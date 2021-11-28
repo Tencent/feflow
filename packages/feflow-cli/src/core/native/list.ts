@@ -2,10 +2,10 @@ import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
 
-import Feflow from '@/core';
-import { UniversalPkg } from '@/core/universal-pkg/dep/pkg';
-import { resolvePlugin } from '@/core/plugin/apply-plugins';
-import { FEFLOW_PLUGIN_GIT_PREFIX, FEFLOW_PLUGIN_LOCAL_PREFIX, FEFLOW_PLUGIN_PREFIX } from '@/shared/constant';
+import Feflow from '../';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import { resolvePlugin } from '../plugin/apply-plugins';
+import { FEFLOW_PLUGIN_GIT_PREFIX, FEFLOW_PLUGIN_LOCAL_PREFIX, FEFLOW_PLUGIN_PREFIX } from '../../shared/constant';
 
 export default (ctx: Feflow) => {
   ctx.commander.register('list', 'Show all plugins installed.', () => {

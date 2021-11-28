@@ -3,7 +3,7 @@ import path from 'path';
 import importFresh from 'import-fresh';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
-import Feflow from '@/core';
+import Feflow from '../../';
 
 import { PROJECT_CONFIG, DEVKIT_CONFIG } from '../../shared/constant';
 

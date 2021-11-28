@@ -1,5 +1,5 @@
 import os from 'os';
-import Feflow from '@/core';
+import Feflow from '../';
 
 export default (ctx: Feflow) => {
   ctx.commander.register('info', 'Info messages', () => {

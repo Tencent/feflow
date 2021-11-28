@@ -1,4 +1,4 @@
-import Feflow from '@/core';
+import Feflow from '../';
 
 export default (ctx: Feflow) => {
   ctx.commander.register('logger', 'logger Message', () => {

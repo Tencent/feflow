@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import osenv from 'osenv';
 
-import logger from '@/core/logger';
-import { FEFLOW_ROOT, LOG_FILE } from '@/shared/constant';
+import logger from '../../../src/core/logger';
+import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
 
 const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
 // 确保log文件存在

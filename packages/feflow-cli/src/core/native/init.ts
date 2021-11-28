@@ -3,8 +3,8 @@ import path from 'path';
 import inquirer from 'inquirer';
 import yeoman from 'yeoman-environment';
 
-import Feflow from '@/core';
-import { install } from '@/shared/npm';
+import Feflow from '../';
+import { install } from '../../shared/npm';
 
 const loadGenerator = (root: string, rootPkg: string) =>
   new Promise<{ name: string; desc: string }[]>((resolve, reject) => {

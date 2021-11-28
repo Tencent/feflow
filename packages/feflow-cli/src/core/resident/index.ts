@@ -5,8 +5,8 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 import Table from 'easy-table';
-import Feflow from '@/core';
-import LockFile from '@/shared/lock-file';
+import Feflow from '../';
+import LockFile from '../../shared/lock-file';
 import {
   BEAT_GAP,
   BEAT_KEY,
@@ -18,8 +18,8 @@ import {
   UPDATE_COLLECTION,
   UPDATE_KEY,
   UPDATE_LOCK,
-} from '@/shared/constant';
-import { safeDump } from '@/shared/yaml';
+} from '../../shared/constant';
+import { safeDump } from '../../shared/yaml';
 
 const updateBeatScript = path.join(__dirname, './updateBeat');
 const updateScript = path.join(__dirname, './update');

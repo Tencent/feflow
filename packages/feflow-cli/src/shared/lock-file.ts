@@ -1,6 +1,6 @@
 import fs from 'fs';
 import lockFile from 'lockfile';
-import createLogger, { Logger } from '@/core/logger';
+import createLogger, { Logger } from '../core/logger';
 
 export default class LockFile {
   private readonly filePath: string;

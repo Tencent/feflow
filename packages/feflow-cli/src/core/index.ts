@@ -5,22 +5,6 @@ import Report from '@feflow/report';
 import commandLineUsage from 'command-line-usage';
 import minimist from 'minimist';
 
-import {
-  FEFLOW_BIN,
-  FEFLOW_HOME,
-  FEFLOW_LIB,
-  HOOK_TYPE_ON_COMMAND_REGISTERED,
-  LOG_FILE,
-  UNIVERSAL_MODULES,
-  UNIVERSAL_PKG_JSON,
-} from '@/shared/constant';
-import { parseYaml, safeDump } from '@/shared/yaml';
-import { FefError } from '@/shared/fef-error';
-import { setServerUrl } from '@/shared/git';
-import { mkdirAsync, readFileAsync, statAsync, unlinkAsync, writeFileAsync } from '@/shared/fs';
-import { isInstalledPM } from '@/shared/npm';
-import { FeflowConfig, isValidConfig } from '@/shared/type-predicates';
-
 import Commander from './commander';
 import Hook from './hook';
 import createLogger, { Logger } from './logger';
@@ -33,7 +17,22 @@ import getCommandLine from './devkit/command-options';
 import Binp from './universal-pkg/binp';
 import { UniversalPkg } from './universal-pkg/dep/pkg';
 
-const pkg = require('../../package.json');
+import {
+  FEFLOW_BIN,
+  FEFLOW_HOME,
+  FEFLOW_LIB,
+  HOOK_TYPE_ON_COMMAND_REGISTERED,
+  LOG_FILE,
+  UNIVERSAL_MODULES,
+  UNIVERSAL_PKG_JSON,
+} from '../shared/constant';
+import { parseYaml, safeDump } from '../shared/yaml';
+import { FefError } from '../shared/fef-error';
+import { setServerUrl } from '../shared/git';
+import { mkdirAsync, readFileAsync, statAsync, unlinkAsync, writeFileAsync } from '../shared/fs';
+import { isInstalledPM } from '../shared/npm';
+import { FeflowConfig, isValidConfig } from '../shared/type-predicates';
+import pkgJson from '../../package.json';
 
 export default class Feflow {
   public args: minimist.ParsedArgs;
@@ -71,7 +70,7 @@ export default class Feflow {
     this.universalPkgPath = path.join(FEFLOW_HOME, UNIVERSAL_PKG_JSON);
     this.universalModules = path.join(FEFLOW_HOME, UNIVERSAL_MODULES);
     this.args = args;
-    this.version = pkg.version;
+    this.version = pkgJson.version;
     const config = parseYaml(this.configPath);
     isValidConfig(config) && (this.config = config) && setServerUrl(config.serverUrl);
     this.hook = new Hook();

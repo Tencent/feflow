@@ -3,14 +3,14 @@ import chalk from 'chalk';
 import osenv from 'osenv';
 import path from 'path';
 
-import Feflow from '@/core';
-import { CommandPickConfig, CommandType } from '@/core/command-picker';
-import createLogger from '@/core/logger';
-import { Plugin } from '@/core/universal-pkg/schema/plugin';
-import { parseYaml } from '@/shared/yaml';
-import { FEFLOW_ROOT, UNIVERSAL_PLUGIN_CONFIG } from '@/shared/constant';
-
 import compose from './compose';
+
+import Feflow from '../';
+import { CommandPickConfig, CommandType } from '../command-picker';
+import createLogger from '../logger';
+import { Plugin } from '../universal-pkg/schema/plugin';
+import { parseYaml } from '../../shared/yaml';
+import { FEFLOW_ROOT, UNIVERSAL_PLUGIN_CONFIG } from '../../shared/constant';
 
 export default function applyPlugins(plugins: string[]) {
   return (ctx: Feflow) => {

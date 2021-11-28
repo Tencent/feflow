@@ -5,14 +5,20 @@
   "main": "./lib/index.js",
   "scripts": {
     "test": "npm run build && npx mocha -r ts-node/register __tests__/*.spec.ts",
-    "build": "tsc",
+    "clean": "rimraf lib",
+    "compile": "tsc -p tsconfig.build.json",
+    "adjust-lib": "rimraf lib/feflow-cli && mv lib/feflow-report/src/* lib/ && rimraf lib/feflow-report",
+    "prebuild": "npm run clean",
+    "build": "npm run compile",
+    "postbuild": "npm run adjust-lib",
     "dev": "npm run build && node ./lib/dev.js",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "author": "fXy-during <fxy1044667399@163.com>",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.6.4",
+    "@feflow/cli": "^0.24.6",
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.12",
@@ -28,7 +34,6 @@
     "lib",
     "types"
   ],
-  "types": "./types/index.d.ts",
   "dependencies": {
     "request": "^2.88.0",
     "request-promise": "^4.2.5",

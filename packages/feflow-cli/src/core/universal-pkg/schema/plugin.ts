@@ -1,7 +1,7 @@
-import Feflow from '@/core';
 import { Command } from './command';
 import { Dependencies } from './dependencies';
 import { platform } from './base';
+import Feflow from '../../';
 
 export class Plugin {
   path: string;

@@ -3,10 +3,10 @@ import semver from 'semver';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
-import Feflow from '@/core';
-import { getRegistryUrl } from '@/shared/npm';
-import packageJson from '@/shared/package-json';
-import { safeDump } from '@/shared/yaml';
+import Feflow from '../';
+import { getRegistryUrl } from '../../shared/npm';
+import packageJson from '../../shared/package-json';
+import { safeDump } from '../../shared/yaml';
 
 export async function updateCli(packageManager: string) {
   return new Promise<void>((resolve, reject) => {

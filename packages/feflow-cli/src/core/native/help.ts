@@ -6,9 +6,9 @@ import cliMd from 'cli-html-c';
 import commandLineUsage from 'command-line-usage';
 import marked from 'marked';
 
-import Feflow from '@/core';
-import { UNIVERSAL_README_CONFIG } from '@/shared/constant';
+import Feflow from '../';
 import { Store } from '../commander';
+import { UNIVERSAL_README_CONFIG } from '../../shared/constant';
 
 const getCommands = (store: Store) => {
   const arr: {

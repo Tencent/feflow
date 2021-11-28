@@ -2,9 +2,9 @@
 import path from 'path';
 import Config from './config';
 import getCommandLine from './command-options';
-import Feflow from '@/core';
-import logger from '@/core/logger';
-import { FEFLOW_ROOT } from '@/shared/constant';
+import Feflow from '../';
+import logger from '../logger';
+import { FEFLOW_ROOT } from '../../shared/constant';
 
 interface CommandConfig {
   builder: string;
