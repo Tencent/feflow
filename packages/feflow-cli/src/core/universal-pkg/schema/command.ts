@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
-import Feflow from '@/core';
 import { platformType, toArray } from './base';
+
+import Feflow from '../../';
 
 const valRegexp = new RegExp('\\${var:.*?}', 'ig');
 

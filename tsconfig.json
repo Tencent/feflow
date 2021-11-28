@@ -1,30 +1,10 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "target": "ES5",
-    "module": "CommonJS",
-    "declaration": true,
-    "allowUnreachableCode": false,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "strict": true,
-    "pretty": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
-  },
-  "include": [
-    "./src/**/*",
-    "./__tests__/**/*",
-    "./types/**/*",
-  ]
+    "baseUrl": ".",
+    "paths": {
+      "@feflow/cli": ["packages/feflow-cli/src"],
+      "@feflow/report": ["packages/feflow-report/src"],
+    }
+  }
 }

@@ -2,17 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 
-import Feflow from '@/core';
-import { getTag, checkoutVersion, getCurrentTag } from '@/core/universal-pkg/repository/git';
-import { Plugin } from '@/core/universal-pkg/schema/plugin';
-import Linker from '@/core/universal-pkg/linker';
-import { UniversalPkg } from '@/core/universal-pkg/dep/pkg';
-import versionImpl from '@/core/universal-pkg/dep/version';
+import Feflow from '../';
+import { getTag, checkoutVersion, getCurrentTag } from '../universal-pkg/repository/git';
+import { Plugin } from '../universal-pkg/schema/plugin';
+import Linker from '../universal-pkg/linker';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import versionImpl from '../universal-pkg/dep/version';
 import applyPlugins, { resolvePlugin } from '../plugin/apply-plugins';
 import { CommandPickConfig } from '../command-picker';
 
-import packageJson from '@/shared/package-json';
-import { download } from '@/shared/git';
+import packageJson from '../../shared/package-json';
+import { download } from '../../shared/git';
 import {
   HOOK_TYPE_ON_COMMAND_REGISTERED,
   LATEST_VERSION,
@@ -25,10 +25,10 @@ import {
   FEFLOW_PLUGIN_LOCAL_PREFIX,
   SILENT_ARG,
   DISABLE_ARG,
-} from '@/shared/constant';
-import { getRegistryUrl, install } from '@/shared/npm';
-import { getURL } from '@/shared/url';
-import { copyDir } from '@/shared/fs';
+} from '../../shared/constant';
+import { getRegistryUrl, install } from '../../shared/npm';
+import { getURL } from '../../shared/url';
+import { copyDir } from '../../shared/fs';
 
 interface PkgJson {
   dependencies?: {

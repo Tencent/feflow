@@ -17,7 +17,10 @@
   },
   "scripts": {
     "start": "npm run build:live",
-    "build": "rm -rf lib && tsc",
+    "clean": "rimraf lib",
+    "compile": "tsc -p tsconfig.build.json",
+    "prebuild": "npm run clean",
+    "build": "npm run compile",
     "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"

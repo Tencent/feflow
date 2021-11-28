@@ -3,8 +3,14 @@ import path from 'path';
 import osenv from 'osenv';
 import semver from 'semver';
 
-import LockFile from '@/shared/lock-file';
-import { install } from '@/shared/npm';
+import createLogger from '../logger';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
+import { loadPlugin } from '../plugin/load-universal-plugin';
+import { updateCli } from '../native/upgrade';
+import { getPkgInfo, updateUniversalPlugin } from '../native/install';
+
+import LockFile from '../../shared/lock-file';
+import { install } from '../../shared/npm';
 import {
   FEFLOW_BIN,
   FEFLOW_LIB,
@@ -14,16 +20,11 @@ import {
   UPDATE_COLLECTION,
   UPDATE_KEY,
   UPDATE_LOCK,
-} from '@/shared/constant';
-import { setServerUrl } from '@/shared/git';
-import { parseYaml } from '@/shared/yaml';
+} from '../../shared/constant';
+import { setServerUrl } from '../../shared/git';
+import { parseYaml } from '../../shared/yaml';
 
-import createLogger from '@/core/logger';
-import { UniversalPkg } from '@/core/universal-pkg/dep/pkg';
-import { loadPlugin } from '@/core/plugin/load-universal-plugin';
-import { updateCli } from '@/core/native/upgrade';
-import { getPkgInfo, updateUniversalPlugin } from '@/core/native/install';
-import pkgJson from 'package.json';
+import pkgJson from '../../../package.json';
 
 import { PluginUpdateMsg, UpdateData, UniversalPluginUpdateMsg } from './';
 import {

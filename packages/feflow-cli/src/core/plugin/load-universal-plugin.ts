@@ -1,11 +1,11 @@
 import path from 'path';
 
-import Feflow from '@/core';
-import Binp from '@/core/universal-pkg/binp';
-import { CommandPickConfig, CommandType } from '@/core/command-picker';
-import { Plugin } from '@/core/universal-pkg/schema/plugin';
+import Feflow from '..';
+import Binp from '../universal-pkg/binp';
+import { CommandPickConfig, CommandType } from '../command-picker';
+import { Plugin } from '../universal-pkg/schema/plugin';
 
-import { parseYaml } from '@/shared/yaml';
+import { parseYaml } from '../../shared/yaml';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
@@ -13,8 +13,8 @@ import {
   FEF_ENV_PLUGIN_PATH,
   SILENT_ARG,
   DISABLE_ARG,
-} from '@/shared/constant';
-import { escape } from '@/shared/args';
+} from '../../shared/constant';
+import { escape } from '../../shared/args';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 

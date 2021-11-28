@@ -1,9 +1,9 @@
-import Feflow from '../core';
+import fs from 'fs';
+import path from 'path';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
-import fs from 'fs';
-import path from 'path';
+import bunyan from 'bunyan';
 import stripComments from 'strip-json-comments';
 import {
   HOOK_TYPE_BEFORE,
@@ -14,7 +14,7 @@ import {
   LOG_FILE,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
-import bunyan from 'bunyan';
+import Feflow from '../core';
 
 const pkg = JSON.parse(
   stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),

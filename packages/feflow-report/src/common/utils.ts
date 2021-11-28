@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-useless-escape */
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -13,8 +12,8 @@ const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
 const cwd = process.cwd();
 
-export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
-export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+export const httpRegex = /^https?:\/\/([^/]+)\/([^/]+)\/([^/.]+)(?:\.git)?/;
+export const sshRegex = /^git@([^:]+):([^/]+)\/([^/.]+)(?:\.git)?/;
 
 const exec = (command: string) => {
   let result = '';
@@ -58,9 +57,7 @@ const getUserNameFromGit = () => {
   if (!isGitAvailable) {
     return '';
   }
-  const nameFromLinux = exec('git config user.name');
-
-  return nameFromLinux;
+  return exec('git config user.name');
 };
 
 export const getUserName = () => {

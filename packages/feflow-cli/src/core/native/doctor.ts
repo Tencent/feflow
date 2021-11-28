@@ -1,8 +1,8 @@
 import { execSync } from 'child_process';
 import axios from 'axios';
 import commandLineUsage from 'command-line-usage';
-import Feflow from '@/core';
-import { getRegistryUrl } from '@/shared/npm';
+import Feflow from '../';
+import { getRegistryUrl } from '../../shared/npm';
 
 export default (ctx: Feflow) => {
   async function showToolVersion() {

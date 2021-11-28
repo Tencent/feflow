@@ -1,5 +1,5 @@
-import Feflow from '@/core';
-import { safeDump } from '@/shared/yaml';
+import Feflow from '../';
+import { safeDump } from '../../shared/yaml';
 
 export default (ctx: Feflow) => {
   const { args, config = {}, configPath } = ctx;
