@@ -8,6 +8,12 @@ import { getRegistryUrl } from '../../shared/npm';
 import packageJson from '../../shared/package-json';
 import { safeDump } from '../../shared/yaml';
 
+export default (ctx: Feflow) => {
+  ctx.commander.register('upgrade', 'upgrade fef cli', () => {
+    checkCliUpdate(ctx);
+  });
+};
+
 export async function updateCli(packageManager: string) {
   return new Promise<void>((resolve, reject) => {
     const args =
@@ -72,9 +78,3 @@ export async function checkCliUpdate(ctx: Feflow) {
     ctx.logger.info('Current version is already latest.');
   }
 }
-
-export default (ctx: Feflow) => {
-  ctx.commander.register('upgrade', 'upgrade fef cli', () => {
-    checkCliUpdate(ctx);
-  });
-};

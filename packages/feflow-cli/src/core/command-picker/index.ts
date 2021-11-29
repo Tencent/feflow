@@ -467,7 +467,7 @@ export default class CommandPicker {
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
-        require(commandPath)(Object.assign({}, this.ctx, { logger: pluginLogger }));
+        require(commandPath).default(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
         this.ctx.fefError.printError({
           error,

@@ -20,38 +20,6 @@ const pkg = JSON.parse(
   stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
 );
 
-function ensureNodeVersion(requiredVersion: string, id: string): void {
-  if (!semver.satisfies(process.version, requiredVersion)) {
-    console.error(
-      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
-    );
-    process.exit(1);
-  }
-}
-
-function printBanner(logger: bunyan) {
-  figlet.text(
-    'feflow',
-    {
-      font: '3D-ASCII',
-      horizontalLayout: 'default',
-      verticalLayout: 'default',
-    },
-    (err, data) => {
-      if (err) {
-        logger.error(err);
-        process.exit(2);
-      }
-      logger.info(`\n${data}`);
-      logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
-      logger.info(
-        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
-      );
-      logger.info(' Run fef --help to see usage.                                     ');
-    },
-  );
-}
-
 export default function entry() {
   const args = minimist(process.argv.slice(2), {
     alias: {
@@ -98,7 +66,7 @@ export default function entry() {
     const localCmd = commander.get(cmd);
     // 本地无法找到命令执行文件获取失败时转为help命令
     if (!localCmd) {
-      cmd && logger.debug(`Cant found command: ${cmd}`);
+      cmd && logger.debug(`Can't found command: ${cmd}`);
       cmd = 'help';
     }
     feflow.cmd = cmd;
@@ -121,4 +89,36 @@ export default function entry() {
         }),
     );
   });
+}
+
+function ensureNodeVersion(requiredVersion: string, id: string): void {
+  if (!semver.satisfies(process.version, requiredVersion)) {
+    console.error(
+      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
+    );
+    process.exit(1);
+  }
+}
+
+function printBanner(logger: bunyan) {
+  figlet.text(
+    'feflow',
+    {
+      font: '3D-ASCII',
+      horizontalLayout: 'default',
+      verticalLayout: 'default',
+    },
+    (err, data) => {
+      if (err) {
+        logger.error(err);
+        process.exit(2);
+      }
+      logger.info(`\n${data}`);
+      logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
+      logger.info(
+        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
+      );
+      logger.info(' Run fef --help to see usage.                                     ');
+    },
+  );
 }

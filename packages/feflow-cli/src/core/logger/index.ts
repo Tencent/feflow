@@ -3,8 +3,10 @@ import { Writable } from 'stream';
 import path from 'path';
 import osenv from 'osenv';
 import { spawn } from 'child_process';
+import chalk from 'chalk';
 import { LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG } from '../../shared/constant';
 import { getKeyFormFile, setKeyToFile } from '../../shared/file';
+import pkgJson from '../../../package.json';
 
 const root = path.join(osenv.home(), FEFLOW_ROOT);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION_LOG);
@@ -54,7 +56,7 @@ export default function createLogger(options: LoggerOptions): Logger {
     streams.push({
       type: 'raw',
       level: options.debug ? 'trace' : 'info',
-      stream: new ConsoleStream(),
+      stream: new ConsoleStream(options),
     });
   }
 
@@ -74,11 +76,36 @@ export default function createLogger(options: LoggerOptions): Logger {
   });
 }
 
+interface IObject {
+  [key: string]: string;
+}
+
+const levelNames: IObject = {
+  10: 'Trace',
+  20: 'Debug',
+  30: 'Info',
+  40: 'Warn',
+  50: 'Error',
+  60: 'Fatal',
+};
+
+const levelColors: IObject = {
+  10: 'gray',
+  20: 'gray',
+  30: 'green',
+  40: 'orange',
+  50: 'red',
+  60: 'red',
+};
+
 class ConsoleStream extends Writable {
-  constructor() {
+  private debug: Boolean;
+
+  constructor(args: LoggerOptions) {
     super({
       objectMode: true,
     });
+    this.debug = Boolean(args.debug);
   }
   // 上报
   startReport() {
@@ -116,5 +143,35 @@ class ConsoleStream extends Writable {
       hasCreateHeart = false;
       report();
     }
+  }
+
+  async _write(data: any, encoding: string, callback: (error?: Error | null) => void) {
+    const { level } = data;
+    const PLUGIN_NAME = `feflow-${pkgJson.name.split('/').pop()}`;
+    const loggerName = data.name || PLUGIN_NAME;
+    let msg = '';
+    if (this.debug) {
+      msg += `${chalk.gray(data.time)} `;
+    }
+    msg += chalk.keyword(levelColors[level])(`[ Feflow ${levelNames[level]} ]`);
+    msg += `[ ${loggerName} ] `;
+    msg += `${data.msg}\n`;
+    if (data.err) {
+      const err = data.err.stack || data.err.message;
+      if (err) msg += `${chalk.yellow(err)}\n`;
+    }
+    Object.assign(data, {
+      level,
+      msg: `[Feflow ${levelNames[level]}][${loggerName}]${data.msg}`,
+      date: new Date().getTime(),
+      name: loggerName,
+    });
+    if (level >= 40) {
+      process.stderr.write(msg);
+    } else {
+      process.stdout.write(msg);
+    }
+    this.startReport();
+    callback();
   }
 }
