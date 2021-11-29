@@ -177,7 +177,7 @@ export default class Feflow {
   loadNative() {
     const nativePath = path.join(__dirname, './native/*.js');
     glob.sync(nativePath).forEach((file: string) => {
-      require(file)(this);
+      require(file).default(this);
     });
   }
 

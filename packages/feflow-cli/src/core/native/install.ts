@@ -30,6 +30,43 @@ import { getRegistryUrl, install } from '../../shared/npm';
 import { getURL } from '../../shared/url';
 import { copyDir } from '../../shared/fs';
 
+export default (ctx: Feflow) => {
+  ctx.commander.register('install', 'Install a devkit or plugin', async () => {
+    const dependencies = ctx.args._;
+    const installPluginStr = dependencies[0];
+    if (!installPluginStr) {
+      ctx.logger.error('parameter error');
+      return;
+    }
+    try {
+      await installPlugin(ctx, installPluginStr, true);
+    } catch (e) {
+      ctx.logger.error(`install error: ${JSON.stringify(e)}`);
+      process.exit(2);
+    }
+  });
+
+  ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', async () => {
+    const dependencies = ctx.args._;
+    ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
+    const serverUrl = ctx.config?.serverUrl;
+    if (!serverUrl) {
+      return uninstallNpmPlugin(ctx, dependencies);
+    }
+    const { universalPkg } = ctx;
+    const installPluginStr = dependencies[0];
+    const pkgInfo = await getPkgInfo(ctx, installPluginStr);
+    if (pkgInfo && universalPkg.isInstalled(pkgInfo.repoName)) {
+      return uninstallUniversalPlugin(ctx, pkgInfo.repoName);
+    }
+
+    await uninstallNpmPlugin(ctx, dependencies);
+
+    const pickerConfig = new CommandPickConfig(ctx);
+    pickerConfig.removeCache(dependencies[0]);
+  });
+};
+
 interface PkgJson {
   dependencies?: {
     [key: string]: string;
@@ -39,7 +76,7 @@ interface PkgJson {
   };
 }
 
-async function getRepoInfo(ctx: Feflow, packageName: string) {
+export async function getRepoInfo(ctx: Feflow, packageName: string) {
   const serverUrl = ctx.config?.serverUrl;
   if (!serverUrl) {
     return Promise.reject(`cannot find 'serverUrl' from config file`);
@@ -395,7 +432,7 @@ function getRepoPath(universalModules: string, repoName: string, installVersion:
   return path.join(universalModules, `${repoName}@${installVersion}`);
 }
 
-async function installPlugin(ctx: Feflow, installPluginStr: string, isGlobal: boolean) {
+export async function installPlugin(ctx: Feflow, installPluginStr: string, isGlobal: boolean) {
   const {
     logger,
     universalPkg,
@@ -506,8 +543,14 @@ export async function getPkgInfo(ctx: Feflow, installPlugin: string): Promise<Pk
     repoName = getDirRepoName(installPlugin);
   } else {
     fromType = PkgInfo.appStore;
-    const pluginName = installPlugin.split('@')[0];
-    let pluginVersion = installPlugin.split('@')[1];
+    let pluginName: string;
+    let pluginVersion: string;
+    if (installPlugin.startsWith('@')) {
+      [, pluginName, pluginVersion] = installPlugin.split('@');
+      pluginName = `@${pluginName}`;
+    } else {
+      [pluginName, pluginVersion] = installPlugin.split('@');
+    }
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
       ctx.logger.warn(
@@ -692,45 +735,3 @@ async function updatePlugin(ctx: Feflow, pkg: string, version: string) {
     ctx.logger.error(`[${pkg}] update failure, ${e}`);
   }
 }
-
-export default (ctx: Feflow) => {
-  ctx.commander.register('install', 'Install a devkit or plugin', async () => {
-    const dependencies = ctx.args._;
-    const installPluginStr = dependencies[0];
-    if (!installPluginStr) {
-      ctx.logger.error('parameter error');
-      return;
-    }
-    try {
-      await installPlugin(ctx, installPluginStr, true);
-    } catch (e) {
-      ctx.logger.error(`install error: ${JSON.stringify(e)}`);
-      process.exit(2);
-    }
-  });
-
-  ctx.commander.register('uninstall', 'Uninstall a devkit or plugin', async () => {
-    const dependencies = ctx.args._;
-    ctx.logger.info('Uninstalling packages. This might take a couple of minutes.');
-    const serverUrl = ctx.config?.serverUrl;
-    if (!serverUrl) {
-      return uninstallNpmPlugin(ctx, dependencies);
-    }
-    const { universalPkg } = ctx;
-    const installPluginStr = dependencies[0];
-    const pkgInfo = await getPkgInfo(ctx, installPluginStr);
-    if (pkgInfo && universalPkg.isInstalled(pkgInfo.repoName)) {
-      return uninstallUniversalPlugin(ctx, pkgInfo.repoName);
-    }
-
-    await uninstallNpmPlugin(ctx, dependencies);
-
-    const pickerConfig = new CommandPickConfig(ctx);
-    pickerConfig.removeCache(dependencies[0]);
-  });
-};
-
-module.exports.installPlugin = installPlugin;
-module.exports.updateUniversalPlugin = updateUniversalPlugin;
-module.exports.getRepoInfo = getRepoInfo;
-module.exports.getPkgInfo = getPkgInfo;
