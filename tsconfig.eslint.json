@@ -5,6 +5,6 @@
     "./packages/*/__tests__/**/*",
     "./packages/*/types/**/*",
     "./types/**/*",
-    ".eslintrc.js"
+    "./*.js"
   ]
 }
