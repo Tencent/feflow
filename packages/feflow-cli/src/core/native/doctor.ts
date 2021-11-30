@@ -2,9 +2,17 @@ import { execSync } from 'child_process';
 import axios from 'axios';
 import commandLineUsage from 'command-line-usage';
 import Feflow from '../';
-import { getRegistryUrl } from '../../shared/npm';
 
 export default (ctx: Feflow) => {
+  ctx.commander.register('doctor', 'environment information', async () => {
+    try {
+      const stdout = await showToolVersion();
+      console.log(stdout);
+    } catch (error) {
+      ctx.logger.error(error);
+    }
+  });
+
   async function showToolVersion() {
     const sections = [
       {
@@ -77,7 +85,7 @@ export default (ctx: Feflow) => {
           {
             name: 'curl npm_config_registry ',
             typeLabel: '{underline info:}',
-            description: await accessTnpmRegistry(),
+            description: await accessNpmRegistry(),
           },
         ],
       },
@@ -96,29 +104,17 @@ export default (ctx: Feflow) => {
     return resultBuf.toString('utf8').trim();
   }
 
-  async function accessTnpmRegistry() {
-    let tnpmRegistry = await getRegistryUrl('tnpm');
-    tnpmRegistry = tnpmRegistry.trim().split('\n').pop() || '';
-
+  async function accessNpmRegistry() {
     try {
-      const response = await axios.get(tnpmRegistry);
+      const npmRegistry = executeSync('npm config get registry');
+      const response = await axios.get(npmRegistry);
 
       if (response.status === 200) {
-        return 'access tnpm registry is ok!';
+        return 'access npm registry is ok!';
       }
-      return 'access tnpm registry has error, http code: ${response.statusCode}';
+      return `access npm registry has error, http code: ${response.status}`;
     } catch (error) {
-      return 'access tnpm registry has error: ${error}';
+      return `access npm registry has error: ${error}`;
     }
   }
-
-  ctx.commander.register('doctor', 'environment information', () => {
-    showToolVersion()
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log('error:', error);
-      });
-  });
 };

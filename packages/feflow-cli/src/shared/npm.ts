@@ -23,6 +23,10 @@ export function getRegistryUrl(packageManager: string) {
       output = output.replace(/\n/, '').replace(/\/$/, '');
       resolve(output);
     });
+
+    child.on('error', (err) => {
+      reject(err);
+    });
   });
 }
 
