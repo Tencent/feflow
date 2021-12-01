@@ -6,7 +6,7 @@
   "include": [
     "./src/**/*",
     "./types/**/*",
-    "package.json",
+    "./package.json",
     "../../types/**/*"
   ]
 }
