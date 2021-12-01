@@ -23,7 +23,7 @@ interface Stream {
   type?: string;
   level?: LogLevel;
   path?: string;
-  stream?: NodeJS.WritableStream | Stream;
+  stream?: ConsoleStream;
   closeOnExit?: boolean;
   period?: string;
   count?: number;
@@ -145,6 +145,8 @@ class ConsoleStream extends Writable {
     }
   }
 
+  // 此方法必须保留，因为继承一个 writable stream 时必须重写其 _write 方法
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   async _write(data: any, encoding: string, callback: (error?: Error | null) => void) {
     const { level } = data;
     const PLUGIN_NAME = `feflow-${pkgJson.name.split('/').pop()}`;
