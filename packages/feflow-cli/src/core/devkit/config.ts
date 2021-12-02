@@ -125,10 +125,6 @@ export default class Config {
       throw e;
     }
 
-    if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
-      throw new FeflowConfigFieldNotFoundError("package.json file doesn't have 'feflowConfig' field.");
-    }
-
     return packageData.feflowConfig;
   }
 
