@@ -18,6 +18,10 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
   try {
     const devkitConfig = config.loadDevkitConfig(pkgPath);
+    if (!devkitConfig) {
+      ctx.logger.debug(`devkit config not found!`);
+      return;
+    }
     const { implementation, description, optionsDescription, usage = {} } = devkitConfig.builders[command];
 
     const options = getCommandLine(optionsDescription || usage, description, command);
