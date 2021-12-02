@@ -18,11 +18,16 @@
   },
   "scripts": {
     "start": "npm run build:live",
-    "build": "rimraf lib && tsc",
+    "clean": "rimraf lib",
+    "compile": "tsc -p tsconfig.build.json",
+    "adjust-lib": "rimraf lib/feflow-report && mv lib/feflow-cli/src/* lib/ && rimraf lib/feflow-cli",
+    "prebuild": "npm run clean",
+    "build": "npm run compile",
+    "postbuild": "npm run adjust-lib",
     "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "oclif": {
     "bin": "fef",
@@ -43,6 +48,7 @@
     "@types/js-yaml": "^3.12.5",
     "@types/lockfile": "^1.0.1",
     "@types/lodash": "^4.14.161",
+    "@types/marked": "^3.0.1",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.7",
     "@types/nedb": "^1.8.10",
@@ -57,13 +63,13 @@
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
     "prettier": "2.0.5",
-    "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "^0.2.7",
     "@feflow/report": "^0.4.9",
+    "@types/marked": "^3.0.1",
     "abbrev": "^1.1.1",
     "axios": "^0.21.1",
     "bunyan": "^1.8.14",

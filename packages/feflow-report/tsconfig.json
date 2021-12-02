@@ -1,22 +1,3 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es5",
-    "noImplicitAny": false,
-    "moduleResolution": "node",
-    "sourceMap": false,
-    "outDir": "lib",
-    "baseUrl": ".",
-    "types": ["node", "mocha"],
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]
-    },
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true
-  },
-  "experimentalDecorators": true
+  "extends": "../../tsconfig.json"
 }

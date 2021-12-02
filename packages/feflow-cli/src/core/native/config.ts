@@ -1,6 +1,7 @@
+import Feflow from '../';
 import { safeDump } from '../../shared/yaml';
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   const { args, config = {}, configPath } = ctx;
   const [action, key, value] = args._;
 
@@ -10,7 +11,7 @@ module.exports = (ctx: any) => {
     () => {
       switch (action) {
         case 'get':
-          console.log(ctx.config[key]);
+          console.log(config[key]);
           break;
         case 'set':
           config[key] = value;
@@ -30,7 +31,7 @@ module.exports = (ctx: any) => {
     },
     [
       {
-        header: `Usage`,
+        header: 'Usage',
         content: [
           'fef config list                         list all configs',
           'fef config set <key> <value>            set key value',
@@ -38,7 +39,7 @@ module.exports = (ctx: any) => {
         ],
       },
       {
-        header: `Example`,
+        header: 'Example',
         content: [
           'fef config set packageManager npm       set package manager',
           'fef config set disableCheck true        disable check when has new version',

@@ -1,6 +1,6 @@
 export function getURL(base: string, url: string): string {
-  let finalBase: string = '';
-  if (!base?.startsWith('http://') && !base?.startsWith('https://')) {
+  let finalBase = base;
+  if (!base.startsWith('http://') && !base.startsWith('https://')) {
     finalBase = `http://${base}`;
   }
   try {

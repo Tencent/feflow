@@ -1,5 +1,7 @@
-import { platformType, toArray } from './base';
 import { execSync } from 'child_process';
+import { platformType, toArray } from './base';
+
+import Feflow from '../../';
 
 const valRegexp = new RegExp('\\${var:.*?}', 'ig');
 
@@ -8,23 +10,23 @@ function getVal(symbol: string): string {
 }
 
 type GlobalVal = {
-  pd?: string | undefined;
+  pd?: string;
 };
 
 export class Command {
   private val: GlobalVal = {};
 
-  private ctx: any;
+  private ctx: Feflow;
 
-  private default: string[];
+  private readonly default: string[];
 
-  private macos: string[];
+  private readonly macos: string[];
 
-  private linux: string[];
+  private readonly linux: string[];
 
-  private windows: string[];
+  private readonly windows: string[];
 
-  constructor(ctx: any, pluginPath: string, command: any) {
+  constructor(ctx: Feflow, pluginPath: string, command: any) {
     this.val.pd = pluginPath;
     this.default = toArray(command?.default, 'default');
     this.macos = toArray(command?.macos, 'macos', this.default);
@@ -34,17 +36,17 @@ export class Command {
   }
 
   getCommands(): string[] {
-    const commands = this[platformType] as string[];
-    return commands.map((c) => {
-      if (!c || typeof c !== 'string') {
-        throw `invalid command: [${c}]`;
+    const commands = this[platformType];
+    return commands.map((command) => {
+      if (!command) {
+        throw new Error(`invalid command: [${command}]`);
       }
-      return c.replace(valRegexp, (match) => {
+      return command.replace(valRegexp, (match) => {
         const v = getVal(match);
         if (this.val[v] !== undefined) {
           return this.val[v];
         }
-        throw `global variable [${v}] not currently supported`;
+        throw new Error(`global variable [${v}] not currently supported`);
       });
     });
   }
@@ -95,7 +97,7 @@ export class Command {
         commands = [];
     }
     if (commands.length === 0) {
-      throw `no command was found for the ${platformType} system`;
+      throw new Error(`no command was found for the ${platformType} system`);
     }
   }
 }

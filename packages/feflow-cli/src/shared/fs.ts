@@ -16,10 +16,10 @@ export async function copyDir(srcPath: string, tarPath: string) {
     statAsync(tarPath).catch(() => null),
   ]);
   if (!srcStats) {
-    throw `the source path [${srcPath}] does not exist`;
+    throw new Error(`the source path [${srcPath}] does not exist`);
   }
   if (!srcStats.isDirectory()) {
-    throw `the source path [${srcPath}] is not a folder`;
+    throw new Error(`the source path [${srcPath}] is not a folder`);
   }
   if (!tarStats) {
     await mkdirAsync(tarPath, { recursive: true });

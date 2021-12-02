@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-useless-escape */
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
-import objectFactory from './objectFactory';
 import { execSync } from 'child_process';
+
+import Feflow from '@feflow/cli';
+import objectFactory from './objectFactory';
 
 const platform = os.platform();
 const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
 const cwd = process.cwd();
 
-export const httpRegex = /^https?\:\/\/(?:[^\/]+)\/([^\/]+)\/([^\/.]+)(?:\.git)?/;
-export const sshRegex = /^git@(?:[^\:]+)\:([^\/]+)\/([^\/\.]+)(?:\.git)?/;
+export const httpRegex = /^https?:\/\/([^/]+)\/([^/]+)\/([^/.]+)(?:\.git)?/;
+export const sshRegex = /^git@([^:]+):([^/]+)\/([^/.]+)(?:\.git)?/;
 
 const exec = (command: string) => {
   let result = '';
@@ -23,7 +24,7 @@ const exec = (command: string) => {
     })
       .toString()
       .replace(/\n/, '');
-  } catch (err) { }
+  } catch (err) {}
   return result;
 };
 
@@ -56,9 +57,7 @@ const getUserNameFromGit = () => {
   if (!isGitAvailable) {
     return '';
   }
-  const nameFromLinux = exec('git config user.name');
-
-  return nameFromLinux;
+  return exec('git config user.name');
 };
 
 export const getUserName = () => {
@@ -108,10 +107,10 @@ export const getSystemInfo = () => {
   return JSON.stringify(systemDetailInfo);
 };
 
-export const getProject = (ctx: any, local?: boolean): string => {
-  const pkgConfig: any = ctx.pkgConfig || {};
+export const getProject = (ctx: Feflow, local?: boolean): string => {
+  const { pkgConfig } = ctx;
   let project = '';
-  if (pkgConfig.name && !local) {
+  if (pkgConfig?.name && !local) {
     // feflow context
     project = pkgConfig.name;
   } else {
@@ -121,29 +120,31 @@ export const getProject = (ctx: any, local?: boolean): string => {
       if (!project && isGitAvailable) {
         project = getProjectByGit();
       }
-    } catch (error) { }
+    } catch (error) {
+      console.error('getProject error =>', error);
+    }
   }
 
   return project;
 };
 
-export const getKeyFormFile = (file: string, key: string): any => {
+export const getKeyFormFile = (file: string, key: string) => {
   try {
     const jsonString = fs.readFileSync(file, 'utf-8');
     const jsonData = JSON.parse(jsonString);
     return jsonData[key];
   } catch (e) {
-    console.log('getKeyFormCache error =>', e);
+    console.error('getKeyFormCache error =>', e);
   }
 };
 
-export const setKeyToFile = (file: string, key: string, value: any): any => {
+export const setKeyToFile = (file: string, key: string, value: any) => {
   try {
     const jsonString = fs.readFileSync(file, 'utf-8');
     const jsonData = JSON.parse(jsonString);
     jsonData[key] = value;
     fs.writeFileSync(file, JSON.stringify(jsonData, null, 4), 'utf-8');
   } catch (e) {
-    console.log('setKeyToCache error =>', e);
+    console.error('setKeyToCache error =>', e);
   }
 };

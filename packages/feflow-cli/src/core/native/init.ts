@@ -1,11 +1,13 @@
 import fs from 'fs';
-import inquirer from 'inquirer';
 import path from 'path';
+import inquirer from 'inquirer';
 import yeoman from 'yeoman-environment';
+
+import Feflow from '../';
 import { install } from '../../shared/npm';
 
 const loadGenerator = (root: string, rootPkg: string) =>
-  new Promise<any>((resolve, reject) => {
+  new Promise<{ name: string; desc: string }[]>((resolve, reject) => {
     fs.readFile(rootPkg, 'utf8', (err, data) => {
       if (err) {
         reject(err);
@@ -24,7 +26,7 @@ const loadGenerator = (root: string, rootPkg: string) =>
             const generatorPkgPath = path.join(root, 'node_modules', name, 'package.json');
             const generatorPkgData = fs.readFileSync(generatorPkgPath, 'utf8');
             const generatorPkgJson = JSON.parse(generatorPkgData);
-            const desc = generatorPkgJson.description;
+            const desc = generatorPkgJson.description as string;
 
             return { name, desc };
           });
@@ -33,7 +35,7 @@ const loadGenerator = (root: string, rootPkg: string) =>
     });
   });
 
-const run = (ctx: any, name: string) => {
+const run = (ctx: Feflow, name: string) => {
   const { root } = ctx;
   const yeomanEnv = yeoman.createEnv();
   let generatorEntry = path.join(root, 'node_modules', name, 'app/index.js');
@@ -52,14 +54,14 @@ const run = (ctx: any, name: string) => {
   });
 };
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   ctx.commander.register('init', 'Create a new project', () => {
     const { root, rootPkg, args } = ctx;
     const { generator } = args;
-    loadGenerator(root, rootPkg).then(async (generators: any) => {
+    loadGenerator(root, rootPkg).then(async (generators) => {
       // feflow init 简化逻辑直接安装并使用脚手架
       if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
-        const isGeneratorInstalled = generators.some((item: any) => item.name === generator);
+        const isGeneratorInstalled = generators.some((item) => item.name === generator);
         if (generators.length && isGeneratorInstalled) {
           run(ctx, generator);
           return;
@@ -74,7 +76,11 @@ module.exports = (ctx: any) => {
         ];
         const answer = await inquirer.prompt(askIfInstallGenerator);
         if (answer.ifInstall) {
-          const packageManager = ctx.config?.packageManager;
+          const { packageManager } = ctx.config || {};
+          if (!packageManager) {
+            ctx.logger.error(`cannot find 'packageManager' from config`);
+            return;
+          }
           install(packageManager, ctx.root, 'install', generator, false).then(() => {
             ctx.logger.info('install success');
             run(ctx, generator);
@@ -82,7 +88,7 @@ module.exports = (ctx: any) => {
           return;
         }
       }
-      const options = generators.map((item: any) => item.desc);
+      const options = generators.map((item) => item.desc);
       if (generators.length) {
         inquirer
           .prompt([

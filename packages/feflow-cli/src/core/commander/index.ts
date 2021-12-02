@@ -1,24 +1,23 @@
 import abbrev from 'abbrev';
 
-interface CmdObj {
+export interface CmdObj {
   runFn: Function;
-  desc: string | Function;
+  desc: string | (() => string);
   options?: Array<object>;
   pluginName?: string;
 }
 
-interface Store {
-  [key: string]: CmdObj;
-}
+export type Store = Record<string, CmdObj>;
 
 interface StrObj {
   [key: string]: string;
 }
+
 export default class Commander {
-  private store: Store;
-  private invisibleStore: Store;
+  store: Store;
+  private readonly invisibleStore: Store;
   private alias: StrObj;
-  private onRegistered?: Function;
+  private readonly onRegistered?: Function;
 
   constructor(onRegistered?: Function) {
     this.store = {};
@@ -27,11 +26,11 @@ export default class Commander {
     if (typeof onRegistered === 'function') this.onRegistered = onRegistered;
   }
 
-  get(name: string) {
+  get(name?: string) {
     if (Object.prototype.toString.call(name) !== '[object String]') {
       return;
     }
-    const finalName = name.toLowerCase();
+    const finalName = name!.toLowerCase();
     const invisibleCommand = this.invisibleStore[finalName];
     if (invisibleCommand) {
       return invisibleCommand;
@@ -43,7 +42,7 @@ export default class Commander {
     return this.store;
   }
 
-  register(name: string, desc: string | Function, fn: Function, options?: Array<object>, pluginName?: string) {
+  register(name: string, desc: CmdObj['desc'], fn: Function, options?: Array<object>, pluginName?: string) {
     const storeKey = name.toLowerCase();
     this.store[storeKey] = {
       runFn: fn,

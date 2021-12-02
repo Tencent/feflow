@@ -4,19 +4,14 @@ import fs from 'fs';
 import path from 'path';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
-import packageJson from '../../shared/packageJson';
-import { FEFLOW_ROOT, UNIVERSAL_MODULES, LATEST_VERSION } from '../../shared/constant';
+import packageJson from '../../shared/package-json';
+import { FEFLOW_ROOT, LATEST_VERSION, UNIVERSAL_MODULES } from '../../shared/constant';
 import { getCurrentTag } from '../universal-pkg/repository/git';
 import loggerInstance from '../logger';
 import versionImpl from '../universal-pkg/dep/version';
-
-interface VersionObj {
-  name: string;
-  localVersion: any;
-  latestVersion: any;
-  repoPath: string;
-  installVersion: any;
-}
+import { PluginUpdateMsg, UniversalPluginUpdateMsg } from './index';
+import { PkgInfo } from '../native/install';
+import { UniversalPkg } from '../universal-pkg/dep/pkg';
 
 const { debug, silent } = process.env;
 const root = path.join(osenv.home(), FEFLOW_ROOT);
@@ -29,16 +24,18 @@ const logger = loggerInstance({
 });
 
 export const getInstalledPlugins = () => {
-  let plugins: any = [];
+  let plugins: string[] = [];
   const exist = fs.existsSync(rootPkg);
   const pluginDir = path.join(root, 'node_modules');
 
   if (!exist) {
     plugins = [];
   } else {
-    const content: any = fs.readFileSync(rootPkg);
+    const content = fs.readFileSync(rootPkg, {
+      encoding: 'utf8',
+    });
 
-    let json: any;
+    let json;
 
     try {
       json = JSON.parse(content);
@@ -49,7 +46,7 @@ export const getInstalledPlugins = () => {
       plugins = [];
     }
   }
-  return plugins.filter((name: any) => {
+  return plugins.filter((name) => {
     if (!/^feflow-plugin-|^@[^/]+\/feflow-plugin-|generator-|^@[^/]+\/generator-/.test(name)) {
       return false;
     }
@@ -67,23 +64,23 @@ export const getNpmRegistryUrl = (packageManager: string) =>
 
 export const getLatestVersion = async (name: string, packageManager: string) => {
   const registryUrl = getNpmRegistryUrl(packageManager);
-  return await packageJson(name, registryUrl).catch(() => {
-    logger.warn(`Network error, can't reach ${registryUrl}, CLI give up verison check.`);
+  return packageJson(name, registryUrl).catch(() => {
+    logger.warn(`Network error, can't reach ${registryUrl}, CLI give up version check.`);
   });
 };
 
-export const updatePluginsVersion = (packagePath: string, plugins: any) => {
+export const updatePluginsVersion = (packagePath: string, plugins: PluginUpdateMsg[]) => {
   const obj = require(packagePath);
 
-  plugins.forEach((plugin: any) => {
+  plugins.forEach((plugin) => {
     obj.dependencies[plugin.name] = plugin.latestVersion;
   });
 
   fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
 };
 
-export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) =>
-  new Promise<VersionObj>(async (resolve) => {
+export const getUniversalPluginVersion = (pkgInfo: PkgInfo, universalPkg: UniversalPkg) =>
+  new Promise<UniversalPluginUpdateMsg>(async (resolve) => {
     const repoPath = path.join(universalModulesPath, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
@@ -112,7 +109,7 @@ export const getUniversalPluginVersion = (pkgInfo: any, universalPkg: any) =>
   });
 
 export const promisify =
-  (asyncFun: Function, ...args: any) =>
+  (asyncFun: Function, ...args: any[]) =>
   () =>
     new Promise<void>(async (resolve) => {
       await asyncFun(...args);

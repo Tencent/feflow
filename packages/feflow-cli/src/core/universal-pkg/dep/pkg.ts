@@ -20,15 +20,11 @@ export class UniversalPkg {
       this.saveChange();
       return;
     }
-    try {
-      const data = fs.readFileSync(pkgFile, 'utf-8');
-      const universalPkg = JSON.parse(data);
-      this.version = universalPkg?.version || this.version;
-      this.installed = toInstalled(universalPkg?.installed);
-      this.dependencies = this.toDependencies(universalPkg?.dependencies);
-    } catch (error) {
-      throw new Error(error);
-    }
+    const data = fs.readFileSync(pkgFile, 'utf-8');
+    const universalPkg = JSON.parse(data);
+    this.version = universalPkg?.version || this.version;
+    this.installed = toInstalled(universalPkg?.installed);
+    this.dependencies = this.toDependencies(universalPkg?.dependencies);
   }
 
   getInstalled(): Map<string, string> {
@@ -150,7 +146,9 @@ export class UniversalPkg {
         return;
       }
       for (const [dependedPkg, dependedVersion] of depended) {
-        throw `refusing to uninstall ${pkg}@${version} because it is required by ${dependedPkg}@${dependedVersion} ...`;
+        throw new Error(
+          `refusing to uninstall ${pkg}@${version} because it is required by ${dependedPkg}@${dependedVersion} ...`,
+        );
       }
     }
     const dependencies = this.getDependencies(pkg, version);
@@ -263,7 +261,7 @@ export class UniversalPkg {
     this.dependencies.set(pkg, versionMap);
   }
 
-  private toObject(obj: any): object {
+  private toObject(obj: object): object {
     if (!obj || typeof obj !== 'object') {
       return obj;
     }
@@ -275,7 +273,7 @@ export class UniversalPkg {
     } else {
       Object.entries(obj).forEach(([key, value]) => {
         newObj[key] = typeof value === 'object' ? this.toObject(value) : value;
-      })
+      });
     }
     return newObj;
   }

@@ -1,24 +1,10 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": false,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "strict": true,
-    "pretty": true,
-    "suppressImplicitAnyIndexErrors": true
-  },
-  "include": [
-    "packages/*/src/**/*",
-    "packages/*/__tests__/**/*",
-    "packages/*/types/**/*",
-    "types/**/*"
-  ]
+    "baseUrl": ".",
+    "paths": {
+      "@feflow/cli": ["packages/feflow-cli/src"],
+      "@feflow/report": ["packages/feflow-report/src"],
+    }
+  }
 }

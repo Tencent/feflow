@@ -5,32 +5,33 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 import Table from 'easy-table';
-import LockFileInstance from '../../shared/lockFile';
+import Feflow from '../';
+import LockFile from '../../shared/lock-file';
 import {
-  HEART_BEAT_COLLECTION,
-  UPDATE_COLLECTION,
   BEAT_GAP,
-  CHECK_UPDATE_GAP,
   BEAT_KEY,
-  UPDATE_KEY,
   BEAT_LOCK,
-  UPDATE_LOCK,
-  SILENT_ARG,
+  CHECK_UPDATE_GAP,
   DISABLE_ARG,
+  HEART_BEAT_COLLECTION,
+  SILENT_ARG,
+  UPDATE_COLLECTION,
+  UPDATE_KEY,
+  UPDATE_LOCK,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
-const updateBeatProcess = path.join(__dirname, './updateBeat');
-const updateProcess = path.join(__dirname, './update');
+const updateBeatScript = path.join(__dirname, './updateBeat');
+const updateScript = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes(SILENT_ARG);
 const disableCheck = process.argv.slice(3).includes(DISABLE_ARG);
-let updateFile: LockFileInstance;
-let heartFile: LockFileInstance;
+let updateFile: LockFile;
+let heartFile: LockFile;
 const table = new Table();
 const uTable = new Table();
 
-function startUpdateBeat(ctx: any) {
-  const child = spawn(process.argv[0], [updateBeatProcess], {
+function startUpdateBeat(ctx: Feflow) {
+  const child = spawn(process.argv[0], [updateBeatScript], {
     detached: true, // 使子进程在父进程退出后继续运行
     stdio: 'ignore', // 保持后台运行
     env: {
@@ -45,15 +46,15 @@ function startUpdateBeat(ctx: any) {
   child.unref();
 }
 
-function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
-  const child = spawn(process.argv[0], [updateProcess], {
+function startUpdate(ctx: Feflow, cacheValidate: boolean, latestVersion: string) {
+  const child = spawn(process.argv[0], [updateScript], {
     detached: true,
     stdio: 'ignore',
     env: {
       ...process.env,
       debug: ctx.args.debug,
       silent: ctx.args.silent,
-      cacheValidate,
+      cacheValidate: String(cacheValidate),
       latestVersion,
     },
     windowsHide: true,
@@ -63,20 +64,20 @@ function startUpdate(ctx: any, cacheValidate: any, latestVersion: any) {
   child.unref();
 }
 
-async function checkUpdateMsg(ctx: any, updateData: any = {}) {
+async function checkUpdateMsg(ctx: Feflow, updateData: UpdateData) {
   const showCliUpdateM = () => {
     const updateMsg = updateData.cli_update_msg;
     if (updateMsg) {
       const { version, latestVersion } = updateMsg;
       ctx.logger.info(`@feflow/cil has been updated from ${version} to ${latestVersion}. Enjoy it.`);
-      updateData.cli_update_msg = '';
+      updateData.cli_update_msg = undefined;
     }
   };
 
   const showPluginsUpdateM = () => {
     const updatePkg = updateData.plugins_update_msg;
     if (updatePkg) {
-      updatePkg.forEach((pkg: any) => {
+      updatePkg.forEach((pkg) => {
         const { name, localVersion, latestVersion } = pkg;
         table.cell('Name', name);
         table.cell('Version', localVersion === latestVersion ? localVersion : `${localVersion} -> ${latestVersion}`);
@@ -85,13 +86,12 @@ async function checkUpdateMsg(ctx: any, updateData: any = {}) {
         table.newRow();
       });
 
-      console.log('');
       ctx.logger.info(
         'Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
       );
       if (!isSilent) console.log(table.toString());
 
-      updateData.plugins_update_msg = '';
+      updateData.plugins_update_msg = undefined;
     }
   };
 
@@ -99,7 +99,7 @@ async function checkUpdateMsg(ctx: any, updateData: any = {}) {
     const updatePkg = updateData.universal_plugins_update_msg;
 
     if (updatePkg) {
-      updatePkg.forEach((pkg: any) => {
+      updatePkg.forEach((pkg) => {
         const { name, localVersion, latestVersion } = pkg;
         uTable.cell('Name', name);
         uTable.cell('Version', localVersion === latestVersion ? localVersion : `${localVersion} -> ${latestVersion}`);
@@ -108,13 +108,12 @@ async function checkUpdateMsg(ctx: any, updateData: any = {}) {
         uTable.newRow();
       });
 
-      console.log('');
       ctx.logger.info(
         'Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
       );
       if (!isSilent) console.log(uTable.toString());
 
-      updateData.universal_plugins_update_msg = '';
+      updateData.universal_plugins_update_msg = undefined;
     }
   };
 
@@ -126,60 +125,60 @@ async function checkUpdateMsg(ctx: any, updateData: any = {}) {
   updateFile.update(UPDATE_KEY, updateData);
 }
 
-async function checkLock(updateData: any) {
+async function checkLock(updateData: UpdateData) {
   const updateLock = updateData?.update_lock;
   const nowTime = new Date().getTime();
-  if (updateLock?.time && nowTime - updateLock.time < CHECK_UPDATE_GAP) {
+  if (updateLock?.time && nowTime - Number(updateLock.time) < CHECK_UPDATE_GAP) {
     return true;
   }
   updateData.update_lock = {
-    time: String(nowTime),
+    time: nowTime,
     pid: process.pid,
   };
   await updateFile.update(UPDATE_KEY, updateData);
 
   // Optimistic Concurrency Control
-  const nowUpdateData = await updateFile.read(UPDATE_KEY);
-  const nowUpdateLock = nowUpdateData?.update_lock;
-  if (nowUpdateLock && nowUpdateLock.pid !== process.pid) {
-    return true;
-  }
-
-  return false;
+  const currUpdateData = await updateFile.read(UPDATE_KEY);
+  return isUpdateData(currUpdateData) && currUpdateData.update_lock?.pid !== process.pid;
 }
 
-export async function checkUpdate(ctx: any) {
-  const dbFile = path.join(ctx.root, UPDATE_COLLECTION);
-  const autoUpdate = ctx.args['auto-update'] || String(ctx.config.autoUpdate) === 'true';
+export async function checkUpdate(ctx: Feflow) {
+  const dbFilePath = path.join(ctx.root, UPDATE_COLLECTION);
+  const autoUpdate = ctx.args['auto-update'] || String(ctx.config?.autoUpdate) === 'true';
   const nowTime = new Date().getTime();
-  let latestVersion: any = '';
+  let latestVersion = '';
   let cacheValidate = false;
 
   if (!updateFile) {
-    const updateLock = path.join(ctx.root, UPDATE_LOCK);
-    updateFile = new LockFileInstance(dbFile, updateLock);
+    const updateLockPath = path.join(ctx.root, UPDATE_LOCK);
+    updateFile = new LockFile(dbFilePath, updateLockPath);
   }
 
-  const heartDBFile = path.join(ctx.root, HEART_BEAT_COLLECTION);
+  const heartDBFilePath = path.join(ctx.root, HEART_BEAT_COLLECTION);
   if (!heartFile) {
-    const beatLock = path.join(ctx.root, BEAT_LOCK);
-    heartFile = new LockFileInstance(heartDBFile, beatLock);
+    const beatLockPath = path.join(ctx.root, BEAT_LOCK);
+    heartFile = new LockFile(heartDBFilePath, beatLockPath);
   }
 
   const updateData = await updateFile.read(UPDATE_KEY);
-  if (updateData) {
+  if (isUpdateData(updateData)) {
     // add lock to keep only one updating process is running
     const isLocked = await checkLock(updateData);
     if (isLocked) return ctx.logger.debug('one updating process is running');
 
-    const { cliUpdateMsg, pluginsUpdateMsg, universalPluginsUpdateMsg } = updateData;
+    const {
+      cli_update_msg: cliUpdateMsg,
+      plugins_update_msg: pluginsUpdateMsg,
+      universal_plugins_update_msg: universalPluginsUpdateMsg,
+    } = updateData;
+
     if (cliUpdateMsg || pluginsUpdateMsg || universalPluginsUpdateMsg) {
       await checkUpdateMsg(ctx, updateData);
     }
 
-    const data = await heartFile.read(BEAT_KEY);
-    if (data) {
-      const lastBeatTime = parseInt(data, 10);
+    const heartBeatData = await heartFile.read(BEAT_KEY);
+    if (isHeartBeatData(heartBeatData)) {
+      const lastBeatTime = parseInt(heartBeatData, 10);
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
       ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
@@ -189,7 +188,7 @@ export async function checkUpdate(ctx: any) {
         startUpdateBeat(ctx);
       }
       // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
-      latestVersion = updateData.latest_cli_version;
+      updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
     }
   } else {
     // init
@@ -229,11 +228,11 @@ export async function checkUpdate(ctx: any) {
       {
         type: 'confirm',
         name: 'ifUpdate',
-        message: `${chalk.yellow(
-          `@feflow/cli's latest version is ${chalk.green(`${latestVersion}`)}, but your current version is ${chalk.red(
-            `${ctx.version}`,
+        message: chalk.yellow(
+          `@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your current version is ${chalk.red(
+            ctx.version,
           )}. Do you want to update it?`,
-        )}`,
+        ),
         default: true,
       },
     ];
@@ -251,7 +250,46 @@ export async function checkUpdate(ctx: any) {
       ctx.configPath,
     );
   } else {
-    ctx.logger.debug(`Current cli version is already latest.`);
+    ctx.logger.debug('Current cli version is already latest.');
     return startUpdate(ctx, cacheValidate, '');
   }
+}
+
+export interface PluginUpdateMsg {
+  name: string;
+  localVersion?: string;
+  latestVersion: string;
+}
+
+export interface UniversalPluginUpdateMsg {
+  name: string;
+  localVersion: string;
+  latestVersion: string;
+  repoPath: string;
+  installVersion: string;
+}
+
+export interface UpdateData {
+  update_lock?: {
+    time: number;
+    pid: number;
+  };
+  cli_update_msg?: {
+    version: string;
+    latestVersion: string;
+  };
+  latest_cli_version?: string;
+  plugins_update_msg?: PluginUpdateMsg[];
+  latest_plugins?: PluginUpdateMsg[];
+  universal_plugins_update_msg?: UniversalPluginUpdateMsg[];
+  latest_universal_plugins?: UniversalPluginUpdateMsg[];
+}
+
+function isUpdateData(data: unknown): data is UpdateData {
+  return !!(data && typeof data === 'object');
+}
+
+type HeartBeatData = string;
+function isHeartBeatData(data: unknown): data is HeartBeatData {
+  return typeof data === 'string';
 }

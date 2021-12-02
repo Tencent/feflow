@@ -1,9 +1,18 @@
-import commandLineUsage from 'command-line-usage';
 import { execSync } from 'child_process';
-import { getRegistryUrl } from '../../shared/npm';
 import axios from 'axios';
+import commandLineUsage from 'command-line-usage';
+import Feflow from '../';
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
+  ctx.commander.register('doctor', 'environment information', async () => {
+    try {
+      const stdout = await showToolVersion();
+      console.log(stdout);
+    } catch (error) {
+      ctx.logger.error(error);
+    }
+  });
+
   async function showToolVersion() {
     const sections = [
       {
@@ -76,13 +85,12 @@ module.exports = (ctx: any) => {
           {
             name: 'curl npm_config_registry ',
             typeLabel: '{underline info:}',
-            description: await accessTnpmRegistry(),
+            description: await accessNpmRegistry(),
           },
         ],
       },
     ];
-    const result = commandLineUsage(sections);
-    return result;
+    return commandLineUsage(sections);
   }
 
   function executeSync(command: string): string {
@@ -90,37 +98,23 @@ module.exports = (ctx: any) => {
     try {
       resultBuf = execSync(command, { windowsHide: true });
     } catch (e) {
-      return e.message;
+      return e instanceof Error ? e.message : JSON.stringify(e);
     }
 
-    const result = resultBuf.toString('utf8').trim();
-    return result;
+    return resultBuf.toString('utf8').trim();
   }
 
-  async function accessTnpmRegistry() {
-    let tnpmRegistry = await getRegistryUrl('tnpm');
-    tnpmRegistry = tnpmRegistry.trim().split('\n');
-    tnpmRegistry = tnpmRegistry[tnpmRegistry.length - 1];
-
+  async function accessNpmRegistry() {
     try {
-      const response = await axios.get(tnpmRegistry);
+      const npmRegistry = executeSync('npm config get registry');
+      const response = await axios.get(npmRegistry);
 
       if (response.status === 200) {
-        return 'access tnpm registry is ok!';
+        return 'access npm registry is ok!';
       }
-      return 'access tnpm registry has error, http code: ${response.statusCode}';
+      return `access npm registry has error, http code: ${response.status}`;
     } catch (error) {
-      return 'access tnpm registry has error: ${error}';
+      return `access npm registry has error: ${error}`;
     }
   }
-
-  ctx.commander.register('doctor', 'environment information', () => {
-    showToolVersion()
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log('error:', error);
-      });
-  });
 };

@@ -1,6 +1,7 @@
 import os from 'os';
+import Feflow from '../';
 
-module.exports = (ctx: any) => {
+export default (ctx: Feflow) => {
   ctx.commander.register('info', 'Info messages', () => {
     const { versions } = process;
     const keys = Object.keys(versions);

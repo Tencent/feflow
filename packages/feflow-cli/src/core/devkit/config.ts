@@ -3,11 +3,13 @@ import path from 'path';
 import importFresh from 'import-fresh';
 import stripComments from 'strip-json-comments';
 import yaml from 'js-yaml';
+import Feflow from '../../';
+
 import { PROJECT_CONFIG, DEVKIT_CONFIG } from '../../shared/constant';
 
 export default class Config {
-  public ctx: any;
-  constructor(ctx: any) {
+  public ctx: Feflow;
+  constructor(ctx: Feflow) {
     this.ctx = ctx;
   }
 
@@ -51,7 +53,7 @@ export default class Config {
         try {
           configData = this.loadConfigFile(filePath);
         } catch (error) {
-          if (!error || error.code !== 'FEFLOW_CONFIG_FIELD_NOT_FOUND') {
+          if (!(error instanceof FeflowConfigFieldNotFoundError)) {
             throw error;
           }
         }
@@ -65,7 +67,7 @@ export default class Config {
       }
     }
 
-    this.ctx.logger.debug(`Config file not found.`);
+    this.ctx.logger.debug('Config file not found.');
     return null;
   }
 
@@ -95,7 +97,7 @@ export default class Config {
       return importFresh(filePath);
     } catch (e) {
       this.ctx.logger.debug(`Error reading JavaScript file: ${filePath}`);
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -106,28 +108,28 @@ export default class Config {
       return yaml.safeLoad(this.readFile(filePath)) || {};
     } catch (e) {
       this.ctx.logger.debug(`Error reading YAML file: ${filePath}`);
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
 
   loadPackageJSONConfigFile(filePath: string) {
     this.ctx.logger.debug(`Loading package.json config file: ${filePath}`);
+
+    let packageData;
     try {
-      const packageData = this.loadJSONConfigFile(filePath);
-
-      if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
-        throw Object.assign(new Error("package.json file doesn't have 'feflowConfig' field."), {
-          code: 'FEFLOW_CONFIG_FIELD_NOT_FOUND',
-        });
-      }
-
-      return packageData.feflowConfig;
+      packageData = this.loadJSONConfigFile(filePath);
     } catch (e) {
       this.ctx.logger.debug(`Error reading package.json file: ${filePath}`);
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
+
+    if (!Object.hasOwnProperty.call(packageData, 'feflowConfig')) {
+      throw new FeflowConfigFieldNotFoundError("package.json file doesn't have 'feflowConfig' field.");
+    }
+
+    return packageData.feflowConfig;
   }
 
   loadJSONConfigFile(filePath: string) {
@@ -137,12 +139,7 @@ export default class Config {
       return JSON.parse(stripComments(this.readFile(filePath)));
     } catch (e) {
       this.ctx.logger.debug(`Error reading JSON file: ${filePath}`);
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
-      e.messageTemplate = 'failed-to-read-json';
-      e.messageData = {
-        path: filePath,
-        message: e.message,
-      };
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
@@ -153,12 +150,19 @@ export default class Config {
       return yaml.safeLoad(stripComments(this.readFile(filePath))) || {};
     } catch (e) {
       this.ctx.logger.debug('Error reading YAML file: %s\n%o', filePath, e);
-      e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`;
+      e instanceof Error && (e.message = `Cannot read config file: ${filePath}\nError: ${e.message}`);
       throw e;
     }
   }
 
   readFile(filePath: string) {
     return fs.readFileSync(filePath, 'utf8').replace(/^\ufeff/u, '');
+  }
+}
+
+class FeflowConfigFieldNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'FeflowConfigFieldNotFoundError';
   }
 }

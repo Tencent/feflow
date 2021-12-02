@@ -1,6 +1,11 @@
 import path from 'path';
-import { parseYaml } from '../../shared/yaml';
+
+import Feflow from '..';
+import Binp from '../universal-pkg/binp';
+import { CommandPickConfig, CommandType } from '../command-picker';
 import { Plugin } from '../universal-pkg/schema/plugin';
+
+import { parseYaml } from '../../shared/yaml';
 import {
   UNIVERSAL_MODULES,
   UNIVERSAL_PLUGIN_CONFIG,
@@ -9,22 +14,20 @@ import {
   SILENT_ARG,
   DISABLE_ARG,
 } from '../../shared/constant';
-import Binp from '../universal-pkg/binp';
-import { CommandPickConfig, CommandType } from '../command-picker';
 import { escape } from '../../shared/args';
 
 const toolRegex = /^feflow-(?:devkit|plugin)-(.*)/i;
 
 const excludeAgrs = [DISABLE_ARG, SILENT_ARG];
 
-export function loadPlugin(ctx: any, pkg: string, version: string): Plugin {
+export function loadPlugin(ctx: Feflow, pkg: string, version: string): Plugin {
   const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
   const pluginConfigPath = path.join(pluginPath, UNIVERSAL_PLUGIN_CONFIG);
   const config = parseYaml(pluginConfigPath) || {};
   return new Plugin(ctx, pluginPath, config);
 }
 
-function register(ctx: any, pkg: string, version: string, global = false) {
+function register(ctx: Feflow, pkg: string, version: string, global = false) {
   const { commander } = ctx;
   const pluginCommand = (toolRegex.exec(pkg) || [])[1] || pkg;
   if (!pluginCommand) {
@@ -67,7 +70,7 @@ function register(ctx: any, pkg: string, version: string, global = false) {
   }
 }
 
-export async function execPlugin(ctx: any, pkg: string, version: string) {
+export async function execPlugin(ctx: Feflow, pkg: string, version: string) {
   const pluginPath = path.join(ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
   const plugin = loadPlugin(ctx, pkg, version);
   // make it find dependencies
@@ -88,13 +91,13 @@ export async function execPlugin(ctx: any, pkg: string, version: string) {
   plugin.postRun.runLess();
 }
 
-export default async function loadUniversalPlugin(ctx: any): Promise<any> {
+export default function loadUniversalPlugin(ctx: Feflow) {
   const { universalPkg } = ctx;
   const pickConfig = new CommandPickConfig(ctx);
 
   const installed = universalPkg.getInstalled();
   for (const [pkg, version] of installed) {
-    pickConfig.registSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store, pkg, version);
+    pickConfig.registerSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store, pkg, version);
     register(ctx, pkg, version, true);
   }
 
@@ -105,6 +108,6 @@ export default async function loadUniversalPlugin(ctx: any): Promise<any> {
     }
   }
 
-  pickConfig.registSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store);
+  pickConfig.registerSubCommand(CommandType.UNIVERSAL_PLUGIN_TYPE, ctx.commander.store);
   pickConfig.updateCache(CommandType.UNIVERSAL_PLUGIN_TYPE);
 }

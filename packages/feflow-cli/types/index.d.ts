@@ -1,4 +1,3 @@
-declare module '@feflow/report';
-declare module 'request-promise';
-declare module 'cli-html-c';
-declare module 'marked';
+declare module 'cli-html-c' {
+  export default function cliHtml(htmlStr: string): string;
+}

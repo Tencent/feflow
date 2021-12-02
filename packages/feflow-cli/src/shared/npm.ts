@@ -1,7 +1,7 @@
 import spawn from 'cross-spawn';
 
 export function getRegistryUrl(packageManager: string) {
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const command = packageManager;
     const args = ['config', 'get', 'registry'];
 
@@ -23,11 +23,15 @@ export function getRegistryUrl(packageManager: string) {
       output = output.replace(/\n/, '').replace(/\/$/, '');
       resolve(output);
     });
+
+    child.on('error', (err) => {
+      reject(err);
+    });
   });
 }
 
-export function install(packageManager: string, root: any, cmd: any, dependencies: any, verbose: boolean) {
-  return new Promise((resolve, reject) => {
+export function install(packageManager: string, root: string, cmd: string, dependencies: string[], verbose: boolean) {
+  return new Promise<void>((resolve, reject) => {
     const command = packageManager;
     const args = [cmd, '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
 

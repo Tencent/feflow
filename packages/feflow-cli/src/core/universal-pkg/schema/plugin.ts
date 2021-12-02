@@ -1,6 +1,7 @@
 import { Command } from './command';
 import { Dependencies } from './dependencies';
 import { platform } from './base';
+import Feflow from '../../';
 
 export class Plugin {
   path: string;
@@ -38,11 +39,11 @@ export class Plugin {
   // 是否属于语言运行时，语言运行时不需要经过feflow代理执行
   langRuntime = false;
 
-  private readonly ctx: any;
+  private readonly ctx: Feflow;
 
-  constructor(ctx: any, pluginPath: string, config: any) {
+  constructor(ctx: Feflow, pluginPath: string, config: any) {
     if (!platform) {
-      throw `current operating system [${platform}] is not supported`;
+      throw new Error(`current operating system [${platform}] is not supported`);
     }
     this.ctx = ctx;
     this.path = pluginPath;
@@ -50,7 +51,7 @@ export class Plugin {
     this.desc = config?.desc;
     this.dep = new Dependencies(config?.dep);
     this.command = new Command(this.ctx, this.path, config?.command);
-    this.autoUpdate = config['auto-update'] || false;
+    this.autoUpdate = config?.['auto-update'] || false;
     this.test = new Command(this.ctx, this.path, config?.test);
     this.preInstall = new Command(this.ctx, this.path, config?.['pre-install']);
     this.postInstall = new Command(this.ctx, this.path, config?.['post-install']);

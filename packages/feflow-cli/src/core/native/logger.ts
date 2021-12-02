@@ -1,4 +1,6 @@
-module.exports = (ctx: any) => {
+import Feflow from '../';
+
+export default (ctx: Feflow) => {
   ctx.commander.register('logger', 'logger Message', () => {
     const args = ctx.args._ || [];
     const [types, msg] = args;

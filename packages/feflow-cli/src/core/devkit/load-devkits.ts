@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import Config from './config';
-import getCommandLine from './commandOptions';
-import { FEFLOW_ROOT } from '../../shared/constant';
+import getCommandLine from './command-options';
+import Feflow from '../';
 import logger from '../logger';
+import { FEFLOW_ROOT } from '../../shared/constant';
 
-const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: any, ctx: any) => {
+interface CommandConfig {
+  builder: string;
+  options?: object;
+}
+
+const registerDevkitCommand = (command: string, commandConfig: CommandConfig, directoryPath: string, ctx: Feflow) => {
   const { builder } = commandConfig;
   const [packageName] = builder.split(':', 2);
   const config = new Config(ctx);
@@ -50,32 +56,29 @@ const registerDevkitCommand = (command: any, commandConfig: any, directoryPath: 
   }
 };
 
-export default function loadDevkits(ctx: any): Promise<void> {
+export default function loadDevkits(ctx: Feflow) {
   const config = new Config(ctx);
   const configData = config.loadProjectConfig();
   const directoryPath = config.getProjectDirectory();
 
-  return new Promise<void>((resolve) => {
-    if (configData) {
-      ctx.projectPath = directoryPath;
-      ctx.projectConfig = configData;
-      if (configData.devkit?.commands) {
-        const commandsConfig = configData.devkit.commands;
-        Object.entries(commandsConfig).forEach(([key, commandConfig]) => {
-          registerDevkitCommand(key, commandConfig, directoryPath, ctx);
-        });
-      } else {
-        if (path.basename(directoryPath) === FEFLOW_ROOT) {
-          ctx.logger.debug('Run commands in .fef root will not work.');
-        } else {
-          ctx.logger.error(
-            `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
-          );
-        }
-      }
+  if (configData) {
+    ctx.projectPath = directoryPath;
+    ctx.projectConfig = configData;
+    if (configData.devkit?.commands) {
+      const commandsConfig = configData.devkit.commands as Record<string, CommandConfig>;
+      Object.entries(commandsConfig).forEach(([key, commandConfig]) => {
+        registerDevkitCommand(key, commandConfig, directoryPath, ctx);
+      });
     } else {
-      ctx.logger.debug('Run commands not in a feflow project.');
+      if (path.basename(directoryPath) === FEFLOW_ROOT) {
+        ctx.logger.debug('Run commands in .fef root will not work.');
+      } else {
+        ctx.logger.error(
+          `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
+        );
+      }
     }
-    resolve();
-  });
+  } else {
+    ctx.logger.debug('Run commands not in a feflow project.');
+  }
 }

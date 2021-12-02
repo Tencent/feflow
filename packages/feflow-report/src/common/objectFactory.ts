@@ -23,7 +23,7 @@ const objectFactory: ObjectFactory = {
     if (!objValue) {
       return this;
     }
-    if (this.obj){
+    if (this.obj) {
       this.obj[key] = objValue;
     }
     if (cache[key] === undefined && this.obj) {

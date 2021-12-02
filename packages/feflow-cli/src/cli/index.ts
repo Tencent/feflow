@@ -1,9 +1,9 @@
-import Feflow from '../core';
+import fs from 'fs';
+import path from 'path';
 import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
-import fs from 'fs';
-import path from 'path';
+import bunyan from 'bunyan';
 import stripComments from 'strip-json-comments';
 import {
   HOOK_TYPE_BEFORE,
@@ -14,43 +14,11 @@ import {
   LOG_FILE,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
-import bunyan from 'bunyan';
+import Feflow from '../core';
 
 const pkg = JSON.parse(
   stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
 );
-
-function ensureNodeVersion(requiredVersion: string, id: string): void {
-  if (!semver.satisfies(process.version, requiredVersion)) {
-    console.error(
-      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
-    );
-    process.exit(1);
-  }
-}
-
-function printBanner(logger: bunyan) {
-  figlet.text(
-    'feflow',
-    {
-      font: '3D-ASCII',
-      horizontalLayout: 'default',
-      verticalLayout: 'default',
-    },
-    (err, data) => {
-      if (err) {
-        logger.error(err);
-        process.exit(2);
-      }
-      logger.info(`\n${data}`);
-      logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
-      logger.info(
-        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
-      );
-      logger.info(' Run fef --help to see usage.                                     ');
-    },
-  );
-}
 
 export default function entry() {
   const args = minimist(process.argv.slice(2), {
@@ -88,24 +56,24 @@ export default function entry() {
     return;
   }
   // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', (err) => {
-    logger.debug(err);
-    feflow?.reporter?.reportCommandError(err);
-    feflow.fefError?.printError({ error: err, msg: '', hideError: true });
+  process.on('unhandledRejection', (reason) => {
+    logger.debug(reason);
+    feflow?.reporter?.reportCommandError(new Error(String(reason)));
+    feflow.fefError?.printError({ error: reason, msg: '', hideError: true });
   });
 
   return feflow.init(cmd).then(() => {
     const localCmd = commander.get(cmd);
     // 本地无法找到命令执行文件获取失败时转为help命令
     if (!localCmd) {
-      cmd && logger.debug(`Cant found command: ${cmd}`);
+      cmd && logger.debug(`Can't found command: ${cmd}`);
       cmd = 'help';
     }
     feflow.cmd = cmd;
     feflow.hook.emit(HOOK_TYPE_BEFORE);
     feflow.hook.on(EVENT_COMMAND_BEGIN, () =>
       feflow
-        .call(cmd, feflow)
+        .invoke(cmd, feflow)
         .then(() => {
           feflow.hook.emit(HOOK_TYPE_AFTER);
           logger.debug(`call ${cmd} success`);
@@ -121,4 +89,36 @@ export default function entry() {
         }),
     );
   });
+}
+
+function ensureNodeVersion(requiredVersion: string, id: string): void {
+  if (!semver.satisfies(process.version, requiredVersion)) {
+    console.error(
+      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
+    );
+    process.exit(1);
+  }
+}
+
+function printBanner(logger: bunyan) {
+  figlet.text(
+    'feflow',
+    {
+      font: '3D-ASCII',
+      horizontalLayout: 'default',
+      verticalLayout: 'default',
+    },
+    (err, data) => {
+      if (err) {
+        logger.error(err);
+        process.exit(2);
+      }
+      logger.info(`\n${data}`);
+      logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
+      logger.info(
+        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
+      );
+      logger.info(' Run fef --help to see usage.                                     ');
+    },
+  );
 }

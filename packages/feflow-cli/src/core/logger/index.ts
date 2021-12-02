@@ -1,30 +1,20 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import bunyan from 'bunyan';
-import chalk from 'chalk';
 import { Writable } from 'stream';
 import path from 'path';
-import { LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG } from '../../shared/constant';
 import osenv from 'osenv';
 import { spawn } from 'child_process';
+import chalk from 'chalk';
+import { LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG } from '../../shared/constant';
 import { getKeyFormFile, setKeyToFile } from '../../shared/file';
+import pkgJson from '../../../package.json';
 
 const root = path.join(osenv.home(), FEFLOW_ROOT);
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION_LOG);
-let logReportProcess: any = null;
+let logReportProcess: ReturnType<typeof spawn> | null = null;
 const reportLog = path.join(__dirname, './report');
 let hasCreateHeart = false;
 const logReportDbKey = 'log_report_beat_time';
 const { debug, silent } = process.env;
-const pkg = require('../../../package.json');
-const PLUGE_NAME = `feflow-${pkg.name.split('/').pop()}`;
-let logger: any;
-interface IObject {
-  [key: string]: string;
-}
-
-interface Args {
-  debug: Boolean;
-}
 
 type LogLevelString = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 type LogLevel = LogLevelString | number;
@@ -33,12 +23,61 @@ interface Stream {
   type?: string;
   level?: LogLevel;
   path?: string;
-  stream?: NodeJS.WritableStream | Stream;
+  stream?: ConsoleStream;
   closeOnExit?: boolean;
   period?: string;
   count?: number;
   name?: string;
-  reemitErrorEvents?: boolean;
+  reEmitErrorEvents?: boolean;
+}
+
+interface LoggerOptions {
+  name?: string;
+  silent?: boolean;
+  debug?: boolean;
+}
+
+export interface Logger extends bunyan {
+  name?: string;
+}
+
+export default function createLogger(options: LoggerOptions): Logger {
+  const streams: Array<Stream> = [];
+
+  streams.push({
+    level: 'error',
+    path: path.join(root, LOG_FILE),
+  });
+  streams.push({
+    level: 'info',
+    path: path.join(root, LOG_FILE),
+  });
+  if (!options.silent) {
+    streams.push({
+      type: 'raw',
+      level: options.debug ? 'trace' : 'info',
+      stream: new ConsoleStream(options),
+    });
+  }
+
+  if (options.debug) {
+    streams.push({
+      level: 'trace',
+      path: path.join(root, 'debug.log'),
+    });
+  }
+
+  return bunyan.createLogger({
+    name: options.name || 'feflow-cli',
+    streams,
+    serializers: {
+      err: bunyan.stdSerializers.err,
+    },
+  });
+}
+
+interface IObject {
+  [key: string]: string;
 }
 
 const levelNames: IObject = {
@@ -62,7 +101,7 @@ const levelColors: IObject = {
 class ConsoleStream extends Writable {
   private debug: Boolean;
 
-  constructor(args: Args) {
+  constructor(args: LoggerOptions) {
     super({
       objectMode: true,
     });
@@ -106,9 +145,12 @@ class ConsoleStream extends Writable {
     }
   }
 
-  async writeDown(data: any, enc: any, callback: any) {
+  // 此方法必须保留，因为继承一个 writable stream 时必须重写其 _write 方法
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  async _write(data: any, encoding: string, callback: (error?: Error | null) => void) {
     const { level } = data;
-    const loggerName = data.name || logger?.name.split('/').pop() || PLUGE_NAME;
+    const PLUGIN_NAME = `feflow-${pkgJson.name.split('/').pop()}`;
+    const loggerName = data.name || PLUGIN_NAME;
     let msg = '';
     if (this.debug) {
       msg += `${chalk.gray(data.time)} `;
@@ -134,40 +176,4 @@ class ConsoleStream extends Writable {
     this.startReport();
     callback();
   }
-}
-
-export default function createLogger(options: any = {}) {
-  const streams: Array<Stream> = [];
-
-  streams.push({
-    level: 'error',
-    path: path.join(root, LOG_FILE),
-  });
-  streams.push({
-    level: 'info',
-    path: path.join(root, LOG_FILE),
-  });
-  if (!options.silent) {
-    streams.push({
-      type: 'raw',
-      level: options.debug ? 'trace' : 'info',
-      stream: new ConsoleStream(options),
-    });
-  }
-
-  if (options.debug) {
-    streams.push({
-      level: 'trace',
-      path: path.join(root, 'debug.log'),
-    });
-  }
-
-  logger = bunyan.createLogger({
-    name: options.name || 'feflow-cli',
-    streams,
-    serializers: {
-      err: bunyan.stdSerializers.err,
-    },
-  });
-  return logger;
 }

@@ -1,33 +1,24 @@
 import fs from 'fs';
 import yaml from 'js-yaml';
 
-export function parseYaml(path: any) {
+export function parseYaml(path: string) {
   let config;
 
   if (fs.existsSync(path)) {
-    try {
-      config = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
-    } catch (e) {
-      throw new Error(e);
-    }
+    config = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
   }
 
   return config;
 }
 
-export function safeDump(obj: object, path: any) {
-  let doc;
-  try {
-    doc = yaml.safeDump(obj, {
-      styles: {
-        '!!null': 'canonical',
-      },
-      sortKeys: true,
-      skipInvalid: true,
-    });
-  } catch (e) {
-    throw new Error(e);
-  }
+export function safeDump(obj: object, path: string) {
+  const doc = yaml.safeDump(obj, {
+    styles: {
+      '!!null': 'canonical',
+    },
+    sortKeys: true,
+    skipInvalid: true,
+  });
 
   return fs.writeFileSync(path, doc, 'utf-8');
 }

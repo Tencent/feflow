@@ -4,12 +4,12 @@ import chalk from 'chalk';
 import { get } from 'lodash';
 
 import Feflow from '../core';
-import { Config } from '../shared/file';
+import { Config } from './file';
 import CommandPicker, { CommandType } from '../core/command-picker';
 
 type PrintError = {
-  error: any | Error;
-  msg: string;
+  error: unknown | Error;
+  msg?: string;
   pluginPath?: string;
   hideError?: boolean;
 };
@@ -41,7 +41,7 @@ export class FefError {
   checkPick() {
     if (this.picker) return true;
     if (this.context.commandPick) {
-      this.picker = this.context.commandPick as CommandPicker;
+      this.picker = this.context.commandPick;
     }
     return !!this.picker;
   }
@@ -66,8 +66,8 @@ export class FefError {
       if (!obj.hideError) {
         msg = `${msg || error}`;
         this.context.logger[
-          [CommandType.UNIVERSAL_PLUGIN_TYPE, CommandType.UNKNOWN_TYPE].indexOf(cmdType) > 0 ? 'debug' : 'error'
-        ]({ err: error }, msg, chalk.magenta(error));
+          [CommandType.UNIVERSAL_PLUGIN_TYPE, CommandType.UNKNOWN_TYPE].includes(cmdType) ? 'debug' : 'error'
+        ]({ err: error }, msg, chalk.magenta(`${error}`));
       } else if (msg) {
         // 兼容多语言插件
         this.context.logger.info(`${msg}`);
@@ -81,7 +81,7 @@ export class FefError {
     if (!obj.hideError) {
       msg = `${msg || error}
       插件执行发生异常，请查看文档获取更多内容：${chalk.green(docs)}`;
-      this.context.logger.error({ err: error }, msg, chalk.magenta(error));
+      this.context.logger.error({ err: error }, msg, chalk.magenta(`${error}`));
     } else {
       // 兼容多语言插件
       msg = `${msg} 请查看文档获取更多内容：${chalk.green(docs)}`;
@@ -93,7 +93,7 @@ export class FefError {
     let docs = '';
     let configPath = '';
     let type = CommandType.PLUGIN_TYPE;
-    let finalPluginPath: string = '';
+    let finalPluginPath = '';
     if (!pluginPath) {
       if (this.picker !== null) {
         const { path, type: cmdType } = this.picker.getCmdInfo();
@@ -111,7 +111,7 @@ export class FefError {
       configPath = join(finalPluginPath, this.pluginFile);
     } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       this.unversalpluginFile.forEach((ext) => {
-        const tmpPath = join(finalPluginPath as string, ext);
+        const tmpPath = join(finalPluginPath, ext);
         if (existsSync(tmpPath)) configPath = tmpPath;
       });
     } else if (type === CommandType.NATIVE_TYPE) {
