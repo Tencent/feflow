@@ -9,7 +9,8 @@
         "*.log",
         "*.md",
         "*-lock.json"
-      ]
+      ],
+      "message": "chore(release): publish"
     }
   },
   "version": "independent"
