@@ -21,7 +21,7 @@ import {
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
-const updateBeatScript = path.join(__dirname, './updateBeat');
+const updateBeatScript = path.join(__dirname, './update-beat');
 const updateScript = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes(SILENT_ARG);
 const disableCheck = process.argv.slice(3).includes(DISABLE_ARG);
