@@ -12,7 +12,7 @@ interface CommandConfig {
 }
 
 const registerDevkitCommand = (command: string, commandConfig: CommandConfig, directoryPath: string, ctx: Feflow) => {
-  const { builder } = commandConfig;
+  const { builder, options: builderOptions } = commandConfig;
   const [packageName] = builder.split(':', 2);
   const config = new Config(ctx);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
@@ -37,7 +37,7 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
         async () => {
           for (const implementationItem of implementation) {
             const action = path.join(pkgPath, implementationItem);
-            await require(action)(Object.assign({}, ctx, { logger: devkitLogger }));
+            await require(action)(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
           }
         },
         options,
@@ -49,7 +49,7 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
         command,
         description,
         () => {
-          require(action)(Object.assign({}, ctx, { logger: devkitLogger }));
+          require(action)(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
         },
         options,
         packageName,
