@@ -151,13 +151,13 @@ export async function checkUpdate(ctx: Feflow) {
 
   if (!updateFile) {
     const updateLockPath = path.join(ctx.root, UPDATE_LOCK);
-    updateFile = new LockFile(dbFilePath, updateLockPath);
+    updateFile = new LockFile(dbFilePath, updateLockPath, ctx.logger);
   }
 
   const heartDBFilePath = path.join(ctx.root, HEART_BEAT_COLLECTION);
   if (!heartFile) {
     const beatLockPath = path.join(ctx.root, BEAT_LOCK);
-    heartFile = new LockFile(heartDBFilePath, beatLockPath);
+    heartFile = new LockFile(heartDBFilePath, beatLockPath, ctx.logger);
   }
 
   const updateData = await updateFile.read(UPDATE_KEY);

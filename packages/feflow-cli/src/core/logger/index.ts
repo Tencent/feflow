@@ -31,7 +31,7 @@ interface Stream {
   reEmitErrorEvents?: boolean;
 }
 
-interface LoggerOptions {
+export interface LoggerOptions {
   name?: string;
   silent?: boolean;
   debug?: boolean;

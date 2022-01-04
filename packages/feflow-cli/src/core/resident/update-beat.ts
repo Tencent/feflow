@@ -38,20 +38,20 @@ const pkg = require('../../../package.json');
 const { version } = pkg;
 
 const { debug, silent } = process.env;
-const root = path.join(osenv.home(), FEFLOW_ROOT);
-const configPath = path.join(root, '.feflowrc.yml');
-const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
-const dbFile = path.join(root, UPDATE_COLLECTION);
-const updateLock = path.join(root, UPDATE_LOCK);
-const updateFile = new LockFile(dbFile, updateLock);
-const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
-const beatLock = path.join(root, BEAT_LOCK);
-const heartFile = new LockFile(heartDBFile, beatLock);
 const logger = createLogger({
   name: 'feflow-update-beat-process',
   debug: Boolean(debug),
   silent: Boolean(silent),
 });
+const root = path.join(osenv.home(), FEFLOW_ROOT);
+const configPath = path.join(root, '.feflowrc.yml');
+const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
+const dbFile = path.join(root, UPDATE_COLLECTION);
+const updateLock = path.join(root, UPDATE_LOCK);
+const updateFile = new LockFile(dbFile, updateLock, logger);
+const heartDBFile = path.join(root, HEART_BEAT_COLLECTION);
+const beatLock = path.join(root, BEAT_LOCK);
+const heartFile = new LockFile(heartDBFile, beatLock, logger);
 
 // 设置特殊的静默进程名字
 process.title = 'feflow-update-beat-process';

@@ -41,6 +41,11 @@ import Feflow from '../index';
 process.title = 'feflow-update-process';
 
 const { cacheValidate, debug, silent, latestVersion } = process.env;
+const logger = createLogger({
+  name: 'feflow-update-process',
+  debug: Boolean(debug),
+  silent: Boolean(silent),
+});
 const root = path.join(osenv.home(), FEFLOW_ROOT);
 const rootPkg = path.join(root, 'package.json');
 const configPath = path.join(root, '.feflowrc.yml');
@@ -52,13 +57,7 @@ const lib = path.join(root, FEFLOW_LIB);
 const dbFile = path.join(root, UPDATE_COLLECTION);
 const updateLock = path.join(root, UPDATE_LOCK);
 const universalPkg = new UniversalPkg(universalPkgPath);
-const updateFile = new LockFile(dbFile, updateLock);
-
-const logger = createLogger({
-  name: 'feflow-update-process',
-  debug: Boolean(debug),
-  silent: Boolean(silent),
-});
+const updateFile = new LockFile(dbFile, updateLock, logger);
 
 if (!isValidConfig(config)) {
   process.exit();

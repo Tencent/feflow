@@ -1,6 +1,6 @@
 import fs from 'fs';
 import lockFile from 'lockfile';
-import createLogger, { Logger } from '../core/logger';
+import { Logger } from '../core/logger';
 
 export default class LockFile {
   private readonly filePath: string;
@@ -10,13 +10,10 @@ export default class LockFile {
   private readonly tryGap: number;
   private tryCount: number;
 
-  constructor(filePath: string, lockKey: string) {
+  constructor(filePath: string, lockKey: string, logger: Logger) {
     this.filePath = filePath;
     this.lockKey = lockKey;
-    this.logger = createLogger({
-      debug: false,
-      silent: true,
-    });
+    this.logger = logger;
     this.tryMax = 50;
     this.tryGap = 100;
     this.tryCount = 0;
@@ -128,10 +125,10 @@ export default class LockFile {
   }
 
   private checkIfCanRead(cb: Function): void {
-    lockFile.check(this.lockKey, (err, status) => {
+    lockFile.check(this.lockKey, (err, isLocked) => {
       if (err) return this.logger.error(`check ${this.lockKey} error: `, err);
-      if (status) {
-        // another writing is runing
+      if (isLocked) {
+        // another writing is running
         if (this.tryCount >= this.tryMax) {
           this.tryCount = 0;
           return this.logger.error(`file read time out ${this.filePath}`);
@@ -141,7 +138,7 @@ export default class LockFile {
           this.checkIfCanRead(cb);
         }, this.tryGap);
       } else {
-        // read immediatelly
+        // read immediately
         this.tryCount = 0;
         cb();
       }
