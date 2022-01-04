@@ -72,15 +72,18 @@ export async function clearGitCert(url: string) {
   if (!/https?:\/\/(.*?(:.*?)?@)/.test(url)) {
     finalUrl = await transformUrl(url);
   }
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const child = spawn('git', ['credential', 'reject'], {
       windowsHide: true,
-      timeout: 60 * 1000 * 1,
+      timeout: 60 * 1000,
     });
     child.stdin?.write(`url=${finalUrl}`);
     child.stdin?.end();
     child.on('close', (code) => {
       resolve(code);
+    });
+    child.on('error', (err) => {
+      reject(err);
     });
   });
 }

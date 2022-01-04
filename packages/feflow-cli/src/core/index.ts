@@ -152,14 +152,14 @@ export default class Feflow {
 
   initPackageManager() {
     const { root, logger } = this;
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       if (!this.config?.packageManager) {
         const packageManagers = ['npm', 'tnpm', 'yarn', 'cnpm'];
         const defaultPackageManager = packageManagers.find((packageManager) => isInstalledPM(packageManager));
         if (!defaultPackageManager) {
           // 无包管理器直接结束
           logger.error('You must installed a package manager');
-          return;
+          return reject();
         }
         const configPath = path.join(root, '.feflowrc.yml');
         const config = Object.assign({}, parseYaml(configPath), {

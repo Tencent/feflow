@@ -27,11 +27,11 @@ export default class LockFile {
       fs.stat(this.filePath, (err, stats) => {
         if (err) {
           this.logger.error(err);
-          reject(err);
+          return reject(err);
         }
 
         if (!stats.isFile()) {
-          reject('not a file');
+          return reject('not a file');
         }
 
         this.checkIfCanRead(() => {
@@ -43,7 +43,7 @@ export default class LockFile {
             (err, data) => {
               if (err) {
                 this.logger.error(err);
-                reject(err);
+                return reject(err);
               }
 
               let finalData = data;
@@ -86,7 +86,7 @@ export default class LockFile {
         this.lock((err) => {
           if (err) {
             this.unlock();
-            reject(err);
+            return reject(err);
           }
 
           let origData = fs.readFileSync(this.filePath, 'utf-8');
@@ -103,7 +103,7 @@ export default class LockFile {
               this.unlock();
               if (err) {
                 this.logger.error(err);
-                reject(err);
+                return reject(err);
               }
               resolve(origDataObj);
             });

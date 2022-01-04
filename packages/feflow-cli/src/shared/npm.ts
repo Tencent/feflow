@@ -49,6 +49,9 @@ export function install(packageManager: string, root: string, cmd: string, depen
       }
       resolve();
     });
+    child.on('error', (err) => {
+      reject(err);
+    });
   });
 }
 

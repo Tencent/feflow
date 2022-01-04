@@ -93,11 +93,8 @@ class Report {
     this.report(this.cmd, this.args, true);
   }
 
-  reportCommandError(err: Error) {
-    if (!err) {
-      return;
-    }
-    setKeyToFile(this.cachePath, 'errMsg', err.message);
+  reportCommandError(err: Error | unknown) {
+    setKeyToFile(this.cachePath, 'errMsg', `${err}`);
     if (getKeyFormFile(this.cachePath, 'reCallId') && !getKeyFormFile(this.cachePath, 'hasRecalled')) {
       this.report(this.cmd, this.args, true);
     } else {

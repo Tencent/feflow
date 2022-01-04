@@ -20,7 +20,7 @@ const pkg = JSON.parse(
   stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
 );
 
-export default function entry() {
+export default async function entry() {
   const args = minimist(process.argv.slice(2), {
     alias: {
       h: 'help',
@@ -43,51 +43,56 @@ export default function entry() {
   fileExit(path.join(FEFLOW_HOME, LOG_FILE));
 
   const feflow = new Feflow(args);
-  const { commander, logger } = feflow;
-  let cmd: string | undefined = args._.shift();
-  if (!cmd && args.version) {
-    feflow.reporter.report('version', args);
+  const { commander, logger, reporter, fefError } = feflow;
+
+  const handleUnexpectedError = (
+    ...args: Parameters<NodeJS.UncaughtExceptionListener | NodeJS.UnhandledRejectionListener>
+  ) => {
+    const [err] = args;
+    logger.error(err);
+    reporter.reportCommandError(err);
+    fefError.printError({ error: err, msg: '', hideError: true });
+  };
+  // 捕获promise异常退出或catch中抛出异常
+  process.on('unhandledRejection', handleUnexpectedError);
+  // 捕获未被 catch 的异常
+  process.on('uncaughtException', handleUnexpectedError);
+
+  let cmdName: string | undefined = args._.shift();
+  if (!cmdName && args.version) {
+    reporter.report('version', args);
     logger.info(pkg.version);
     return;
   }
 
-  if (!cmd && !args.help) {
+  if (!cmdName && !args.help) {
     printBanner(logger);
     return;
   }
-  // 捕获promise异常退出或catch中抛出异常
-  process.on('unhandledRejection', (reason) => {
-    logger.debug(reason);
-    feflow?.reporter?.reportCommandError(new Error(String(reason)));
-    feflow.fefError?.printError({ error: reason, msg: '', hideError: true });
-  });
 
-  return feflow.init(cmd).then(() => {
-    const localCmd = commander.get(cmd);
-    // 本地无法找到命令执行文件获取失败时转为help命令
-    if (!localCmd) {
-      cmd && logger.debug(`Can't found command: ${cmd}`);
-      cmd = 'help';
+  await feflow.init(cmdName);
+  const localCmd = commander.get(cmdName);
+  // 本地无法找到命令执行文件获取失败时转为help命令
+  if (!localCmd) {
+    cmdName && logger.debug(`Can't found command: ${cmdName}`);
+    cmdName = 'help';
+  }
+  feflow.cmd = cmdName;
+  feflow.hook.emit(HOOK_TYPE_BEFORE);
+  feflow.hook.on(EVENT_COMMAND_BEGIN, async () => {
+    try {
+      await feflow.invoke(cmdName, feflow);
+      feflow.hook.emit(HOOK_TYPE_AFTER);
+      logger.debug(`call ${cmdName} success`);
+    } catch (err) {
+      logger.error(err);
+      reporter.reportCommandError(err);
+      fefError.printError({
+        error: err,
+        msg: '%s',
+      });
+      process.exit(2);
     }
-    feflow.cmd = cmd;
-    feflow.hook.emit(HOOK_TYPE_BEFORE);
-    feflow.hook.on(EVENT_COMMAND_BEGIN, () =>
-      feflow
-        .invoke(cmd, feflow)
-        .then(() => {
-          feflow.hook.emit(HOOK_TYPE_AFTER);
-          logger.debug(`call ${cmd} success`);
-        })
-        .catch((err) => {
-          logger.debug(err);
-          feflow?.reporter?.reportCommandError(err);
-          feflow.fefError.printError({
-            error: err,
-            msg: '%s',
-          });
-          process.exit(err.status || 2);
-        }),
-    );
   });
 }
 
@@ -115,10 +120,8 @@ function printBanner(logger: bunyan) {
       }
       logger.info(`\n${data}`);
       logger.info(`Feflow，current version: v${pkg.version}, homepage: https://github.com/Tencent/feflow`);
-      logger.info(
-        ' (c) powered by Tencent, aims to improve front end workflow.                                       ',
-      );
-      logger.info(' Run fef --help to see usage.                                     ');
+      logger.info('(c) powered by Tencent, aims to improve front end workflow.');
+      logger.info('Run fef --help to see usage.');
     },
   );
 }

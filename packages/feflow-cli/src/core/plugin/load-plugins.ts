@@ -38,7 +38,7 @@ export default function loadPlugins(ctx: Feflow): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const [err, plugins] = getPluginsList(ctx);
     if (err) {
-      reject(err);
+      return reject(err);
     }
     applyPlugins(plugins)(ctx);
     resolve();
