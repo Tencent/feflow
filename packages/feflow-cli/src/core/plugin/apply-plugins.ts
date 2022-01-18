@@ -6,7 +6,7 @@ import path from 'path';
 import compose from './compose';
 
 import Feflow from '../';
-import { CommandPickConfig, CommandType } from '../command-picker';
+import { CacheController, CommandType } from '../command-picker';
 import createLogger from '../logger';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import { parseYaml } from '../../shared/yaml';
@@ -17,7 +17,7 @@ export default function applyPlugins(plugins: string[]) {
     if (!plugins.length) {
       return;
     }
-    const pickConfig = new CommandPickConfig(ctx);
+    const pickConfig = new CacheController(ctx);
 
     const chain = plugins.map((name) => {
       const home = path.join(osenv.home(), FEFLOW_ROOT);

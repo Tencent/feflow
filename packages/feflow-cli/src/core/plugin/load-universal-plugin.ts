@@ -2,7 +2,7 @@ import path from 'path';
 
 import Feflow from '..';
 import Binp from '../universal-pkg/binp';
-import { CommandPickConfig, CommandType } from '../command-picker';
+import { CacheController, CommandType } from '../command-picker';
 import { Plugin } from '../universal-pkg/schema/plugin';
 
 import { parseYaml } from '../../shared/yaml';
@@ -93,7 +93,7 @@ export async function execPlugin(ctx: Feflow, pkg: string, version: string) {
 
 export default function loadUniversalPlugin(ctx: Feflow) {
   const { universalPkg } = ctx;
-  const pickConfig = new CommandPickConfig(ctx);
+  const pickConfig = new CacheController(ctx);
 
   const installed = universalPkg.getInstalled();
   for (const [pkg, version] of installed) {

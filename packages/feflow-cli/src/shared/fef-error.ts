@@ -33,8 +33,7 @@ export class FefError {
       this.picker = context.commandPick as CommandPicker;
     } else {
       this.picker = null;
-      // throw new Error('command pick is not inital');
-      context.logger.debug('command pick is not inital');
+      context.logger.debug('command picker is not initialized');
     }
   }
 
@@ -52,7 +51,7 @@ export class FefError {
       if (!this.checkPick()) {
         this.context.logger.debug('无法找到命令路径');
       } else {
-        this.context.logger.debug('FefError command pick 初始化成功');
+        this.context.logger.debug('FefError command picker 初始化成功');
       }
     }
 

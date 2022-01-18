@@ -35,7 +35,7 @@ const showHelp = (commands: ReturnType<typeof getCommands>) => {
       content: {
         data: commands,
         options: {
-          maxWidth: 60,
+          maxWidth: 100,
         },
       },
     },

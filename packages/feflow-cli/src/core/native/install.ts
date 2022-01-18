@@ -9,7 +9,7 @@ import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 import versionImpl from '../universal-pkg/dep/version';
 import applyPlugins, { resolvePlugin } from '../plugin/apply-plugins';
-import { CommandPickConfig } from '../command-picker';
+import { CacheController } from '../command-picker';
 
 import packageJson from '../../shared/package-json';
 import { download } from '../../shared/git';
@@ -62,7 +62,7 @@ export default (ctx: Feflow) => {
 
     await uninstallNpmPlugin(ctx, dependencies);
 
-    const pickerConfig = new CommandPickConfig(ctx);
+    const pickerConfig = new CacheController(ctx);
     pickerConfig.removeCache(dependencies[0]);
   });
 };

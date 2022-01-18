@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import fs from 'fs';
 import path from 'path';
-import osenv from 'osenv';
+import osEnv from 'osenv';
 import _ from 'lodash';
 
 import Feflow from '..';
@@ -85,9 +85,9 @@ class TargetUniversalPlugin {
   }
 }
 
-export class CommandPickConfig {
+export class CacheController {
   ctx: Feflow;
-  cache: Cache | undefined;
+  cache?: Cache;
   lastCommand = '';
   lastVersion = '';
   lastStore: Record<string, { pluginName: string }> = {};
@@ -106,20 +106,20 @@ export class CommandPickConfig {
 
   constructor(ctx: Feflow) {
     this.ctx = ctx;
-    this.root = path.join(osenv.home(), FEFLOW_ROOT);
+    this.root = path.join(osEnv.home(), FEFLOW_ROOT);
     this.cacheFilePath = path.join(this.root, CACHE_FILE);
     this.cache = this.getCache();
-    if (!this.cache) {
-      this.ctx.logger.debug('command picker is empty');
-    } else {
-      const isCacheExpried = this.cache.version !== this.cacheVersion;
-      if (isCacheExpried) {
-        this.ctx.logger.debug('fef cache is expried, clear invalid cache.');
+    if (this.cache) {
+      const isCacheExpired = this.cache.version !== this.cacheVersion;
+      if (isCacheExpired) {
+        this.ctx.logger.debug('fef cache is expired, clear invalid cache.');
         this.cache = {
           version: this.cacheVersion,
         };
         this.writeCache();
       }
+    } else {
+      this.ctx.logger.debug('fef cache is empty.');
     }
   }
 
@@ -247,7 +247,7 @@ export class CommandPickConfig {
   getPluginMap(): PluginInfo {
     const plugin: PluginInfo = {};
     const [err, pluginList] = getPluginsList(this.ctx);
-    const home = path.join(osenv.home(), FEFLOW_ROOT);
+    const home = path.join(osEnv.home(), FEFLOW_ROOT);
 
     if (!Object.keys(this.subCommandMap).length) {
       return plugin;
@@ -273,27 +273,25 @@ export class CommandPickConfig {
   }
 
   getUniversalMap(): PluginInfo {
-    const unversalPlugin: PluginInfo = {};
+    const universalPlugin: PluginInfo = {};
     for (const pkg of Object.keys(this.subCommandMapWithVersion)) {
       if (!pkg) continue;
       const plugin = this.subCommandMapWithVersion[pkg];
-      unversalPlugin[pkg] = {
+      universalPlugin[pkg] = {
         ...plugin,
         type: CommandType.UNIVERSAL_PLUGIN_TYPE,
       };
     }
-    return unversalPlugin;
+    return universalPlugin;
   }
 
-  getCache(): Cache | undefined {
+  getCache() {
     const { cacheFilePath } = this;
-    let localCache: Cache | undefined;
     try {
-      localCache = parseYaml(cacheFilePath) as Cache;
+      return parseYaml(cacheFilePath) as Cache;
     } catch (error) {
-      this.ctx.logger.debug('.feflowCache.yml parse err ', error);
+      this.ctx.logger.error(`parse ${CACHE_FILE} error: `, error);
     }
-    return localCache;
   }
 
   removeCache(name: string) {
@@ -372,14 +370,13 @@ export default class CommandPicker {
   cmd: string;
   ctx: Feflow;
   isHelp: boolean;
-  cacheController: CommandPickConfig;
+  cacheController: CacheController;
   supportType = [
     CommandType.NATIVE_TYPE,
     CommandType.PLUGIN_TYPE,
     CommandType.UNIVERSAL_PLUGIN_TYPE,
     CommandType.INTERNAL_PLUGIN_TYPE,
   ];
-
   homeRunCmd = ['help', 'list'];
 
   constructor(ctx: Feflow, cmd = 'help') {
@@ -387,29 +384,29 @@ export default class CommandPicker {
     this.ctx = ctx;
     this.cmd = cmd;
     this.isHelp = cmd === 'help' || ctx.args.h || ctx.args.help;
-    this.cacheController = new CommandPickConfig(ctx);
+    this.cacheController = new CacheController(ctx);
   }
 
-  loadHelp() {
+  async loadHelp() {
     this.cmd = 'help';
-    this.pickCommand();
+    await this.pickCommand();
   }
 
   isAvailable() {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
-    const { type } = tartgetCommand;
+    const targetCommand = this.cacheController.getCommandPath(this.cmd) || {};
+    const { type } = targetCommand;
 
     if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
-      const { version, pkg } = tartgetCommand as TargetUniversalPlugin;
+      const { version, pkg } = targetCommand as TargetUniversalPlugin;
       const pkgPath = path.join(this.ctx.universalModules, `${pkg}@${version}`);
       const pathExists = fs.existsSync(pkgPath);
       return !this.isHelp && pathExists && !!version;
     }
     if (type === CommandType.PLUGIN_TYPE) {
-      const { path } = tartgetCommand as TargetPlugin;
+      const { path } = targetCommand as TargetPlugin;
       const pathExists = fs.existsSync(path);
-      const isCachType = this.supportType.includes(type);
-      return !this.isHelp && pathExists && isCachType;
+      const isCacheType = this.supportType.includes(type);
+      return !this.isHelp && pathExists && isCacheType;
     }
     if (type === CommandType.NATIVE_TYPE) {
       if (!this.homeRunCmd.includes(this.cmd)) {
@@ -420,10 +417,10 @@ export default class CommandPicker {
     return false;
   }
 
-  checkCommand() {
+  async checkCommand() {
     const cmdInfo = this.ctx?.commander.get(this.cmd);
     if (!cmdInfo) {
-      this.loadHelp();
+      await this.loadHelp();
     }
   }
 
@@ -433,7 +430,7 @@ export default class CommandPicker {
     return commandSource;
   }
 
-  pickCommand() {
+  async pickCommand() {
     const targetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = targetCommand;
     const pluginLogger = logger({
@@ -443,11 +440,11 @@ export default class CommandPicker {
     });
     this.ctx.logger.debug('pick command type: ', type);
     if (!this.supportType.includes(type)) {
-      return this.ctx.logger.warn(`this kind of command is not supported in command picker, ${type}`);
+      return this.ctx.logger.warn(`this kind of command is not supported in command picker: ${type}`);
     }
     if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = targetCommand as TargetUniversalPlugin;
-      execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
+      await execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
     } else {
       let commandPath = '';
       if (targetCommand instanceof TargetPlugin) {
@@ -477,26 +474,22 @@ export default class CommandPicker {
   }
 
   getCmdInfo(): { path: string; type: CommandType } {
-    const tartgetCommand = this.cacheController.getCommandPath(this.cmd) || {};
-    const { type } = tartgetCommand;
+    const targetCommand = this.cacheController.getCommandPath(this.cmd) || {};
+    const { type } = targetCommand;
     const cmdInfo: { path: string; type: CommandType } = {
       type,
       path: '',
     };
 
     if (type === CommandType.PLUGIN_TYPE) {
-      cmdInfo.path = (tartgetCommand as TargetPlugin).path;
+      cmdInfo.path = (targetCommand as TargetPlugin).path;
     } else if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
-      const { pkg, version } = tartgetCommand as TargetUniversalPlugin;
+      const { pkg, version } = targetCommand as TargetUniversalPlugin;
       cmdInfo.path = path.join(this.ctx.root, UNIVERSAL_MODULES, `${pkg}@${version}`);
     } else {
       cmdInfo.path = this.ctx.root;
     }
 
     return cmdInfo;
-  }
-
-  getLoadOrder() {
-    return LOAD_ALL;
   }
 }

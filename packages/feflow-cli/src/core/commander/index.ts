@@ -26,11 +26,11 @@ export default class Commander {
     if (typeof onRegistered === 'function') this.onRegistered = onRegistered;
   }
 
-  get(name?: string) {
-    if (Object.prototype.toString.call(name) !== '[object String]') {
+  get(cmdName?: string) {
+    if (Object.prototype.toString.call(cmdName) !== '[object String]') {
       return;
     }
-    const finalName = name!.toLowerCase();
+    const finalName = cmdName!.toLowerCase();
     const invisibleCommand = this.invisibleStore[finalName];
     if (invisibleCommand) {
       return invisibleCommand;
@@ -42,8 +42,8 @@ export default class Commander {
     return this.store;
   }
 
-  register(name: string, desc: CmdObj['desc'], fn: Function, options?: Array<object>, pluginName?: string) {
-    const storeKey = name.toLowerCase();
+  register(cmdName: string, desc: CmdObj['desc'], fn: Function, options?: Array<object>, pluginName?: string) {
+    const storeKey = cmdName.toLowerCase();
     this.store[storeKey] = {
       runFn: fn,
       desc,
@@ -56,8 +56,8 @@ export default class Commander {
     }
   }
 
-  registerInvisible(name: string, fn: Function, options?: Array<object>, pluginName?: string) {
-    const storeKey = name.toLowerCase();
+  registerInvisible(cmdName: string, fn: Function, options?: Array<object>, pluginName?: string) {
+    const storeKey = cmdName.toLowerCase();
     this.invisibleStore[storeKey] = {
       runFn: fn,
       desc: '',

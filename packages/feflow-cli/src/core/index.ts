@@ -88,8 +88,8 @@ export default class Feflow {
     this.fefError = new FefError(this);
   }
 
-  async init(cmd?: string) {
-    this.reporter.init(cmd);
+  async init(cmdName?: string) {
+    this.reporter.init(cmdName);
 
     await Promise.all([this.initClient(), this.initPackageManager(), this.initBinPath()]);
 
@@ -98,19 +98,19 @@ export default class Feflow {
       await checkUpdate(this);
     }
 
-    this.commandPick = new CommandPicker(this, cmd);
+    this.commandPick = new CommandPicker(this, cmdName);
 
     if (this.commandPick.isAvailable()) {
       // should hit the cache in most cases
       this.logger.debug('find cmd in cache');
-      this.commandPick.pickCommand();
+      await this.commandPick.pickCommand();
       await this.loadCommands(LOAD_DEVKIT);
     } else {
       // if not, load plugin/devkit/native in need
       this.logger.debug('not find cmd in cache');
-      await this.loadCommands(this.commandPick.getLoadOrder());
+      await this.loadCommands(LOAD_ALL);
       // make sure the command has at least one function, otherwise replace to help command
-      this.commandPick.checkCommand();
+      await this.commandPick.checkCommand();
     }
   }
 
@@ -214,39 +214,38 @@ export default class Feflow {
     }
   }
 
-  async invoke(name: string | undefined, ctx: Feflow) {
-    if (this.args.help && name) {
-      await this.showCommandOptionDescription(name, ctx);
+  async invoke(cmdName: string | undefined, ctx: Feflow) {
+    if (this.args.help && cmdName && cmdName !== 'help') {
+      await this.showCommandOptionDescription(cmdName, ctx);
     }
-    const cmd = this.commander.get(name);
+    const cmd = this.commander.get(cmdName);
     if (cmd) {
       this.logger.name = cmd.pluginName;
       await cmd.runFn.call(this, ctx);
     } else {
-      this.logger.debug(`Command ' ${name} ' has not been registered yet!`);
+      this.logger.debug(`Command ' ${cmdName} ' has not been registered yet!`);
     }
   }
 
-  async showCommandOptionDescription(cmd: string, ctx: Feflow) {
-    const registeredCommand = ctx.commander.get(cmd);
+  async showCommandOptionDescription(cmdName: string, ctx: Feflow) {
+    const registeredCommand = ctx.commander.get(cmdName);
     let commandLine: object[] = [];
 
     if (registeredCommand?.options) {
-      commandLine = getCommandLine(registeredCommand.options, registeredCommand.desc, cmd);
+      commandLine = getCommandLine(registeredCommand.options, registeredCommand.desc, cmdName);
     }
     // 有副作用，暂无好方法改造
-    if (cmd === 'help' && registeredCommand) {
+    if (cmdName === 'help' && registeredCommand) {
       registeredCommand.runFn.call(this, ctx);
-      return true;
+      return;
     }
     if (commandLine.length === 0) {
-      return false;
+      return;
     }
 
     const sections = [];
     sections.push(...commandLine);
     const usage = commandLineUsage(sections);
-    console.log(usage);
-    return true;
+    console.info(usage);
   }
 }
