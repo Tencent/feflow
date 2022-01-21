@@ -6,10 +6,6 @@ import osenv from 'osenv';
 import logger from '../../../src/core/logger';
 import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
 
-const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
-// 确保log文件存在
-fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
-
 const captureStream = (stream: NodeJS.WriteStream) => {
   const oldWrite = stream.write;
   let buf = '';
@@ -29,6 +25,14 @@ const captureStream = (stream: NodeJS.WriteStream) => {
 
 describe('@feflow/core - Logger system', () => {
   let hook: ReturnType<typeof captureStream>;
+
+  before(() => {
+    const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
+    // 确保log文件存在
+    if (!fs.existsSync(LOGGER_LOG_PATH)) {
+      fs.writeFileSync(LOGGER_LOG_PATH, '', 'utf-8');
+    }
+  });
 
   beforeEach(() => {
     hook = captureStream(process.stderr);
