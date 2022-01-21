@@ -12,8 +12,8 @@ const isWin = platform === 'win32';
 const isMac = platform === 'darwin';
 const cwd = process.cwd();
 
-export const httpRegex = /^https?:\/\/([^/]+)\/([^/]+)\/([^/.]+)(?:\.git)?/;
-export const sshRegex = /^git@([^:]+):([^/]+)\/([^/.]+)(?:\.git)?/;
+export const httpRegex = /^https?:\/\/[^/]+\/([^/]+)\/([^/.]+)(?:\.git)?/;
+export const sshRegex = /^git@[^:]+:([^/]+)\/([^/.]+)(?:\.git)?/;
 
 const exec = (command: string) => {
   let result = '';
