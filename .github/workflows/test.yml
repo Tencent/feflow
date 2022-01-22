@@ -10,8 +10,6 @@ on:
       - release
       - feat_*
       - feat/*
-      - fix_*
-      - fix/*
     tags:
       - "*"
 

@@ -3,8 +3,12 @@ import path from 'path';
 import fs from 'fs';
 import osenv from 'osenv';
 
-import createLogger from '../../../src/core/logger';
+import logger from '../../../src/core/logger';
 import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
+
+const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
+// 确保log文件存在
+fs.appendFileSync(LOGGER_LOG_PATH, '', 'utf-8');
 
 const captureStream = (stream: NodeJS.WriteStream) => {
   const oldWrite = stream.write;
@@ -26,17 +30,6 @@ const captureStream = (stream: NodeJS.WriteStream) => {
 describe('@feflow/core - Logger system', () => {
   let hook: ReturnType<typeof captureStream>;
 
-  before(() => {
-    const FEFLOW_ROOT_DIR = path.join(osenv.home(), FEFLOW_ROOT);
-    const LOGGER_LOG_PATH = path.join(FEFLOW_ROOT_DIR, LOG_FILE);
-    // 确保 feflow 根目录存在
-    if (!fs.existsSync(FEFLOW_ROOT_DIR)) {
-      fs.mkdirSync(FEFLOW_ROOT_DIR);
-    }
-    // 确保log文件存在
-    fs.appendFileSync(LOGGER_LOG_PATH, '');
-  });
-
   beforeEach(() => {
     hook = captureStream(process.stderr);
   });
@@ -46,7 +39,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test debug and silent', () => {
-    const log = createLogger({
+    const log = logger({
       debug: true,
       silent: true,
     });
@@ -54,7 +47,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test no debug and silent', () => {
-    const log = createLogger({
+    const log = logger({
       debug: true,
       silent: true,
     });
@@ -62,7 +55,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test debug', () => {
-    const log = createLogger({
+    const log = logger({
       debug: true,
       silent: true,
     });
@@ -70,7 +63,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test warn', () => {
-    const log = createLogger({
+    const log = logger({
       debug: true,
       silent: true,
     });
@@ -78,7 +71,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test error', () => {
-    const log = createLogger({
+    const log = logger({
       debug: true,
       silent: true,
     });
