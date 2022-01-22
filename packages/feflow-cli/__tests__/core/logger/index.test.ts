@@ -27,7 +27,12 @@ describe('@feflow/core - Logger system', () => {
   let hook: ReturnType<typeof captureStream>;
 
   before(() => {
-    const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
+    const FEFLOW_ROOT_DIR = path.join(osenv.home(), FEFLOW_ROOT);
+    const LOGGER_LOG_PATH = path.join(FEFLOW_ROOT_DIR, LOG_FILE);
+    // 确保 feflow 根目录存在
+    if (fs.existsSync(FEFLOW_ROOT_DIR)) {
+      fs.mkdirSync(FEFLOW_ROOT_DIR);
+    }
     // 确保log文件存在
     fs.appendFileSync(LOGGER_LOG_PATH, '');
   });
