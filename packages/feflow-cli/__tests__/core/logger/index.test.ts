@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import osenv from 'osenv';
 
-import logger from '../../../src/core/logger';
+import createLogger from '../../../src/core/logger';
 import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
 
 const captureStream = (stream: NodeJS.WriteStream) => {
@@ -29,9 +29,7 @@ describe('@feflow/core - Logger system', () => {
   before(() => {
     const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
     // 确保log文件存在
-    if (!fs.existsSync(LOGGER_LOG_PATH)) {
-      fs.writeFileSync(LOGGER_LOG_PATH, '', 'utf-8');
-    }
+    fs.appendFileSync(LOGGER_LOG_PATH, '');
   });
 
   beforeEach(() => {
@@ -43,7 +41,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test debug and silent', () => {
-    const log = logger({
+    const log = createLogger({
       debug: true,
       silent: true,
     });
@@ -51,7 +49,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test no debug and silent', () => {
-    const log = logger({
+    const log = createLogger({
       debug: true,
       silent: true,
     });
@@ -59,7 +57,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test debug', () => {
-    const log = logger({
+    const log = createLogger({
       debug: true,
       silent: true,
     });
@@ -67,7 +65,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test warn', () => {
-    const log = logger({
+    const log = createLogger({
       debug: true,
       silent: true,
     });
@@ -75,7 +73,7 @@ describe('@feflow/core - Logger system', () => {
   });
 
   it('test error', () => {
-    const log = logger({
+    const log = createLogger({
       debug: true,
       silent: true,
     });
