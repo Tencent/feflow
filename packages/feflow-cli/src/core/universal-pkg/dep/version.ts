@@ -17,7 +17,7 @@ class SemverVersion implements Version {
     if (version === this.latestVersion) {
       return true;
     }
-    return /^v(0|[1-9]\d*).(0|[1-9]\d*).(0|[1-9]\d*)$/i.test(version);
+    return !!semver.valid(version);
   }
 
   valid(version: string): string {

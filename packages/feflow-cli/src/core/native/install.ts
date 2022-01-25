@@ -7,7 +7,6 @@ import { getTag, checkoutVersion, getCurrentTag } from '../universal-pkg/reposit
 import { Plugin } from '../universal-pkg/schema/plugin';
 import Linker from '../universal-pkg/linker';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
-import versionImpl from '../universal-pkg/dep/version';
 import applyPlugins, { resolvePlugin } from '../plugin/apply-plugins';
 import { CacheController } from '../command-picker';
 
@@ -164,7 +163,7 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
   }
   const registryUrl = await getRegistryUrl(packageManager);
   let versionList: string[];
-  let needInstall: string[] = [];
+  const needInstall: string[] = [];
   try {
     versionList = await Promise.all(
       dependencies.map(async (dependency: string) => {
@@ -201,14 +200,15 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
       return installedPlugin;
     };
     const hasInstallDep = getCurversion();
-    needInstall = dependencies.filter((dep, idx) => {
+
+    dependencies.forEach((dep, idx) => {
       const depList = (dep || '').split('@');
       const depName = !depList[0] ? `@${depList[1]}` : depList[0];
       if (hasInstallDep[depName] !== versionList[idx]) {
-        return dep;
+        const installPluginName = versionList[idx] ? `${depName}@${versionList[idx]}` : dep;
+        needInstall.push(installPluginName);
       }
       ctx.logger.info(`[${dep}] has installed the latest version: ${hasInstallDep[depName]}`);
-      return '';
     });
   } catch (err) {
     ctx.logger.error(`get pkg info error ${JSON.stringify(err)}`);
@@ -561,14 +561,9 @@ export async function getPkgInfo(ctx: Feflow, installPlugin: string): Promise<Pk
     repoFrom = repoInfo.repo;
     repoName = repoInfo.name;
     if (isGitRepo(repoFrom) && !repoInfo.tnpm) {
-      if (pluginVersion) {
-        pluginVersion = versionImpl.toFull(pluginVersion);
-        if (!versionImpl.check(pluginVersion)) {
-          throw new Error(`invalid version: ${pluginVersion} for ${pluginName}`);
-        }
-      }
       installVersion = pluginVersion || LATEST_VERSION;
       checkoutTag = await getTag(repoFrom, installVersion === LATEST_VERSION ? undefined : installVersion);
+      ctx.logger.debug(`install ${pluginVersion}, get checkoutTag ${checkoutTag}`);
     } else {
       return;
     }
@@ -576,7 +571,13 @@ export async function getPkgInfo(ctx: Feflow, installPlugin: string): Promise<Pk
   if (!checkoutTag) {
     throw new Error(`the version [${installVersion}] was not found`);
   }
-  return new PkgInfo(repoName, repoFrom, installVersion, checkoutTag, fromType);
+  return new PkgInfo(
+    repoName,
+    repoFrom,
+    installVersion === LATEST_VERSION ? LATEST_VERSION : checkoutTag,
+    checkoutTag,
+    fromType,
+  );
 }
 
 export class PkgInfo {
