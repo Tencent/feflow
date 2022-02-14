@@ -1,7 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "outDir": "lib"
+    "baseUrl": "./",
+    "outDir": "lib",
+    "paths": {
+      "@feflow/cli": ["./node_modules/@feflow/cli/lib", "../../types/feflow.d.ts"],
+    }
   },
   "include": [
     "./src/**/*",

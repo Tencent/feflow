@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
-import Feflow from '@feflow/cli';
+import type Feflow from '@feflow/cli';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_JSON, REPORT_COMMAND_ERR } from './constants';
 import { getProject, getKeyFormFile, setKeyToFile } from './common/utils';
 

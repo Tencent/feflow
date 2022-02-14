@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "@feflow/monorepo",
   "private": true,
   "workspaces": {
     "packages": [
@@ -11,7 +11,7 @@
     "publish": "lerna publish --skip-git",
     "eslint": "eslint ./packages --ext .ts",
     "eslint:fix": "eslint --fix ./packages --ext .ts",
-    "build": "lerna run build",
+    "build": "lerna run build --ignore @feflow/cli && lerna run build --scope @feflow/cli",
     "prepare": "husky install"
   },
   "lint-staged": {

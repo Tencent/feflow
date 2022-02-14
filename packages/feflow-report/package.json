@@ -7,10 +7,9 @@
     "test": "npm run build && npx mocha -r ts-node/register __tests__/*.spec.ts",
     "clean": "rimraf lib",
     "compile": "tsc -p tsconfig.build.json",
-    "adjust-lib": "rimraf lib/feflow-cli && mv lib/feflow-report/src/* lib/ && rimraf lib/feflow-report",
-    "prebuild": "npm run clean",
+    "checkType": "tsc --noEmit",
+    "prebuild": "npm run checkType && npm run clean",
     "build": "npm run compile",
-    "postbuild": "npm run adjust-lib",
     "dev": "npm run build && node ./lib/dev.js",
     "prepublishOnly": "npm run build"
   },

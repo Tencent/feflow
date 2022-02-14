@@ -19,11 +19,10 @@
   "scripts": {
     "start": "npm run build:live",
     "clean": "rimraf lib",
+    "checkType": "tsc --noEmit",
     "compile": "tsc -p tsconfig.build.json",
-    "adjust-lib": "rimraf lib/feflow-report && mv lib/feflow-cli/src/* lib/ && rimraf lib/feflow-cli",
-    "prebuild": "npm run clean",
+    "prebuild": "npm run checkType && npm run clean",
     "build": "npm run compile",
-    "postbuild": "npm run adjust-lib",
     "test": "nyc mocha -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",

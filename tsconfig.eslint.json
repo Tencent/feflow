@@ -6,5 +6,6 @@
     "./packages/*/types/**/*",
     "./types/**/*",
     "./*.js"
-  ]
+  ],
+  "exclude": []
 }

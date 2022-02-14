@@ -28,14 +28,13 @@ import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from
 import { getPkgInfo } from '../native/install';
 import Feflow from '../index';
 import { isValidConfig } from '../../shared/type-predicates';
+import pkgJson from '../../../package.json';
+
 interface ErrorInstance {
   name: string;
   message: string;
   stack: string;
 }
-
-const pkg = require('../../../package.json');
-const { version } = pkg;
 
 const { debug, silent } = process.env;
 const logger = createLogger({
@@ -83,7 +82,7 @@ const queryCliUpdate = async () => {
   }
 
   const latestVersion = await getLatestVersion('@feflow/cli', config.packageManager);
-  if (latestVersion && semver.gt(latestVersion, version)) {
+  if (latestVersion && semver.gt(latestVersion, pkgJson.version)) {
     const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
     if (updateData?.latest_cli_version !== latestVersion) {
       const newUpdateData = {

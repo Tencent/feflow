@@ -1,9 +1,21 @@
 {
   "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@feflow/cli": ["./src"],
+      "@feflow/report": ["../feflow-report/src"],
+      "/package.json": ["./package.json"]
+    }
+  },
   "include": [
     "./src/**/*",
     "./types/**/*",
     "./package.json",
     "../../types/**/*"
+  ],
+  "exclude": [
+    "../../types/feflow.d.ts",
+    "./types/pkgJson.d.ts"
   ]
 }

@@ -1,10 +1,14 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "skipLibCheck": false,
+    "baseUrl": "./",
     "paths": {
-      "@feflow/cli": ["packages/feflow-cli/src"],
-      "@feflow/report": ["packages/feflow-report/src"],
+      "@feflow/cli": ["./packages/feflow-cli/src"],
+      "@feflow/report": ["./packages/feflow-report/src"]
     }
-  }
+  },
+  "exclude": [
+    "./types/feflow.d.ts",
+  ]
 }
