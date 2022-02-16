@@ -11,7 +11,10 @@
     "publish": "lerna publish --skip-git",
     "eslint": "eslint ./packages --ext .ts",
     "eslint:fix": "eslint --fix ./packages --ext .ts",
+    "bootstrap": "lerna bootstrap",
     "build": "lerna run build --ignore @feflow/cli && lerna run build --scope @feflow/cli",
+    "test": "lerna run test",
+    "release": "lerna publish from-git --yes",
     "prepare": "husky install"
   },
   "lint-staged": {
