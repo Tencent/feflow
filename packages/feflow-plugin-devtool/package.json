@@ -1,6 +1,6 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
@@ -22,7 +22,7 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "devDependencies": {
-    "@feflow/cli": "^0.25.0-alpha.1",
+    "@feflow/cli": "^0.25.0",
     "@types/abbrev": "^1.1.0",
     "@types/bunyan": "^1.8.6",
     "@types/command-line-usage": "^5.0.1",
