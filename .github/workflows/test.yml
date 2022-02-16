@@ -45,7 +45,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             node_modules
-            packages/*/node_modules
+            */*/node_modules
       - name: Install dependencies
         run: npm ci && npm run bootstrap
       - name: Test
