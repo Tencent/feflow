@@ -10,7 +10,8 @@
         "*.md",
         "*-lock.json"
       ],
-      "message": "chore(release): publish"
+      "registry": "https://registry.npmjs.org",
+      "message": "chore(release): publish %s"
     }
   },
   "version": "independent"
