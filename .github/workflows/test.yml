@@ -43,9 +43,6 @@ jobs:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.architecture }}
           cache: npm
-          cache-dependency-path: |
-            node_modules
-            */*/node_modules
       - name: Install dependencies
         run: npm ci && npm run bootstrap
       - name: Test
