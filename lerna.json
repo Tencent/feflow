@@ -12,6 +12,13 @@
       ],
       "registry": "https://registry.npmjs.org",
       "message": "chore(release): publish"
+    },
+    "version": {
+      "ignoreChanges": [
+        "**/test/**",
+        "**/*.md",
+        "**/package-lock.json"
+      ]
     }
   },
   "version": "independent"
