@@ -11,7 +11,7 @@
         "*-lock.json"
       ],
       "registry": "https://registry.npmjs.org",
-      "message": "chore(release): publish %s"
+      "message": "chore(release): publish"
     }
   },
   "version": "independent"
