@@ -9,8 +9,6 @@ on:
       - feat/*
       - fix_*
       - fix/*
-    tags-ignore:
-      - *
   workflow_call: null
 
 jobs:
