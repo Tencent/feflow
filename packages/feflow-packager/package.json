@@ -28,7 +28,8 @@
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.0",
-    "@types/minimist": "^1.2.0"
+    "@types/minimist": "^1.2.0",
+    "@types/semver": "^7.3.9"
   },
   "dependencies": {
     "chalk": "^2.4.2",
