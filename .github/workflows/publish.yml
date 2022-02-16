@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # 获取所有 tags，让 lerna publish from-git 正常识别待发的包
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
