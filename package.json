@@ -7,8 +7,6 @@
     ]
   },
   "scripts": {
-    "beta": "lerna publish -c --skip-git",
-    "publish": "lerna publish --skip-git",
     "eslint": "eslint ./packages --ext .ts",
     "eslint:fix": "eslint --fix ./packages --ext .ts",
     "bootstrap": "lerna bootstrap",
