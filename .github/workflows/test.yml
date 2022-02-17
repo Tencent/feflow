@@ -1,15 +1,6 @@
 name: Test
 
-on:
-  push:
-    branches:
-      - master
-      - release
-      - feat_*
-      - feat/*
-      - fix_*
-      - fix/*
-  workflow_call: null
+on: [push, pull_request, workflow_call]
 
 jobs:
   test:
