@@ -13,7 +13,10 @@
     "build": "lerna run build --ignore @feflow/cli && lerna run build --scope @feflow/cli",
     "test": "lerna run test",
     "release": "lerna publish from-git --yes",
-    "prepare": "husky install"
+    "prepare-husky": "husky install",
+    "check-npm-version": "node ./scripts/check-npm-version.js",
+    "prepare": "npm run prepare-husky",
+    "preinstall": "npm run check-npm-version"
   },
   "lint-staged": {
     "*.{js,ts}": "eslint --fix"

@@ -24,6 +24,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci && npm run bootstrap
+        env:
+          CI: true
       - name: Build
         run: npm run build
       - name: Publish

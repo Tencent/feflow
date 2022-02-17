@@ -35,6 +35,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci && npm run bootstrap
+        env:
+          CI: true
       - name: Test
         run: npm run test
         env:
