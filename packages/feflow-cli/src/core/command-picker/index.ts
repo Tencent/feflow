@@ -1,5 +1,4 @@
 /* eslint-disable no-loop-func */
-/* eslint-disable @typescript-eslint/no-require-imports */
 import fs from 'fs';
 import path from 'path';
 import osEnv from 'osenv';
@@ -464,7 +463,8 @@ export default class CommandPicker {
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
-        require(commandPath).default(Object.assign({}, this.ctx, { logger: pluginLogger }));
+        const commandEntry = await import(commandPath);
+        commandEntry.default(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
         this.ctx.fefError.printError({
           error,
