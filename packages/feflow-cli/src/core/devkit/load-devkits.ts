@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import Config from './config';
 import getCommandLine from './command-options';
@@ -37,7 +36,8 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
         async () => {
           for (const implementationItem of implementation) {
             const action = path.join(pkgPath, implementationItem);
-            await require(action)(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
+            const devkitCommandEntry = await import(action);
+            devkitCommandEntry.default(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
           }
         },
         options,
@@ -48,8 +48,9 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
       ctx.commander.register(
         command,
         description,
-        () => {
-          require(action)(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
+        async () => {
+          const devkitCommandEntry = await import(action);
+          devkitCommandEntry.default(Object.assign({}, ctx, { logger: devkitLogger, options: builderOptions }));
         },
         options,
         packageName,

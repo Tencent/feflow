@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import path from 'path';
 import glob from 'glob';
 import Report from '@feflow/report';
@@ -95,7 +94,12 @@ export default class Feflow {
 
     const disableCheck = Boolean(this.args['disable-check']) || Boolean(this.config?.disableCheck);
     if (!disableCheck) {
-      await checkUpdate(this);
+      // 使用 try catch 避免检查更新出错中断整体流程
+      try {
+        await checkUpdate(this);
+      } catch (error) {
+        this.logger.error('check update error: ', error);
+      }
     }
 
     this.commandPick = new CommandPicker(this, cmdName);
@@ -176,8 +180,9 @@ export default class Feflow {
 
   loadNative() {
     const nativePath = path.join(__dirname, './native/*.js');
-    glob.sync(nativePath).forEach((file: string) => {
-      require(file).default(this);
+    glob.sync(nativePath).forEach(async (file: string) => {
+      const nativeCommandEntry = await import(file);
+      nativeCommandEntry.default(this);
     });
   }
 
@@ -201,11 +206,12 @@ export default class Feflow {
     }
   }
 
-  loadInternalPlugins() {
+  async loadInternalPlugins() {
     const devToolPlugin = '@feflow/feflow-plugin-devtool';
     try {
       this.logger.debug('Plugin loaded: %s', devToolPlugin);
-      return require(devToolPlugin)(this);
+      const devToolPluginEntry = await import(devToolPlugin);
+      return devToolPluginEntry.default(this);
     } catch (err) {
       this.fefError.printError({
         error: err,
