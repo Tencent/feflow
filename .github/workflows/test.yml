@@ -1,6 +1,13 @@
 name: Test
 
-on: [push, pull_request, workflow_call]
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request: null
+  workflow_call: null
 
 jobs:
   test:
