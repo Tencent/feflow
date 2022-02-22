@@ -3,7 +3,7 @@ name: Test
 on:
   push:
     tags-ignore:
-      - *
+      - '*'
   pull_request: null
   workflow_call: null
 
