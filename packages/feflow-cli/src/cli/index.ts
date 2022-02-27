@@ -9,9 +9,11 @@ import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
-  FEFLOW_HOME,
+  FEFLOW_HOME_ORIGINAL,
+  FEFLOW_HOME_E2E,
   HEART_BEAT_COLLECTION_LOG,
   LOG_FILE,
+  UPDATE_JSON,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
 import Feflow from '../core';
@@ -28,6 +30,8 @@ export default async function entry() {
     },
   });
 
+  const FEFLOW_HOME = args?.e2e ? FEFLOW_HOME_E2E : FEFLOW_HOME_ORIGINAL;
+
   // 检查node版本
   ensureNodeVersion(pkg.engines.node, pkg.name);
   try {
@@ -41,8 +45,9 @@ export default async function entry() {
   // 确保日志相关本地文件存在，避免报错
   fileExit(path.join(FEFLOW_HOME, HEART_BEAT_COLLECTION_LOG));
   fileExit(path.join(FEFLOW_HOME, LOG_FILE));
+  fileExit(path.join(FEFLOW_HOME, UPDATE_JSON));
 
-  const feflow = new Feflow(args);
+  const feflow = new Feflow(args, FEFLOW_HOME);
   const { commander, logger, reporter, fefError } = feflow;
 
   const handleUnexpectedError = (

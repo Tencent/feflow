@@ -3,7 +3,8 @@ import osenv from 'osenv';
 export const FEFLOW_ROOT = '.fef';
 export const FEFLOW_BIN = 'bin';
 export const FEFLOW_LIB = 'lib';
-export const FEFLOW_HOME = path.join(osenv.home(), FEFLOW_ROOT);
+export const FEFLOW_HOME_ORIGINAL = path.join(osenv.home(), FEFLOW_ROOT);
+export const FEFLOW_HOME_E2E = path.join('./', FEFLOW_ROOT);
 
 export const LATEST_VERSION = 'latest';
 
@@ -78,6 +79,8 @@ export const FEFLOW_PLUGIN_GIT_PREFIX = 'feflow-plugin-git-';
 export const FEFLOW_PLUGIN_PREFIX = 'feflow-plugin-';
 
 export const LOG_FILE = 'logger.log';
+
+export const UPDATE_JSON = 'update.json';
 
 export const BEAT_KEY = 'beat_time';
 
