@@ -25,22 +25,17 @@ export async function getTag(repoUrl: string, version?: string): Promise<string 
 
   const tagList = tagListStr.split('\n');
   let satisfiedMaxVersion: string | undefined;
-  for (const tagStr of tagList) {
+  tagList.forEach((tagStr: string) => {
     const [, tagReference] = tagStr.split('\t');
     const tag = tagReference?.substring('refs/tags/'.length);
-    if (!versionImpl.check(tag)) {
-      continue;
-    }
     if (tag === version) {
       return tag;
     }
-    if (version && !versionImpl.satisfies(tag, version)) {
-      continue;
-    }
-    if (!satisfiedMaxVersion || versionImpl.gt(tag, satisfiedMaxVersion)) {
+    if (tag.includes(version || '') && (!satisfiedMaxVersion || versionImpl.gt(tag, satisfiedMaxVersion))) {
       satisfiedMaxVersion = tag;
     }
-  }
+  });
+
   return satisfiedMaxVersion;
 }
 
