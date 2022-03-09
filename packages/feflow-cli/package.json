@@ -24,7 +24,7 @@
     "prebuild": "npm run clean",
     "build": "npm run compile",
     "postbuild": "npm run adjust-lib",
-    "test": "nyc mocha --timeout 100000 -r ts-node/register __tests__/**/info.test.ts",
+    "test": "nyc mocha --timeout 100000 -r ts-node/register __tests__/**/doctor.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "prepublishOnly": "npm run build"
