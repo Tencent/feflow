@@ -6,7 +6,7 @@ const { expect } = chai;
 describe('@feflow/core - Native logger', () => {
   const loggerText = 'loggerText';
 
-  it('测试 fef logger', () => {
+  it('fef logger 的参数为空时, 应输出 nothing types', () => {
     expect(shell.exec(`node bin/feflow logger`).stdout).to.equal('nothing types\n');
   });
 
