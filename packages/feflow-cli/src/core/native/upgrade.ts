@@ -52,35 +52,35 @@ export async function checkCliUpdate(ctx: Feflow) {
   });
 
   if (e2e) {
-    console.log('E2E: latestVersion === ', latestVersion);
-  }
-
-  if (latestVersion && semver.gt(latestVersion, version)) {
-    const askIfUpdateCli = [
-      {
-        type: 'confirm',
-        name: 'ifUpdate',
-        message: chalk.yellow(
-          `@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your version is ${chalk.red(
-            version,
-          )}, Do you want to update it?`,
-        ),
-        default: true,
-      },
-    ];
-    const answer = await inquirer.prompt(askIfUpdateCli);
-    if (answer.ifUpdate) {
-      await updateCli(packageManager);
-    } else {
-      safeDump(
-        {
-          ...config,
-          lastUpdateCheck: +new Date(),
-        },
-        configPath,
-      );
-    }
+    console.log('E2E: upgrade');
   } else {
-    ctx.logger.info('Current version is already latest.');
+    if (latestVersion && semver.gt(latestVersion, version)) {
+      const askIfUpdateCli = [
+        {
+          type: 'confirm',
+          name: 'ifUpdate',
+          message: chalk.yellow(
+            `@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your version is ${chalk.red(
+              version,
+            )}, Do you want to update it?`,
+          ),
+          default: true,
+        },
+      ];
+      const answer = await inquirer.prompt(askIfUpdateCli);
+      if (answer.ifUpdate) {
+        await updateCli(packageManager);
+      } else {
+        safeDump(
+          {
+            ...config,
+            lastUpdateCheck: +new Date(),
+          },
+          configPath,
+        );
+      }
+    } else {
+      ctx.logger.info('Current version is already latest.');
+    }
   }
 }

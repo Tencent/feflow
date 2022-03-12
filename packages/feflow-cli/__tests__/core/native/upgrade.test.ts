@@ -8,7 +8,8 @@ describe('@feflow/core - Native upgrade', () => {
     shell.exec('rm -rf .fef');
   });
 
-  it('fef info 的输出中应该包含feflow以及它的版本信息', () => {
-    expect(shell.exec('node bin/feflow upgrade --e2e').stdout).to.empty('');
+  it('执行 fef upgrade 应该返回upgrade提示信息', () => {
+    const expectContent = 'E2E: upgrade\n';
+    expect(shell.exec('node bin/feflow upgrade --e2e').stdout).to.equal(expectContent);
   });
 });
