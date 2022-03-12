@@ -56,7 +56,7 @@ describe('@feflow/core - Native config', () => {
       expect(shell.exec('node bin/feflow config list --e2e').stdout).to.equal(expectContent);
     });
 
-    it.only('当添加完某项配置后 fef config list 返回的信息中应该包含该项配置', () => {
+    it('当添加完某项配置后 fef config list 返回的信息中应该包含该项配置', () => {
       const [key, value] = ['serverUrl', 'gui.com'];
       const expectContent = `packageManager = npm\n${key} = ${value}\n`;
 

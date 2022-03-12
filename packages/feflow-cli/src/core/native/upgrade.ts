@@ -38,8 +38,10 @@ export async function updateCli(packageManager: string) {
 }
 
 export async function checkCliUpdate(ctx: Feflow) {
-  const { version, config = {}, configPath } = ctx;
+  const { version, config = {}, configPath, args } = ctx;
   const { packageManager } = config;
+  const { e2e } = args;
+
   if (!packageManager) {
     ctx.logger.error(`cannot find 'packageManager' from config`);
     return;
@@ -48,6 +50,10 @@ export async function checkCliUpdate(ctx: Feflow) {
   const latestVersion: any = await packageJson('@feflow/cli', registryUrl).catch(() => {
     ctx.logger.warn(`Network error, can't reach ${registryUrl}, CLI give up version check.`);
   });
+
+  if (e2e) {
+    console.log('E2E: latestVersion === ', latestVersion);
+  }
 
   if (latestVersion && semver.gt(latestVersion, version)) {
     const askIfUpdateCli = [

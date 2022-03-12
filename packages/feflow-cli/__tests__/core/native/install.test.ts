@@ -34,7 +34,7 @@ describe('@feflow/core - Native list', () => {
     expect(shell.exec(`node bin/feflow list --e2e`).stdout).to.equal(expectContent);
   });
 
-  it.only('fef install 安装插件时，fef list 的返回结果中应包含该插件', () => {
+  it('fef install 安装插件时，fef list 的返回结果中应包含该插件', () => {
     const packageName = 'feflow-plugin-lint';
     const edition = '1.1.3';
     shell.exec(`node bin/feflow install ${packageName}@${edition} --e2e`);

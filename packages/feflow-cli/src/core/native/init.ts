@@ -57,15 +57,27 @@ const run = (ctx: Feflow, name: string) => {
 export default (ctx: Feflow) => {
   ctx.commander.register('init', 'Create a new project', () => {
     const { root, rootPkg, args } = ctx;
-    const { generator } = args;
+    const { generator, e2e } = args;
     loadGenerator(root, rootPkg).then(async (generators) => {
       // feflow init 简化逻辑直接安装并使用脚手架
       if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
         const isGeneratorInstalled = generators.some((item) => item.name === generator);
         if (generators.length && isGeneratorInstalled) {
-          run(ctx, generator);
+          // 端对端测试不真正利用脚手架创建项目
+          if (e2e) {
+            console.log(`E2E: 使用${generator}脚手架创建项目`);
+          } else {
+            run(ctx, generator);
+          }
           return;
         }
+
+        // 端对端测试时不进行下述的inquirer逻辑
+        if (e2e) {
+          console.log(`E2E: ${generator}未安装，是否要安装使用？`);
+          return;
+        }
+
         const askIfInstallGenerator = [
           {
             type: 'confirm',
@@ -90,6 +102,12 @@ export default (ctx: Feflow) => {
       }
       const options = generators.map((item) => item.desc);
       if (generators.length) {
+        // 端对端测试不执行下面的inquirer逻辑
+        if (e2e) {
+          console.log('E2E: 您想要创建哪种类型的工程?', options);
+          return;
+        }
+
         inquirer
           .prompt([
             {
@@ -110,6 +128,10 @@ export default (ctx: Feflow) => {
             name && run(ctx, name);
           });
       } else {
+        console.log(
+          'You have not installed a template yet, ' +
+            ' please use install command. Guide: https://github.com/Tencent/feflow',
+        );
         ctx.logger.warn(
           'You have not installed a template yet, ' +
             ' please use install command. Guide: https://github.com/Tencent/feflow',

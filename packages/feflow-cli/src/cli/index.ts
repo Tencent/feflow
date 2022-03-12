@@ -30,6 +30,7 @@ export default async function entry() {
     },
   });
 
+  // 根据是否进行的是端对端测试动态设置FEFLOW_HOME
   const FEFLOW_HOME = args?.e2e ? FEFLOW_HOME_E2E : FEFLOW_HOME_ORIGINAL;
 
   // 检查node版本
