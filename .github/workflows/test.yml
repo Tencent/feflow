@@ -45,7 +45,7 @@ jobs:
         env:
           CI: true
       - name: Test
-        run: npm run test
+        run: npm run build && npm run test
         env:
           CI: true
 
