@@ -1,12 +1,13 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.build.json",
   "compilerOptions": {
-    "outDir": "lib"
+    "outDir": "lib",
+    "baseUrl": "./",
+    "resolveJsonModule": false,
   },
   "include": [
     "./src/**/*",
     "./types/**/*",
-    "./package.json",
     "../../types/**/*"
   ]
 }

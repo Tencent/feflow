@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { execSync } from 'child_process';
 
-import Feflow from '@feflow/cli';
+import type Feflow from '@feflow/cli';
 import objectFactory from './objectFactory';
 
 const platform = os.platform();

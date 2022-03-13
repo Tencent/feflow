@@ -1,41 +1,53 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Test
 
 on:
   push:
     branches:
-      - master
-      - release
-      - feat_*
-      - feat/*
-      - fix_*
-      - fix/*
-    tags:
-      - "*"
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request: null
+  workflow_call: null
 
 jobs:
   test:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [12.18.3]
-
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        node:
+          - 10
+          - 12
+          - 14
+          - 16
+        architecture:
+          - x64
+        # an extra windows-x86 run:
+        include:
+          - os: windows-latest
+            node: 12
+            architecture: x86
+    name: Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm i
-    - run: npx lerna bootstrap
-    - run: npx lerna run build
-    - run: npx lerna run test
-      env:
-        CI: true
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.architecture }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci && npm run bootstrap
+        env:
+          CI: true
+      - name: Test
+        run: npm run test
+        env:
+          CI: true
 
   commitlint:
     runs-on: ubuntu-latest

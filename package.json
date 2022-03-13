@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "@feflow/monorepo",
   "private": true,
   "workspaces": {
     "packages": [
@@ -7,12 +7,16 @@
     ]
   },
   "scripts": {
-    "beta": "lerna publish -c --skip-git",
-    "publish": "lerna publish --skip-git",
     "eslint": "eslint ./packages --ext .ts",
     "eslint:fix": "eslint --fix ./packages --ext .ts",
-    "build": "lerna run build",
-    "prepare": "husky install"
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build --ignore @feflow/cli && lerna run build --scope @feflow/cli",
+    "test": "lerna run test",
+    "release": "lerna publish from-git --yes",
+    "prepare-husky": "husky install",
+    "check-npm-version": "node ./scripts/check-npm-version.js",
+    "prepare": "npm run prepare-husky",
+    "preinstall": "npm run check-npm-version"
   },
   "lint-staged": {
     "*.{js,ts}": "eslint --fix"
@@ -22,7 +26,7 @@
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-conventional": "^15.0.0",
     "@types/chai": "^4.2.11",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^8.0.0",
     "@types/sinon-chai": "^3.2.3",
     "@typescript-eslint/eslint-plugin": "4.27",
     "@typescript-eslint/parser": "4.27",
@@ -41,10 +45,13 @@
     "mocha-junit-reporter": "^1.23.3",
     "mocha-multi-reporters": "^1.1.7",
     "mochawesome": "^6.1.1",
+    "nodemon": "^2.0.15",
+    "nyc": "^14.1.1",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "sinon-chai": "^3.5.0",
-    "ts-mocha": "^7.0.0",
+    "ts-mocha": "^8.0.0",
+    "ts-node": "^8.10.2",
     "typescript": "^4.4.3"
   },
   "config": {

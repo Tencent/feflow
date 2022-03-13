@@ -17,10 +17,16 @@ export default class LockFile {
     this.tryMax = 50;
     this.tryGap = 100;
     this.tryCount = 0;
+
+    // 初始化的时候如果不存在也创建
+    this.ensureFileExists();
   }
 
   public read(key?: string) {
     return new Promise<JSONValue>((resolve, reject) => {
+      // 文件不存在则创建文件后读取
+      this.ensureFileExists();
+
       fs.stat(this.filePath, (err, stats) => {
         if (err) {
           this.logger.error(err);
@@ -76,10 +82,9 @@ export default class LockFile {
   public update(key: string, value: JSONValue): Promise<object | undefined> {
     return new Promise((resolve, reject) => {
       try {
-        if (!fs.existsSync(this.filePath)) {
-          // 文件不存在则创建文件后插入
-          this.resetFile();
-        }
+        // 文件不存在则创建文件后插入
+        this.ensureFileExists();
+
         this.lock((err) => {
           if (err) {
             this.unlock();
@@ -169,5 +174,11 @@ export default class LockFile {
     lockFile.unlock(this.lockKey, (err) => {
       err && this.logger.error(`unlock ${this.lockKey} error: `, err);
     });
+  }
+
+  private ensureFileExists(): void {
+    if (!fs.existsSync(this.filePath)) {
+      this.resetFile();
+    }
   }
 }
