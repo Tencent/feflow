@@ -8,7 +8,7 @@ describe('@feflow/core - Native list', () => {
     shell.exec('rm -rf .fef');
   });
 
-  it('未安装任何脚手架或插件时, fef list 应提示未安装任何脚手架或插件', () => {
+  it.only('未安装任何脚手架或插件时, fef list 应提示未安装任何脚手架或插件', () => {
     const expectContent =
       'You can search more templates or plugins through https://feflowjs.com/encology/\nNo templates and plugins have been installed\n';
     expect(shell.exec(`node bin/feflow list --e2e`).stdout).to.equal(expectContent);
