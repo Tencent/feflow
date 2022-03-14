@@ -33,7 +33,9 @@ jobs:
     - run: npm i
     - run: npx lerna bootstrap
     - run: npx lerna run build
-    - run: npx lerna run test
+    - run: cd packages && cd feflow-cli && ls -lah
+    - run: npm run test
+    - run: ls -lah
       env:
         CI: true
 
