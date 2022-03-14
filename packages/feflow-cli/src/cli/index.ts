@@ -55,6 +55,9 @@ export default async function entry() {
     ...args: Parameters<NodeJS.UncaughtExceptionListener | NodeJS.UnhandledRejectionListener>
   ) => {
     const [err] = args;
+
+    console.log('E2E: err === ', err);
+
     logger.error(err);
     reporter.reportCommandError(err);
     fefError.printError({ error: err, msg: '', hideError: true });
