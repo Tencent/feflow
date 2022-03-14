@@ -17,6 +17,7 @@ import {
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
 import Feflow from '../core';
+import shell from 'shelljs';
 
 const pkg = JSON.parse(
   stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
@@ -45,7 +46,12 @@ export default async function entry() {
   }
   // 确保日志相关本地文件存在，避免报错
   fileExit(path.join(FEFLOW_HOME, HEART_BEAT_COLLECTION_LOG));
+
+  console.log('E2E: ls -lah === ', shell.exec('ls -lah').stdout);
+
   fileExit(path.join(FEFLOW_HOME, LOG_FILE));
+
+  console.log('E2E: ls -lah === ', shell.exec('ls -lah').stdout);
   fileExit(path.join(FEFLOW_HOME, UPDATE_JSON));
 
   const feflow = new Feflow(args, FEFLOW_HOME);
