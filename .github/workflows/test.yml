@@ -49,7 +49,7 @@ jobs:
         env:
           CI: true
       - name: Test
-        run: npm run test
+        run: cd packages && cd feflow-cli && npm run test
         env:
           CI: true
 
