@@ -44,8 +44,12 @@ jobs:
         run: npm ci && npm run bootstrap
         env:
           CI: true
+      - name: build
+        run: npm run build
+        env:
+          CI: true
       - name: Test
-        run: npm run build && npm run test
+        run: npm run test
         env:
           CI: true
 
