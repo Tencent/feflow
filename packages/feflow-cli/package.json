@@ -77,7 +77,7 @@
     "lodash": "^4.17.20",
     "lookpath": "^1.1.0",
     "marked": "^4.0.10",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "osenv": "^0.1.5",
     "package-json": "^6.5.0",
     "request": "^2.88.0",
