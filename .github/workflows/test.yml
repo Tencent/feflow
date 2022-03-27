@@ -49,7 +49,7 @@ jobs:
         env:
           CI: true
       - name: Install dependencies
-        run: npm i && npm run bootstrap
+        run: npm install && npm run bootstrap
         env:
           CI: true
       - name: Build
