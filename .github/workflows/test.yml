@@ -47,6 +47,10 @@ jobs:
       - name: excute fef
         run: fef
         env:
+          CI: true
+      - name: souce .bash_profle
+        run: source /Users/runner/.bash_profile
+        env:
           CI: true 
       - name: Install dependencies
         run: npm ci && npm run bootstrap
