@@ -25,7 +25,7 @@ jobs:
           - 16
         architecture:
           - x64
-        an extra windows-x86 run:
+        # an extra windows-x86 run:
         include:
           - os: windows-latest
             node: 12
