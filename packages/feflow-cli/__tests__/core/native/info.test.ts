@@ -17,4 +17,8 @@ describe('@feflow/core - Native info', () => {
     const pattern = /feflow: \d+.\d+.\d+[-]*[\w.\d]*/;
     assert(pattern.test(shell.exec('node bin/feflow info --e2e').stdout));
   });
+
+  it.only('fef info 输出信息中应该包含系统型号', () => {
+    shell.exec('node bin/feflow info --e2e');
+  });
 });
