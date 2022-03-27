@@ -108,14 +108,14 @@ export default class Binp {
       return profile;
     }
 
-    if (process.env.TEST_MODE === 'E2E') {
-      return;
-    }
-
     this.handleUnsupportedTerminal(profile);
   }
 
   private handleUnsupportedTerminal(profile: string) {
+    if (process.env.TEST_MODE === 'E2E') {
+      return;
+    }
+
     console.error(
       'the current terminal cannot use feflow normally, ' +
         'please open a new terminal or execute the following statement:',
