@@ -40,6 +40,14 @@ jobs:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.architecture }}
           cache: npm
+      - name: Install @feflow/cli
+        run: npm install @feflow/cli -g
+        env:
+          CI: true
+      - name: excute fef
+        run: fef
+        env:
+          CI: true 
       - name: Install dependencies
         run: npm ci && npm run bootstrap
         env:
