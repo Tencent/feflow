@@ -23,7 +23,7 @@
     "compile": "tsc -p tsconfig.build.json",
     "prebuild": "npm run checkType && npm run clean",
     "build": "npm run compile",
-    "test": "nyc mocha --timeout 100000 -r ts-node/register __tests__/**/*.test.ts",
+    "test": "cross-env TEST_MODE=E2E nyc mocha --timeout 100000 -r ts-node/register __tests__/**/*.test.ts",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "prepublishOnly": "npm run build"
@@ -59,6 +59,7 @@
     "@types/yeoman-environment": "^2.10.1",
     "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.1.0",
+    "cross-env": "^7.0.3",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",

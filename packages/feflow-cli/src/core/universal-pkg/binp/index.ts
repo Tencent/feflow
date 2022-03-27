@@ -99,12 +99,19 @@ export default class Binp {
       return;
     }
     if (!fs.existsSync(profile)) {
+      console.log('E2E_Debug: 文件不存在');
       return profile;
     }
     const content = fs.readFileSync(profile)?.toString();
+    console.log('E2E_Debug: ', [profile, setStatement]);
     if (content?.indexOf(setStatement) === -1) {
       return profile;
     }
+
+    if (process.env.TEST_MODE === 'E2E') {
+      return;
+    }
+
     this.handleUnsupportedTerminal(profile);
   }
 

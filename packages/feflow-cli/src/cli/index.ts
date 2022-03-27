@@ -33,6 +33,9 @@ export default async function entry() {
   // 根据是否进行的是端对端测试动态设置FEFLOW_HOME
   const FEFLOW_HOME = args?.e2e ? FEFLOW_HOME_E2E : FEFLOW_HOME_ORIGINAL;
 
+  console.log('TEST_MODE == ', process.env.TEST_MODE);
+  console.log('SHELL == ', process.env.SHELL);
+
   // 检查node版本
   ensureNodeVersion(pkg.engines.node, pkg.name);
   try {
@@ -55,9 +58,6 @@ export default async function entry() {
     ...args: Parameters<NodeJS.UncaughtExceptionListener | NodeJS.UnhandledRejectionListener>
   ) => {
     const [err] = args;
-
-    console.log('E2E: err === ', err);
-
     logger.error(err);
     reporter.reportCommandError(err);
     fefError.printError({ error: err, msg: '', hideError: true });
