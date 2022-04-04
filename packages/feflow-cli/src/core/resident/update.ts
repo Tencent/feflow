@@ -47,7 +47,6 @@ const logger = createLogger({
 });
 
 const root = FEFLOW_HOME;
-console.log('FEFLOW: resident root ', root);
 const rootPkg = path.join(root, 'package.json');
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);

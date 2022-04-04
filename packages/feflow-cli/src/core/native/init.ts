@@ -57,7 +57,8 @@ const run = (ctx: Feflow, name: string) => {
 export default (ctx: Feflow) => {
   ctx.commander.register('init', 'Create a new project', () => {
     const { root, rootPkg, args } = ctx;
-    const { generator, e2e } = args;
+    const { generator } = args;
+    const e2e = process.env?.TEST_MODE;
     loadGenerator(root, rootPkg).then(async (generators) => {
       // feflow init 简化逻辑直接安装并使用脚手架
       if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {

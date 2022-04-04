@@ -38,9 +38,9 @@ export async function updateCli(packageManager: string) {
 }
 
 export async function checkCliUpdate(ctx: Feflow) {
-  const { version, config = {}, configPath, args } = ctx;
+  const { version, config = {}, configPath } = ctx;
   const { packageManager } = config;
-  const { e2e } = args;
+  const e2e = process.env?.TEST_MODE;
 
   if (!packageManager) {
     ctx.logger.error(`cannot find 'packageManager' from config`);

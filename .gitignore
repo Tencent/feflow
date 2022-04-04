@@ -9,5 +9,6 @@ packages/*/lib
 tmp
 dist
 packages/feflow-cli/bin/run
+packages/feflow-cli/.zshrc
 tnpm
 **/.fef

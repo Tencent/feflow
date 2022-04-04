@@ -31,9 +31,6 @@ export default async function entry() {
     },
   });
 
-  console.log('TEST_MODE == ', process.env.TEST_MODE);
-  console.log('FEFLOW_HOME == ', FEFLOW_HOME);
-
   // 检查node版本
   ensureNodeVersion(pkg.engines.node, pkg.name);
   try {
