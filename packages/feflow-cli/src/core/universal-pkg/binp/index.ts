@@ -2,7 +2,7 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import spawn from 'cross-spawn';
-import osenv from 'osenv';
+import { USER_HOME } from '../../../shared/constant';
 
 /**
  * register the directory to the environment variable path
@@ -78,7 +78,7 @@ export default class Binp {
     } else {
       toPath = `export PATH=$PATH:${binPath}`;
     }
-    const home = osenv.home();
+    const home = USER_HOME;
     const zshProfile = this.detectZshProfile(home);
     this.addToPath(zshProfile, toPath);
     const bashProfile = this.detectBashProfile(home);
@@ -125,7 +125,7 @@ export default class Binp {
   }
 
   private detectProfile(binPath: string, prior: boolean): [string | undefined, string | undefined] {
-    const home = osenv.home();
+    const home = USER_HOME;
     const shell = process.env.SHELL;
     let toPath: string;
     if (prior) {

@@ -2,7 +2,6 @@
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
-import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import _ from 'lodash';
 import { UpdateData, UniversalPluginUpdateMsg } from './';
@@ -16,12 +15,12 @@ import {
   UPDATE_COLLECTION,
   BEAT_GAP,
   CHECK_UPDATE_GAP,
-  FEFLOW_ROOT,
   UNIVERSAL_PKG_JSON,
   BEAT_KEY,
   BEAT_LOCK,
   UPDATE_KEY,
   UPDATE_LOCK,
+  FEFLOW_HOME,
 } from '../../shared/constant';
 import createLogger from '../logger';
 import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
@@ -42,7 +41,7 @@ const logger = createLogger({
   debug: Boolean(debug),
   silent: Boolean(silent),
 });
-const root = path.join(osenv.home(), FEFLOW_ROOT);
+const root = FEFLOW_HOME;
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);
 const dbFile = path.join(root, UPDATE_COLLECTION);

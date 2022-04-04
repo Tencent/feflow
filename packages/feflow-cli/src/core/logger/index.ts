@@ -1,14 +1,13 @@
 import bunyan from 'bunyan';
 import { Writable } from 'stream';
 import path from 'path';
-import osenv from 'osenv';
 import { spawn } from 'child_process';
 import chalk from 'chalk';
-import { LOG_REPORT_BEAT_GAP, FEFLOW_ROOT, LOG_FILE, HEART_BEAT_COLLECTION_LOG } from '../../shared/constant';
+import { LOG_REPORT_BEAT_GAP, LOG_FILE, HEART_BEAT_COLLECTION_LOG, FEFLOW_HOME } from '../../shared/constant';
 import { getKeyFormFile, setKeyToFile } from '../../shared/file';
 import pkgJson from '../../../package.json';
 
-const root = path.join(osenv.home(), FEFLOW_ROOT);
+const root = FEFLOW_HOME;
 const heartDBFile = path.join(root, HEART_BEAT_COLLECTION_LOG);
 let logReportProcess: ReturnType<typeof spawn> | null = null;
 const reportLog = path.join(__dirname, './report');

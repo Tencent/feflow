@@ -19,6 +19,7 @@ import { UniversalPkg } from './universal-pkg/dep/pkg';
 import {
   FEFLOW_BIN,
   FEFLOW_LIB,
+  FEFLOW_HOME,
   HOOK_TYPE_ON_COMMAND_REGISTERED,
   LOG_FILE,
   UNIVERSAL_MODULES,
@@ -58,7 +59,7 @@ export default class Feflow {
     name: string;
   };
 
-  constructor(args: minimist.ParsedArgs, FEFLOW_HOME: string) {
+  constructor(args: minimist.ParsedArgs) {
     this.root = FEFLOW_HOME;
     this.configPath = path.join(FEFLOW_HOME, '.feflowrc.yml');
     this.bin = path.join(FEFLOW_HOME, FEFLOW_BIN);

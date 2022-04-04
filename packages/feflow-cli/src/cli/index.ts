@@ -9,8 +9,9 @@ import {
   HOOK_TYPE_BEFORE,
   HOOK_TYPE_AFTER,
   EVENT_COMMAND_BEGIN,
-  FEFLOW_HOME_ORIGINAL,
-  FEFLOW_HOME_E2E,
+  // FEFLOW_HOME_ORIGINAL,
+  // FEFLOW_HOME_E2E,
+  FEFLOW_HOME,
   HEART_BEAT_COLLECTION_LOG,
   LOG_FILE,
   UPDATE_JSON,
@@ -30,11 +31,8 @@ export default async function entry() {
     },
   });
 
-  // 根据是否进行的是端对端测试动态设置FEFLOW_HOME
-  const FEFLOW_HOME = args?.e2e ? FEFLOW_HOME_E2E : FEFLOW_HOME_ORIGINAL;
-
   console.log('TEST_MODE == ', process.env.TEST_MODE);
-  console.log('SHELL == ', process.env.SHELL);
+  console.log('FEFLOW_HOME == ', FEFLOW_HOME);
 
   // 检查node版本
   ensureNodeVersion(pkg.engines.node, pkg.name);
@@ -51,7 +49,7 @@ export default async function entry() {
   fileExit(path.join(FEFLOW_HOME, LOG_FILE));
   fileExit(path.join(FEFLOW_HOME, UPDATE_JSON));
 
-  const feflow = new Feflow(args, FEFLOW_HOME);
+  const feflow = new Feflow(args);
   const { commander, logger, reporter, fefError } = feflow;
 
   const handleUnexpectedError = (

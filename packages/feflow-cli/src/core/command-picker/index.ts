@@ -1,14 +1,13 @@
 /* eslint-disable no-loop-func */
 import fs from 'fs';
 import path from 'path';
-import osEnv from 'osenv';
 import _ from 'lodash';
 
 import Feflow from '..';
 import { execPlugin } from '../plugin/load-universal-plugin';
 import logger from '../logger';
 import { parseYaml, safeDump } from '../../shared/yaml';
-import { UNIVERSAL_MODULES, CACHE_FILE, FEFLOW_ROOT } from '../../shared/constant';
+import { UNIVERSAL_MODULES, CACHE_FILE, FEFLOW_HOME } from '../../shared/constant';
 import { getPluginsList } from '../plugin/load-plugins';
 
 const internalPlugins = {
@@ -105,7 +104,7 @@ export class CacheController {
 
   constructor(ctx: Feflow) {
     this.ctx = ctx;
-    this.root = path.join(osEnv.home(), FEFLOW_ROOT);
+    this.root = FEFLOW_HOME;
     this.cacheFilePath = path.join(this.root, CACHE_FILE);
     this.cache = this.getCache();
     if (this.cache) {
@@ -246,7 +245,7 @@ export class CacheController {
   getPluginMap(): PluginInfo {
     const plugin: PluginInfo = {};
     const [err, pluginList] = getPluginsList(this.ctx);
-    const home = path.join(osEnv.home(), FEFLOW_ROOT);
+    const home = FEFLOW_HOME;
 
     if (!Object.keys(this.subCommandMap).length) {
       return plugin;

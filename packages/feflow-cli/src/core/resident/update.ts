@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import osenv from 'osenv';
 import semver from 'semver';
 
 import createLogger from '../logger';
@@ -14,7 +13,7 @@ import { install } from '../../shared/npm';
 import {
   FEFLOW_BIN,
   FEFLOW_LIB,
-  FEFLOW_ROOT,
+  FEFLOW_HOME,
   UNIVERSAL_MODULES,
   UNIVERSAL_PKG_JSON,
   UPDATE_COLLECTION,
@@ -46,7 +45,9 @@ const logger = createLogger({
   debug: Boolean(debug),
   silent: Boolean(silent),
 });
-const root = path.join(osenv.home(), FEFLOW_ROOT);
+
+const root = FEFLOW_HOME;
+console.log('FEFLOW: resident root ', root);
 const rootPkg = path.join(root, 'package.json');
 const configPath = path.join(root, '.feflowrc.yml');
 const universalPkgPath = path.join(root, UNIVERSAL_PKG_JSON);

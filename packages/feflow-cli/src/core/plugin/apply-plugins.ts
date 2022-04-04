@@ -1,6 +1,5 @@
 import fs from 'fs';
 import chalk from 'chalk';
-import osenv from 'osenv';
 import path from 'path';
 
 import compose from './compose';
@@ -10,7 +9,7 @@ import { CacheController, CommandType } from '../command-picker';
 import createLogger from '../logger';
 import { Plugin } from '../universal-pkg/schema/plugin';
 import { parseYaml } from '../../shared/yaml';
-import { FEFLOW_ROOT, UNIVERSAL_PLUGIN_CONFIG } from '../../shared/constant';
+import { UNIVERSAL_PLUGIN_CONFIG, FEFLOW_HOME } from '../../shared/constant';
 
 export default function applyPlugins(plugins: string[]) {
   return (ctx: Feflow) => {
@@ -20,7 +19,7 @@ export default function applyPlugins(plugins: string[]) {
     const pickConfig = new CacheController(ctx);
 
     const chain = plugins.map((name) => {
-      const home = path.join(osenv.home(), FEFLOW_ROOT);
+      const home = FEFLOW_HOME;
       const pluginPath = path.join(home, 'node_modules', name);
       pickConfig.registerSubCommand(CommandType.PLUGIN_TYPE, ctx.commander.store, name);
 

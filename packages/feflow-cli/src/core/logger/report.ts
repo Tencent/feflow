@@ -1,12 +1,11 @@
-import osenv from 'osenv';
 import fs from 'fs';
 import axios from 'axios';
 import path from 'path';
 import os from 'os';
-import { FEFLOW_ROOT, LOG_FILE } from '../../shared/constant';
+import { LOG_FILE, FEFLOW_HOME } from '../../shared/constant';
 import pkgJson from '../../../package.json';
 
-const LOGGER_LOG_PATH = path.join(osenv.home(), FEFLOW_ROOT, LOG_FILE);
+const LOGGER_LOG_PATH = path.join(FEFLOW_HOME, LOG_FILE);
 const KEYS_FILE = path.join(__dirname, '../../../.keys');
 const USER_NAME = os.hostname().split('-')[0];
 const NOW_TIME = new Date().getTime();

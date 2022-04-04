@@ -2,10 +2,9 @@
 // 更新依赖
 import fs from 'fs';
 import path from 'path';
-import osenv from 'osenv';
 import spawn from 'cross-spawn';
 import packageJson from '../../shared/package-json';
-import { FEFLOW_ROOT, LATEST_VERSION, UNIVERSAL_MODULES } from '../../shared/constant';
+import { LATEST_VERSION, UNIVERSAL_MODULES, FEFLOW_HOME } from '../../shared/constant';
 import { getCurrentTag } from '../universal-pkg/repository/git';
 import loggerInstance from '../logger';
 import versionImpl from '../universal-pkg/dep/version';
@@ -14,7 +13,7 @@ import { PkgInfo } from '../native/install';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
 
 const { debug, silent } = process.env;
-const root = path.join(osenv.home(), FEFLOW_ROOT);
+const root = FEFLOW_HOME;
 const rootPkg = path.join(root, 'package.json');
 const universalModulesPath = path.join(root, UNIVERSAL_MODULES);
 
