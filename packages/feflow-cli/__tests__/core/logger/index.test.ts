@@ -1,10 +1,8 @@
 /* eslint-disable no-param-reassign */
 import path from 'path';
 import fs from 'fs';
-import osenv from 'osenv';
-
 import createLogger from '../../../src/core/logger';
-import { FEFLOW_ROOT, LOG_FILE } from '../../../src/shared/constant';
+import { LOG_FILE, FEFLOW_HOME } from '../../../src/shared/constant';
 
 const captureStream = (stream: NodeJS.WriteStream) => {
   const oldWrite = stream.write;
@@ -27,11 +25,10 @@ describe('@feflow/core - Logger system', () => {
   let hook: ReturnType<typeof captureStream>;
 
   before(() => {
-    const FEFLOW_ROOT_DIR = path.join(osenv.home(), FEFLOW_ROOT);
-    const LOGGER_LOG_PATH = path.join(FEFLOW_ROOT_DIR, LOG_FILE);
+    const LOGGER_LOG_PATH = path.join(FEFLOW_HOME, LOG_FILE);
     // 确保 feflow 根目录存在
-    if (!fs.existsSync(FEFLOW_ROOT_DIR)) {
-      fs.mkdirSync(FEFLOW_ROOT_DIR);
+    if (!fs.existsSync(FEFLOW_HOME)) {
+      fs.mkdirSync(FEFLOW_HOME);
     }
     // 确保log文件存在
     fs.appendFileSync(LOGGER_LOG_PATH, '');
