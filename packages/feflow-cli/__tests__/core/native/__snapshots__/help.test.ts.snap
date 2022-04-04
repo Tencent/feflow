@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`@feflow/core - Native help 测试 fef help 1`] = `
+exports[`@feflow/core - Native help fef help 应该可以正常输出帮助信息 1`] = `
 "
 Usage
 
@@ -8,38 +8,16 @@ Usage
 
 Commands
 
-  config            Config client                                         
-  doctor            environment information                               
-  help              Help messages                                         
-  info              Info messages                                         
-  init              Create a new project                                  
-  install           Install a devkit or plugin                            
-  uninstall         Uninstall a devkit or plugin                          
-  list              Show all plugins installed.                           
-  logger            logger Message                                        
-  upgrade           upgrade fef cli                                       
-  gitinit           EPC Git仓库规范化工具                                        
-  golangci-lint     Go代码规范扫描工具                                            
-  tcli              tencent cli                                           
-  code-style-go     基于golangci-lint实现的go代码风格扫描工具                          
-  java              绿色版JRE                                                
-  checkstyle        feflow-plugin-checkstyle universal plugin description 
-  code-style-java   基于checkstyle实现的java代码风格扫描工具                           
-  python            Python绿色版                                             
-  cpplint           cpplint工具，校验c++代码是否符合Google C++ Style。                
-  code-style-cpp    基于cpplint实现的Google C++ Style代码风格扫描工具                  
-  code-style-js     多语言代码风格扫描工具 - js                                      
-  code-style-py     基于checkstyle实现的Python代码风格扫描工具                         
-  lizard            多语言圈复杂度扫描工具                                           
-  code-style        多语言代码风格扫描工具                                           
-  code-yml-helper   .code.yml辅助工具                                         
-  hookman           注册式GIT钩子工具，允许注册任何指令到指定钩子下                             
-  log-helper        GIT提交日志辅助工具，支持angular规范检查、tapd规范检查，日志辅助纠正等能力。         
-  branch-helper     分支助手                                                  
-  finfo             查看插件的依赖、作者等详细信息                                       
-  mdr               控制台打印markdown                                         
-  fman              打印插件的readme.md                                        
-  epc               EPC官方工具集套件，聚焦代码领域                                     
+  config      Config client                
+  doctor      environment information      
+  help        Help messages                
+  info        Info messages                
+  init        Create a new project         
+  install     Install a devkit or plugin   
+  uninstall   Uninstall a devkit or plugin 
+  list        Show all plugins installed.  
+  logger      logger Message               
+  upgrade     upgrade fef cli              
 
 Options
 
@@ -51,7 +29,7 @@ Options
 "
 `;
 
-exports[`@feflow/core - Native help 测试 fef help 正常输出 1`] = `
+exports[`@feflow/core - Native help 测试 fef help 1`] = `
 "
 Usage
 
@@ -59,38 +37,16 @@ Usage
 
 Commands
 
-  config            Config client                                         
-  doctor            environment information                               
-  help              Help messages                                         
-  info              Info messages                                         
-  init              Create a new project                                  
-  install           Install a devkit or plugin                            
-  uninstall         Uninstall a devkit or plugin                          
-  list              Show all plugins installed.                           
-  logger            logger Message                                        
-  upgrade           upgrade fef cli                                       
-  gitinit           EPC Git仓库规范化工具                                        
-  golangci-lint     Go代码规范扫描工具                                            
-  tcli              tencent cli                                           
-  code-style-go     基于golangci-lint实现的go代码风格扫描工具                          
-  java              绿色版JRE                                                
-  checkstyle        feflow-plugin-checkstyle universal plugin description 
-  code-style-java   基于checkstyle实现的java代码风格扫描工具                           
-  python            Python绿色版                                             
-  cpplint           cpplint工具，校验c++代码是否符合Google C++ Style。                
-  code-style-cpp    基于cpplint实现的Google C++ Style代码风格扫描工具                  
-  code-style-js     多语言代码风格扫描工具 - js                                      
-  code-style-py     基于checkstyle实现的Python代码风格扫描工具                         
-  lizard            多语言圈复杂度扫描工具                                           
-  code-style        多语言代码风格扫描工具                                           
-  code-yml-helper   .code.yml辅助工具                                         
-  hookman           注册式GIT钩子工具，允许注册任何指令到指定钩子下                             
-  log-helper        GIT提交日志辅助工具，支持angular规范检查、tapd规范检查，日志辅助纠正等能力。         
-  branch-helper     分支助手                                                  
-  finfo             查看插件的依赖、作者等详细信息                                       
-  mdr               控制台打印markdown                                         
-  fman              打印插件的readme.md                                        
-  epc               EPC官方工具集套件，聚焦代码领域                                     
+  config      Config client                
+  doctor      environment information      
+  help        Help messages                
+  info        Info messages                
+  init        Create a new project         
+  install     Install a devkit or plugin   
+  uninstall   Uninstall a devkit or plugin 
+  list        Show all plugins installed.  
+  logger      logger Message               
+  upgrade     upgrade fef cli              
 
 Options
 

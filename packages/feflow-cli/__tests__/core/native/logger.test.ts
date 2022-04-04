@@ -3,7 +3,7 @@ import chai from 'chai';
 
 const { expect } = chai;
 
-describe.only('@feflow/core - Native logger', () => {
+describe('@feflow/core - Native logger', () => {
   const loggerText = 'loggerText';
 
   it('fef logger 的参数为空时, 应输出 nothing types', () => {
