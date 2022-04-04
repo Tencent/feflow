@@ -19,10 +19,10 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 10
+          # - 10
           - 12
-          - 14
-          - 16
+          # - 14
+          # - 16
         architecture:
           - x64
         # an extra windows-x86 run:

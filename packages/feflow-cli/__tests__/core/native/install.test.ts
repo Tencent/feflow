@@ -3,7 +3,7 @@ import chai from 'chai';
 
 const { expect, assert } = chai;
 
-describe.only('@feflow/core - Native list', () => {
+describe('@feflow/core - Native list', () => {
   beforeEach(() => {
     shell.exec('rm -rf .fef');
   });
