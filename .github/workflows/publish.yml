@@ -28,6 +28,9 @@ jobs:
           CI: true
       - name: Build
         run: npm run build
+      - name: Check dist tag
+        # 不能使用 npm script 包裹，会污染 stdout
+        run: node ./scripts/check-dist-tag.js >> $GITHUB_ENV
       - name: Publish
         run: npm run release
         env:
