@@ -12,7 +12,7 @@
     "bootstrap": "lerna bootstrap --no-ci",
     "build": "lerna run build --ignore @feflow/cli && lerna run build --scope @feflow/cli",
     "test": "lerna run test",
-    "release": "lerna publish from-git dist-tag $DIST_TAG --yes",
+    "release": "lerna publish from-git --dist-tag $DIST_TAG --yes",
     "prepare-husky": "husky install",
     "check-npm-version": "node ./scripts/check-npm-version.js",
     "prepare": "npm run prepare-husky",
