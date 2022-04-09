@@ -25,6 +25,7 @@ import {
   FEFLOW_PLUGIN_LOCAL_PREFIX,
   SILENT_ARG,
   DISABLE_ARG,
+  UNIVERSAL_PLUGIN_CONFIG,
 } from '../../shared/constant';
 import { getRegistryUrl, install } from '../../shared/npm';
 import { getURL } from '../../shared/url';
@@ -465,7 +466,9 @@ export async function installPlugin(ctx: Feflow, installPluginStr: string, isGlo
 
   const repoPath = getRepoPath(universalModules, pkgInfo.repoName, pkgInfo.installVersion);
   if (pkgInfo.installVersion === LATEST_VERSION) {
-    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
+    // TODO(blurooochen): 重构已安装插件记录表
+    const pluginFile = path.join(repoPath, UNIVERSAL_PLUGIN_CONFIG);
+    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION) && fs.existsSync(pluginFile)) {
       const currentVersion = await getCurrentTag(repoPath);
       if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
         if (global) {
