@@ -31,4 +31,4 @@ jobs:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
           msgtype: markdown
-          content: $CHANGELOG
+          content: ${{env.CHANGELOG}}
