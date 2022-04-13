@@ -20,7 +20,10 @@ jobs:
         with:
           node-version: 12
       - run: npm i
-      - run: changelog=`npx lerna-changelog` && echo "CHANGELOG=$changelog" >> $GITHUB_ENV
+      - run: |
+          echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+          npx lerna-changelog >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
         env:
           GITHUB_AUTH: ${{secrets.GITHUB_TOKEN}}
       - uses: chf007/action-wechat-work@master
