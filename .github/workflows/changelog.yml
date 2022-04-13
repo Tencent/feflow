@@ -19,8 +19,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-      - run: changelog=`npx lerna-changelog` && echo "CHANGELOG=$changelog" >> $GITHUB_ENV
       - run: npm i
+      - run: changelog=`npx lerna-changelog` && echo "CHANGELOG=$changelog" >> $GITHUB_ENV
       - uses: chf007/action-wechat-work@master
         env:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
