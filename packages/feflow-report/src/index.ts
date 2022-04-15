@@ -71,6 +71,7 @@ class Report {
         commandSource: this.commandSource,
         lastCommand: this.lastCommand,
         project: this.project,
+        generatorProject: this.generatorProject,
         version: this.ctx.version,
         cachePath: this.cachePath,
         costTime: String(this.costTime),
@@ -89,7 +90,7 @@ class Report {
       return;
     }
     this.costTime = Date.now() - this.startTime;
-    this.generatorProject = getProject(this.ctx, true);
+    this.generatorProject = getProject(this.ctx);
     this.report(this.cmd, this.args, true);
   }
 

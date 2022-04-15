@@ -28,7 +28,24 @@ jobs:
           CI: true
       - name: Build
         run: npm run build
+      - name: Check dist tag
+        # 不能使用 npm script 包裹，会污染 stdout
+        run: node ./scripts/check-dist-tag.js >> $GITHUB_ENV
       - name: Publish
         run: npm run release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Generate changelog
+        run: |
+          echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+          npx lerna-changelog >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+        env:
+          GITHUB_AUTH: ${{secrets.GITHUB_TOKEN}}
+      - name: Wework notification
+        uses: chf007/action-wechat-work@master
+        env:
+          WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
+        with:
+          msgtype: markdown
+          content: ${{env.CHANGELOG}}
