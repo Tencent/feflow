@@ -46,7 +46,7 @@
     "@types/js-yaml": "^3.12.5",
     "@types/lockfile": "^1.0.1",
     "@types/lodash": "^4.14.161",
-    "@types/marked": "^3.0.1",
+    "@types/marked": "^4.0.3",
     "@types/minimist": "^1.2.0",
     "@types/nedb": "^1.8.10",
     "@types/osenv": "^0.1.0",
@@ -57,7 +57,6 @@
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "^0.3.3",
     "@feflow/report": "^0.5.3",
-    "@types/marked": "^3.0.1",
     "abbrev": "^1.1.1",
     "axios": "^0.21.1",
     "bunyan": "^1.8.14",
