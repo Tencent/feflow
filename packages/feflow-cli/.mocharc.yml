@@ -1,0 +1,7 @@
+require:
+  - 'ts-node/register'
+recursive: true
+timeout: 100000 # 100s
+allow-uncaught: true
+retries: 1
+parallel: false
