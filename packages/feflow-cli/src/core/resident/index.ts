@@ -20,7 +20,7 @@ import {
   UPDATE_LOCK,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
-import { createPm2Process } from '../../shared/pm2';
+import { createPm2Process, ErrProcCallback } from '../../shared/pm2';
 
 const updateBeatScript = path.join(__dirname, './update-beat.js');
 const updateScript = path.join(__dirname, './update');
@@ -37,7 +37,10 @@ const uTable = new Table();
  * @param ctx Feflow实例
  */
 function startUpdateBeat(ctx: Feflow) {
-  createPm2Process({
+  /**
+   * pm2 启动参数
+   */
+  const options = {
     script: updateBeatScript,
     name: 'feflow-update-beat-process',
     env: {
@@ -45,11 +48,25 @@ function startUpdateBeat(ctx: Feflow) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
-  });
+  };
+
+  /**
+   * pm2 启动回调
+   */
+  const pm2StartCallback: ErrProcCallback = (pm2) => (err) => {
+    if (err) {
+      ctx.logger.error('launch update beat pm2 process failed', err);
+    }
+    return pm2.disconnect();
+  };
+
+  createPm2Process(ctx, options, pm2StartCallback);
 }
 
 /**
  * 利用spawn创建异步更新子进程
+ *
+ * 不使用pm2的原因：更新子进程并不是常驻子进程，在运行fef命令时如果有更新才会去创建进程进行更新
  *
  * @param ctx Feflow实例
  * @param cacheValidate 缓存是否有效
