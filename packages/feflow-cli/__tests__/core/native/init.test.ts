@@ -4,7 +4,7 @@ import chai from 'chai';
 const { expect } = chai;
 
 describe('@feflow/core - Native init', () => {
-  beforeEach(() => {
+  before(() => {
     shell.exec('rm -rf .fef');
   });
 

@@ -4,7 +4,7 @@ import chai from 'chai';
 const { assert } = chai;
 
 describe('@feflow/core - Native doctor', () => {
-  beforeEach(() => {
+  before(() => {
     shell.exec('rm -rf .fef');
   });
 

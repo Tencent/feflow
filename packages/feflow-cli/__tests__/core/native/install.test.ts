@@ -4,7 +4,7 @@ import chai from 'chai';
 const { expect, assert } = chai;
 
 describe('@feflow/core - Native list', () => {
-  beforeEach(() => {
+  before(() => {
     shell.exec('rm -rf .fef');
   });
 
