@@ -22,16 +22,4 @@ describe('@feflow/core - Native list', () => {
     const expectedPattern = new RegExp(`templates\\n*${packageName}\\(${edition}\\)\\n*plugins\\n*`);
     assert.match(shell.exec(`node bin/feflow list`).stdout, expectedPattern);
   });
-
-  it('安装 feflow-plugin-lint 插件后, fef list 的返回内容应包含 feflow-plugin-lint', () => {
-    // 安装 feflow-plugin-lint
-    const packageName = 'feflow-plugin-lint';
-    const edition = '1.1.3';
-    shell.exec(`node bin/feflow install ${packageName}@${edition}`);
-
-    const expectedPattern = new RegExp(
-      `templates\\n*No templates have been installed\\n*plugins\\n*${packageName}\\(${edition}\\)\\n*`,
-    );
-    assert.match(shell.exec(`node bin/feflow list`).stdout, expectedPattern);
-  });
 });
