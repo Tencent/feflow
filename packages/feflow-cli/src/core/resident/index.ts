@@ -18,12 +18,13 @@ import {
   UPDATE_COLLECTION,
   UPDATE_KEY,
   UPDATE_LOCK,
+  FEFLOW_HOME,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
-import { createPm2Process, ErrProcCallback } from '../../shared/pm2';
+import { createPm2Process, ErrProcCallback } from './pm2';
 
-const updateBeatScript = path.join(__dirname, './update-beat.js');
-const updateScript = path.join(__dirname, './update');
+const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
+const updateScriptPath = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes(SILENT_ARG);
 const disableCheck = process.argv.slice(3).includes(DISABLE_ARG);
 let updateFile: LockFile;
@@ -41,13 +42,16 @@ function startUpdateBeat(ctx: Feflow) {
    * pm2 启动参数
    */
   const options = {
-    script: updateBeatScript,
+    script: updateBeatScriptPath,
     name: 'feflow-update-beat-process',
     env: {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
+    error_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-error.log`,
+    out_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-out.log`,
+    pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,
   };
 
   /**
@@ -73,7 +77,7 @@ function startUpdateBeat(ctx: Feflow) {
  * @param latestVersion 最新版本
  */
 function startUpdate(ctx: Feflow, cacheValidate: boolean, latestVersion: string) {
-  const child = spawn(process.argv[0], [updateScript], {
+  const child = spawn(process.argv[0], [updateScriptPath], {
     detached: true,
     stdio: 'ignore',
     env: {

@@ -79,6 +79,7 @@
     "minimist": "^1.2.6",
     "osenv": "^0.1.5",
     "package-json": "^6.5.0",
+    "pm2": "^5.2.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.6",
     "semver": "^7.3.2",
