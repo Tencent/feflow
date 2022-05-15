@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import spawn from 'cross-spawn';
 import cliMd from 'cli-html-c';
 import commandLineUsage from 'command-line-usage';
-import marked from 'marked';
+import { marked } from 'marked';
 
 import Feflow from '../';
 import { Store } from '../commander';
