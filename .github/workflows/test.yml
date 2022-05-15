@@ -16,20 +16,20 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          # - macos-latest
-          # - windows-latest
+          - macos-latest
+          - windows-latest
         node:
-          # - 10
+          - 10
           - 12
-          # - 14
-          # - 16
+          - 14
+          - 16
         architecture:
           - x64
         # an extra windows-x86 run:
-        # include:
-        #   - os: windows-latest
-        #     node: 12
-        #     architecture: x86
+        include:
+          - os: windows-latest
+            node: 12
+            architecture: x86
     name: Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
     steps:
       - name: Checkout
