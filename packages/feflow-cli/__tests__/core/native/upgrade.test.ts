@@ -5,7 +5,7 @@ const { assert } = chai;
 
 describe('@feflow/core - Native upgrade', () => {
   it('执行 fef upgrade 应该返回upgrade提示信息', () => {
-    const expectContentPattern = /E2E: upgrade/;
-    assert(expectContentPattern.test(shell.exec('node bin/feflow upgrade').stdout));
+    const expectedPattern = /E2E: upgrade/;
+    assert.match(shell.exec('node bin/feflow upgrade').stdout, expectedPattern);
   });
 });
