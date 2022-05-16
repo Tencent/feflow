@@ -10,3 +10,4 @@ tmp
 dist
 packages/feflow-cli/bin/run
 tnpm
+**/.keys
