@@ -1,6 +1,6 @@
 {
   "name": "@feflow/packager",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Feflow packager",
   "directories": {
     "lib": "lib",
@@ -36,7 +36,7 @@
     "cross-spawn": "^6.0.5",
     "execa": "^4.0.0",
     "get-stream": "^5.1.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "semver": "^7.3.5"
   },
   "engines": {

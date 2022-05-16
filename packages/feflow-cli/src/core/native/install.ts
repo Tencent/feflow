@@ -25,10 +25,12 @@ import {
   FEFLOW_PLUGIN_LOCAL_PREFIX,
   SILENT_ARG,
   DISABLE_ARG,
+  UNIVERSAL_PLUGIN_CONFIG,
 } from '../../shared/constant';
 import { getRegistryUrl, install } from '../../shared/npm';
 import { getURL } from '../../shared/url';
 import { copyDir } from '../../shared/fs';
+import { Logger } from '../logger';
 
 export default (ctx: Feflow) => {
   ctx.commander.register('install', 'Install a devkit or plugin', async () => {
@@ -41,7 +43,7 @@ export default (ctx: Feflow) => {
     try {
       await installPlugin(ctx, installPluginStr, true);
     } catch (e) {
-      ctx.logger.error(`install error: ${JSON.stringify(e)}`);
+      ctx.logger.error(`install error: `, e);
       process.exit(2);
     }
   });
@@ -184,7 +186,7 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
         const data = fs.readFileSync(ctx.rootPkg, 'utf-8');
         json = JSON.parse(data);
       } catch (e) {
-        ctx.logger.error(`getCurversion error: ${JSON.stringify(e)}`);
+        ctx.logger.error(`getCurversion error: `, e);
       }
 
       if (!json.dependencies) {
@@ -211,7 +213,7 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
       return '';
     });
   } catch (err) {
-    ctx.logger.error(`get pkg info error ${JSON.stringify(err)}`);
+    ctx.logger.error(`get pkg info error: `, err);
   }
   if (!needInstall.length) {
     return Promise.resolve();
@@ -315,13 +317,12 @@ async function startInstall(ctx: Feflow, pkgInfo: PkgInfo, repoPath: string, upd
   if (lastVersion) {
     const oldRepoPath = getRepoPath(universalModules, pkgInfo.repoName, lastVersion);
     lastRepoName = toSimpleCommand(pkgInfo.repoName);
-    try {
-      const oldPlugin = resolvePlugin(ctx, oldRepoPath);
-      if (oldPlugin.name) {
-        lastRepoName = oldPlugin.name;
-      }
-    } catch (e) {}
+    const oldPlugin = resolvePlugin(ctx, oldRepoPath);
+    if (oldPlugin.name) {
+      lastRepoName = oldPlugin.name;
+    }
   }
+
   if (pkgInfo.fromType !== PkgInfo.dir) {
     logger.info(`switch to version: ${pkgInfo.checkoutTag}`);
     await checkoutVersion(repoPath, pkgInfo.checkoutTag, pkgInfo.lastCheckoutTag);
@@ -438,7 +439,7 @@ export async function installPlugin(ctx: Feflow, installPluginStr: string, isGlo
     universalPkg,
     universalModules,
   }: {
-    logger: any;
+    logger: Logger;
     universalPkg: UniversalPkg;
     universalModules: string;
   } = ctx;
@@ -465,31 +466,27 @@ export async function installPlugin(ctx: Feflow, installPluginStr: string, isGlo
 
   const repoPath = getRepoPath(universalModules, pkgInfo.repoName, pkgInfo.installVersion);
   if (pkgInfo.installVersion === LATEST_VERSION) {
-    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
-      try {
-        const currentVersion = await getCurrentTag(repoPath);
-        if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
-          if (global) {
-            logger.info(
-              `[${pkgInfo.repoName}] the plugin version currently installed is the latest version: ${currentVersion}`,
-            );
-          }
-          return;
+    // TODO(blurooochen): 重构已安装插件记录表
+    const pluginFile = path.join(repoPath, UNIVERSAL_PLUGIN_CONFIG);
+    if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION) && fs.existsSync(pluginFile)) {
+      const currentVersion = await getCurrentTag(repoPath);
+      if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
+        if (global) {
+          logger.info(
+            `[${pkgInfo.repoName}] the plugin version currently installed is the latest version: ${currentVersion}`,
+          );
         }
-        updateFlag = true;
-        if (currentVersion) {
-          pkgInfo.lastCheckoutTag = currentVersion;
-        }
-      } catch (e) {
-        logger.error(JSON.stringify(e));
+        return;
+      }
+      updateFlag = true;
+      if (currentVersion) {
+        pkgInfo.lastCheckoutTag = currentVersion;
       }
     }
   }
   if (updateFlag) {
     logger.info(`[${pkgInfo.showName()}] update the plugin to version ${pkgInfo.checkoutTag}`);
-    try {
-      resolvePlugin(ctx, repoPath).preUpgrade.runLess();
-    } catch (e) {}
+    resolvePlugin(ctx, repoPath).preUpgrade.runLess();
   } else {
     logger.info(`[${pkgInfo.showName()}] installing plugin`);
   }
@@ -732,6 +729,6 @@ async function updatePlugin(ctx: Feflow, pkg: string, version: string) {
   try {
     await installPlugin(ctx, `${pkg}@${version}`, isGlobal);
   } catch (e) {
-    ctx.logger.error(`[${pkg}] update failure, ${e}`);
+    ctx.logger.error(`[${pkg}] update failure: `, e);
   }
 }
