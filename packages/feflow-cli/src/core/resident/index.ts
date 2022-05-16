@@ -78,8 +78,8 @@ function startUpdateBeat(ctx: Feflow) {
  */
 function startUpdate(ctx: Feflow, cacheValidate: boolean, latestVersion: string) {
   const child = spawn(process.argv[0], [updateScriptPath], {
-    detached: true,
-    stdio: 'ignore',
+    detached: true, // 使子进程在父进程退出后继续运行
+    stdio: 'ignore', // 保持后台运行
     env: {
       ...process.env,
       debug: ctx.args.debug,
