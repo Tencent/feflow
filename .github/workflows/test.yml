@@ -41,7 +41,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
           cache: npm
       - name: Install dependencies
-        run: npm install && npm run bootstrap
+        run: npm i npm@6.0.1 && npm install && npm run bootstrap
         env:
           CI: true
       - name: Build
