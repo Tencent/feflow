@@ -18,11 +18,13 @@ import {
   UPDATE_COLLECTION,
   UPDATE_KEY,
   UPDATE_LOCK,
+  FEFLOW_HOME,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
+import { createPm2Process, ErrProcCallback } from './pm2';
 
-const updateBeatScript = path.join(__dirname, './update-beat');
-const updateScript = path.join(__dirname, './update');
+const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
+const updateScriptPath = path.join(__dirname, './update');
 const isSilent = process.argv.slice(3).includes(SILENT_ARG);
 const disableCheck = process.argv.slice(3).includes(DISABLE_ARG);
 let updateFile: LockFile;
@@ -30,26 +32,54 @@ let heartFile: LockFile;
 const table = new Table();
 const uTable = new Table();
 
+/**
+ * 使用pm2创建异步心跳子进程
+ *
+ * @param ctx Feflow实例
+ */
 function startUpdateBeat(ctx: Feflow) {
-  const child = spawn(process.argv[0], [updateBeatScript], {
-    detached: true, // 使子进程在父进程退出后继续运行
-    stdio: 'ignore', // 保持后台运行
+  /**
+   * pm2 启动参数
+   */
+  const options = {
+    script: updateBeatScriptPath,
+    name: 'feflow-update-beat-process',
     env: {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
-    windowsHide: true,
-  });
+    error_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-error.log`,
+    out_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-out.log`,
+    pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,
+  };
 
-  // 父进程不会等待子进程
-  child.unref();
+  /**
+   * pm2 启动回调
+   */
+  const pm2StartCallback: ErrProcCallback = (pm2) => (err) => {
+    if (err) {
+      ctx.logger.error('launch update beat pm2 process failed', err);
+    }
+    return pm2.disconnect();
+  };
+
+  createPm2Process(ctx, options, pm2StartCallback);
 }
 
+/**
+ * 利用spawn创建异步更新子进程
+ *
+ * 不使用pm2的原因：更新子进程并不是常驻子进程，在运行fef命令时如果有更新才会去创建进程进行更新
+ *
+ * @param ctx Feflow实例
+ * @param cacheValidate 缓存是否有效
+ * @param latestVersion 最新版本
+ */
 function startUpdate(ctx: Feflow, cacheValidate: boolean, latestVersion: string) {
-  const child = spawn(process.argv[0], [updateScript], {
-    detached: true,
-    stdio: 'ignore',
+  const child = spawn(process.argv[0], [updateScriptPath], {
+    detached: true, // 使子进程在父进程退出后继续运行
+    stdio: 'ignore', // 保持后台运行
     env: {
       ...process.env,
       debug: ctx.args.debug,
