@@ -41,7 +41,7 @@ jobs:
           architecture: ${{ matrix.architecture }}
           cache: npm
       - name: Install dependencies
-        run: npm i npm@6.0.1 && npm install && npm run bootstrap
+        run: npm install npm@6.0.1 -g && npm install && npm run bootstrap
         env:
           CI: true
       - name: Build
@@ -49,7 +49,7 @@ jobs:
         env:
           CI: true
       - name: Test
-        run: cd packages && cd feflow-cli && ls && npm run test:yml
+        run: npm run test
         env:
           CI: true
 

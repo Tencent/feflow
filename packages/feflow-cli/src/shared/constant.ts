@@ -6,9 +6,9 @@ export const FEFLOW_LIB = 'lib';
 export const FEFLOW_HOME_ORIGINAL = path.join(osenv.home(), FEFLOW_ROOT);
 export const FEFLOW_HOME_E2E = path.join('./', FEFLOW_ROOT);
 export const FEFLOW_HOME = process.env?.TEST_MODE === 'E2E' ? FEFLOW_HOME_E2E : FEFLOW_HOME_ORIGINAL;
-// export const FEFLOW_HOME = FEFLOW_HOME_ORIGINAL;
 export const USER_HOME = process.env?.TEST_MODE === 'E2E' ? path.join('./') : osenv.home();
-// export const USER_HOME = osenv.home();
+export const DISABLE_UPDATE = process.env?.DISABLE_UPDATE || false; // 端对端测试时设置为true，不创建更新进程
+export const DISABLE_UPDATE_BEAT = process.env?.DISABLE_UPDATE_BEAT || false; // 端对端测试时设置为true，不创建心跳进程
 
 export const LATEST_VERSION = 'latest';
 

@@ -18,6 +18,8 @@ import {
   UPDATE_COLLECTION,
   UPDATE_KEY,
   UPDATE_LOCK,
+  DISABLE_UPDATE,
+  DISABLE_UPDATE_BEAT,
 } from '../../shared/constant';
 import { safeDump } from '../../shared/yaml';
 
@@ -182,8 +184,8 @@ export async function checkUpdate(ctx: Feflow) {
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
       ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
-      // 子进程心跳停止了
-      if (!cacheValidate) {
+      // 子进程心跳停止,并且允许创建心跳进程时重新创建心跳进程
+      if (!cacheValidate && !DISABLE_UPDATE_BEAT) {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
         startUpdateBeat(ctx);
       }
@@ -212,13 +214,14 @@ export async function checkUpdate(ctx: Feflow) {
         },
       }),
     ]);
-    startUpdateBeat(ctx);
+    // 端对端测试时不创建心跳进程
+    !DISABLE_UPDATE_BEAT && startUpdateBeat(ctx);
   }
 
   // 开启更新时
   if (!disableCheck && latestVersion && semver.gt(latestVersion, ctx.version)) {
     ctx.logger.debug(`Find new version, current version: ${ctx.version}, latest version: ${latestVersion}`);
-    if (autoUpdate) {
+    if (autoUpdate && !DISABLE_UPDATE) {
       ctx.logger.debug(`Feflow will auto update version from ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
       return startUpdate(ctx, cacheValidate, latestVersion);
@@ -237,7 +240,7 @@ export async function checkUpdate(ctx: Feflow) {
       },
     ];
     const answer = await inquirer.prompt(askIfUpdateCli);
-    if (answer.ifUpdate) {
+    if (answer.ifUpdate && !DISABLE_UPDATE) {
       ctx.logger.debug(`Feflow will update from version ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
       return startUpdate(ctx, cacheValidate, latestVersion);
@@ -251,7 +254,7 @@ export async function checkUpdate(ctx: Feflow) {
     );
   } else {
     ctx.logger.debug('Current cli version is already latest.');
-    return startUpdate(ctx, cacheValidate, '');
+    return !DISABLE_UPDATE && startUpdate(ctx, cacheValidate, '');
   }
 }
 
