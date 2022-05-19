@@ -43,7 +43,7 @@ export default (ctx: Feflow) => {
     try {
       await installPlugin(ctx, installPluginStr, true);
     } catch (e) {
-      ctx.logger.error(`install error: `, e);
+      ctx.logger.error('install error: ', e);
       process.exit(2);
     }
   });
@@ -81,7 +81,7 @@ interface PkgJson {
 export async function getRepoInfo(ctx: Feflow, packageName: string) {
   const serverUrl = ctx.config?.serverUrl;
   if (!serverUrl) {
-    return Promise.reject(`cannot find 'serverUrl' from config file`);
+    return Promise.reject('cannot find \'serverUrl\' from config file');
   }
   const url = getURL(serverUrl, `apply/getlist?name=${packageName}`);
   if (!url) {
@@ -148,37 +148,31 @@ function deleteDir(dirPath: string) {
 
 function isGitRepo(url: string): boolean {
   return (
-    new RegExp(
-      '^git@[a-zA-Z0-9._-]+:[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
-    ).test(url) ||
-    new RegExp(
-      '^http(s)?://([a-zA-Z0-9._-]*?(:[a-zA-Z0-9._-]*)?@)?[a-zA-Z0-9._-]+' +
-        '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$',
-    ).test(url)
+    new RegExp('^git@[a-zA-Z0-9._-]+:[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$').test(url)
+    || new RegExp('^http(s)?://([a-zA-Z0-9._-]*?(:[a-zA-Z0-9._-]*)?@)?[a-zA-Z0-9._-]+'
+        + '(/[a-zA-Z0-9._-]+)+.git(@v(0|[1-9]\\d*).(0|[1-9]\\d*).(0|[1-9]\\d*))?$').test(url)
   );
 }
 
 async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
   const packageManager = ctx.config?.packageManager;
   if (!packageManager) {
-    ctx.logger.error(`cannot find 'packageManager' in config file.`);
+    ctx.logger.error('cannot find \'packageManager\' in config file.');
     return;
   }
   const registryUrl = await getRegistryUrl(packageManager);
   let versionList: string[];
   let needInstall: string[] = [];
   try {
-    versionList = await Promise.all(
-      dependencies.map(async (dependency: string) => {
-        try {
-          return await packageJson(dependency, registryUrl);
-        } catch (e) {
-          ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
-          ctx.logger.debug(e);
-          process.exit(2);
-        }
-      }),
-    );
+    versionList = await Promise.all(dependencies.map(async (dependency: string) => {
+      try {
+        return await packageJson(dependency, registryUrl);
+      } catch (e) {
+        ctx.logger.error(`${dependency} not found on ${packageManager}, please check if it exists`);
+        ctx.logger.debug(e);
+        process.exit(2);
+      }
+    }));
     const getCurversion = () => {
       let json: PkgJson = {};
       const installedPlugin = {};
@@ -186,7 +180,7 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
         const data = fs.readFileSync(ctx.rootPkg, 'utf-8');
         json = JSON.parse(data);
       } catch (e) {
-        ctx.logger.error(`getCurversion error: `, e);
+        ctx.logger.error('getCurversion error: ', e);
       }
 
       if (!json.dependencies) {
@@ -213,17 +207,15 @@ async function installNpmPlugin(ctx: Feflow, ...dependencies: string[]) {
       return '';
     });
   } catch (err) {
-    ctx.logger.error(`get pkg info error: `, err);
+    ctx.logger.error('get pkg info error: ', err);
   }
   if (!needInstall.length) {
     return Promise.resolve();
   }
   ctx.logger.info('Installing packages. This might take a couple of minutes.');
-  return install(packageManager, ctx.root, packageManager === 'yarn' ? 'add' : 'install', needInstall, false).then(
-    () => {
-      ctx.logger.info('install success');
-    },
-  );
+  return install(packageManager, ctx.root, packageManager === 'yarn' ? 'add' : 'install', needInstall, false).then(() => {
+    ctx.logger.info('install success');
+  });
 }
 
 function updateNpmPluginInfo(ctx: Feflow, pluginName: string, options: any) {
@@ -245,6 +237,7 @@ function updateNpmPluginInfo(ctx: Feflow, pluginName: string, options: any) {
         ? Array.from(new Set<string>([...globalCmd, ...options.globalCmd]))
         : options.globalCmd || [];
       npmPluginInfoJson[pluginName] = pluginInfo;
+      // eslint-disable-next-line no-param-reassign
       delete options.globalCmd;
     }
     npmPluginInfoJson[pluginName] = Object.assign({}, npmPluginInfoJson[pluginName] || {}, options || {});
@@ -472,9 +465,7 @@ export async function installPlugin(ctx: Feflow, installPluginStr: string, isGlo
       const currentVersion = await getCurrentTag(repoPath);
       if (currentVersion && pkgInfo.checkoutTag === currentVersion) {
         if (global) {
-          logger.info(
-            `[${pkgInfo.repoName}] the plugin version currently installed is the latest version: ${currentVersion}`,
-          );
+          logger.info(`[${pkgInfo.repoName}] the plugin version currently installed is the latest version: ${currentVersion}`);
         }
         return;
       }
@@ -550,9 +541,7 @@ export async function getPkgInfo(ctx: Feflow, installPlugin: string): Promise<Pk
     }
     const repoInfo = await getRepoInfo(ctx, pluginName);
     if (!repoInfo) {
-      ctx.logger.warn(
-        `cant found message about ${pluginName} from Feflow Application market, please check if it exists`,
-      );
+      ctx.logger.warn(`cant found message about ${pluginName} from Feflow Application market, please check if it exists`);
       return;
     }
     repoFrom = repoInfo.repo;
@@ -662,7 +651,7 @@ async function uninstallNpmPlugin(ctx: Feflow, dependencies: string[]) {
   });
   const { packageManager } = ctx.config || {};
   if (!packageManager) {
-    logger.error(`cannot find 'packageManager' in config file`);
+    logger.error('cannot find \'packageManager\' in config file');
     return;
   }
   return install(

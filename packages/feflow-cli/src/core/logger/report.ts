@@ -95,10 +95,12 @@ async function report(logObj?: LogObj) {
     if (readData.length < 20) {
       // 如果有timer则不创新新的timer
       if (!hasTimer) {
-        timer = setTimeout(async () => {
-          await send(logObj, readData);
-          timer && clearTimeout(timer);
-          timer = null;
+        timer = setTimeout(() => {
+          (async () => {
+            await send(logObj, readData);
+            timer && clearTimeout(timer);
+            timer = null;
+          })();
         }, 5000);
       }
       return;

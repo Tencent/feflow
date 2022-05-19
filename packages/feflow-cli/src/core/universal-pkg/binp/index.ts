@@ -109,10 +109,8 @@ export default class Binp {
   }
 
   private handleUnsupportedTerminal(profile: string) {
-    console.error(
-      'the current terminal cannot use feflow normally, ' +
-        'please open a new terminal or execute the following statement:',
-    );
+    console.error('the current terminal cannot use feflow normally, '
+        + 'please open a new terminal or execute the following statement:');
     console.error(`source ${profile}`);
     process.exit(1);
   }

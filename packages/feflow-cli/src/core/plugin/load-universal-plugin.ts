@@ -47,13 +47,13 @@ function register(ctx: Feflow, pkg: string, version: string, global = false) {
           const plugin = loadPlugin(ctx, pkg, version);
           return plugin.usage
             ? {
-                type: 'usage',
-                content: plugin.usage,
-              }
+              type: 'usage',
+              content: plugin.usage,
+            }
             : {
-                type: 'path',
-                content: plugin.path,
-              };
+              type: 'path',
+              content: plugin.path,
+            };
         },
       ],
       pkg,
@@ -86,7 +86,7 @@ export async function execPlugin(ctx: Feflow, pkg: string, version: string) {
       }
       return true;
     })
-    .map((arg) => escape(arg));
+    .map(arg => escape(arg));
   plugin.command.run(...args);
   plugin.postRun.runLess();
 }

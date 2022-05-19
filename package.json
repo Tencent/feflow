@@ -34,7 +34,7 @@
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.32.0",
-    "eslint-config-tencent": "^1.0.2",
+    "eslint-config-tencent": "^1.0.4",
     "eslint-plugin-chai-friendly": "^0.7.2",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-prettier": "^3.4.1",

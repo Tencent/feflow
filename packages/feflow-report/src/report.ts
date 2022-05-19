@@ -3,8 +3,18 @@ import { getUserName, getSystemInfo, getKeyFormFile, setKeyToFile } from './comm
 import objectFactory from './common/objectFactory';
 import { REPORT_STATUS } from './constants';
 
-const { cmd, args, commandSource, lastCommand, project, version, generatorProject, cachePath, costTime, recall } =
-  process.env;
+const {
+  cmd,
+  args,
+  commandSource,
+  lastCommand,
+  project,
+  version,
+  generatorProject,
+  cachePath,
+  costTime,
+  recall,
+} =  process.env;
 const params = args ? JSON.parse(args) : undefined;
 const userName = getUserName();
 const systemInfo = getSystemInfo();
