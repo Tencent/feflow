@@ -433,13 +433,13 @@ export default class CommandPicker {
     const targetCommand = this.cacheController.getCommandPath(this.cmd) || {};
     const { type } = targetCommand;
     const pluginLogger = logger({
-      debug: Boolean(this.ctx.args.debug),
-      silent: Boolean(this.ctx.args.silent),
+      debug: Boolean(this.ctx?.args?.debug),
+      silent: Boolean(this.ctx?.args?.silent),
       name: targetCommand.pkg,
     });
-    this.ctx.logger.debug('pick command type: ', type);
+    this.ctx?.logger.debug('pick command type: ', type);
     if (!this.supportType.includes(type)) {
-      return this.ctx.logger.warn(`this kind of command is not supported in command picker: ${type}`);
+      return this.ctx?.logger.warn(`this kind of command is not supported in command picker: ${type}`);
     }
     if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = targetCommand as TargetUniversalPlugin;
@@ -458,15 +458,15 @@ export default class CommandPicker {
         commandPath = path.join(__dirname, '../native', commandPath);
       }
       const commandSource = this.getCommandSource(commandPath) || CommandType.NATIVE_TYPE;
-      this.ctx.logger.debug('pick command path: ', commandPath);
-      this.ctx.logger.debug('pick command source: ', commandSource);
+      this.ctx?.logger.debug('pick command path: ', commandPath);
+      this.ctx?.logger.debug('pick command source: ', commandSource);
 
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
         const commandEntry = await import(commandPath);
         commandEntry.default(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
-        this.ctx.fefError.printError({
+        this.ctx?.fefError.printError({
           error,
         });
       }
