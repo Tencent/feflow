@@ -131,56 +131,56 @@ async function startPluginsUpdate(plugins: PluginUpdateMsg[]) {
     needUpdatePlugins.push(plugin.name);
   });
 
-  return install(packageManager, root, packageManager === 'yarn' ? 'add' : 'install', needUpdatePlugins, false).then(
-    () => {
-      updateData.plugins_update_msg = plugins;
-      updateData.latest_plugins = undefined;
+  return install(packageManager, root, packageManager === 'yarn' ? 'add' : 'install', needUpdatePlugins, false).then(() => {
+    updateData.plugins_update_msg = plugins;
+    updateData.latest_plugins = undefined;
 
-      logger.info('Plugin update success');
-    },
-  );
+    logger.info('Plugin update success');
+  });
 }
 
 async function checkPluginsUpdate() {
-  return new Promise<void>(async (resolve, reject) => {
-    try {
-      if (Boolean(cacheValidate)) {
-        // 用缓存数据
-        const updatePkg = updateData.latest_plugins;
-        if (updatePkg?.length) {
-          await startPluginsUpdate(updatePkg);
-        }
-        resolve();
-      } else {
-        const installedPlugins = getInstalledPlugins();
-        const pluginsToUpdate: PluginUpdateMsg[] = [];
-        const checkUpdatePromises = installedPlugins.map(async (pluginName: string) => {
-          const pluginPath = path.join(root, 'node_modules', pluginName, 'package.json');
-          const content = fs.readFileSync(pluginPath, {
-            encoding: 'utf8',
-          });
-          const pkgInfo = JSON.parse(content);
-          const localVersion = pkgInfo.version;
-          const latestVersion = await getLatestVersion(pluginName, packageManager);
-          if (latestVersion && semver.gt(latestVersion, localVersion)) {
-            pluginsToUpdate.push({
-              name: pluginName,
-              latestVersion,
-            });
+  return new Promise<void>((resolve, reject) => {
+    (async () => {
+      try {
+        if (Boolean(cacheValidate)) {
+          // 用缓存数据
+          const updatePkg = updateData.latest_plugins;
+          if (updatePkg?.length) {
+            await startPluginsUpdate(updatePkg);
           }
-          logger.debug('All plugins is in latest version');
-        });
-        // 实时拉取最新更新
-        await Promise.all(checkUpdatePromises);
-        if (pluginsToUpdate.length) {
-          await startPluginsUpdate(pluginsToUpdate);
+          resolve();
+        } else {
+          const installedPlugins = getInstalledPlugins();
+          const pluginsToUpdate: PluginUpdateMsg[] = [];
+          const checkUpdatePromises = installedPlugins.map(async (pluginName: string) => {
+            const pluginPath = path.join(root, 'node_modules', pluginName, 'package.json');
+            const content = fs.readFileSync(pluginPath, {
+              encoding: 'utf8',
+            });
+            const pkgInfo = JSON.parse(content);
+            const localVersion = pkgInfo.version;
+            const latestVersion = await getLatestVersion(pluginName, packageManager);
+            if (latestVersion && semver.gt(latestVersion, localVersion)) {
+              pluginsToUpdate.push({
+                name: pluginName,
+                latestVersion,
+              });
+            }
+            logger.debug('All plugins is in latest version');
+          });
+          // 实时拉取最新更新
+          await Promise.all(checkUpdatePromises);
+          if (pluginsToUpdate.length) {
+            await startPluginsUpdate(pluginsToUpdate);
+          }
+          resolve();
         }
-        resolve();
+      } catch (e) {
+        logger.error(e);
+        reject(e);
       }
-    } catch (e) {
-      logger.error(e);
-      reject(e);
-    }
+    })();
   });
 }
 

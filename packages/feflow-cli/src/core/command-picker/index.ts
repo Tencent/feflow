@@ -133,7 +133,7 @@ export class CacheController {
     if (!!this.lastCommand) {
       if (type === CommandType.PLUGIN_TYPE) {
         // 命令相同的场景，插件提供方变化后，依然可以探测到是新命令
-        const commonCommands = Object.keys(store).filter((item) => !newCommands.includes(item));
+        const commonCommands = Object.keys(store).filter(item => !newCommands.includes(item));
         for (const common of commonCommands) {
           if (!this.lastStore[common]) continue;
           if (store[common].pluginName !== this.lastStore[common].pluginName) {
@@ -211,7 +211,7 @@ export class CacheController {
     const nativePath = path.join(__dirname, '../native');
     const nativeMap: PluginInfo = {};
     fs.readdirSync(nativePath)
-      .filter((file) => file.endsWith('.js'))
+      .filter(file => file.endsWith('.js'))
       .forEach((file) => {
         const command = file.split('.')[0];
         // 通过缓存路径的方式并不是一个值得主张的方案，例如在我们使用webpack构建单文件时这个机制会成为束缚

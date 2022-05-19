@@ -57,7 +57,7 @@ function startUpdateBeat(ctx: Feflow) {
   /**
    * pm2 启动回调
    */
-  const pm2StartCallback: ErrProcCallback = (pm2) => (err) => {
+  const pm2StartCallback: ErrProcCallback = pm2 => (err) => {
     if (err) {
       ctx.logger.error('launch update beat pm2 process failed', err);
     }
@@ -116,9 +116,7 @@ async function checkUpdateMsg(ctx: Feflow, updateData: UpdateData) {
         table.newRow();
       });
 
-      ctx.logger.info(
-        'Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
-      );
+      ctx.logger.info('Your local templates or plugins has been updated last time. This will not affect your work at hand, just enjoy it.');
       if (!isSilent) console.log(table.toString());
 
       updateData.plugins_update_msg = undefined;
@@ -138,9 +136,7 @@ async function checkUpdateMsg(ctx: Feflow, updateData: UpdateData) {
         uTable.newRow();
       });
 
-      ctx.logger.info(
-        'Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.',
-      );
+      ctx.logger.info('Your local universal plugins has been updated last time. This will not affect your work at hand, just enjoy it.');
       if (!isSilent) console.log(uTable.toString());
 
       updateData.universal_plugins_update_msg = undefined;
@@ -258,11 +254,7 @@ export async function checkUpdate(ctx: Feflow) {
       {
         type: 'confirm',
         name: 'ifUpdate',
-        message: chalk.yellow(
-          `@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your current version is ${chalk.red(
-            ctx.version,
-          )}. Do you want to update it?`,
-        ),
+        message: chalk.yellow(`@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your current version is ${chalk.red(ctx.version)}. Do you want to update it?`),
         default: true,
       },
     ];

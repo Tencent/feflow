@@ -16,9 +16,7 @@ import {
 import { fileExit } from '../shared/file';
 import Feflow from '../core';
 
-const pkg = JSON.parse(
-  stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')),
-);
+const pkg = JSON.parse(stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')));
 
 export default async function entry() {
   const args = minimist(process.argv.slice(2), {
@@ -45,9 +43,8 @@ export default async function entry() {
   const feflow = new Feflow(args);
   const { commander, logger, reporter, fefError } = feflow;
 
-  const handleUnexpectedError = (
-    ...args: Parameters<NodeJS.UncaughtExceptionListener | NodeJS.UnhandledRejectionListener>
-  ) => {
+  const handleUnexpectedError = (...args: Parameters<NodeJS.UncaughtExceptionListener
+  | NodeJS.UnhandledRejectionListener>) => {
     const [err] = args;
     logger.error(err);
     reporter.reportCommandError(err);
@@ -98,9 +95,7 @@ export default async function entry() {
 
 function ensureNodeVersion(requiredVersion: string, id: string): void {
   if (!semver.satisfies(process.version, requiredVersion)) {
-    console.error(
-      `You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`,
-    );
+    console.error(`You are using Node ${process.version}, but this version of ${id} requires Node ${requiredVersion}.\nPlease upgrade your Node version.`);
     process.exit(1);
   }
 }

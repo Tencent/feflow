@@ -133,5 +133,7 @@ export async function download(url: string, tag: string, filepath: string): Prom
     child.on('error', (err) => {
       reject(err);
     });
-  }).finally(() => clearGitCert(cloneUrl));
+  })
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    .finally(() => clearGitCert(cloneUrl));
 }

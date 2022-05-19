@@ -32,7 +32,7 @@ export default (ctx: Feflow) => {
     if (templates.length === 0) {
       console.log(chalk.magenta('No templates have been installed'));
     } else {
-      templates.forEach((item) => console.log(chalk.magenta(`${item.name}(${item.version})`)));
+      templates.forEach(item => console.log(chalk.magenta(`${item.name}(${item.version})`)));
     }
     const storePlugins: typeof list = [];
     const gitPlugins: typeof list = [];
@@ -50,7 +50,7 @@ export default (ctx: Feflow) => {
     if (storePlugins.length === 0 && gitPlugins.length === 0) {
       console.log(chalk.magenta('No plugins have been installed'));
     } else {
-      storePlugins.forEach((item) => console.log(chalk.magenta(`${item.name}(${item.version})`)));
+      storePlugins.forEach(item => console.log(chalk.magenta(`${item.name}(${item.version})`)));
     }
     if (gitPlugins.length > 0) {
       console.log('git plugins');
@@ -95,7 +95,7 @@ function loadModuleList(ctx: Feflow): PluginInfo[] {
         const pluginPath = path.join(pluginDir, name);
         return fs.existsSync(pluginPath);
       })
-      .map((key) => ({
+      .map(key => ({
         name: key,
         version: getModuleVersion(pluginDir, key),
       }));

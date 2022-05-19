@@ -146,9 +146,7 @@ export class UniversalPkg {
         return;
       }
       for (const [dependedPkg, dependedVersion] of depended) {
-        throw new Error(
-          `refusing to uninstall ${pkg}@${version} because it is required by ${dependedPkg}@${dependedVersion} ...`,
-        );
+        throw new Error(`refusing to uninstall ${pkg}@${version} because it is required by ${dependedPkg}@${dependedVersion} ...`);
       }
     }
     const dependencies = this.getDependencies(pkg, version);
