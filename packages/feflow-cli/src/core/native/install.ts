@@ -233,7 +233,7 @@ function updateNpmPluginInfo(ctx: Feflow, pluginName: string, options: any) {
     if (options.globalCmd) {
       const pluginInfo = npmPluginInfoJson[pluginName] || {};
       const globalCmd = pluginInfo.globalCmd || [];
-      pluginInfo.globalCmd = globalCmd
+      pluginInfo.globalCmd = globalCmd.length
         ? Array.from(new Set<string>([...globalCmd, ...options.globalCmd]))
         : options.globalCmd || [];
       npmPluginInfoJson[pluginName] = pluginInfo;
@@ -260,7 +260,7 @@ async function installJsPlugin(ctx: Feflow, installPlugin: string) {
   await installNpmPlugin(ctx, installPlugin);
   // if install with option -g, register as global command
   if (isGlobal && /^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(installPlugin)) {
-    ctx.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
+    ctx?.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
       if (cmdName) {
         logger.debug(`linking cmd [${cmdName}] registered by plugin ${installPlugin} to global`);
         // create symbol link to plugin, support global plugin cmd
@@ -349,7 +349,7 @@ async function startInstall(ctx: Feflow, pkgInfo: PkgInfo, repoPath: string, upd
       await installPlugin(ctx, depPlugin, false);
       const commandName = toSimpleCommand(curPkgInfo.repoName);
       if (oldDependencies?.get(curPkgInfo.repoName) === curPkgInfo.installVersion) {
-        oldDependencies.delete(curPkgInfo.repoName);
+        oldDependencies?.delete(curPkgInfo.repoName);
       }
       universalPkg.depend(pkgInfo.repoName, pkgInfo.installVersion, curPkgInfo.repoName, curPkgInfo.installVersion);
       const pluginPath = path.join(universalModules, `${curPkgInfo.repoName}@${curPkgInfo.installVersion}`);
