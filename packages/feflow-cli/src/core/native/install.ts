@@ -255,12 +255,12 @@ async function installJsPlugin(ctx: Feflow, installPlugin: string) {
     lib: string;
     logger: any;
   } = ctx;
-  const isGlobal = ctx?.args.g;
+  const isGlobal = ctx.args?.g;
   // install js npm plugin
   await installNpmPlugin(ctx, installPlugin);
   // if install with option -g, register as global command
   if (isGlobal && /^feflow-plugin-|^@[^/]+\/feflow-plugin-/.test(installPlugin)) {
-    ctx?.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
+    ctx.hook.on(HOOK_TYPE_ON_COMMAND_REGISTERED, (cmdName: string) => {
       if (cmdName) {
         logger.debug(`linking cmd [${cmdName}] registered by plugin ${installPlugin} to global`);
         // create symbol link to plugin, support global plugin cmd

@@ -152,9 +152,9 @@ async function checkUpdateMsg(ctx: Feflow, updateData: UpdateData) {
 }
 
 async function checkLock(updateData: UpdateData) {
-  const updateLock = updateData?.update_lock || {};
+  const updateLock = updateData.update_lock || {};
   const nowTime = new Date().getTime();
-  if (updateLock?.time && nowTime - Number(updateLock.time) < CHECK_UPDATE_GAP) {
+  if (updateLock.time && nowTime - Number(updateLock.time) < CHECK_UPDATE_GAP) {
     return true;
   }
   updateData.update_lock = {
