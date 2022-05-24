@@ -8,7 +8,7 @@ import Commander from './commander';
 import Hook from './hook';
 import createLogger, { Logger } from './logger';
 import CommandPicker, { LOAD_ALL, LOAD_DEVKIT, LOAD_PLUGIN, LOAD_UNIVERSAL_PLUGIN } from './command-picker';
-// import { checkUpdate } from './resident';
+import { checkUpdate } from './resident';
 import loadPlugins from './plugin/load-plugins';
 import loadUniversalPlugin from './plugin/load-universal-plugin';
 import loadDevkits from './devkit/load-devkits';
@@ -24,6 +24,7 @@ import {
   LOG_FILE,
   UNIVERSAL_MODULES,
   UNIVERSAL_PKG_JSON,
+  DISABLE_UPDATE,
 } from '../shared/constant';
 import { parseYaml, safeDump } from '../shared/yaml';
 import { FefError } from '../shared/fef-error';
@@ -92,15 +93,16 @@ export default class Feflow {
 
     await Promise.all([this.initClient(), this.initPackageManager(), this.initBinPath()]);
 
-    // const disableCheck = Boolean(this.args['disable-check']) || Boolean(this.config?.disableCheck);
-    // if (!disableCheck) {
-    //   // 使用 try catch 避免检查更新出错中断整体流程
-    //   try {
-    //     await checkUpdate(this);
-    //   } catch (error) {
-    //     this.logger.error('check update error: ', error);
-    //   }
-    // }
+    const disableCheck = Boolean(this.args['disable-check']) || Boolean(this.config?.disableCheck);
+    // 端对端测试时DISABLE_UPDATE为true不允许启动更新进程
+    if (!disableCheck && !DISABLE_UPDATE) {
+      // 使用 try catch 避免检查更新出错中断整体流程
+      try {
+        await checkUpdate(this);
+      } catch (error) {
+        this.logger.error('check update error: ', error);
+      }
+    }
 
     this.commandPick = new CommandPicker(this, cmdName);
 

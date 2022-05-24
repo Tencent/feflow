@@ -184,7 +184,7 @@ export async function checkUpdate(ctx: Feflow) {
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
       ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
-      // 子进程心跳停止,并且允许创建心跳进程时重新创建心跳进程
+      // 端对端测试时DISABLE_UPDATE_BEAT为true不允许创建心跳进程
       if (!cacheValidate && !DISABLE_UPDATE_BEAT) {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
         startUpdateBeat(ctx);
@@ -214,13 +214,14 @@ export async function checkUpdate(ctx: Feflow) {
         },
       }),
     ]);
-    // 端对端测试时不创建心跳进程
+    // 端对端测试时DISABLE_UPDATE_BEAT为true不允许创建心跳进程
     !DISABLE_UPDATE_BEAT && startUpdateBeat(ctx);
   }
 
   // 开启更新时
   if (!disableCheck && latestVersion && semver.gt(latestVersion, ctx.version)) {
     ctx.logger.debug(`Find new version, current version: ${ctx.version}, latest version: ${latestVersion}`);
+    // 端对端测试时DISABLE_UPDATE为true不允许启动更新进程
     if (autoUpdate && !DISABLE_UPDATE) {
       ctx.logger.debug(`Feflow will auto update version from ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
@@ -240,6 +241,7 @@ export async function checkUpdate(ctx: Feflow) {
       },
     ];
     const answer = await inquirer.prompt(askIfUpdateCli);
+    // 端对端测试时DISABLE_UPDATE为true不允许启动更新进程
     if (answer.ifUpdate && !DISABLE_UPDATE) {
       ctx.logger.debug(`Feflow will update from version ${ctx.version} to ${latestVersion}.`);
       ctx.logger.debug('Update message will be shown next time.');
@@ -254,6 +256,7 @@ export async function checkUpdate(ctx: Feflow) {
     );
   } else {
     ctx.logger.debug('Current cli version is already latest.');
+    // 端对端测试时DISABLE_UPDATE为true不允许启动更新进程
     return !DISABLE_UPDATE && startUpdate(ctx, cacheValidate, '');
   }
 }
