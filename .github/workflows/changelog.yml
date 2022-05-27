@@ -1,0 +1,46 @@
+name: Test changelog
+
+on:
+  push:
+    branches:
+      - 'fix/empty_changelog'
+
+jobs:
+  test_changelog:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # 获取所有 tags，让 lerna publish from-git 正常识别待发的包
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - name: Install dependencies
+        run: npm i && npm run bootstrap
+        env:
+          CI: true
+      - name: Get tag info
+        id: tags
+        uses: babel/actions/get-release-tags@v2
+      - name: Generate the changelog
+        id: changelog
+        uses: babel/actions/generate-lerna-changelog@v2
+        with:
+          from: ${{ steps.tags.outputs.old }}
+          to: ${{ steps.tags.outputs.new }}
+        env:
+          GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate changelog
+        run: |
+          echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+          npx lerna-changelog --from ${{ steps.tags.outputs.old }} --to ${{ steps.tags.outputs.new }} >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+        env:
+          GITHUB_AUTH: ${{secrets.GITHUB_TOKEN}}
+      - name: Echo changelog
+        run: echo $CHANGELOG
