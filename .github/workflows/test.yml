@@ -1,11 +1,11 @@
 name: Test
 
 on:
-  push: null
-#    branches:
-#      - '**'
-#    tags-ignore:
-#      - '**'
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - '**'
   pull_request: null
   workflow_call: null
 
