@@ -4,6 +4,7 @@ import figlet from 'figlet';
 import minimist from 'minimist';
 import semver from 'semver';
 import bunyan from 'bunyan';
+import lockFile from 'lockfile';
 import stripComments from 'strip-json-comments';
 import {
   HOOK_TYPE_BEFORE,
@@ -12,8 +13,11 @@ import {
   FEFLOW_HOME,
   HEART_BEAT_COLLECTION_LOG,
   LOG_FILE,
+  BEAT_LOCK,
+  UPDATE_LOCK,
 } from '../shared/constant';
 import { fileExit } from '../shared/file';
+import { isProcessExist } from '../shared/process';
 import Feflow from '../core';
 
 const pkg = JSON.parse(stripComments(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8').replace(/^\ufeff/u, '')));
@@ -50,6 +54,25 @@ export default async function entry() {
     reporter.reportCommandError(err);
     fefError.printError({ error: err, msg: '', hideError: true });
   };
+
+  // 如果更新和心跳文件是上锁的状态并且进程不存在时先解锁
+  const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
+  const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+  try {
+    const isPsExist = await isProcessExist('feflow-update-beat-process');
+    logger.debug('fefelow-update-beat-process is exist:', isPsExist);
+    if (lockFile.checkSync(beatLockPath) && !isPsExist) {
+      logger.debug('beat file unlock');
+      lockFile.unlockSync(beatLockPath);
+    }
+    if (lockFile.checkSync(updateLockPath) && !isPsExist) {
+      logger.debug('update file unlock');
+      lockFile.unlockSync(updateLockPath);
+    }
+  } catch (e) {
+    logger.error('unlock beat or update file fail', e);
+  }
+
   // 捕获promise异常退出或catch中抛出异常
   process.on('unhandledRejection', handleUnexpectedError);
   // 捕获未被 catch 的异常

@@ -27,6 +27,7 @@
     "@commitlint/config-conventional": "^15.0.0",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^8.0.0",
+    "@types/signal-exit": "^3.0.1",
     "@types/sinon-chai": "^3.2.3",
     "@typescript-eslint/eslint-plugin": "4.27",
     "@typescript-eslint/parser": "4.27",
@@ -62,5 +63,8 @@
   },
   "changelog": {
     "repo": "Tencent/feflow"
+  },
+  "dependencies": {
+    "signal-exit": "^3.0.7"
   }
 }

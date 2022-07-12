@@ -152,7 +152,7 @@ async function checkUpdateMsg(ctx: Feflow, updateData: UpdateData) {
 }
 
 async function checkLock(updateData: UpdateData) {
-  const updateLock = updateData.update_lock || {};
+  const updateLock = updateData.update_lock || { time: undefined };
   const nowTime = new Date().getTime();
   if (updateLock.time && nowTime - Number(updateLock.time) < CHECK_UPDATE_GAP) {
     return true;
@@ -207,7 +207,7 @@ export async function checkUpdate(ctx: Feflow) {
       const lastBeatTime = parseInt(heartBeatData, 10);
 
       cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
-      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}`);
+      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}, ${cacheValidate ? 'not' : ''} launch update-beat-process`);
       // 子进程心跳停止了
       if (!cacheValidate) {
         // todo：进程检测，清理一下僵死的进程(兼容不同系统)
@@ -218,7 +218,7 @@ export async function checkUpdate(ctx: Feflow) {
     }
   } else {
     // init
-    ctx.logger.debug('init heart-beat for update detective');
+    ctx.logger.debug('init heart-beat for update detective, launch update-beat-process');
     await Promise.all([
       // 初始化心跳数据
       heartFile.update(BEAT_KEY, String(nowTime)),

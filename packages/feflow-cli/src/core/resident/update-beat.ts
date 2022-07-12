@@ -4,6 +4,7 @@ import path from 'path';
 import semver from 'semver';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
+import lockFile from 'lockfile';
 import _ from 'lodash';
 import { UpdateData, UniversalPluginUpdateMsg } from './';
 import LockFile from '../../shared/lock-file';
@@ -29,6 +30,7 @@ import { getPkgInfo } from '../native/install';
 import Feflow from '../index';
 import { isValidConfig } from '../../shared/type-predicates';
 import pkgJson from '../../../package.json';
+import signalExit from 'signal-exit';
 
 interface ErrorInstance {
   name: string;
@@ -62,6 +64,16 @@ const handleException = (e: ErrorInstance): void => {
 (process as NodeJS.EventEmitter).on('uncaughtException', handleException);
 
 (process as NodeJS.EventEmitter).on('unhandledRejection', handleException);
+
+// 进程退出时如果心跳或更新文件是lock状态执行unlock
+signalExit(() => {
+  if (lockFile.checkSync(beatLock)) {
+    lockFile.unlockSync(beatLock);
+  }
+  if (lockFile.checkSync(updateLock)) {
+    lockFile.unlockSync(updateLock);
+  }
+});
 
 const heartBeat = () => {
   heartFile.update(BEAT_KEY, String(new Date().getTime()));
