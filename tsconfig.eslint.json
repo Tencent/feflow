@@ -5,7 +5,8 @@
     "./packages/*/__tests__/**/*",
     "./packages/*/types/**/*",
     "./types/**/*",
-    "**/*.js"
+    "**/*.js",
+    ".eslintrc.js",
   ],
   "exclude": []
 }

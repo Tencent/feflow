@@ -16,10 +16,9 @@ export default (ctx: Feflow) => {
 
 export async function updateCli(packageManager: string) {
   return new Promise<void>((resolve, reject) => {
-    const args =
-      packageManager === 'yarn'
-        ? ['global', 'add', '@feflow/cli@latest', '--extract']
-        : ['install', '@feflow/cli@latest', '--color=always', '--save', '--save-exact', '--loglevel', 'error', '-g'];
+    const args =      packageManager === 'yarn'
+      ? ['global', 'add', '@feflow/cli@latest', '--extract']
+      : ['install', '@feflow/cli@latest', '--color=always', '--save', '--save-exact', '--loglevel', 'error', '-g'];
 
     const child = spawn(packageManager, args, {
       stdio: 'inherit',
@@ -43,7 +42,7 @@ export async function checkCliUpdate(ctx: Feflow) {
   const e2e = process.env?.TEST_MODE;
 
   if (!packageManager) {
-    ctx.logger.error(`cannot find 'packageManager' from config`);
+    ctx.logger.error('cannot find \'packageManager\' from config');
     return;
   }
   const registryUrl = await getRegistryUrl(packageManager);
@@ -59,11 +58,7 @@ export async function checkCliUpdate(ctx: Feflow) {
         {
           type: 'confirm',
           name: 'ifUpdate',
-          message: chalk.yellow(
-            `@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your version is ${chalk.red(
-              version,
-            )}, Do you want to update it?`,
-          ),
+          message: chalk.yellow(`@feflow/cli's latest version is ${chalk.green(latestVersion)}, but your version is ${chalk.red(version)}, Do you want to update it?`),
           default: true,
         },
       ];

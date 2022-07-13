@@ -99,36 +99,34 @@ const queryPluginsUpdate = async () => {
     return;
   }
 
-  Promise.all(
-    getInstalledPlugins().map(async (name: string) => {
-      const pluginPkgJsonPath = path.join(root, 'node_modules', name, 'package.json');
-      const pkgJsonStr = fs.readFileSync(pluginPkgJsonPath, {
-        encoding: 'utf8',
-      });
-      const pkgJson = JSON.parse(pkgJsonStr);
-      const localVersion = pkgJson.version;
-      const registryUrl = spawn
-        .sync(config.packageManager, ['config', 'get', 'registry'], {
-          windowsHide: true,
-        })
-        .stdout.toString()
-        .replace(/\n/, '')
-        .replace(/\/$/, '');
-      const latestVersion = await packageJson(name, registryUrl).catch((err) => {
-        logger.debug('Check plugin update error', err);
-      });
+  Promise.all(getInstalledPlugins().map(async (name: string) => {
+    const pluginPkgJsonPath = path.join(root, 'node_modules', name, 'package.json');
+    const pkgJsonStr = fs.readFileSync(pluginPkgJsonPath, {
+      encoding: 'utf8',
+    });
+    const pkgJson = JSON.parse(pkgJsonStr);
+    const localVersion = pkgJson.version;
+    const registryUrl = spawn
+      .sync(config.packageManager, ['config', 'get', 'registry'], {
+        windowsHide: true,
+      })
+      .stdout.toString()
+      .replace(/\n/, '')
+      .replace(/\/$/, '');
+    const latestVersion = await packageJson(name, registryUrl).catch((err) => {
+      logger.debug('Check plugin update error', err);
+    });
 
-      if (latestVersion && semver.gt(latestVersion, localVersion)) {
-        return {
-          name,
-          latestVersion,
-          localVersion,
-        };
-      }
-      logger.debug('All plugins is in latest version');
-    }),
-  ).then(async (plugins) => {
-    const pluginsWithName = plugins.filter((plugin) => plugin?.name);
+    if (latestVersion && semver.gt(latestVersion, localVersion)) {
+      return {
+        name,
+        latestVersion,
+        localVersion,
+      };
+    }
+    logger.debug('All plugins is in latest version');
+  })).then(async (plugins) => {
+    const pluginsWithName = plugins.filter(plugin => plugin?.name);
     logger.debug('tnpm plugins update information', pluginsWithName);
     if (pluginsWithName.length) {
       const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
@@ -155,11 +153,9 @@ const queryUniversalPluginsUpdate = async () => {
 
   for (const [pkg, version] of universalPkg.getInstalled()) {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const pkgInfo = await getPkgInfo({ root, config, logger } as Feflow, `${pkg}@${version}`).catch(
-      async (e: unknown) => {
-        logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
-      },
-    );
+    const pkgInfo = await getPkgInfo({ root, config, logger } as Feflow, `${pkg}@${version}`).catch(async (e: unknown) => {
+      logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
+    });
     if (!pkgInfo) {
       continue;
     }
