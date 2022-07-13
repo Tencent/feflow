@@ -2,6 +2,7 @@
 import path from 'path';
 import { spawn } from 'child_process';
 import chalk from 'chalk';
+import lockFile from 'lockfile';
 import inquirer from 'inquirer';
 import semver from 'semver';
 import Table from 'easy-table';
@@ -19,7 +20,9 @@ import {
   UPDATE_KEY,
   UPDATE_LOCK,
   FEFLOW_HOME,
+  FEFLOW_UPDATE_BEAT_PROCESS,
 } from '../../shared/constant';
+import { isProcessExist } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
 import { createPm2Process, ErrProcCallback } from './pm2';
 
@@ -168,12 +171,37 @@ async function checkLock(updateData: UpdateData) {
   return isUpdateData(currUpdateData) && currUpdateData.update_lock?.pid !== process.pid;
 }
 
+/**
+ * 在初始化时如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+ */
+async function unlockInInit(ctx: Feflow) {
+  const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
+  const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+  try {
+    const isPsExist = await isProcessExist(FEFLOW_UPDATE_BEAT_PROCESS);
+    ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
+    if (lockFile.checkSync(beatLockPath) && !isPsExist) {
+      ctx.logger.debug('beat file unlock');
+      lockFile.unlockSync(beatLockPath);
+    }
+    if (lockFile.checkSync(updateLockPath) && !isPsExist) {
+      ctx.logger.debug('update file unlock');
+      lockFile.unlockSync(updateLockPath);
+    }
+  } catch (e) {
+    ctx.logger.error('unlock beat or update file fail', e);
+  }
+}
+
 export async function checkUpdate(ctx: Feflow) {
   const dbFilePath = path.join(ctx.root, UPDATE_COLLECTION);
   const autoUpdate = ctx.args['auto-update'] || String(ctx.config?.autoUpdate) === 'true';
   const nowTime = new Date().getTime();
   let latestVersion = '';
   let cacheValidate = false;
+
+  // 在初始化时如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+  await unlockInInit(ctx);
 
   if (!updateFile) {
     const updateLockPath = path.join(ctx.root, UPDATE_LOCK);

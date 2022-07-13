@@ -1,3 +1,4 @@
+// 查询进程的代码参考https://github.com/neekey/ps
 import { spawn } from 'child_process';
 import os from 'os';
 
