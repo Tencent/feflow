@@ -46,7 +46,7 @@ function startUpdateBeat(ctx: Feflow) {
    */
   const options = {
     script: updateBeatScriptPath,
-    name: 'feflow-update-beat-process',
+    name: FEFLOW_UPDATE_BEAT_PROCESS,
     env: {
       ...process.env, // env 无法把 ctx 传进去，会自动 string 化
       debug: ctx.args.debug,
