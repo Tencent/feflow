@@ -172,9 +172,15 @@ async function checkLock(updateData: UpdateData) {
 }
 
 /**
- * 在初始化时如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+ * 如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+ *
+ * 当心跳进程意外退出unlock没有被调用时会存在心跳和更新两个unlock文件
+ * 当这两个unlock文件存在并且没有心跳进程正常运行时会导致主流程报file read timeout错误
+ * 这个函数的作用是为了解决这个问题，如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+ *
+ * @param ctx Feflow
  */
-async function unlockInInit(ctx: Feflow) {
+async function ensureFilesUnlocked(ctx: Feflow) {
   const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
   try {
@@ -200,8 +206,8 @@ export async function checkUpdate(ctx: Feflow) {
   let latestVersion = '';
   let cacheValidate = false;
 
-  // 在初始化时如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
-  await unlockInInit(ctx);
+  // 如果更新和心跳文件是上锁的状态并且心跳进程不存在时先解锁
+  await ensureFilesUnlocked(ctx);
 
   if (!updateFile) {
     const updateLockPath = path.join(ctx.root, UPDATE_LOCK);
