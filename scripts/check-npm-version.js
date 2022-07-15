@@ -14,7 +14,6 @@ exec('npm --version', (error, stdout, stderr) => {
     console.error(error || stderr);
     process.exit(1);
   }
-
   const [, majorVersion] = semverRegExp.exec(stdout) || [];
   if (majorVersion >= restrictMajorVersion) {
     console.log(`Please use a version of npm lower than v${restrictMajorVersion} for development due to a bug of lerna: https://github.com/lerna/lerna/issues/2832 .`);
