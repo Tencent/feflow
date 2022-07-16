@@ -20,10 +20,11 @@ import {
   UPDATE_KEY,
   UPDATE_LOCK,
   FEFLOW_HOME,
-  FEFLOW_UPDATE_BEAT_PROCESS,
+  HEART_BEAT_PID,
 } from '../../shared/constant';
-import { isProcessExist } from '../../shared/process';
+import { isProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
+import { getKeyFormFile } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
 
 const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
@@ -183,8 +184,11 @@ async function checkLock(updateData: UpdateData) {
 async function ensureFilesUnlocked(ctx: Feflow) {
   const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+  const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
   try {
-    const isPsExist = await isProcessExist(FEFLOW_UPDATE_BEAT_PROCESS);
+    const heartBeatPid = getKeyFormFile(heartBeatPidPath, 'pid');
+    ctx.logger.debug('heartBeatPid:', heartBeatPid);
+    const isPsExist = await isProcessExistByPid(heartBeatPid);
     ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
     if (lockFile.checkSync(beatLockPath) && !isPsExist) {
       ctx.logger.debug('beat file unlock');

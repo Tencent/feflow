@@ -1,6 +1,7 @@
 // 查询进程的代码参考https://github.com/neekey/ps
 import { spawn } from 'child_process';
 import os from 'os';
+import psNode from 'ps-node';
 
 /**
  * End of line.
@@ -85,3 +86,18 @@ export async function isProcessExist(psName: string) {
     console.error(e);
   }
 };
+
+// 根据进程id判断某个进程是否存在
+export async function isProcessExistByPid(pid: number): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    psNode.lookup({ pid }, (err, psList) => {
+      if (err) return reject(err);
+
+      if (Array.isArray(psList) && psList[0]) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
