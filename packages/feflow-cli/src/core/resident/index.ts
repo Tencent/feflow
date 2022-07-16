@@ -24,7 +24,7 @@ import {
 } from '../../shared/constant';
 import { isProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
-import { getKeyFormFile } from '../../shared/file';
+import { fileExit, getKeyFormFile } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
 
 const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
@@ -186,6 +186,7 @@ async function ensureFilesUnlocked(ctx: Feflow) {
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
   const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
   try {
+    fileExit(heartBeatPidPath);
     const heartBeatPid = getKeyFormFile(heartBeatPidPath, 'pid');
     ctx.logger.debug('heartBeatPid:', heartBeatPid);
     const isPsExist = await isProcessExistByPid(heartBeatPid);
