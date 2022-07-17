@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const { assert } = chai;
 
-describe('@feflow/core - Native init', () => {
+describe('测试 @feflow/cli - Native init', () => {
   beforeEach(() => {
     fs.rmdirSync('.fef', {
       recursive: true,
