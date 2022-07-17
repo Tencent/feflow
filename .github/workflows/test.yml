@@ -31,7 +31,7 @@ jobs:
           - os: windows-latest
             node: 12
             architecture: x86
-    name: Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
+    name: Node ${{ matrix.node }} - ${{ matrix.architecture }} on ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

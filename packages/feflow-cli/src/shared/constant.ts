@@ -97,3 +97,6 @@ export const UPDATE_LOCK = 'update.lock';
 export const SILENT_ARG = '--slient';
 
 export const DISABLE_ARG = '--disable-check';
+
+// 心跳进程名字
+export const FEFLOW_UPDATE_BEAT_PROCESS  = 'feflow-update-beat-process';
