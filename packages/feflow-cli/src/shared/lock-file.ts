@@ -1,6 +1,23 @@
 import fs from 'fs';
+import path from 'path';
 import lockFile from 'lockfile';
 import { Logger } from '../core/logger';
+import { FEFLOW_HOME, BEAT_LOCK, UPDATE_LOCK } from './constant';
+
+// 解锁心跳文件和更新文件
+function unlockUpdateBeatFile(logger: Logger) {
+  const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
+  const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+
+  if (lockFile.checkSync(beatLockPath)) {
+    logger.debug('file read timeout beat file unlock');
+    lockFile.unlockSync(beatLockPath);
+  }
+  if (lockFile.checkSync(updateLockPath)) {
+    logger.debug('file read timeout update file unlock');
+    lockFile.unlockSync(updateLockPath);
+  }
+}
 
 export default class LockFile {
   private readonly filePath: string;
@@ -136,7 +153,9 @@ export default class LockFile {
         // another writing is running
         if (this.tryCount >= this.tryMax) {
           this.tryCount = 0;
-          return this.logger.error(`file read time out ${this.filePath}`);
+          // 解锁更新和心跳文件
+          unlockUpdateBeatFile(this.logger);
+          return this.logger.error(`file read time out ${this.filePath}, please retry again`);
         }
         this.tryCount += 1;
         setTimeout(() => {

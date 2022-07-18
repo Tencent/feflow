@@ -43,3 +43,7 @@ async function copyFiles(srcPath: string, tarPath: string, files: string[]) {
     }
   }));
 }
+
+export function isFileExist(filePath: string) {
+  return fs.existsSync(filePath);
+}

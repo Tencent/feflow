@@ -24,8 +24,9 @@ import {
 } from '../../shared/constant';
 import { isProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
-import { fileExit, getKeyFormFile } from '../../shared/file';
+import { getKeyFormFile } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
+import { isFileExist } from '../../shared/fs';
 
 const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
 const updateScriptPath = path.join(__dirname, './update');
@@ -186,18 +187,20 @@ async function ensureFilesUnlocked(ctx: Feflow) {
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
   const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
   try {
-    fileExit(heartBeatPidPath);
-    const heartBeatPid = getKeyFormFile(heartBeatPidPath, 'pid');
-    ctx.logger.debug('heartBeatPid:', heartBeatPid);
-    const isPsExist = await isProcessExistByPid(heartBeatPid);
-    ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
-    if (lockFile.checkSync(beatLockPath) && !isPsExist) {
-      ctx.logger.debug('beat file unlock');
-      lockFile.unlockSync(beatLockPath);
-    }
-    if (lockFile.checkSync(updateLockPath) && !isPsExist) {
-      ctx.logger.debug('update file unlock');
-      lockFile.unlockSync(updateLockPath);
+    // 当heart-beat-pid.json存在时，说明启动了最新的心跳进程，文件中会被写入当前的心跳进程，此时根据pid判断进程是否存在
+    if (isFileExist(heartBeatPidPath)) {
+      const heartBeatPid = getKeyFormFile(heartBeatPidPath, 'pid');
+      ctx.logger.debug('heartBeatPid:', heartBeatPid);
+      const isPsExist = await isProcessExistByPid(heartBeatPid);
+      ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
+      if (lockFile.checkSync(beatLockPath) && !isPsExist) {
+        ctx.logger.debug('beat file unlock');
+        lockFile.unlockSync(beatLockPath);
+      }
+      if (lockFile.checkSync(updateLockPath) && !isPsExist) {
+        ctx.logger.debug('update file unlock');
+        lockFile.unlockSync(updateLockPath);
+      }
     }
   } catch (e) {
     ctx.logger.error('unlock beat or update file fail', e);
