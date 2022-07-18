@@ -155,7 +155,7 @@ export default class LockFile {
           this.tryCount = 0;
           // 解锁更新和心跳文件
           unlockUpdateBeatFile(this.logger);
-          return this.logger.error(`file read time out ${this.filePath}, please retry again`);
+          cb();
         }
         this.tryCount += 1;
         setTimeout(() => {
