@@ -88,7 +88,7 @@ export async function isProcessExist(psName: string) {
 };
 
 // 根据进程id判断某个进程是否存在
-export async function checkProcessExistByPid(pid: number): Promise<boolean> {
+export async function checkProcessExistByPid(pid: number | string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     if (!pid) return resolve(false);
 

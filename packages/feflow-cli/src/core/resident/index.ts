@@ -24,7 +24,7 @@ import {
 } from '../../shared/constant';
 import { checkProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
-import { getKeyFormFile } from '../../shared/file';
+import { readFileSync } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
 import { isFileExist } from '../../shared/fs';
 
@@ -189,7 +189,7 @@ async function ensureFilesUnlocked(ctx: Feflow) {
   try {
     if (!isFileExist(heartBeatPidPath)) return;
     // 当heart-beat-pid.json存在时，说明启动了最新的心跳进程，文件中会被写入当前的心跳进程，此时根据pid判断进程是否存在
-    const heartBeatPid = getKeyFormFile(heartBeatPidPath, 'pid');
+    const heartBeatPid = readFileSync(heartBeatPidPath);
     ctx.logger.debug('heartBeatPid:', heartBeatPid);
     const isPsExist = await checkProcessExistByPid(heartBeatPid);
     ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);

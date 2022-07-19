@@ -59,7 +59,7 @@ export const CACHE_FILE = '.feflowCache.yml';
 
 export const HEART_BEAT_COLLECTION = 'heart-beat.json';
 
-export const HEART_BEAT_PID = 'heart-beat-pid.json';
+export const HEART_BEAT_PID = 'heart-beat.pid';
 
 export const HEART_BEAT_COLLECTION_LOG = 'heart_beat-log.db';
 

@@ -46,7 +46,12 @@ export const setKeyToFile = (file: string, key: string, value: any): any => {
     console.log('setKeyToCache error =>', e);
   }
 };
-
+// 同步读取文件
+export const readFileSync = (file: string) => fs.readFileSync(file, 'utf8').replace(/^\ufeff/u, '');
+// 同步写入文件
+export const writeFileSync = (file: string, data: string) => {
+  fs.writeFileSync(file, data);
+};
 export class Config {
   static loadConfigFile(filePath: string) {
     switch (path.extname(filePath)) {
