@@ -22,12 +22,15 @@ import {
   BEAT_LOCK,
   UPDATE_KEY,
   UPDATE_LOCK,
+  FEFLOW_HOME,
+  HEART_BEAT_PID,
 } from '../../shared/constant';
 import createLogger from '../logger';
 import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
 import { getPkgInfo } from '../native/install';
 import Feflow from '../index';
 import { isValidConfig } from '../../shared/type-predicates';
+import { fileExit, writeFileSync } from '../../shared/file';
 import pkgJson from '../../../package.json';
 
 interface ErrorInstance {
@@ -178,6 +181,11 @@ const queryUniversalPluginsUpdate = async () => {
     }
   }
 };
+
+// 记录心跳进程的pid
+const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
+fileExit(heartBeatPidPath);
+writeFileSync(heartBeatPidPath, `${process.pid}`);
 
 // startBeat
 setInterval(heartBeat, BEAT_GAP);

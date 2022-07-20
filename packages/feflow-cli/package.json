@@ -50,6 +50,7 @@
     "@types/minimist": "^1.2.0",
     "@types/nedb": "^1.8.10",
     "@types/osenv": "^0.1.0",
+    "@types/ps-node": "^0.1.1",
     "@types/request-promise": "^4.1.45",
     "@types/semver": "^6.0.1",
     "@types/yeoman-environment": "^2.10.1"
@@ -80,6 +81,7 @@
     "osenv": "^0.1.5",
     "package-json": "^6.5.0",
     "pm2": "^5.2.0",
+    "ps-node": "^0.1.6",
     "request": "^2.88.0",
     "request-promise": "^4.2.6",
     "semver": "^7.3.2",

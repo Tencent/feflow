@@ -20,11 +20,13 @@ import {
   UPDATE_KEY,
   UPDATE_LOCK,
   FEFLOW_HOME,
-  FEFLOW_UPDATE_BEAT_PROCESS,
+  HEART_BEAT_PID,
 } from '../../shared/constant';
-import { isProcessExist } from '../../shared/process';
+import { checkProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
+import { readFileSync } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
+import { isFileExist } from '../../shared/fs';
 
 const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
 const updateScriptPath = path.join(__dirname, './update');
@@ -52,8 +54,9 @@ function startUpdateBeat(ctx: Feflow) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
-    error_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-error.log`,
-    out_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-out.log`,
+    // 由于心跳进程会不断写日志导致pm2日志文件过大，而且对于用户来说并关心心跳进程的日志，对于开发同学可以通过pm2 log来查看心跳进程的日志
+    error_file: '/dev/null',
+    out_file: '/dev/null',
     pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,
   };
 
@@ -183,8 +186,13 @@ async function checkLock(updateData: UpdateData) {
 async function ensureFilesUnlocked(ctx: Feflow) {
   const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+  const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
   try {
-    const isPsExist = await isProcessExist(FEFLOW_UPDATE_BEAT_PROCESS);
+    if (!isFileExist(heartBeatPidPath)) return;
+    // 当heart-beat-pid.json存在时，说明启动了最新的心跳进程，文件中会被写入当前的心跳进程，此时根据pid判断进程是否存在
+    const heartBeatPid = readFileSync(heartBeatPidPath);
+    ctx.logger.debug('heartBeatPid:', heartBeatPid);
+    const isPsExist = await checkProcessExistByPid(heartBeatPid);
     ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
     if (lockFile.checkSync(beatLockPath) && !isPsExist) {
       ctx.logger.debug('beat file unlock');
