@@ -54,8 +54,8 @@ function startUpdateBeat(ctx: Feflow) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
-    error_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-error.log`,
-    out_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-out.log`,
+    error_file: '/dev/null',
+    out_file: '/dev/null',
     pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,
   };
 
