@@ -54,6 +54,7 @@ function startUpdateBeat(ctx: Feflow) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
+    // 由于心跳进程会不断写日志导致pm2日志文件过大，而且对于用户来说并关心心跳进程的日志，对于开发同学可以通过pm2 log来查看心跳进程的日志
     error_file: '/dev/null',
     out_file: '/dev/null',
     pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,

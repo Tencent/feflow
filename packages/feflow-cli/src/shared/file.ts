@@ -16,9 +16,9 @@ export function fileExit(filePath: string) {
   }
 }
 // 文件中读取json对象的某个value
-export const getKeyFormFile = (file: string, key: string) => {
+export const getKeyFormFile = (filePath: string, key: string) => {
   try {
-    const jsonString = fs.readFileSync(file, 'utf-8');
+    const jsonString = fs.readFileSync(filePath, 'utf-8');
     if (jsonString) {
       const jsonData = JSON.parse(jsonString);
       return jsonData[key];
@@ -29,9 +29,9 @@ export const getKeyFormFile = (file: string, key: string) => {
   }
 };
 // 文件中写入一个json字符串
-export const setKeyToFile = (file: string, key: string, value: any): any => {
+export const setKeyToFile = (filePath: string, key: string, value: any): any => {
   try {
-    const jsonString = fs.readFileSync(file, 'utf-8');
+    const jsonString = fs.readFileSync(filePath, 'utf-8');
     let jsonData;
     if (jsonString) {
       jsonData = JSON.parse(jsonString);
@@ -41,16 +41,16 @@ export const setKeyToFile = (file: string, key: string, value: any): any => {
         [key]: value,
       };
     }
-    fs.writeFileSync(file, JSON.stringify(jsonData, null, 4), 'utf-8');
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 4), 'utf-8');
   } catch (e) {
     console.log('setKeyToCache error =>', e);
   }
 };
 // 同步读取文件
-export const readFileSync = (file: string) => fs.readFileSync(file, 'utf8').replace(/^\ufeff/u, '');
+export const readFileSync = (filePath: string) => fs.readFileSync(filePath, 'utf8').replace(/^\ufeff/u, '');
 // 同步写入文件
-export const writeFileSync = (file: string, data: string) => {
-  fs.writeFileSync(file, data);
+export const writeFileSync = (filePath: string, data: string) => {
+  fs.writeFileSync(filePath, data);
 };
 export class Config {
   static loadConfigFile(filePath: string) {
