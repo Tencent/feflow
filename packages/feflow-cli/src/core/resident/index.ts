@@ -258,6 +258,7 @@ export async function checkUpdate(ctx: Feflow) {
       // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
       updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
     } else {
+      ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and launch update-beat-process');
       // 初始化心跳数据
       heartFile.update(BEAT_KEY, String(nowTime));
       // 启动心跳进程
