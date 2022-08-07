@@ -228,7 +228,7 @@ export async function checkUpdate(ctx: Feflow) {
     heartFile = new LockFile(heartDBFilePath, beatLockPath, ctx.logger);
   }
 
-  const updateData = await updateFile.read(UPDATE_KEY);
+  let updateData = await updateFile.read(UPDATE_KEY) as UpdateData;
   if (isUpdateData(updateData)) {
     // add lock to keep only one updating process is running
     const isLocked = await checkLock(updateData);
@@ -243,30 +243,10 @@ export async function checkUpdate(ctx: Feflow) {
     if (cliUpdateMsg || pluginsUpdateMsg || universalPluginsUpdateMsg) {
       await checkUpdateMsg(ctx, updateData);
     }
-
-    const heartBeatData = await heartFile.read(BEAT_KEY);
-    if (isHeartBeatData(heartBeatData)) {
-      const lastBeatTime = parseInt(heartBeatData, 10);
-
-      cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
-      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}, ${cacheValidate ? 'not' : ''} launch update-beat-process`);
-      // 子进程心跳停止了
-      if (!cacheValidate) {
-        // todo：进程检测，清理一下僵死的进程(兼容不同系统)
-        startUpdateBeat(ctx);
-      }
-      // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
-      updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
-    } else {
-      ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and launch update-beat-process');
-      // 初始化心跳数据
-      heartFile.update(BEAT_KEY, String(nowTime));
-      // 启动心跳进程
-      startUpdateBeat(ctx);
-    }
   } else {
     // init
-    ctx.logger.debug('init heart-beat for update detective, launch update-beat-process');
+    ctx.logger.debug('update.json is illegal, init update.json, update-beat.json and launch update-beat-process');
+    // 这里维持原来的写法不做改动
     await Promise.all([
       // 初始化心跳数据
       heartFile.update(BEAT_KEY, String(nowTime)),
@@ -286,6 +266,30 @@ export async function checkUpdate(ctx: Feflow) {
         },
       }),
     ]);
+
+    // 启动心跳进程
+    startUpdateBeat(ctx);
+  }
+
+  const heartBeatData = await heartFile.read(BEAT_KEY);
+  updateData = await updateFile.read(UPDATE_KEY) as UpdateData;
+  if (isHeartBeatData(heartBeatData)) {
+    const lastBeatTime = parseInt(heartBeatData, 10);
+
+    cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
+    ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}, ${cacheValidate ? 'not' : ''} launch update-beat-process`);
+    // 子进程心跳停止了
+    if (!cacheValidate) {
+      // todo：进程检测，清理一下僵死的进程(兼容不同系统)
+      startUpdateBeat(ctx);
+    }
+    // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
+    updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
+  } else {
+    ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and launch update-beat-process');
+    // 初始化心跳数据
+    await heartFile.update(BEAT_KEY, String(nowTime));
+    // 启动心跳进程
     startUpdateBeat(ctx);
   }
 
