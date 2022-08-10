@@ -228,6 +228,7 @@ export async function checkUpdate(ctx: Feflow) {
     heartFile = new LockFile(heartDBFilePath, beatLockPath, ctx.logger);
   }
 
+  let needToRestartUpdateBeatProcess = false;
   let updateData = await updateFile.read(UPDATE_KEY) as UpdateData;
   if (isUpdateData(updateData)) {
     // add lock to keep only one updating process is running
@@ -245,8 +246,8 @@ export async function checkUpdate(ctx: Feflow) {
     }
   } else {
     // init
-    ctx.logger.debug('update.json is illegal, init update.json, update-beat.json and launch update-beat-process');
-    // 这里维持原来的写法不做改动
+    ctx.logger.debug('update.json is illegal, init update.json, update-beat.json and change needToRestartUpdateBeatProcess to be true');
+    // 这里维持原来的写法不做改动，在更新文件内容不合法时同时初始化心跳和更新文件
     await Promise.all([
       // 初始化心跳数据
       heartFile.update(BEAT_KEY, String(nowTime)),
@@ -267,8 +268,8 @@ export async function checkUpdate(ctx: Feflow) {
       }),
     ]);
 
-    // 启动心跳进程
-    startUpdateBeat(ctx);
+    // 需要重启心跳进程
+    needToRestartUpdateBeatProcess = true;
   }
 
   const heartBeatData = await heartFile.read(BEAT_KEY);
@@ -281,15 +282,22 @@ export async function checkUpdate(ctx: Feflow) {
     // 子进程心跳停止了
     if (!cacheValidate) {
       // todo：进程检测，清理一下僵死的进程(兼容不同系统)
-      startUpdateBeat(ctx);
+      // 需要重启心跳进程
+      needToRestartUpdateBeatProcess = true;
     }
     // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
     updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
   } else {
-    ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and launch update-beat-process');
+    ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and change needToRestartUpdateBeatProcess to be true');
     // 初始化心跳数据
     await heartFile.update(BEAT_KEY, String(nowTime));
-    // 启动心跳进程
+    // 需要重启心跳进程
+    needToRestartUpdateBeatProcess = true;
+  }
+
+  // 根据needToRestartUpdateBeat状态决定是否重启心跳进程
+  if (needToRestartUpdateBeatProcess) {
+    ctx.logger.debug('launch update-beat-process');
     startUpdateBeat(ctx);
   }
 
