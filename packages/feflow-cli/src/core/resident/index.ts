@@ -246,7 +246,7 @@ export async function checkUpdate(ctx: Feflow) {
     }
   } else {
     // init
-    ctx.logger.debug('update.json is illegal, init update.json, update-beat.json and change needToRestartUpdateBeatProcess to be true');
+    ctx.logger.debug(`${UPDATE_COLLECTION} is illegal, init ${UPDATE_COLLECTION}`);
     // 这里维持原来的写法不做改动，在更新文件内容不合法时同时初始化心跳和更新文件
     await Promise.all([
       // 初始化心跳数据
@@ -288,7 +288,7 @@ export async function checkUpdate(ctx: Feflow) {
     // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
     updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
   } else {
-    ctx.logger.debug('heart-beat.json is illegal, init heart-beat.json and change needToRestartUpdateBeatProcess to be true');
+    ctx.logger.debug(`${HEART_BEAT_COLLECTION} is illegal, init ${HEART_BEAT_COLLECTION}`);
     // 初始化心跳数据
     await heartFile.update(BEAT_KEY, String(nowTime));
     // 需要重启心跳进程
