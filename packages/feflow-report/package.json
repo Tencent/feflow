@@ -1,6 +1,6 @@
 {
   "name": "@feflow/report",
-  "version": "0.6.0-alpha.3",
+  "version": "0.6.0",
   "description": "feflow report sdk",
   "main": "./lib/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "author": "fXy-during <fxy1044667399@163.com>",
   "license": "ISC",
   "devDependencies": {
-    "@feflow/cli": "^0.26.0-alpha.3",
+    "@feflow/cli": "^0.26.0",
     "@types/request-promise": "^4.1.48"
   },
   "files": [
