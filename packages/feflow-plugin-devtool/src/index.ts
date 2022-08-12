@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
-import Feflow from '@feflow/cli';
+import type Feflow from '@feflow/cli';
 
 enum DevtoolType {
   SCAFFLOAD = '脚手架',
