@@ -22,11 +22,13 @@ import {
   DISABLE_UPDATE,
   DISABLE_UPDATE_BEAT,
   FEFLOW_HOME,
-  FEFLOW_UPDATE_BEAT_PROCESS,
+  HEART_BEAT_PID,
 } from '../../shared/constant';
-import { isProcessExist } from '../../shared/process';
+import { checkProcessExistByPid } from '../../shared/process';
 import { safeDump } from '../../shared/yaml';
+import { readFileSync } from '../../shared/file';
 import { createPm2Process, ErrProcCallback } from './pm2';
+import { isFileExist } from '../../shared/fs';
 
 const updateBeatScriptPath = path.join(__dirname, './update-beat.js');
 const updateScriptPath = path.join(__dirname, './update');
@@ -54,8 +56,9 @@ function startUpdateBeat(ctx: Feflow) {
       debug: ctx.args.debug,
       silent: ctx.args.silent,
     },
-    error_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-error.log`,
-    out_file: `${FEFLOW_HOME}/.pm2/logs/feflow-update-beat-process-out.log`,
+    // 由于心跳进程会不断写日志导致pm2日志文件过大，而且对于用户来说并关心心跳进程的日志，对于开发同学可以通过pm2 log来查看心跳进程的日志
+    error_file: '/dev/null',
+    out_file: '/dev/null',
     pid_file: `${FEFLOW_HOME}/.pm2/pid/app-pm_id.pid`,
   };
 
@@ -185,8 +188,13 @@ async function checkLock(updateData: UpdateData) {
 async function ensureFilesUnlocked(ctx: Feflow) {
   const beatLockPath = path.join(FEFLOW_HOME, BEAT_LOCK);
   const updateLockPath = path.join(FEFLOW_HOME, UPDATE_LOCK);
+  const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
   try {
-    const isPsExist = await isProcessExist(FEFLOW_UPDATE_BEAT_PROCESS);
+    if (!isFileExist(heartBeatPidPath)) return;
+    // 当heart-beat-pid.json存在时，说明启动了最新的心跳进程，文件中会被写入当前的心跳进程，此时根据pid判断进程是否存在
+    const heartBeatPid = readFileSync(heartBeatPidPath);
+    ctx.logger.debug('heartBeatPid:', heartBeatPid);
+    const isPsExist = await checkProcessExistByPid(heartBeatPid);
     ctx.logger.debug('fefelow-update-beat-process is exist:', isPsExist);
     if (lockFile.checkSync(beatLockPath) && !isPsExist) {
       ctx.logger.debug('beat file unlock');
@@ -222,7 +230,8 @@ export async function checkUpdate(ctx: Feflow) {
     heartFile = new LockFile(heartDBFilePath, beatLockPath, ctx.logger);
   }
 
-  const updateData = await updateFile.read(UPDATE_KEY);
+  let needToRestartUpdateBeatProcess = false;
+  let updateData = await updateFile.read(UPDATE_KEY) as UpdateData;
   if (isUpdateData(updateData)) {
     // add lock to keep only one updating process is running
     const isLocked = await checkLock(updateData);
@@ -237,24 +246,10 @@ export async function checkUpdate(ctx: Feflow) {
     if (cliUpdateMsg || pluginsUpdateMsg || universalPluginsUpdateMsg) {
       await checkUpdateMsg(ctx, updateData);
     }
-
-    const heartBeatData = await heartFile.read(BEAT_KEY);
-    if (isHeartBeatData(heartBeatData)) {
-      const lastBeatTime = parseInt(heartBeatData, 10);
-
-      cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
-      ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}, ${cacheValidate ? 'don’t' : ''} launch update-beat-process`);
-      // 端对端测试时DISABLE_UPDATE_BEAT为true不允许创建心跳进程
-      if (!cacheValidate && !DISABLE_UPDATE_BEAT) {
-        // todo：进程检测，清理一下僵死的进程(兼容不同系统)
-        startUpdateBeat(ctx);
-      }
-      // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
-      updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
-    }
   } else {
     // init
-    ctx.logger.debug('init heart-beat for update detective, launch update-beat-process');
+    ctx.logger.debug(`${UPDATE_COLLECTION} is illegal, init ${UPDATE_COLLECTION}`);
+    // 这里维持原来的写法不做改动，在更新文件内容不合法时同时初始化心跳和更新文件
     await Promise.all([
       // 初始化心跳数据
       heartFile.update(BEAT_KEY, String(nowTime)),
@@ -274,6 +269,37 @@ export async function checkUpdate(ctx: Feflow) {
         },
       }),
     ]);
+
+    // 需要重启心跳进程
+    needToRestartUpdateBeatProcess = true;
+  }
+
+  const heartBeatData = await heartFile.read(BEAT_KEY);
+  updateData = await updateFile.read(UPDATE_KEY) as UpdateData;
+  if (isHeartBeatData(heartBeatData)) {
+    const lastBeatTime = parseInt(heartBeatData, 10);
+
+    cacheValidate = nowTime - lastBeatTime <= BEAT_GAP;
+    ctx.logger.debug(`heart-beat process cache validate ${cacheValidate}, ${cacheValidate ? 'not' : ''} launch update-beat-process`);
+    // 子进程心跳停止了
+    if (!cacheValidate) {
+      // todo：进程检测，清理一下僵死的进程(兼容不同系统)
+      // 需要重启心跳进程
+      needToRestartUpdateBeatProcess = true;
+    }
+    // 即便 心跳 停止了，latest_cli_version 也应该是之前检测到的最新值
+    updateData.latest_cli_version && (latestVersion = updateData.latest_cli_version);
+  } else {
+    ctx.logger.debug(`${HEART_BEAT_COLLECTION} is illegal, init ${HEART_BEAT_COLLECTION}`);
+    // 初始化心跳数据
+    await heartFile.update(BEAT_KEY, String(nowTime));
+    // 需要重启心跳进程
+    needToRestartUpdateBeatProcess = true;
+  }
+
+  // 根据needToRestartUpdateBeat状态决定是否重启心跳进程
+  if (needToRestartUpdateBeatProcess) {
+    ctx.logger.debug('launch update-beat-process');
     // 端对端测试时DISABLE_UPDATE_BEAT为true不允许创建心跳进程
     !DISABLE_UPDATE_BEAT && startUpdateBeat(ctx);
   }

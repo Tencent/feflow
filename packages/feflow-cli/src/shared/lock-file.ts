@@ -1,7 +1,6 @@
 import fs from 'fs';
 import lockFile from 'lockfile';
 import { Logger } from '../core/logger';
-
 export default class LockFile {
   private readonly filePath: string;
   private readonly lockKey: string;
@@ -136,7 +135,9 @@ export default class LockFile {
         // another writing is running
         if (this.tryCount >= this.tryMax) {
           this.tryCount = 0;
-          return this.logger.error(`file read time out ${this.filePath}`);
+          // 解锁文件
+          this.unlock();
+          cb();
         }
         this.tryCount += 1;
         setTimeout(() => {
