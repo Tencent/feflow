@@ -19,9 +19,9 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 10
+          # - 10
           - 12
-          - 14
+          # - 14
           # 因为在使用lerna时node16安装包时会报错因此暂时去掉node16
           # - 16
         architecture:
