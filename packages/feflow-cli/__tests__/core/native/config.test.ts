@@ -1,14 +1,11 @@
 import shell from 'shelljs';
-import fs from 'fs';
 import chai from 'chai';
 
 const { assert } = chai;
 
 describe('@feflow/core - Native config', () => {
   beforeEach(() => {
-    fs.rmdirSync('.fef', {
-      recursive: true,
-    });
+    shell.exec('rm -rf .fef');
   });
 
   it('fef config 后面没有参数时返回的信息应该为空', () => {
