@@ -60,8 +60,6 @@ Every release, along with the migration instructions, is documented on the GitHu
 [build-status-url]: https://travis-ci.org/Tencent/feflow
 [contributors]: https://img.shields.io/github/contributors/Tencent/feflow.svg
 [contributors-url]: https://github.com/Tencent/feflow/graphs/contributors
-[deps]: https://img.shields.io/david/Tencent/feflow.svg
-[deps-url]: https://david-dm.org/Tencent/feflow
 [downloads]: https://img.shields.io/npm/dw/@feflow/cli.svg
 [downloads-url]: https://www.npmjs.com/package/@feflow/cli
 [issue-resolution]: https://isitmaintained.com/badge/resolution/Tencent/feflow.svg
