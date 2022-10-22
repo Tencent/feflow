@@ -19,15 +19,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
           registry-url: https://registry.npmjs.org
           cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Install dependencies
-        run: npm i && npm run bootstrap
+        run: npm ci && npm run bootstrap
         env:
           CI: true
-      - name: Build
-        run: npm run build
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: lib
       - name: Check dist tag
         # 不能使用 npm script 包裹，会污染 stdout
         run: node ./scripts/check-dist-tag.js >> $GITHUB_ENV

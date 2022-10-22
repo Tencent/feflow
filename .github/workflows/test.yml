@@ -10,7 +10,32 @@ on:
   workflow_call: null
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - name: Install dependencies
+        run: npm ci && npm run bootstrap
+        env:
+          CI: true
+      - name: Build
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib
+          path: |
+            packages/**/lib
   test:
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,10 +65,15 @@ jobs:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.architecture }}
           cache: npm
+          cache-dependency-path: '**/package-lock.json'
       - name: Install dependencies
-        run: npm i && npm run bootstrap
+        run: npm ci && npm run bootstrap
         env:
           CI: true
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: lib
       - name: Test
         run: npm run test
         env:
