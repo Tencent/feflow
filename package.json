@@ -13,7 +13,7 @@
     "release": "lerna publish from-git --dist-tag $DIST_TAG --yes",
     "prepare-husky": "husky install",
     "check-npm-version": "node ./scripts/check-npm-version.js",
-    "prepare": "npm run prepare-husky",
+    "prepare": "$CI || npm run prepare-husky",
     "preinstall": "npm run check-npm-version",
     "preversion": "lerna clean -y && lerna bootstrap"
   },
