@@ -51,7 +51,7 @@
     "js-yaml": "^3.13.1",
     "minimist": "^1.2.6",
     "osenv": "^0.1.5",
-    "package-json": "^6.5.0"
+    "package-json": "^8.1.0"
   },
   "engines": {
     "node": ">=8.0"
