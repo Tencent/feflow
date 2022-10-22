@@ -10,7 +10,6 @@ English | [简体中文](./README.CN.md)
 
 [![npm][npm]][npm-url]
 [![Build Status][build-status]][build-status-url]
-[![deps][deps]][deps-url]
 [![Install Size][size]][size-url]
 [![Downloads][downloads]][downloads-url]
 [![lerna][lerna]][lerna-url]
