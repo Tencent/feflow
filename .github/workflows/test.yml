@@ -21,7 +21,9 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: |
+            package-lock.json
+            packages/*/package-lock.json
       - name: Install dependencies
         run: npm ci && npm run bootstrap
         env:
@@ -32,8 +34,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: lib
-          path: |
-            packages/**/lib
+          path: packages/*/lib
   test:
     needs: build
     runs-on: ${{ matrix.os }}
@@ -63,7 +64,9 @@ jobs:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.architecture }}
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: |
+            package-lock.json
+            packages/*/package-lock.json
       - name: Install dependencies
         run: npm ci && npm run bootstrap
         env:
