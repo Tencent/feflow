@@ -64,6 +64,8 @@ export const CACHE_FILE = '.feflowCache.yml';
 
 export const HEART_BEAT_COLLECTION = 'heart-beat.json';
 
+export const HEART_BEAT_PID = 'heart-beat.pid';
+
 export const HEART_BEAT_COLLECTION_LOG = 'heart_beat-log.db';
 
 export const UPDATE_COLLECTION = 'update.json';
@@ -97,3 +99,6 @@ export const UPDATE_LOCK = 'update.lock';
 export const SILENT_ARG = '--slient';
 
 export const DISABLE_ARG = '--disable-check';
+
+// 心跳进程名字
+export const FEFLOW_UPDATE_BEAT_PROCESS  = 'feflow-update-beat-process';

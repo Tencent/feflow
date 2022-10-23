@@ -54,12 +54,11 @@ export const getInstalledPlugins = () => {
   });
 };
 
-export const getNpmRegistryUrl = (packageManager: string) =>
-  spawn
-    .sync(packageManager, ['config', 'get', 'registry'], { windowsHide: true })
-    .stdout.toString()
-    .replace(/\n/, '')
-    .replace(/\/$/, '');
+export const getNpmRegistryUrl = (packageManager: string) => spawn
+  .sync(packageManager, ['config', 'get', 'registry'], { windowsHide: true })
+  .stdout.toString()
+  .replace(/\n/, '')
+  .replace(/\/$/, '');
 
 export const getLatestVersion = async (name: string, packageManager: string) => {
   const registryUrl = getNpmRegistryUrl(packageManager);
@@ -78,15 +77,16 @@ export const updatePluginsVersion = (packagePath: string, plugins: PluginUpdateM
   fs.writeFileSync(packagePath, JSON.stringify(obj, null, 4));
 };
 
-export const getUniversalPluginVersion = (pkgInfo: PkgInfo, universalPkg: UniversalPkg) =>
-  new Promise<UniversalPluginUpdateMsg>(async (resolve) => {
+export const getUniversalPluginVersion = (
+  pkgInfo: PkgInfo,
+  universalPkg: UniversalPkg,
+) => new Promise<UniversalPluginUpdateMsg>((resolve) => {
+  (async () => {
     const repoPath = path.join(universalModulesPath, `${pkgInfo.repoName}@${pkgInfo.installVersion}`);
     if (pkgInfo.installVersion === LATEST_VERSION) {
       if (universalPkg.isInstalled(pkgInfo.repoName, LATEST_VERSION)) {
         const currentVersion = (await getCurrentTag(repoPath)) || '';
-        logger.debug(
-          `repoPath => ${repoPath}; currentVersion => ${currentVersion}; checkoutTag=> ${pkgInfo.checkoutTag}`,
-        );
+        logger.debug(`repoPath => ${repoPath}; currentVersion => ${currentVersion}; checkoutTag=> ${pkgInfo.checkoutTag}`);
         if (versionImpl.gt(pkgInfo.checkoutTag, currentVersion)) {
           resolve({
             name: pkgInfo.repoName,
@@ -105,12 +105,12 @@ export const getUniversalPluginVersion = (pkgInfo: PkgInfo, universalPkg: Univer
       repoPath,
       installVersion: pkgInfo.installVersion,
     });
-  });
+  })();
+});
 
-export const promisify =
-  (asyncFun: Function, ...args: any[]) =>
-  () =>
-    new Promise<void>(async (resolve) => {
-      await asyncFun(...args);
-      resolve();
-    });
+export const promisify =  (asyncFun: Function, ...args: any[]) => () => new Promise<void>((resolve) => {
+  (async () => {
+    await asyncFun(...args);
+    resolve();
+  })();
+});

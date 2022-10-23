@@ -29,19 +29,21 @@ export async function copyDir(srcPath: string, tarPath: string) {
 }
 
 async function copyFiles(srcPath: string, tarPath: string, files: string[]) {
-  return Promise.all(
-    files.map(async (filename) => {
-      const fileDir = path.join(srcPath, filename);
-      const stats = await statAsync(fileDir);
-      const isFile = stats.isFile();
-      if (isFile) {
-        const destPath = path.join(tarPath, filename);
-        await copyFileAsync(fileDir, destPath);
-      } else {
-        const tarFileDir = path.join(tarPath, filename);
-        await mkdirAsync(tarFileDir);
-        await copyDir(fileDir, tarFileDir);
-      }
-    }),
-  );
+  return Promise.all(files.map(async (filename) => {
+    const fileDir = path.join(srcPath, filename);
+    const stats = await statAsync(fileDir);
+    const isFile = stats.isFile();
+    if (isFile) {
+      const destPath = path.join(tarPath, filename);
+      await copyFileAsync(fileDir, destPath);
+    } else {
+      const tarFileDir = path.join(tarPath, filename);
+      await mkdirAsync(tarFileDir);
+      await copyDir(fileDir, tarFileDir);
+    }
+  }));
+}
+
+export function isFileExist(filePath: string) {
+  return fs.existsSync(filePath);
 }

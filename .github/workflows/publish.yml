@@ -35,10 +35,13 @@ jobs:
         run: npm run release
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Get tag info
+        id: tags
+        uses: babel/actions/get-release-tags@v2
       - name: Generate changelog
         run: |
           echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
-          npx lerna-changelog >> $GITHUB_ENV
+          npx lerna-changelog --from ${{ steps.tags.outputs.old }} --to ${{ steps.tags.outputs.new }} >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
         env:
           GITHUB_AUTH: ${{secrets.GITHUB_TOKEN}}

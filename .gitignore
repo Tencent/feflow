@@ -12,5 +12,4 @@ packages/feflow-cli/bin/run
 packages/feflow-cli/.zshrc
 packages/feflow-cli/.keys
 tnpm
-**/.fef
-
+**/.keys

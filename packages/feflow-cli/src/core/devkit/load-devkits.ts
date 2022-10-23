@@ -12,16 +12,16 @@ interface CommandConfig {
 
 const registerDevkitCommand = (command: string, commandConfig: CommandConfig, directoryPath: string, ctx: Feflow) => {
   const { builder, options: builderOptions } = commandConfig;
-  const [packageName] = builder.split(':', 2);
+  const [packageName, devkitCmd] = builder.split(':', 2);
   const config = new Config(ctx);
   const pkgPath = path.join(directoryPath, 'node_modules', packageName);
   try {
     const devkitConfig = config.loadDevkitConfig(pkgPath);
     if (!devkitConfig) {
-      ctx.logger.debug(`devkit config not found!`);
+      ctx.logger.debug('devkit config not found!');
       return;
     }
-    const { implementation, description, optionsDescription, usage = {} } = devkitConfig.builders[command];
+    const { implementation, description, optionsDescription, usage = {} } = devkitConfig.builders[devkitCmd];
 
     const options = getCommandLine(optionsDescription || usage, description, command);
     const devkitLogger = logger({
@@ -57,7 +57,7 @@ const registerDevkitCommand = (command: string, commandConfig: CommandConfig, di
       );
     }
   } catch (e) {
-    ctx.logger.debug(`${pkgPath} not found!`);
+    ctx.logger.debug(e, 'register devkit command failed');
   }
 };
 
@@ -78,9 +78,7 @@ export default function loadDevkits(ctx: Feflow) {
       if (path.basename(directoryPath) === FEFLOW_ROOT) {
         ctx.logger.debug('Run commands in .fef root will not work.');
       } else {
-        ctx.logger.error(
-          `A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`,
-        );
+        ctx.logger.error(`A config file .feflowrc(.js|.yaml|.yml|.json) was detected in ${directoryPath}, but lost required property 'commands' in field 'devkit'. Please check your config file or just delete it.`);
       }
     }
   } else {

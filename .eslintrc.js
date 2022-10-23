@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['eslint-config-tencent', 'eslint-config-tencent/ts', 'eslint-config-tencent/prettier'],
+  extends: ['eslint-config-tencent', 'eslint-config-tencent/ts'],
   parserOptions: {
     project: './tsconfig.eslint.json',
   },

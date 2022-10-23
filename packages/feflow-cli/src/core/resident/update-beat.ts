@@ -21,12 +21,14 @@ import {
   UPDATE_KEY,
   UPDATE_LOCK,
   FEFLOW_HOME,
+  HEART_BEAT_PID,
 } from '../../shared/constant';
 import createLogger from '../logger';
 import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
 import { getPkgInfo } from '../native/install';
 import Feflow from '../index';
 import { isValidConfig } from '../../shared/type-predicates';
+import { fileExit, writeFileSync } from '../../shared/file';
 import pkgJson from '../../../package.json';
 
 interface ErrorInstance {
@@ -99,36 +101,34 @@ const queryPluginsUpdate = async () => {
     return;
   }
 
-  Promise.all(
-    getInstalledPlugins().map(async (name: string) => {
-      const pluginPkgJsonPath = path.join(root, 'node_modules', name, 'package.json');
-      const pkgJsonStr = fs.readFileSync(pluginPkgJsonPath, {
-        encoding: 'utf8',
-      });
-      const pkgJson = JSON.parse(pkgJsonStr);
-      const localVersion = pkgJson.version;
-      const registryUrl = spawn
-        .sync(config.packageManager, ['config', 'get', 'registry'], {
-          windowsHide: true,
-        })
-        .stdout.toString()
-        .replace(/\n/, '')
-        .replace(/\/$/, '');
-      const latestVersion = await packageJson(name, registryUrl).catch((err) => {
-        logger.debug('Check plugin update error', err);
-      });
+  Promise.all(getInstalledPlugins().map(async (name: string) => {
+    const pluginPkgJsonPath = path.join(root, 'node_modules', name, 'package.json');
+    const pkgJsonStr = fs.readFileSync(pluginPkgJsonPath, {
+      encoding: 'utf8',
+    });
+    const pkgJson = JSON.parse(pkgJsonStr);
+    const localVersion = pkgJson.version;
+    const registryUrl = spawn
+      .sync(config.packageManager, ['config', 'get', 'registry'], {
+        windowsHide: true,
+      })
+      .stdout.toString()
+      .replace(/\n/, '')
+      .replace(/\/$/, '');
+    const latestVersion = await packageJson(name, registryUrl).catch((err) => {
+      logger.debug('Check plugin update error', err);
+    });
 
-      if (latestVersion && semver.gt(latestVersion, localVersion)) {
-        return {
-          name,
-          latestVersion,
-          localVersion,
-        };
-      }
-      logger.debug('All plugins is in latest version');
-    }),
-  ).then(async (plugins) => {
-    const pluginsWithName = plugins.filter((plugin) => plugin?.name);
+    if (latestVersion && semver.gt(latestVersion, localVersion)) {
+      return {
+        name,
+        latestVersion,
+        localVersion,
+      };
+    }
+    logger.debug('All plugins is in latest version');
+  })).then(async (plugins) => {
+    const pluginsWithName = plugins.filter(plugin => plugin?.name);
     logger.debug('tnpm plugins update information', pluginsWithName);
     if (pluginsWithName.length) {
       const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
@@ -155,11 +155,9 @@ const queryUniversalPluginsUpdate = async () => {
 
   for (const [pkg, version] of universalPkg.getInstalled()) {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const pkgInfo = await getPkgInfo({ root, config, logger } as Feflow, `${pkg}@${version}`).catch(
-      async (e: unknown) => {
-        logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
-      },
-    );
+    const pkgInfo = await getPkgInfo({ root, config, logger } as Feflow, `${pkg}@${version}`).catch(async (e: unknown) => {
+      logger.error(`update_error => pkg: ${pkg}@${version} => error: ${e}`);
+    });
     if (!pkgInfo) {
       continue;
     }
@@ -181,6 +179,11 @@ const queryUniversalPluginsUpdate = async () => {
     }
   }
 };
+
+// 记录心跳进程的pid
+const heartBeatPidPath = path.join(FEFLOW_HOME, HEART_BEAT_PID);
+fileExit(heartBeatPidPath);
+writeFileSync(heartBeatPidPath, `${process.pid}`);
 
 // startBeat
 setInterval(heartBeat, BEAT_GAP);

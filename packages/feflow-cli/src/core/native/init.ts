@@ -6,34 +6,36 @@ import yeoman from 'yeoman-environment';
 import Feflow from '../';
 import { install } from '../../shared/npm';
 
-const loadGenerator = (root: string, rootPkg: string) =>
-  new Promise<{ name: string; desc: string }[]>((resolve, reject) => {
-    fs.readFile(rootPkg, 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        const json = JSON.parse(data);
-        const deps = json.dependencies || json.devDependencies || {};
-        const generators = Object.keys(deps)
-          .filter((name) => {
-            if (!/^generator-|^@[^/]+\/generator-/.test(name)) {
-              return false;
-            }
-            const generatorPath = path.join(root, 'node_modules', name);
-            return fs.existsSync(generatorPath);
-          })
-          .map((name) => {
-            const generatorPkgPath = path.join(root, 'node_modules', name, 'package.json');
-            const generatorPkgData = fs.readFileSync(generatorPkgPath, 'utf8');
-            const generatorPkgJson = JSON.parse(generatorPkgData);
-            const desc = generatorPkgJson.description as string;
+const loadGenerator = (
+  root: string,
+  rootPkg: string,
+) => new Promise<{ name: string; desc: string }[]>((resolve, reject) => {
+  fs.readFile(rootPkg, 'utf8', (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      const json = JSON.parse(data);
+      const deps = json.dependencies || json.devDependencies || {};
+      const generators = Object.keys(deps)
+        .filter((name) => {
+          if (!/^generator-|^@[^/]+\/generator-/.test(name)) {
+            return false;
+          }
+          const generatorPath = path.join(root, 'node_modules', name);
+          return fs.existsSync(generatorPath);
+        })
+        .map((name) => {
+          const generatorPkgPath = path.join(root, 'node_modules', name, 'package.json');
+          const generatorPkgData = fs.readFileSync(generatorPkgPath, 'utf8');
+          const generatorPkgJson = JSON.parse(generatorPkgData);
+          const desc = generatorPkgJson.description as string;
 
-            return { name, desc };
-          });
-        resolve(generators);
-      }
-    });
+          return { name, desc };
+        });
+      resolve(generators);
+    }
   });
+});
 
 const run = (ctx: Feflow, name: string) => {
   const { root } = ctx;
@@ -62,7 +64,7 @@ export default (ctx: Feflow) => {
     loadGenerator(root, rootPkg).then(async (generators) => {
       // feflow init 简化逻辑直接安装并使用脚手架
       if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
-        const isGeneratorInstalled = generators.some((item) => item.name === generator);
+        const isGeneratorInstalled = generators.some(item => item.name === generator);
         if (generators.length && isGeneratorInstalled) {
           // 端对端测试不真正利用脚手架创建项目
           if (e2e) {
@@ -91,7 +93,7 @@ export default (ctx: Feflow) => {
         if (answer.ifInstall) {
           const { packageManager } = ctx.config || {};
           if (!packageManager) {
-            ctx.logger.error(`cannot find 'packageManager' from config`);
+            ctx.logger.error('cannot find \'packageManager\' from config');
             return;
           }
           install(packageManager, ctx.root, 'install', generator, false).then(() => {
@@ -101,7 +103,7 @@ export default (ctx: Feflow) => {
           return;
         }
       }
-      const options = generators.map((item) => item.desc);
+      const options = generators.map(item => item.desc);
       if (generators.length) {
         // 端对端测试不执行下面的inquirer逻辑
         if (e2e) {
@@ -129,14 +131,10 @@ export default (ctx: Feflow) => {
             name && run(ctx, name);
           });
       } else {
-        console.log(
-          'You have not installed a template yet, ' +
-            ' please use install command. Guide: https://github.com/Tencent/feflow',
-        );
-        ctx.logger.warn(
-          'You have not installed a template yet, ' +
-            ' please use install command. Guide: https://github.com/Tencent/feflow',
-        );
+        console.log('You have not installed a template yet, '
+            + ' please use install command. Guide: https://github.com/Tencent/feflow');
+        ctx.logger.warn('You have not installed a template yet, '
+            + ' please use install command. Guide: https://github.com/Tencent/feflow');
       }
     });
   });

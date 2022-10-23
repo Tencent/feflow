@@ -114,10 +114,8 @@ export default class Binp {
       return;
     }
 
-    console.error(
-      'the current terminal cannot use feflow normally, ' +
-        'please open a new terminal or execute the following statement:',
-    );
+    console.error('the current terminal cannot use feflow normally, '
+        + 'please open a new terminal or execute the following statement:');
     console.error(`source ${profile}`);
     process.exit(1);
   }
