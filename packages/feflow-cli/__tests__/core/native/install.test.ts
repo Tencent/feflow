@@ -1,12 +1,11 @@
 import shell from 'shelljs';
 import chai from 'chai';
-import { removeDir } from '../../utils';
 
 const { assert } = chai;
 
 describe('@feflow/core - Native list', () => {
   beforeEach(() => {
-    removeDir('.fef');
+    shell.exec('rm -rf .fef');
   });
 
   it('fef install 后面的参数为空时返回参数错误的提示信息', () => {

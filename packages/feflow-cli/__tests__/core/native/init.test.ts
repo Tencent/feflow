@@ -1,12 +1,11 @@
 import shell from 'shelljs';
 import chai from 'chai';
-import { removeDir } from '../../utils';
 
 const { assert } = chai;
 
 describe('@feflow/core - Native init', () => {
   beforeEach(() => {
-    removeDir('.fef');
+    shell.exec('rm -rf .fef');
   });
 
   describe('fef init 使用参数指定脚手架', () => {
