@@ -1,11 +1,12 @@
 import shell from 'shelljs';
 import chai from 'chai';
+import { removeDir } from '../../utils';
 
 const { assert } = chai;
 
 describe('@feflow/core - Native config', () => {
   beforeEach(() => {
-    shell.exec('rm -rf .fef');
+    removeDir('.fef');
   });
 
   it('fef config 后面没有参数时返回的信息应该为空', () => {
@@ -63,7 +64,7 @@ describe('@feflow/core - Native config', () => {
       // 添加配置
       shell.exec(`node bin/feflow config set ${key} ${value}`);
       // 输出配置
-      assert.match(shell.exec(`node bin/feflow config list`).stdout, expectedPattern);
+      assert.match(shell.exec('node bin/feflow config list').stdout, expectedPattern);
     });
   });
 });

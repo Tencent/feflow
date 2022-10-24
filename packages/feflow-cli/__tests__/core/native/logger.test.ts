@@ -8,7 +8,7 @@ describe('@feflow/core - Native logger', () => {
 
   it('fef logger 的参数为空时, 应输出 nothing types', () => {
     const expectedPattern = /nothing types\n*/;
-    assert.match(shell.exec(`node bin/feflow logger`).stdout, expectedPattern);
+    assert.match(shell.exec('node bin/feflow logger').stdout, expectedPattern);
   });
 
   it('fef logger info 应该可以正常输出指定的内容', () => {
