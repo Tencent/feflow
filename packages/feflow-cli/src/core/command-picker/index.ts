@@ -443,7 +443,13 @@ export default class CommandPicker {
     }
     if (type === CommandType.UNIVERSAL_PLUGIN_TYPE) {
       const { version, pkg } = targetCommand as TargetUniversalPlugin;
-      await execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
+      try {
+        await execPlugin(Object.assign({}, this.ctx, { logger: pluginLogger }), pkg, version);
+      } catch (error) {
+        this.ctx.fefError.printError({
+          error,
+        });
+      }
     } else {
       let commandPath = '';
       if (targetCommand instanceof TargetPlugin) {
@@ -464,7 +470,7 @@ export default class CommandPicker {
       try {
         this.ctx?.reporter?.setCommandSource(commandSource);
         const commandEntry = await import(commandPath);
-        commandEntry.default(Object.assign({}, this.ctx, { logger: pluginLogger }));
+        await commandEntry.default(Object.assign({}, this.ctx, { logger: pluginLogger }));
       } catch (error) {
         this.ctx.fefError.printError({
           error,
