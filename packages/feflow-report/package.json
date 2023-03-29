@@ -16,14 +16,14 @@
   "author": "fXy-during <fxy1044667399@163.com>",
   "license": "ISC",
   "devDependencies": {
-    "@feflow/cli": "^0.26.2",
-    "@types/request-promise": "^4.1.48"
+    "@feflow/cli": "^0.26.2"
   },
   "files": [
     "lib",
     "types"
   ],
   "dependencies": {
+    "@types/request-promise": "^4.1.48",
     "request-promise": "^4.2.5"
   },
   "nyc": {
