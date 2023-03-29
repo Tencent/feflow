@@ -26,12 +26,10 @@
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/cross-spawn": "^6.0.0",
     "@types/minimist": "^1.2.0",
-    "@types/semver": "^7.3.9"
-  },
-  "dependencies": {
+    "@types/semver": "^7.3.9",
     "chalk": "^2.4.2",
     "cross-spawn": "^6.0.5",
     "execa": "^4.0.0",
