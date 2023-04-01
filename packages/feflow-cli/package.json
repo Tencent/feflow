@@ -79,7 +79,7 @@
     "marked": "^4.0.10",
     "minimist": "^1.2.6",
     "osenv": "^0.1.5",
-    "package-json": "^6.5.0",
+    "package-json": "^8.1.0",
     "pm2": "^5.2.0",
     "ps-node": "^0.1.6",
     "request": "^2.88.0",
