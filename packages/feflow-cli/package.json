@@ -36,7 +36,8 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
-    "@types/nedb": "^1.8.10"
+    "@types/nedb": "^1.8.10",
+    "@types/yeoman-environment": "^2.10.8"
   },
   "dependencies": {
     "@feflow/feflow-plugin-devtool": "^0.4.3",
@@ -57,7 +58,6 @@
     "@types/ps-node": "^0.1.1",
     "@types/request-promise": "^4.1.45",
     "@types/semver": "^6.0.1",
-    "@types/yeoman-environment": "^2.10.1",
     "abbrev": "^1.1.1",
     "axios": "^0.21.1",
     "bunyan": "^1.8.14",
@@ -86,7 +86,7 @@
     "request-promise": "^4.2.6",
     "semver": "^7.3.2",
     "strip-json-comments": "^3.1.1",
-    "yeoman-environment": "^2.10.3"
+    "yeoman-environment": "^3.19.3"
   },
   "engines": {
     "node": ">=8.0"

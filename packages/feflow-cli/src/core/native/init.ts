@@ -37,7 +37,7 @@ const loadGenerator = (
   });
 });
 
-const run = (ctx: Feflow, name: string) => {
+const run = async (ctx: Feflow, name: string) => {
   const { root } = ctx;
   const yeomanEnv = yeoman.createEnv();
   let generatorEntry = path.join(root, 'node_modules', name, 'app/index.js');
@@ -46,14 +46,15 @@ const run = (ctx: Feflow, name: string) => {
     generatorEntry = path.join(root, 'node_modules', name, 'generators', 'app/index.js');
   }
   yeomanEnv.register(require.resolve(generatorEntry), name);
-  yeomanEnv.run(name, ctx, (err) => {
+
+  try {
+    await yeomanEnv.run(name, ctx);
+    ctx.logger.debug('create project success!');
+  } catch (error) {
+    ctx.logger.error(error);
+  } finally {
     ctx.reporter?.reportInitResult();
-    if (err) {
-      ctx.logger.error(err);
-    } else {
-      ctx.logger.debug('create project success!');
-    }
-  });
+  }
 };
 
 export default (ctx: Feflow) => {
@@ -75,7 +76,7 @@ export default (ctx: Feflow) => {
             message: `You have not installed the generator ${generator}，if you want to install and use ?`,
             default: true,
           },
-        ];
+        ] as const;
         const answer = await inquirer.prompt(askIfInstallGenerator);
         if (answer.ifInstall) {
           const { packageManager } = ctx.config || {};
