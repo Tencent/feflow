@@ -6,6 +6,56 @@ import yeoman from 'yeoman-environment';
 import Feflow from '../';
 import { install } from '../../shared/npm';
 
+export default (ctx: Feflow) => {
+  ctx.commander.register('init', 'Create a new project', async () => {
+    const { root, rootPkg, args } = ctx;
+    const { generator } = args;
+    const generators = await loadGenerator(root, rootPkg);
+    // feflow init 简化逻辑直接安装并使用脚手架
+    if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
+      const isGeneratorInstalled = generators.some(item => item.name === generator);
+      if (isGeneratorInstalled) {
+        return run(ctx, generator);
+      }
+      const askIfInstallGenerator = [
+        {
+          type: 'confirm',
+          name: 'ifInstall',
+          message: `You have not installed the generator ${generator}，if you want to install and use ?`,
+          default: true,
+        },
+      ] as const;
+      const answer = await inquirer.prompt(askIfInstallGenerator);
+      if (answer.ifInstall) {
+        const { packageManager } = ctx.config || {};
+        if (!packageManager) {
+          ctx.logger.error('cannot find \'packageManager\' from config');
+          return;
+        }
+        await install(packageManager, ctx.root, 'install', generator, false);
+        ctx.logger.info('install success');
+        return run(ctx, generator);
+      }
+    }
+    const options = generators.map(item => item.desc);
+    if (generators.length) {
+      const answer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'desc',
+          message: '您想要创建哪种类型的工程?',
+          choices: options,
+        },
+      ]);
+      const { name = '' } = generators.find(item => item.desc === answer.desc) || {};
+      ctx.logger.debug('generator name:', name);
+      return run(ctx, name);
+    }
+    ctx.logger.warn('You have not installed a template yet, '
+        + ' please use install command. Guide: https://github.com/Tencent/feflow');
+  });
+};
+
 const loadGenerator = (
   root: string,
   rootPkg: string,
@@ -45,6 +95,11 @@ const run = async (ctx: Feflow, name: string) => {
   if (!fs.existsSync(generatorEntry)) {
     generatorEntry = path.join(root, 'node_modules', name, 'generators', 'app/index.js');
   }
+
+  if (!fs.existsSync(generatorEntry)) {
+    return ctx.logger.error('Cannot find generator entry:', generatorEntry);
+  }
+
   yeomanEnv.register(require.resolve(generatorEntry), name);
 
   try {
@@ -55,67 +110,4 @@ const run = async (ctx: Feflow, name: string) => {
   } finally {
     ctx.reporter?.reportInitResult();
   }
-};
-
-export default (ctx: Feflow) => {
-  ctx.commander.register('init', 'Create a new project', () => {
-    const { root, rootPkg, args } = ctx;
-    const { generator } = args;
-    loadGenerator(root, rootPkg).then(async (generators) => {
-      // feflow init 简化逻辑直接安装并使用脚手架
-      if (generator && /^generator-|^@[^/]+\/generator-/.test(generator)) {
-        const isGeneratorInstalled = generators.some(item => item.name === generator);
-        if (generators.length && isGeneratorInstalled) {
-          run(ctx, generator);
-          return;
-        }
-        const askIfInstallGenerator = [
-          {
-            type: 'confirm',
-            name: 'ifInstall',
-            message: `You have not installed the generator ${generator}，if you want to install and use ?`,
-            default: true,
-          },
-        ] as const;
-        const answer = await inquirer.prompt(askIfInstallGenerator);
-        if (answer.ifInstall) {
-          const { packageManager } = ctx.config || {};
-          if (!packageManager) {
-            ctx.logger.error('cannot find \'packageManager\' from config');
-            return;
-          }
-          install(packageManager, ctx.root, 'install', generator, false).then(() => {
-            ctx.logger.info('install success');
-            run(ctx, generator);
-          });
-          return;
-        }
-      }
-      const options = generators.map(item => item.desc);
-      if (generators.length) {
-        inquirer
-          .prompt([
-            {
-              type: 'list',
-              name: 'desc',
-              message: '您想要创建哪种类型的工程?',
-              choices: options,
-            },
-          ])
-          .then((answer: any) => {
-            let name;
-            generators.forEach((item: any) => {
-              if (item.desc === answer.desc) {
-                name = item.name;
-              }
-            });
-            ctx.reporter.report('init', name);
-            name && run(ctx, name);
-          });
-      } else {
-        ctx.logger.warn('You have not installed a template yet, '
-            + ' please use install command. Guide: https://github.com/Tencent/feflow');
-      }
-    });
-  });
 };

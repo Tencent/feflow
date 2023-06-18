@@ -244,8 +244,7 @@ export default class Feflow {
     }
     // 有副作用，暂无好方法改造
     if (cmdName === 'help' && registeredCommand) {
-      registeredCommand.runFn.call(this, ctx);
-      return;
+      return registeredCommand.runFn.call(this, ctx);
     }
     if (commandLine.length === 0) {
       return;
