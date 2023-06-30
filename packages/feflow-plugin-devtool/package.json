@@ -1,6 +1,6 @@
 {
   "name": "@feflow/feflow-plugin-devtool",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Feflow internal plugins",
   "main": "./lib/index.js",
   "directories": {
@@ -22,7 +22,7 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "devDependencies": {
-    "@feflow/cli": "^0.27.0"
+    "@feflow/cli": "^0.27.1"
   },
   "dependencies": {
     "@types/abbrev": "^1.1.0",

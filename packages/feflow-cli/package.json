@@ -1,6 +1,6 @@
 {
   "name": "@feflow/cli",
-  "version": "0.27.0",
+  "version": "0.27.1",
   "description": "A front-end flow tool.",
   "main": "./lib/index.js",
   "directories": {
@@ -39,8 +39,8 @@
     "@types/nedb": "^1.8.10"
   },
   "dependencies": {
-    "@feflow/feflow-plugin-devtool": "^0.4.4",
-    "@feflow/report": "^0.6.4",
+    "@feflow/feflow-plugin-devtool": "^0.4.5",
+    "@feflow/report": "^0.6.5",
     "@types/abbrev": "^1.1.0",
     "@types/bunyan": "^1.8.7",
     "@types/command-line-usage": "^5.0.1",
