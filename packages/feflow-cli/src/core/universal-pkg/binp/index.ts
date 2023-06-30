@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import spawn from 'cross-spawn';
 import osenv from 'osenv';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 /**
  * register the directory to the environment variable path
@@ -101,8 +102,10 @@ export default class Binp {
     if (!fs.existsSync(profile)) {
       return profile;
     }
-    const content = fs.readFileSync(profile)?.toString();
-    if (content?.indexOf(setStatement) === -1) {
+    const content = fs.readFileSync(profile)?.toString() || '';
+    // 排除包含字符串但被注释的情况
+    const setStatementRegExp = new RegExp(`(?<!#.*)${escapeRegExp(setStatement)}`);
+    if (!setStatementRegExp.test(content)) {
       return profile;
     }
     this.handleUnsupportedTerminal(profile);
