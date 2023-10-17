@@ -3,7 +3,7 @@ import path from 'path';
 import { spawn } from 'child_process';
 import type Feflow from '@feflow/cli';
 import { HOOK_TYPE_BEFORE, HOOK_TYPE_AFTER, REPORT_JSON, REPORT_COMMAND_ERR } from './constants';
-import { getProject, getKeyFormFile, setKeyToFile } from './common/utils';
+import { getProject, getKeyFormFile, setKeyToFile, getUserName } from './common/utils';
 
 const reportProcess = path.join(__dirname, './report');
 
@@ -144,4 +144,5 @@ class Report {
   };
 }
 
+export { getUserName };
 export default Report;
