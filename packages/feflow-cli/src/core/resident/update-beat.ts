@@ -3,11 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 import osenv from 'osenv';
-import spawn from 'cross-spawn';
 import _ from 'lodash';
 import { UpdateData, UniversalPluginUpdateMsg } from './';
 import LockFile from '../../shared/lock-file';
-import packageJson from '../../shared/package-json';
 import { parseYaml } from '../../shared/yaml';
 import { setServerUrl } from '../../shared/git';
 import { UniversalPkg } from '../universal-pkg/dep/pkg';
@@ -26,12 +24,13 @@ import {
   HEART_BEAT_PID,
 } from '../../shared/constant';
 import createLogger from '../logger';
-import { getInstalledPlugins, getLatestVersion, getUniversalPluginVersion } from './utils';
+import { getInstalledPlugins, getUniversalPluginVersion } from './utils';
 import { getPkgInfo } from '../native/install';
 import Feflow from '../index';
 import { isValidConfig } from '../../shared/type-predicates';
 import { fileExit, writeFileSync } from '../../shared/file';
 import pkgJson from '../../../package.json';
+import { getGreyVersion } from './grey-update';
 
 interface ErrorInstance {
   name: string;
@@ -84,7 +83,7 @@ const queryCliUpdate = async () => {
     return;
   }
 
-  const latestVersion = await getLatestVersion('@feflow/cli', config.packageManager);
+  const latestVersion = await getGreyVersion('@feflow/cli', config.packageManager);
   if (latestVersion && semver.gt(latestVersion, pkgJson.version)) {
     const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
     if (updateData?.latest_cli_version !== latestVersion) {
@@ -110,14 +109,7 @@ const queryPluginsUpdate = async () => {
     });
     const pkgJson = JSON.parse(pkgJsonStr);
     const localVersion = pkgJson.version;
-    const registryUrl = spawn
-      .sync(config.packageManager, ['config', 'get', 'registry'], {
-        windowsHide: true,
-      })
-      .stdout.toString()
-      .replace(/\n/, '')
-      .replace(/\/$/, '');
-    const latestVersion = await packageJson(name, registryUrl).catch((err) => {
+    const latestVersion = await getGreyVersion(name, config.packageManager).catch((err) => {
       logger.debug('Check plugin update error', err);
     });
 
