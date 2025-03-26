@@ -1,7 +1,7 @@
 import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 import Feflow from '../core';
 import { Config } from './file';
