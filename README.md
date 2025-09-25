@@ -43,7 +43,7 @@ You can write a Feflow devkit or plugin to extends commands.
 
 More detail document can be found:
 - [Github Wiki](https://github.com/Tencent/feflow/wiki)
-- [Website](https://feflowjs.com/)
+- [Website](https://github.com/Tencent/feflow/wiki)
 
 ## Change Log
 
