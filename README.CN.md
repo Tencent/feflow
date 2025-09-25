@@ -43,7 +43,7 @@ npm install @feflow/cli -g
 
 更多详细信息可前往:
 - [Github Wiki](https://github.com/Tencent/feflow/wiki)
-- [官网](https://feflowjs.com/)
+- [官网](https://github.com/Tencent/feflow/wiki)
 
 ## 发布日志
 
