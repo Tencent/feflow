@@ -1,5 +1,5 @@
 Tencent is pleased to support the open source community by making Feflow available.
-Copyright (C) 2019 THL A29 Limited, a Tencent company.  All rights reserved.
+Copyright (C) 2019 Tencent.  All rights reserved.
 If you have downloaded a copy of the Feflow binary from Tencent, please note that the Feflow binary is licensed under the MIT License.
 If you have downloaded a copy of the Feflow source code from Tencent, please note that Feflow source code is licensed under the MIT License.  Your integration of Feflow into your own projects may require compliance with the MIT License.
 A copy of the MIT License is included in this file.
