@@ -8,7 +8,8 @@ export const HOOK_TYPE_BEFORE = 'before';
  */
 export const HOOK_TYPE_AFTER = 'after';
 
-const BASIC_URL = 'http://api.feflowjs.com';
+// 安全修复：上报地址改为 HTTPS，防止遥测数据明文传输
+const BASIC_URL = 'https://api.feflowjs.com';
 
 export const REPORT_URL = `${BASIC_URL}/api/v1/report/command`;
 

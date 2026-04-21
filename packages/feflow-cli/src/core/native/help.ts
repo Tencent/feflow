@@ -89,10 +89,14 @@ export default (ctx: Feflow) => {
           const { type, content } = universalUsage instanceof Function ? universalUsage() : universalUsage;
 
           // case 1: 多语言情况下 yml 有 usage 属性时，执行对应的内容
+          // 安全修复：移除 shell:true，改用参数数组，防止 yml content 中的 shell 元字符注入
           if (type === 'usage') {
-            spawn(content, {
+            const parts = (content as string).trim().split(/\s+/);
+            const cmd = parts[0];
+            const args = parts.slice(1);
+            spawn(cmd, args, {
               stdio: 'inherit',
-              shell: true,
+              shell: false,
               windowsHide: true,
             });
             return;

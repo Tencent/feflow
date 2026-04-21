@@ -33,7 +33,7 @@ let keysFileContent: Partial<KeysFileContent> = {};
   if (!keysFileContent.time || NOW_TIME - keysFileContent.time > 5184e6) {
     const {
       data: { result },
-    } = await axios.get(`http://log.feflowjs.com/api/v1/summary/getskey?rtx=${USER_NAME}`);
+    } = await axios.get(`https://log.feflowjs.com/api/v1/summary/getskey?rtx=${USER_NAME}`);
     keysFileContent = {
       time: NOW_TIME,
       skey: result.skey,
@@ -71,7 +71,7 @@ async function send(logObj: LogObj | undefined, readData: string[]) {
   // 清除数据
   fs.writeFile(LOGGER_LOG_PATH, '', 'utf8', () => {});
   const response = await axios.post(
-    'http://log.feflowjs.com/api/v1/log/save',
+    'https://log.feflowjs.com/api/v1/log/save',
     {
       plugin: loggerList[0].name,
       data: JSON.stringify(loggerList),
