@@ -4,7 +4,7 @@ import path from 'path';
 import semver from 'semver';
 import osenv from 'osenv';
 import spawn from 'cross-spawn';
-import _ from 'lodash';
+import isEqual from 'lodash/isEqual';
 import { UpdateData, UniversalPluginUpdateMsg } from './';
 import LockFile from '../../shared/lock-file';
 import packageJson from '../../shared/package-json';
@@ -134,7 +134,7 @@ const queryPluginsUpdate = async () => {
     logger.debug('tnpm plugins update information', pluginsWithName);
     if (pluginsWithName.length) {
       const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
-      if (!_.isEqual(updateData.latest_plugins, pluginsWithName)) {
+      if (!isEqual(updateData.latest_plugins, pluginsWithName)) {
         const newUpdateData = {
           ...updateData,
           latest_plugins: pluginsWithName,
@@ -172,7 +172,7 @@ const queryUniversalPluginsUpdate = async () => {
   logger.debug('universal plugins update information', latestUniversalPlugins);
   if (latestUniversalPlugins.length) {
     const updateData = (await updateFile.read(UPDATE_KEY)) as UpdateData;
-    if (!_.isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)) {
+    if (!isEqual(updateData.latest_universal_plugins, latestUniversalPlugins)) {
       const newUpdateData = {
         ...updateData,
         latest_universal_plugins: latestUniversalPlugins,

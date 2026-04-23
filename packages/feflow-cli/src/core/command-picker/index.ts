@@ -2,7 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 import osEnv from 'osenv';
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import difference from 'lodash/difference';
 
 import Feflow from '..';
 import { execPlugin } from '../plugin/load-universal-plugin';
@@ -128,7 +129,7 @@ export class CacheController {
     pluginName: string = CommandType.NATIVE_TYPE,
     version = 'latest',
   ) {
-    const newCommands = _.difference(Object.keys(store), Object.keys(this.lastStore));
+    const newCommands = difference(Object.keys(store), Object.keys(this.lastStore));
 
     if (!!this.lastCommand) {
       if (type === CommandType.PLUGIN_TYPE) {
@@ -343,7 +344,7 @@ export class CacheController {
             } else {
               target = new TargetPlugin(type, (cmdPath || path) as string, plugin);
             }
-            cmdList.push(_.cloneDeep(target));
+            cmdList.push(cloneDeep(target));
           }
         });
       }
